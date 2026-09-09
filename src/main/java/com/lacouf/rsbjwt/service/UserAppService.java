@@ -42,6 +42,7 @@ public class UserAppService {
             case ETUDIANT -> getEmprunteurDto(user.getId());
             case PROFESSEUR -> getPreposeDto(user.getId());
             case GESTIONNAIRE -> getGestionnaireDto(user.getId());
+            case EMPLOYEUR -> getEmployeurDto(user.getId());
         };
     }
 
@@ -60,6 +61,13 @@ public class UserAppService {
     }
 
     private EtudiantDto getEmprunteurDto(Long id) {
+        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
+        return emprunteurOptional.isPresent() ?
+                EtudiantDto.create(emprunteurOptional.get()) :
+                EtudiantDto.empty();
+    }
+
+    private EtudiantDto getEmployeurDto(Long id) {
         final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
         return emprunteurOptional.isPresent() ?
                 EtudiantDto.create(emprunteurOptional.get()) :

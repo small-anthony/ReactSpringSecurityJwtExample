@@ -28,4 +28,9 @@ class SignUpController {
 	public ResponseEntity<Object> signUpProfesseur() {
 		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
 	}
+
+	@PostMapping("/employeur")
+	public ResponseEntity<Object> signUpEmployeur() {
+		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+	}
 }

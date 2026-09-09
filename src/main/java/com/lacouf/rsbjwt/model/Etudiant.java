@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@DiscriminatorValue("E")
+@DiscriminatorValue("S") //student
 @Getter
 @NoArgsConstructor
 public class Etudiant extends UserApp {

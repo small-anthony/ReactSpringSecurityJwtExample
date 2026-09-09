@@ -7,12 +7,13 @@ public enum Role{
 	GESTIONNAIRE("ROLE_GESTIONNAIRE"),
 	PROFESSEUR("ROLE_PROFESSEUR"),
 	ETUDIANT("ROLE_ETUDIANT"),
+	EMPLOYEUR("ROLE_EMPLOYEUR"),
 	;
 
 	private final String string;
 	private final Set<Role> managedRoles = new HashSet<>();
 
-	static{
+	static {
 		GESTIONNAIRE.managedRoles.add(PROFESSEUR);
 		GESTIONNAIRE.managedRoles.add(ETUDIANT);
 	}

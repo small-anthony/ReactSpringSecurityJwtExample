@@ -1,10 +1,7 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.GestionnaireRepository;
-import com.lacouf.rsbjwt.repository.ProfesseurRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,14 +16,22 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final GestionnaireRepository gestionnaireRepository;
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
+    private final EmployeurRepository employeurRepository;
     private final UserAppRepository userAppRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    public ReactSpringSecurityJwtApplication(GestionnaireRepository gestionnaireRepository, EtudiantRepository etudiantRepository, ProfesseurRepository professeurRepository, UserAppRepository userAppRepository, PasswordEncoder passwordEncoder) {
+    public ReactSpringSecurityJwtApplication(
+            GestionnaireRepository gestionnaireRepository,
+            EtudiantRepository etudiantRepository,
+            ProfesseurRepository professeurRepository,
+            EmployeurRepository employeurRepository,
+            UserAppRepository userAppRepository,
+            PasswordEncoder passwordEncoder) {
         this.gestionnaireRepository = gestionnaireRepository;
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
+        this.employeurRepository = employeurRepository;
         this.userAppRepository = userAppRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -58,6 +63,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .firstName("Chandeuse")
                         .lastName("Lixor")
                         .email("lll@l.com")
+                        .password(passwordEncoder.encode("bib"))
+                        .build()
+        );
+        employeurRepository.save(
+                Employeur.builder()
+                        .firstName("Jimmy")
+                        .lastName("Donaldson")
+                        .email("llll@l.com")
                         .password(passwordEncoder.encode("bib"))
                         .build()
         );
