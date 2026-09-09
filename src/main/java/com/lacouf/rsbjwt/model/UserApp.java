@@ -13,14 +13,12 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @ToString
 public abstract class UserApp  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String firstName;
-
     private String lastName;
 
     @Embedded
@@ -37,7 +35,6 @@ public abstract class UserApp  {
     public Role getRole(){
         return credentials.getRole();
     }
-
 
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
