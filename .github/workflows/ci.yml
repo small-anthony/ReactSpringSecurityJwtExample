@@ -16,7 +16,7 @@ jobs:
         with:
           java-version: '25'
           distribution: 'temurin'
-          cache: maven
+          cache: 'maven'
       - name: Build with Maven
         run: mvn clean verify
 
@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       project-path: ./react-vite-project
+
     strategy:
       matrix:
         node-version: [ 22.x ]
