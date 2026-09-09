@@ -22,18 +22,21 @@ jobs:
 
   vite:
     runs-on: ubuntu-latest
+    env:
+      project-path: ./react-vite-project
     strategy:
       matrix:
         node-version: [ 22.x ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     defaults:
       run:
-        working-directory: ./react-vite-project
+        working-directory: ${{ env.project-path }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.JS ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
+          cache-dependency-path: ${{ env.project-path }}/package-lock.json
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Build with Node.JS
