@@ -16,3 +16,6 @@ yarn-error.log*
 # IDE/Editor directories
 .idea/
 .vscode/
+
+# Vitest reports and artifacts
+.vitest/
