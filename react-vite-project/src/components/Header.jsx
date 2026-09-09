@@ -35,8 +35,8 @@ function Header({user}) {
                 <ul className="nav-links">
                     <li><Link to="/">Accueil</Link></li>
                     <li><Link to="/about">À propos</Link></li>
-                    {isEmprunteur() && <li><Link to="/emprunteur">Emprunteur</Link></li>}
-                    {isPrepose() && <li><Link to="/prepose">Prepose</Link></li>}
+                    {isEmprunteur() && <li><Link to="/etudiant">Emprunteur</Link></li>}
+                    {isPrepose() && <li><Link to="/professeur">Prepose</Link></li>}
                     {isGestionnaire() && <li><Link to="/gestionnaire">Gestionnaire</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">Logout</Link> : <Link to="/login">Login</Link>}</li>
                 </ul>
