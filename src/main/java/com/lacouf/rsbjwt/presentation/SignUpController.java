@@ -1,18 +1,20 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.UserAppService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/signup")
 class SignUpController {
 	private final UserAppService userService;
+
+	public SignUpController(UserAppService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping("/etudiant")
 	public ResponseEntity<Object> signUpEtudiant() {

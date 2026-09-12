@@ -1,10 +1,8 @@
 package com.lacouf.rsbjwt.security.exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 public abstract class APIException extends RuntimeException{
-	@Getter
 	protected final HttpStatus status;
 	protected final String message;
 

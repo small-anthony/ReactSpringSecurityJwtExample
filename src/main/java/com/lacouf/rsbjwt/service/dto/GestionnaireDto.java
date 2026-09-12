@@ -2,28 +2,21 @@ package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Gestionnaire;
 import com.lacouf.rsbjwt.model.auth.Role;
-import lombok.*;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class GestionnaireDto extends UserDTO {
-    @Builder
-    public GestionnaireDto(Long id, String firstName, String lastname, String email, Role role) {
-        super(id, firstName, lastname, email, role);
-    }
+public record GestionnaireDto(Long id, String firstName, String lastName, String email, Role role) implements UserDto {
 
     public static GestionnaireDto create(Gestionnaire gestionnaire) {
-        return GestionnaireDto.builder()
-                .id(gestionnaire.getId())
-                .firstName(gestionnaire.getFirstName())
-                .lastname(gestionnaire.getLastName())
-                .email(gestionnaire.getEmail())
-                .role(gestionnaire.getRole())
-                .build();
+        return new GestionnaireDto(
+                gestionnaire.getId(),
+                gestionnaire.getFirstName(),
+                gestionnaire.getLastName(),
+                gestionnaire.getEmail(),
+                gestionnaire.getRole()
+        );
     }
 
     public static GestionnaireDto empty() {
-        return new GestionnaireDto();
+        return new GestionnaireDto(null, null, null, null, null);
     }
 }
