@@ -63,12 +63,21 @@ public class UserAppService {
     }
 
     public EtudiantDto registerEtudiant(String firstName, String lastName, int matricule, String email, String discipline, String password, String confirmPassword) throws Exception {
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new Exception("Le format de l'email est invalide");
+        }
+
         if (checkIfEmailExists(email)) {
             throw new Exception("Un compte avec cet email existe déjà");
         }
 
         if (!password.equals(confirmPassword)) {
             throw new Exception("Les mots de passe ne correspondent pas");
+        }
+
+        if (password.length() < 8) {
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
         }
 
         Credentials credentials = new Credentials(email, password, Role.ETUDIANT);
