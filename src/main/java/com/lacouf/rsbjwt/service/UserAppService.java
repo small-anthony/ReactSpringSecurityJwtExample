@@ -1,20 +1,18 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.GestionnaireRepository;
-import com.lacouf.rsbjwt.repository.ProfesseurRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.model.auth.Credentials;
+import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
-
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -25,19 +23,25 @@ public class UserAppService {
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
     private final GestionnaireRepository gestionnaireRepository;
+    private final EmployeurRepository employeurRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserAppService(AuthenticationManager authenticationManager,
                           JwtTokenProvider jwtTokenProvider,
                           UserAppRepository userAppRepository,
                           EtudiantRepository etudiantRepository,
                           ProfesseurRepository professeurRepository,
-                          GestionnaireRepository gestionnaireRepository) {
+                          GestionnaireRepository gestionnaireRepository,
+                          EmployeurRepository employeurRepository,
+                          PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userAppRepository = userAppRepository;
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
         this.gestionnaireRepository = gestionnaireRepository;
+        this.employeurRepository = employeurRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String authenticateUser(LoginDto loginDto) {
@@ -81,10 +85,45 @@ public class UserAppService {
                 EtudiantDto.empty();
     }
 
-    private EtudiantDto getEmployeurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
+    public EmployeurDto registerEmployeur(String firstName,String lastName,
+                                          String email,String entreprise,
+                                          String posteOccupe,String telephone,
+                                          String password,String passwordConfirmation) throws Exception
+    {
+        if (checkIfEmailExists(email)) {
+            throw new Exception("Un compte avec cet email existe déjà");
+        }
+
+        if (!password.equals(passwordConfirmation)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
+        }
+
+        if (userAppRepository.findUserAppByEmail(email).isPresent()) {
+            throw new Exception("Cette adresse courriel existe déjà dans le système");
+        }
+
+        Credentials credentials = new Credentials(email, passwordEncoder.encode(password), Role.EMPLOYEUR);
+
+        Employeur nouvelEmployeur = new Employeur(
+                firstName,
+                lastName,
+                credentials,
+                entreprise,
+                posteOccupe,
+                telephone
+        );
+
+        return EmployeurDto.create(employeurRepository.save(nouvelEmployeur));
+    }
+
+    private EmployeurDto getEmployeurDto(Long id) {
+        final Optional<Employeur> emprunteurOptional = employeurRepository.findById(id);
         return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
+                EmployeurDto.create(emprunteurOptional.get()) :
+                null;
+    }
+
+    private boolean checkIfEmailExists(String email) {
+        return userAppRepository.findUserAppByEmail(email).isPresent();
     }
 }
