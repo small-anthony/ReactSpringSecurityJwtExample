@@ -120,7 +120,7 @@ public class UserAppService {
         final Optional<Employeur> emprunteurOptional = employeurRepository.findById(id);
         return emprunteurOptional.isPresent() ?
                 EmployeurDto.create(emprunteurOptional.get()) :
-                null;
+                EmployeurDto.empty();
     }
 
     private boolean checkIfEmailExists(String email) {
