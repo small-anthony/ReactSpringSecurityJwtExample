@@ -85,10 +85,9 @@ public class UserAppService {
                 EtudiantDto.empty();
     }
 
-    public EmployeurDto registerEmployeur(String firstName,String lastName,
-                                          String email,String entreprise,
-                                          String posteOccupe,String telephone,
-                                          String password,String passwordConfirmation) throws Exception
+    public EmployeurDto registerEmployeur(String firstName, String lastName,
+                                          String email, String entreprise, String telephone,
+                                          String password, String passwordConfirmation) throws Exception
     {
         if (checkIfEmailExists(email)) {
             throw new Exception("Un compte avec cet email existe déjà");
@@ -109,7 +108,6 @@ public class UserAppService {
                 lastName,
                 credentials,
                 entreprise,
-                posteOccupe,
                 telephone
         );
 
