@@ -4,10 +4,7 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -36,24 +33,13 @@ class SignUpController {
 	}
 
 	@PostMapping("/employeur")
-	public ResponseEntity<Object> signUpEmployeur(@RequestBody Map<String, String> request) {
-		String firstName = request.get("firstName");
-		String lastName = request.get("lastName");
-		String email = request.get("email");
-		String entreprise = request.get("entreprise");
-		String posteOccupe = request.get("posteOccupe");
-		String telephone = request.get("telephone");
-		String password = request.get("password");
-		String passwordConfirmation = request.get("passwordConfirmation");
-
-		if (firstName == null  || lastName == null ||
-			email == null  || entreprise == null ||
-			posteOccupe == null  || telephone == null ||
-			password == null  || passwordConfirmation == null)
-		{
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tous les champs sont obligatoires.");
-		}
-
+	public ResponseEntity<Object> signUpEmployeur(@RequestParam String firstName,
+												  @RequestParam String lastName,
+												  @RequestParam String email,
+												  @RequestParam String entreprise,
+												  @RequestParam String telephone,
+												  @RequestParam String password,
+												  @RequestParam String passwordConfirmation) {
 		if (!email.contains("@") || !email.contains(".")) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le format du courriel n'est pas valide.");
 		}
@@ -68,7 +54,7 @@ class SignUpController {
 
 		try {
 			EmployeurDto employeurCree = userService.registerEmployeur(
-					firstName, lastName, email, entreprise, posteOccupe, telephone, password, passwordConfirmation
+					firstName, lastName, email, entreprise, telephone, password, passwordConfirmation
 			);
 			return ResponseEntity.status(HttpStatus.CREATED).body(employeurCree);
 		} catch (Exception e) {
