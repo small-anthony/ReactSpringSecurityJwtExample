@@ -22,20 +22,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        userAppService.registerEmployeur(
+        IO.println(userAppService.registerEmployeur(
                 "Valentin",
                 "Lacouf",
                 "valentin@gmail.com",
                 "McDonalds",
-                "Board Member",
                 "514 111 1111",
                 "valentin",
                 "valentin"
-        );
-
-        System.out.println("Employeur créé avec succès");
-
-        userAppRepository.findUserAppByEmail("valentin@gmail.com").
-                ifPresent(employeur -> System.out.println("Employeur: " + employeur.getFirstName()));
+        ));
     }
 }
