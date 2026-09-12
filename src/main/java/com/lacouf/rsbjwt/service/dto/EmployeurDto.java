@@ -4,14 +4,14 @@ import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 
-public record EmployeurDto(Long id, String firstName,
+public record EmployeurDto(int id, String firstName,
                            String lastName, String email,
                            Role role, String entreprise,
                            String posteOccupe, String telephone) implements UserDto {
 
     public static EmployeurDto create(Employeur employeur) {
         return new EmployeurDto(
-                employeur.getId(),
+                employeur.getId().intValue(),
                 employeur.getFirstName(),
                 employeur.getLastName(),
                 employeur.getEmail(),
@@ -20,5 +20,9 @@ public record EmployeurDto(Long id, String firstName,
                 employeur.getPosteOccupe(),
                 employeur.getTelephone()
         );
+    }
+
+    public static EmployeurDto empty() {
+        return new EmployeurDto(0, null, null, null, null, null, null, null);
     }
 }
