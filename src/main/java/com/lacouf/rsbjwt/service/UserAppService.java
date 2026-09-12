@@ -8,6 +8,8 @@ import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -89,16 +91,20 @@ public class UserAppService {
                                           String email, String entreprise, String telephone,
                                           String password, String passwordConfirmation) throws Exception
     {
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new Exception("Le format du courriel n'est pas valide.");
+        }
+
         if (checkIfEmailExists(email)) {
             throw new Exception("Un compte avec cet email existe déjà");
         }
 
-        if (!password.equals(passwordConfirmation)) {
-            throw new Exception("Les mots de passe ne correspondent pas");
+        if (password.length() < 8) {
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères.");
         }
 
-        if (userAppRepository.findUserAppByEmail(email).isPresent()) {
-            throw new Exception("Cette adresse courriel existe déjà dans le système");
+        if (!password.equals(passwordConfirmation)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
         }
 
         Credentials credentials = new Credentials(email, passwordEncoder.encode(password), Role.EMPLOYEUR);

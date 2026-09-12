@@ -40,18 +40,6 @@ class SignUpController {
 												  @RequestParam String telephone,
 												  @RequestParam String password,
 												  @RequestParam String passwordConfirmation) {
-		if (!email.contains("@") || !email.contains(".")) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le format du courriel n'est pas valide.");
-		}
-
-		if (password.length() < 8) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le mot de passe doit contenir au moins 8 caractères.");
-		}
-
-		if (!password.equals(passwordConfirmation)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Les mots de passe ne correspondent pas.");
-		}
-
 		try {
 			EmployeurDto employeurCree = userService.registerEmployeur(
 					firstName, lastName, email, entreprise, telephone, password, passwordConfirmation
