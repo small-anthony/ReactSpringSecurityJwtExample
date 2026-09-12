@@ -1,12 +1,11 @@
 package com.lacouf.rsbjwt.service.dto;
 
-public class JWTAuthResponse {
-    private final String tokenType = "BEARER";
-    private String accessToken;
-
+public record JWTAuthResponse(String accessToken, String tokenType) {
     public JWTAuthResponse(String accessToken) {
-        this.accessToken = accessToken;
+        this(accessToken, "BEARER");
     }
 
-    public JWTAuthResponse() {}
+    public JWTAuthResponse() {
+        this(null, "BEARER");
+    }
 }
