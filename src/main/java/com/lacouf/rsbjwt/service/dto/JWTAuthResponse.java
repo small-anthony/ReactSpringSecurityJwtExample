@@ -1,14 +1,11 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public record JWTAuthResponse(String accessToken, String tokenType) {
+    public JWTAuthResponse(String accessToken) {
+        this(accessToken, "BEARER");
+    }
 
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class JWTAuthResponse {
-    private final String tokenType = "BEARER";
-    private String accessToken;
+    public JWTAuthResponse() {
+        this(null, "BEARER");
+    }
 }

@@ -2,30 +2,22 @@ package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.auth.Role;
-import lombok.*;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 
-import java.time.LocalDate;
-
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EtudiantDto extends UserDTO {
-    @Builder
-    public EtudiantDto(Long id, String firstName, String lastname, String email, Role role) {
-        super(id, firstName, lastname, email, role);
-    }
+public record EtudiantDto(Long id, String firstName, String lastName, String email, Role role)
+        implements UserDto {
 
     public static EtudiantDto create(Etudiant etudiant) {
-        return EtudiantDto.builder()
-                .id(etudiant.getId())
-                .firstName(etudiant.getFirstName())
-                .lastname(etudiant.getLastName())
-                .email(etudiant.getEmail())
-                .role(etudiant.getRole())
-                .build();
+        return new EtudiantDto(
+                etudiant.getId(),
+                etudiant.getFirstName(),
+                etudiant.getLastName(),
+                etudiant.getEmail(),
+                etudiant.getRole()
+        );
     }
 
     public static EtudiantDto empty() {
-        return new EtudiantDto();
+        return new EtudiantDto(null, null, null, null, null);
     }
 }

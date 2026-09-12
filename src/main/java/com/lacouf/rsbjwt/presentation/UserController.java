@@ -2,27 +2,27 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.JWTAuthResponse;
-import com.lacouf.rsbjwt.service.dto.LoginDTO;
-import com.lacouf.rsbjwt.service.dto.UserDTO;
+import com.lacouf.rsbjwt.service.dto.LoginDto;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
 	private final UserAppService userService;
 
+	public UserController(UserAppService userService) {
+		this.userService = userService;
+	}
+
 	@PostMapping("/login")
-	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto){
+	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDto loginDto){
 		try {
 			String accessToken = userService.authenticateUser(loginDto);
 			final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
@@ -35,7 +35,7 @@ public class UserController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<UserDTO> getMe(HttpServletRequest request){
+	public ResponseEntity<UserDto> getMe(HttpServletRequest request){
 		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
 			userService.getMe(request.getHeader("Authorization")));
 	}
