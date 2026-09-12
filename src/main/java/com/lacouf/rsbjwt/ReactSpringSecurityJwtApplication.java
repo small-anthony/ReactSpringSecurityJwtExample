@@ -20,6 +20,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //Test enregistrement d'un étudiant
+
         IO.println(userAppService.registerEtudiant("John","Doe", 12345, "john.doe@example.com", "Computer Science", "password", "password"));
 
         try {
