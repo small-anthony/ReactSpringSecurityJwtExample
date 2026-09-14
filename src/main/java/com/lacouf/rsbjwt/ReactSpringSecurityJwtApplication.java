@@ -31,5 +31,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "valentin",
                 "valentin"
         ));
+
+        IO.println(userAppService.registerProfesseur(
+                "Jean",
+                "Tremblay",
+                "jean.tremblay@cegep.ca",
+                "motdepasse123",
+                "motdepasse123"
+        ));
     }
 }

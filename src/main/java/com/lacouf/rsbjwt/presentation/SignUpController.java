@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
+import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,19 @@ class SignUpController {
 	}
 
 	@PostMapping("/professeur")
-	public ResponseEntity<Object> signUpProfesseur() {
-		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+	public ResponseEntity<Object> signUpProfesseur(@RequestParam String firstName,
+												   @RequestParam String lastName,
+												   @RequestParam String email,
+												   @RequestParam String password,
+												   @RequestParam String passwordConfirmation) {
+		try {
+			ProfesseurDto professeurCree = userService.registerProfesseur(
+					firstName, lastName, email, password, passwordConfirmation
+			);
+			return ResponseEntity.status(HttpStatus.CREATED).body(professeurCree);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
 	}
 
 	@PostMapping("/employeur")
