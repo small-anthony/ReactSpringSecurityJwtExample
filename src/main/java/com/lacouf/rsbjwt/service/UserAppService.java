@@ -15,6 +15,7 @@ import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,19 +28,22 @@ public class UserAppService {
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
     private final GestionnaireRepository gestionnaireRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserAppService(AuthenticationManager authenticationManager,
                           JwtTokenProvider jwtTokenProvider,
                           UserAppRepository userAppRepository,
                           EtudiantRepository etudiantRepository,
                           ProfesseurRepository professeurRepository,
-                          GestionnaireRepository gestionnaireRepository) {
+                          GestionnaireRepository gestionnaireRepository,
+                          PasswordEncoder passwordEndcoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userAppRepository = userAppRepository;
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
         this.gestionnaireRepository = gestionnaireRepository;
+        this.passwordEncoder = passwordEndcoder;
     }
 
     public String authenticateUser(LoginDto loginDto) {
@@ -80,7 +84,9 @@ public class UserAppService {
             throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
         }
 
-        Credentials credentials = new Credentials(email, password, Role.ETUDIANT);
+        String passwordEncode = passwordEncoder.encode(password);
+
+        Credentials credentials = new Credentials(email, passwordEncode, Role.ETUDIANT);
         Etudiant etudiant = new Etudiant(firstName, lastName, credentials, matricule, discipline);
 
         return EtudiantDto.create(etudiantRepository.save(etudiant));
