@@ -1,8 +1,17 @@
-import React from "react";
+import React, {useContext, useEffect} from "react";
 import './Header.css';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import {AuthServiceContext} from "../services/AuthService.tsx";
 
-function Header({user}) {
+function Header() {
+    const authService = useContext(AuthServiceContext);
+    const user = authService.getUserData();
+
+    function logOut() {
+        authService.logout();
+        useNavigate("/");
+    }
+
     // Function to format role for display (remove ROLE_ prefix and capitalize)
     const formatRole = (roleString) => {
         if (!roleString) return '';
@@ -13,19 +22,13 @@ function Header({user}) {
     };
 
     const isGestionnaire = () => {
-        console.log(user)
-        return user && user.role &&
-            (user.role.toString() === 'GESTIONNAIRE');
+        return user?.role?.toString() === 'ROLE_GESTIONNAIRE';
     }
     const isPrepose = () => {
-        console.log(user)
-        return user && user.role &&
-            (user.role.toString() === 'GESTIONNAIRE' || user.role.toString() === 'PREPOSE');
+        return user?.role?.toString() === 'ROLE_GESTIONNAIRE' || user?.role?.toString() === 'ROLE_PROFESSEUR';
     }
     const isEmprunteur = () => {
-        console.log(user)
-        return user && user.role &&
-            (user.role.toString() === 'GESTIONNAIRE' || user.role.toString() === 'EMPRUNTEUR');
+        return user?.role?.toString() === 'ROLE_GESTIONNAIRE' || user?.role?.toString() === 'ROLE_ETUDIANT';
     }
 
     return (
@@ -38,9 +41,9 @@ function Header({user}) {
                     {isEmprunteur() && <li><Link to="/etudiant">Emprunteur</Link></li>}
                     {isPrepose() && <li><Link to="/professeur">Prepose</Link></li>}
                     {isGestionnaire() && <li><Link to="/gestionnaire">Gestionnaire</Link></li>}
-                    <li>{user?.isLoggedIn ? <Link to="/logout">Logout</Link> : <Link to="/login">Login</Link>}</li>
+                    <li>{authService.isAuthed() ? <a onClick={logOut}>Logout</a> : <Link to="/login">Login</Link>}</li>
                 </ul>
-                {user?.isLoggedIn && (
+                {user !== null && (
                     <div className="user-info">
                         <p className="para-align">
                             Bonjour <span className="user-name">{user.firstName} {user.lastName}</span>

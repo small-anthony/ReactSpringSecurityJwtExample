@@ -5,7 +5,7 @@ import './PageLayout.css'
 function PageLayout ({user}) {
   return (
     <div id="pagelayout" className="pageLayout">
-      <Header user={user}/>
+      <Header />
       <Outlet />
       <Footer />
     </div>

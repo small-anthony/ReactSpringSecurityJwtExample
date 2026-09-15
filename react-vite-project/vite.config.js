@@ -10,5 +10,8 @@ export default defineConfig({
     ],
     server: {
         port: 3000, // Specify the development server port
+        proxy: {
+            "/user": "http://localhost:8080" // TODO change path to API
+        }
     },
 });

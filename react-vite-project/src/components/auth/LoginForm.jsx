@@ -1,9 +1,10 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import fetcher from "../../utils/fetcher";
+import {AuthServiceContext} from "../../services/AuthService.tsx";
 
 
 const LoginForm = ({user, setUser, setError}) => {
+  const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -63,87 +64,20 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const fetchFunc = async () => {
-    try {
-      const response = await fetcher('/user/login', {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-        body: JSON.stringify({
-          email: formData.email.toLowerCase(),
-          password: formData.password
-        }),
-      });
+      const response = await authService.login(formData.email.toLowerCase(), formData.password);
       if (!response.ok) {
         switch (response.status) {
           case 401:
             throw new Error("Not authorized");
-            break;
           case 404:
             throw new Error("No server available");
           default:
             throw new Error("Not ok")
         }
       }
-      const data = await response.json();
-      localStorage.setItem('token', data.accessToken);
 
-      // Fetch user info to get role
-      const userResponse = await fetcher('user/me', {});
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user info");
-      }
-      const userData = await userResponse.json();
-
-      // Navigate to role-specific page
-      const role = userData.role;
-      if (role === "ROLE_EMPRUNTEUR") {
-        navigate("/emprunteur");
-      } else if (role === "ROLE_PREPOSE") {
-        navigate("/prepose");
-      } else if (role === "ROLE_GESTIONNAIRE") {
-        navigate("/gestionnaire");
-      } else {
-        navigate("/");
-      }
-    } catch(error) {
-      setError(error)
-      navigate('/error')
-    }
-
-
+      navigate("/")
   }
-
-  // const axiosFetch = () => {
-  //   axiosInstance.post("/user/login", {
-  //     email: formData.email.toLowerCase(),
-  //     password: formData.password
-  //   }).then((response) => {
-  //
-  //     axiosInstance.defaults.headers.common['Authorization'] = response.data.accessToken;
-  //     sessionStorage.setItem('token', response.data.accessToken);
-  //
-  //     axiosInstance.get('/user/me')
-  //       .then(res => {
-  //         let newUser = {...res.data, isLoggedin: true}
-  //         setUser(newUser)
-  //       })
-  //       .catch(err => {
-  //         setWarnings({...warnings, email: err.response?.data.message})
-  //       })
-  //   }).catch((error) => {
-  //     if (error.response) {
-  //       if (error.response?.status === 406) {
-  //         setWarnings({...warnings, email: "wrongEmail"});
-  //         setWarnings({...warnings, password: "wrongPassword"});
-  //       }
-  //     } else {
-  //       //toast.error(t('fetchError') + t(error.response?.data.message));
-  //       setWarnings({...warnings, email: "wrongEmail", password: "wrongPassword"});
-  //     }
-  //   });
-  // }
 
   return (
     <>
