@@ -1,11 +1,10 @@
 import React, {useContext, useEffect} from "react";
 import './Header.css';
 import {Link, useNavigate} from 'react-router-dom';
-import {AuthServiceContext} from "../services/AuthService.tsx";
+import {AuthServiceContext, UserRole} from "../services/AuthService.tsx";
 
-function Header() {
+function Header({user}) {
     const authService = useContext(AuthServiceContext);
-    const user = authService.getUserData();
 
     function logOut() {
         authService.logout();
@@ -22,13 +21,13 @@ function Header() {
     };
 
     const isGestionnaire = () => {
-        return user?.role?.toString() === 'ROLE_GESTIONNAIRE';
+        return user?.role === UserRole.Gestionnaire;
     }
     const isPrepose = () => {
-        return user?.role?.toString() === 'ROLE_GESTIONNAIRE' || user?.role?.toString() === 'ROLE_PROFESSEUR';
+        return user?.role === UserRole.Gestionnaire || user?.role === UserRole.Professeur;
     }
     const isEmprunteur = () => {
-        return user?.role?.toString() === 'ROLE_GESTIONNAIRE' || user?.role?.toString() === 'ROLE_ETUDIANT';
+        return user?.role === UserRole.Gestionnaire || user?.role === UserRole.Etudiant;
     }
 
     return (
@@ -41,9 +40,9 @@ function Header() {
                     {isEmprunteur() && <li><Link to="/etudiant">Emprunteur</Link></li>}
                     {isPrepose() && <li><Link to="/professeur">Prepose</Link></li>}
                     {isGestionnaire() && <li><Link to="/gestionnaire">Gestionnaire</Link></li>}
-                    <li>{authService.isAuthed() ? <a onClick={logOut}>Logout</a> : <Link to="/login">Login</Link>}</li>
+                    <li>{user ? <a onClick={logOut}>Logout</a> : <Link to="/login">Login</Link>}</li>
                 </ul>
-                {user !== null && (
+                {user && (
                     <div className="user-info">
                         <p className="para-align">
                             Bonjour <span className="user-name">{user.firstName} {user.lastName}</span>

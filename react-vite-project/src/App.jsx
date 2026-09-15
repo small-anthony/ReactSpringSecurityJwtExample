@@ -9,12 +9,16 @@ import ErrorPage from "./components/ErrorPage.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
+import {AuthServiceContext} from "./services/AuthService.tsx";
 
 function App() {
+  const authService = useContext(AuthServiceContext);
+  const userData = authService.getUserData();
+
   return (
     <div>
       <Routes>
-        <Route path="/" element={<PageLayout/>}>
+        <Route path="/" element={<PageLayout user={userData}/>}>
           <Route index element={<MainContainer/>}/>
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm/>}/>
