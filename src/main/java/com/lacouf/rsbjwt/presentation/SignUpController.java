@@ -33,16 +33,16 @@ class SignUpController {
 	}
 
 	@PostMapping("/employeur")
-	public ResponseEntity<Object> signUpEmployeur(@RequestParam String firstName,
-												  @RequestParam String lastName,
-												  @RequestParam String email,
-												  @RequestParam String entreprise,
-												  @RequestParam String telephone,
-												  @RequestParam String password,
-												  @RequestParam String passwordConfirmation) {
+	public ResponseEntity<Object> signUpEmployeur(@RequestBody Map<String, String> request) {
 		try {
 			EmployeurDto employeurCree = userService.registerEmployeur(
-					firstName, lastName, email, entreprise, telephone, password, passwordConfirmation
+					request.get("firstName"),
+					request.get("lastName"),
+					request.get("email"),
+					request.get("entreprise"),
+					request.get("telephone"),
+					request.get("password"),
+					request.get("passwordConfirmation")
 			);
 			return ResponseEntity.status(HttpStatus.CREATED).body(employeurCree);
 		} catch (Exception e) {

@@ -107,7 +107,8 @@ public class UserAppService {
             throw new Exception("Les mots de passe ne correspondent pas");
         }
 
-        Credentials credentials = new Credentials(email, passwordEncoder.encode(password), Role.EMPLOYEUR);
+        String passwordEncode = passwordEncoder.encode(password);
+        Credentials credentials = new Credentials(email, passwordEncode, Role.EMPLOYEUR);
 
         Employeur nouvelEmployeur = new Employeur(
                 firstName,
