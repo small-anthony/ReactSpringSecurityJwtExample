@@ -1,11 +1,11 @@
 import {useTranslation} from "react-i18next";
-import SidePanel from "../widget/SidePanel.tsx";
 
-const HomePage = ({user, options}) => {
+const HomePage = ({user}) => {
     const t = useTranslation(["main"]);
 
     return (
-        <div className={"flex flex-col flex-1"}>
+        <div>
+            <h1>Hello User</h1>
         </div>
     );
 }
