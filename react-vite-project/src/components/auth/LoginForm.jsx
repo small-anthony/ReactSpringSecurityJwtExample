@@ -1,10 +1,13 @@
 import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {AuthServiceContext} from "../../services/AuthService.tsx";
+import {AuthServiceContext, LoginError} from "../../services/AuthService.tsx";
+import {useTranslation} from "react-i18next";
+import './LoginForm.css';
 
 const LoginForm = () => {
   const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
+  const { t } = useTranslation(["main", "auth"]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -68,41 +71,47 @@ const LoginForm = () => {
       }
 
       catch(error) {
-        if(error instanceof LoginError) {
+        if(error instanceof Error) {
           setWarnings({...warnings, result: error.message});
-        }
-        else {
-          console.log(error)
-          navigate("/error")
         }
       }
   }
 
   return (
     <>
-      <div className="container mt-5">
-        <h1 className="display-6 text-center mb-3">Projet Etudiant</h1>
+      <h1>TO BE REDONE</h1>
+      <div className="w-1/2 m-auto login-form">
+        <h1 className="display-6 text-center mb-3">{t('auth:login.title')}</h1>
+        <form onSubmit={handleSubmit} className={"grid gap-6 mb-6 md:grid-cols-2 py-4"}>
+          <div className={"mx-4"}>
+            <label htmlFor={"email"} className={"block mb-2.5 text-sm font-medium text-heading text-center"}>
+              {t('auth:login.email')}
+            </label>
+            <input className={`w-full login-input ${warnings.email ? "is-invalid" : ""}`}
+                   id={"email"} name={"email"} type={"email"}
+                   onChange={handleChanges}
+                   placeholder={"..."}
 
-          <div className="row">
-            <div className="col-9 mx-auto">
-              <form id="login-form" className="form-group" onSubmit={handleSubmit}>
-                <label htmlFor="email" className="mt-3">email</label>
-                <input id="email" type="email"
-                       className={`form-control ${warnings.email ? "is-invalid" : ""} `}
-                       placeholder="placeHolderEmail" name="email" onChange={handleChanges} required/>
-                <div className="text-danger">{warnings.email}</div>
-                <label htmlFor="password" className="mt-3">password</label>
-                <input id="password" type="password"
-                       className={`form-control ${warnings.password ? "is-invalid" : ""} `}
-                       placeholder="placeHolderPassword" name="password" onChange={handleChanges} required/>
-                <div className="text-danger">{warnings.password}</div>
-                <div className="row col-6 mx-auto">
-                  <button type="submit" className="btn btn-outline-ose my-5 mx-auto">loginSubmit</button>
-                </div>
-              </form>
-            </div>
+            />
+            <div className="text-danger">{warnings.email}</div>
           </div>
+          <div className={"mx-4"}>
+            <label htmlFor={"email"} className={"block mb-2.5 text-sm font-medium text-heading text-center"}>
+              {t('auth:login.password')}
+            </label>
+            <input className={`w-full login-input ${warnings.password ? "is-invalid" : ""}`}
+                   id={"password"} name={"password"} type={"password"}
+                   onChange={handleChanges}
+                   placeholder={"..."}
 
+            />
+            <div className="text-danger">{warnings.password}</div>
+          </div>
+          <div className={"grid-cols-3"}>
+            <button type={"submit"} className={"bg-blue-500 mx-auto"}>{t('auth:login.submit')}</button>
+            <div className="text-danger">{warnings.result}</div>
+          </div>
+        </form>
       </div>
     </>
   )
