@@ -1,5 +1,5 @@
 .header {
-    background-color: #282c34;
+    background-color: var(--primary-ui-color);
     min-height: 60px;
     max-height: 60px;
     display: flex;

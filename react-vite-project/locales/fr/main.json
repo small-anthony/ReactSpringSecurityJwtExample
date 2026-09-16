@@ -10,5 +10,8 @@
     "etudiant": "Étudiant",
     "employeur": "Employeur",
     "professeur": "Professeur"
+  },
+  "notification": {
+    "empty": "Aucune notification"
   }
 }

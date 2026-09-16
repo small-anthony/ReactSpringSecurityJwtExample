@@ -1,0 +1,23 @@
+.sidePanel {
+    background-color: var(--primary-ui-color);
+    height: 100%;
+}
+
+.routes {
+    background-color: var(--secondary-ui-color);
+    border-radius: 10px;
+    margin: 2px 0.5rem;
+}
+
+.notifications {
+    background-color: var(--secondary-ui-color);
+    border-radius: 10px;
+    margin: 2px 0.5rem;
+
+}
+
+.emptyNotificationsHeader {
+    color: var(--secondary-text-color);
+    text-align: center;
+    font-style: oblique;
+}
