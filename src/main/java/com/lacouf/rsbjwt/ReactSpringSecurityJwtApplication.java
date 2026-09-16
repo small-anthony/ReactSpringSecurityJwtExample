@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
-    private final UserAppService userAppService;
+    private final UserAppRepository userAppRepository;
 
-    public ReactSpringSecurityJwtApplication(UserAppService userAppService){
-        this.userAppService = userAppService;
+    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository){
+        this.userAppRepository = userAppRepository;
     }
 
     public static void main(String[] args) {
@@ -20,20 +20,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //Test enregistrement d'un étudiant
 
-        IO.println(userAppService.registerStudent("John","Doe", 12345, "john.doe@example.com", "Computer Science", "password", "password"));
-
-        try {
-            IO.println(userAppService.registerStudent("John", "Doe", 12345, "john.doe@example.com", "Computer Science", "password", "password"));
-        } catch (Exception e) {
-            IO.println(e.getMessage());
-        }
-
-        try {
-            IO.println(userAppService.registerStudent("Jane", "Doe", 12346, "jane.doe@example.com", "Computer Science", "password", "different"));
-        } catch (Exception e) {
-            IO.println(e.getMessage());
-        }
     }
 }
