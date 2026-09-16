@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import fetcher from "../../utils/fetcher";
+import { BASE_URL } from "../config/Config";
 import useFormValidation from "../../hooks/useFormValidation";
 
 const DISCIPLINES = [
@@ -38,9 +38,9 @@ export default function SignupEtudiantForm() {
       return "";
     },
     email: (val) => {
-      if (!val?.trim()) return "Le courriel institutionnel est requis.";
+      if (!val?.trim()) return "Le courriel est requis.";
       const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailRegex.test(val.trim())) return "Format de courriel invalide (ex: etudiant@cegep.ca).";
+      if (!emailRegex.test(val.trim())) return "Format de courriel invalide.";
       return "";
     },
     discipline: (val) => (!val ? "Veuillez choisir une discipline de stage." : ""),
@@ -48,9 +48,6 @@ export default function SignupEtudiantForm() {
       if (!val) return "Le mot de passe est requis.";
       const missing = [];
       if (val.length < 8) missing.push("au moins 8 caractères");
-      if (!/[A-Z]/.test(val)) missing.push("une majuscule");
-      if (!/[a-z]/.test(val)) missing.push("une minuscule");
-      if (!/\d/.test(val)) missing.push("un chiffre");
 
       if (missing.length > 0) {
         return `Il manque : ${missing.join(", ")}.`;
@@ -92,34 +89,29 @@ export default function SignupEtudiantForm() {
         matricule: values.matricule.trim(),
         email: values.email.trim().toLowerCase(),
         discipline: values.discipline,
-        password: values.password
+        password: values.password,
+        confirmPassword: values.confirmPassword
       };
 
-      const response = await fetcher("signup/etudiant", {
+      const response = await fetch(`${BASE_URL}/signup/etudiant`, {
         method: "POST",
         headers: {
-          Accept: "application/json",
+          "Accept": "application/json",
           "Content-Type": "application/json;charset=UTF-8"
         },
         body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
-        if (response.status === 409) {
-          const errData = await response.json().catch(() => null);
-          throw new Error(errData?.message || "Ce courriel ou ce matricule est déjà utilisé.");
-        } else if (response.status === 400) {
-          const errData = await response.json().catch(() => null);
-          throw new Error(errData?.message || "Données invalides envoyées au serveur.");
-        } else {
-          throw new Error("Erreur serveur lors de l'enregistrement.");
-        }
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de l'enregistrement.");
       }
 
-      setSuccessMsg("Inscription réussie ! Un courriel de validation a été envoyé. Redirection...");
+
+      setSuccessMsg("Inscription réussie ! Redirection vers la page de connexion...");
       setTimeout(() => {
         navigate("/login");
-      }, 3000);
+      }, 2000);
 
     } catch (err) {
       setServerError(err.message || "Impossible de contacter le serveur backend.");
@@ -152,7 +144,6 @@ export default function SignupEtudiantForm() {
       )}
 
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
-        {/* Prénom et Nom */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -197,7 +188,6 @@ export default function SignupEtudiantForm() {
           </div>
         </div>
 
-        {/* Matricule */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Numéro d'étudiant / Matricule (7 chiffres) <span className="text-red-500">*</span>
@@ -219,7 +209,6 @@ export default function SignupEtudiantForm() {
           )}
         </div>
 
-        {/* Courriel */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Adresse courriel <span className="text-red-500">*</span>
@@ -241,7 +230,6 @@ export default function SignupEtudiantForm() {
           )}
         </div>
 
-        {/* Discipline de stage */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Discipline de stage <span className="text-red-500">*</span>
@@ -268,9 +256,7 @@ export default function SignupEtudiantForm() {
           )}
         </div>
 
-        {/* Mots de passe */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Mot de passe */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Mot de passe <span className="text-red-500">*</span>
@@ -302,7 +288,6 @@ export default function SignupEtudiantForm() {
             )}
           </div>
 
-          {/* Confirmer mot de passe */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Confirmer mot de passe <span className="text-red-500">*</span>
@@ -334,7 +319,6 @@ export default function SignupEtudiantForm() {
           </div>
         </div>
 
-        {/* Bouton Soumettre */}
         <div className="pt-4">
           <button
             type="submit"
