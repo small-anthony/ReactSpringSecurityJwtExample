@@ -2,18 +2,18 @@ import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
 
-
 const LoginForm = () => {
   const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [warnings, setWarnings] = useState({
     email: '',
-    password: ''
+    password: '',
+    result: '',
   });
 
   const validateUser = () => {
@@ -44,9 +44,7 @@ const LoginForm = () => {
   }
 
   const validatePassword = () => {
-    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    // return passwordRegex.test(formData.password);
-    return true;
+    return formData.password.length > 0; //
   }
 
   const handleChanges = (e) => {
@@ -64,19 +62,20 @@ const LoginForm = () => {
   }
 
   const fetchFunc = async () => {
-      const response = await authService.login(formData.email.toLowerCase(), formData.password);
-      if (!response.ok) {
-        switch (response.status) {
-          case 401:
-            throw new Error("Not authorized");
-          case 404:
-            throw new Error("No server available");
-          default:
-            throw new Error("Not ok")
-        }
+      try {
+        await authService.login(formData.email.toLowerCase(), formData.password);
+        navigate("/home");
       }
 
-      navigate("/")
+      catch(error) {
+        if(error instanceof LoginError) {
+          setWarnings({...warnings, result: error.message});
+        }
+        else {
+          console.log(error)
+          navigate("/error")
+        }
+      }
   }
 
   return (

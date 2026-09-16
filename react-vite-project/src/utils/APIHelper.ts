@@ -1,6 +1,7 @@
 import {BASE_URL} from "../components/config/Config";
 
 type RequestMethods = "GET" | "POST";
+export class APIError extends Error {}
 
 function request(path: RequestInfo, method: RequestMethods, headers: object, body: object): Promise<Response> {
     return new Promise( (success, failure) => {
@@ -14,6 +15,14 @@ function request(path: RequestInfo, method: RequestMethods, headers: object, bod
             body: body ? JSON.stringify(body) : null
         }).then((response) => {
             response.ok ? success(response) : failure(response);
+        }).catch((reason) => {
+            if(reason instanceof Error) {
+                const error = new APIError(reason.message)
+                error.stack = reason.stack;
+                error.cause = reason.cause;
+                return failure(error);
+            }
+            return failure(reason);
         });
     });
 }

@@ -54,6 +54,9 @@ const AuthService = ({children}) => {
                 const fetchData = async () => {
                     const requestResult = await APIHelper.get('/user/me', makeAuthHeader(sessionToken), {});
                     if(!requestResult.ok) {
+                        if(requestResult.status == 401) {
+                            throw new LoginError(await requestResult.text());
+                        }
                         throw new AuthError(await requestResult.text());
                     }
 
@@ -95,5 +98,6 @@ const AuthService = ({children}) => {
 }
 
 export class AuthError extends Error {}
+export class LoginError extends AuthError {}
 
 export default AuthService
