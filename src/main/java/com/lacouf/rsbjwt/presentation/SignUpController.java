@@ -29,7 +29,7 @@ class SignUpController {
 			@RequestParam String confirmPassword) throws Exception {
 
 		try {
-			EtudiantDto etudiant = userService.registerEtudiant(firstName, lastName, matricule, email, discipline, password, confirmPassword);
+			EtudiantDto etudiant = userService.registerStudent(firstName, lastName, matricule, email, discipline, password, confirmPassword);
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(etudiant);
 

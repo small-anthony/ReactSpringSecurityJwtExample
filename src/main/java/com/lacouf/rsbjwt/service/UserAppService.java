@@ -36,14 +36,14 @@ public class UserAppService {
                           EtudiantRepository etudiantRepository,
                           ProfesseurRepository professeurRepository,
                           GestionnaireRepository gestionnaireRepository,
-                          PasswordEncoder passwordEndcoder) {
+                          PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userAppRepository = userAppRepository;
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
         this.gestionnaireRepository = gestionnaireRepository;
-        this.passwordEncoder = passwordEndcoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String authenticateUser(LoginDto loginDto) {
@@ -66,7 +66,7 @@ public class UserAppService {
         };
     }
 
-    public EtudiantDto registerEtudiant(String firstName, String lastName, int matricule, String email, String discipline, String password, String confirmPassword) throws Exception {
+    public EtudiantDto registerStudent(String firstName, String lastName, int matricule, String email, String discipline, String password, String confirmPassword) throws Exception {
 
         if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
             throw new Exception("Le format de l'email est invalide");
@@ -84,9 +84,9 @@ public class UserAppService {
             throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
         }
 
-        String passwordEncode = passwordEncoder.encode(password);
+        String passwordEncoded = passwordEncoder.encode(password);
 
-        Credentials credentials = new Credentials(email, passwordEncode, Role.ETUDIANT);
+        Credentials credentials = new Credentials(email, passwordEncoded, Role.ETUDIANT);
         Etudiant etudiant = new Etudiant(firstName, lastName, credentials, matricule, discipline);
 
         return EtudiantDto.create(etudiantRepository.save(etudiant));
