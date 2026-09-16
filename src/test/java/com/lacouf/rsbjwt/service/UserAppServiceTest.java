@@ -11,8 +11,10 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class UserAppServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
@@ -61,6 +64,7 @@ public class UserAppServiceTest {
         Credentials credentials = new Credentials("test@gmail.com", "passwordEncode", Role.ETUDIANT);
 
         Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+        etudiant.setId(1L);
 
         when(etudiantRepository.save(any(Etudiant.class)))
                 .thenReturn(etudiant);
