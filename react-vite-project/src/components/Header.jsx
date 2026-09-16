@@ -27,7 +27,6 @@ function Header({user}) {
             <h1>{t("sitename")}</h1>
             <nav>
                 <ul className="nav-links">
-                    <li><Link to="/">{t("pagename.home")}</Link></li>
                     <li><Link to="/about">{t("pagename.about")}</Link></li>
                     <li>{user ? <a onClick={logOut}>Logout</a> : <Link to="/login">Login</Link>}</li>
                 </ul>
