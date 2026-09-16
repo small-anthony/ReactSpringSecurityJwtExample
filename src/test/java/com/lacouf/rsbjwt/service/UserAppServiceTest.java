@@ -5,21 +5,15 @@ import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.GestionnaireRepository;
-import com.lacouf.rsbjwt.repository.ProfesseurRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
-import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,22 +21,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UserAppServiceTest {
     @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Mock
     private UserAppRepository userAppRepository;
 
     @Mock
     private EtudiantRepository etudiantRepository;
-
-    @Mock
-    private ProfesseurRepository professeurRepository;
-
-    @Mock
-    private GestionnaireRepository gestionnaireRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -74,6 +56,13 @@ public class UserAppServiceTest {
 
         //ASSERT
         assertNotNull(result);
+        assertEquals(1, result.id());
+        assertEquals("Peter", result.firstName());
+        assertEquals("Parker", result.lastName());
+        assertEquals("test@gmail.com", result.email());
+        assertEquals(Role.ETUDIANT, result.role());
+        assertEquals(12345, result.matricule());
+        assertEquals("Informatique", result.discipline());
     }
 
     @Test
