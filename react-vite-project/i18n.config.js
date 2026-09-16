@@ -21,12 +21,9 @@ i18n
         resources,
         debug: true,
         supportedLngs: ['en', 'fr'],
-        fallbackLng: 'en',
+        fallbackLng: 'fr',
         interpolation: {
             escapeValue: false,
-        },
-        detection: {
-
         }
     });
 
