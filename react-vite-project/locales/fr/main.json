@@ -1,0 +1,14 @@
+{
+  "sitename": "Mon App",
+  "pagename": {
+    "home": "Accueil",
+    "about": "À propos"
+  },
+  "hello-user": "Bonjour, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
+  "role": {
+    "gestionnaire": "Gestionnaire",
+    "etudiant": "Étudiant",
+    "employeur": "Employeur",
+    "professeur": "Professeur"
+  }
+}
