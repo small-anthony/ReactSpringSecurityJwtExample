@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
 
 
-const LoginForm = ({user, setUser, setError}) => {
+const LoginForm = () => {
   const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
 
@@ -81,37 +81,30 @@ const LoginForm = ({user, setUser, setError}) => {
 
   return (
     <>
-      {user?.isLoggedIn ? (
-        user.role === "ROLE_EMPRUNTEUR" ? navigate("/emprunteur") :
-          user.role === "ROLE_PREPOSE" ? navigate("/prepose") :
-            user.role === "ROLE_GESTIONNAIRE" ? navigate("/gestionnaire") :
-              navigate("/")
-      ) : (
-        <div className="container mt-5">
-          <h1 className="display-6 text-center mb-3">Projet Etudiant</h1>
+      <div className="container mt-5">
+        <h1 className="display-6 text-center mb-3">Projet Etudiant</h1>
 
-            <div className="row">
-              <div className="col-9 mx-auto">
-                <form id="login-form" className="form-group" onSubmit={handleSubmit}>
-                  <label htmlFor="email" className="mt-3">email</label>
-                  <input id="email" type="email"
-                         className={`form-control ${warnings.email ? "is-invalid" : ""} `}
-                         placeholder="placeHolderEmail" name="email" onChange={handleChanges} required/>
-                  <div className="text-danger">{warnings.email}</div>
-                  <label htmlFor="password" className="mt-3">password</label>
-                  <input id="password" type="password"
-                         className={`form-control ${warnings.password ? "is-invalid" : ""} `}
-                         placeholder="placeHolderPassword" name="password" onChange={handleChanges} required/>
-                  <div className="text-danger">{warnings.password}</div>
-                  <div className="row col-6 mx-auto">
-                    <button type="submit" className="btn btn-outline-ose my-5 mx-auto">loginSubmit</button>
-                  </div>
-                </form>
-              </div>
+          <div className="row">
+            <div className="col-9 mx-auto">
+              <form id="login-form" className="form-group" onSubmit={handleSubmit}>
+                <label htmlFor="email" className="mt-3">email</label>
+                <input id="email" type="email"
+                       className={`form-control ${warnings.email ? "is-invalid" : ""} `}
+                       placeholder="placeHolderEmail" name="email" onChange={handleChanges} required/>
+                <div className="text-danger">{warnings.email}</div>
+                <label htmlFor="password" className="mt-3">password</label>
+                <input id="password" type="password"
+                       className={`form-control ${warnings.password ? "is-invalid" : ""} `}
+                       placeholder="placeHolderPassword" name="password" onChange={handleChanges} required/>
+                <div className="text-danger">{warnings.password}</div>
+                <div className="row col-6 mx-auto">
+                  <button type="submit" className="btn btn-outline-ose my-5 mx-auto">loginSubmit</button>
+                </div>
+              </form>
             </div>
+          </div>
 
-        </div>
-      )}
+      </div>
     </>
   )
 }

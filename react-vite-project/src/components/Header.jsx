@@ -2,9 +2,11 @@ import React, {useContext, useEffect} from "react";
 import './Header.css';
 import {Link, useNavigate} from 'react-router-dom';
 import {AuthServiceContext, UserRole} from "../services/AuthService.tsx";
+import {Trans, useTranslation} from "react-i18next";
 
 function Header({user}) {
     const authService = useContext(AuthServiceContext);
+    const { t } = useTranslation("main");
 
     function logOut() {
         authService.logout();
@@ -17,38 +19,31 @@ function Header({user}) {
         // Remove ROLE_ prefix if present
         const roleName = roleString.replace('ROLE_', '');
         // Capitalize first letter, lowercase the rest
-        return roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase();
+        return t(`role.${roleName.toLowerCase()}`);
     };
-
-    const isGestionnaire = () => {
-        return user?.role === UserRole.Gestionnaire;
-    }
-    const isPrepose = () => {
-        return user?.role === UserRole.Gestionnaire || user?.role === UserRole.Professeur;
-    }
-    const isEmprunteur = () => {
-        return user?.role === UserRole.Gestionnaire || user?.role === UserRole.Etudiant;
-    }
 
     return (
         <header className="header">
-            <h1>My App</h1>
+            <h1>{t("sitename")}</h1>
             <nav>
                 <ul className="nav-links">
-                    <li><Link to="/">Accueil</Link></li>
-                    <li><Link to="/about">À propos</Link></li>
-                    {isEmprunteur() && <li><Link to="/etudiant">Emprunteur</Link></li>}
-                    {isPrepose() && <li><Link to="/professeur">Prepose</Link></li>}
-                    {isGestionnaire() && <li><Link to="/gestionnaire">Gestionnaire</Link></li>}
+                    <li><Link to="/">{t("pagename.home")}</Link></li>
+                    <li><Link to="/about">{t("pagename.about")}</Link></li>
                     <li>{user ? <a onClick={logOut}>Logout</a> : <Link to="/login">Login</Link>}</li>
                 </ul>
                 {user && (
                     <div className="user-info">
                         <p className="para-align">
-                            Bonjour <span className="user-name">{user.firstName} {user.lastName}</span>
-                            {user.role && (
-                                <span className="user-role"> - {formatRole(user.role.toString())}</span>
-                            )}
+                            <Trans t={t} i18nKey="hello-user"
+                                   values={{
+                                       firstName: user.firstName,
+                                       lastName: user.lastName,
+                                       role: formatRole(user?.role.toString()),
+                                   }}
+                                   components={{
+                                       nameSpan: <span className="user-name"/>,
+                                       roleSpan: <span className="user-role"/>,
+                                   }}/>
                         </p>
                     </div>
                 )}
