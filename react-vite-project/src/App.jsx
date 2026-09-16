@@ -1,4 +1,3 @@
-import "./App.css";
 import PageLayout from "./components/PageLayout.jsx";
 import React, {useContext, useEffect, useState} from "react";
 import {Route, Routes, useNavigate} from "react-router-dom";
