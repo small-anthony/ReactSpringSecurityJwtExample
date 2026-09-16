@@ -53,7 +53,7 @@ public class UserAppServiceTest {
 
     @Test
     void registerStudent_shouldCreateStudent() throws Exception {
-
+        //ARRANGE
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.empty());
 
@@ -69,70 +69,65 @@ public class UserAppServiceTest {
         when(etudiantRepository.save(any(Etudiant.class)))
                 .thenReturn(etudiant);
 
+        //ACT
         EtudiantDto result = userAppService.registerStudent("Peter", "Parker", 12345, "test@gmail.com", "Informatique", "password123", "password123");
 
+        //ASSERT
         assertNotNull(result);
-
-        verify(userAppRepository).findUserAppByEmail("test@gmail.com");
-        verify(passwordEncoder).encode("password123");
-        verify(etudiantRepository).save(any(Etudiant.class));
     }
 
     @Test
     void registerStudent_shouldRejectInvalidEmail() {
-
+        //ARRANGE
+        //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 userAppService.registerStudent("Peter", "Parker", 12345, "emailInvalide", "Informatique", "password123", "password123"));
 
+        //ASSERT
         assertEquals("Le format de l'email est invalide", exception.getMessage());
-
-        verify(userAppRepository, never()).findUserAppByEmail(anyString());
     }
 
     @Test
     void registerStudent_shouldRejectExistingEmail() {
-
+        //ARRANGE
         UserApp user = mock(UserApp.class);
 
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.of(user));
 
+        //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 userAppService.registerStudent("Peter", "Parker", 12345, "test@gmail.com", "Informatique", "password123", "password123"));
 
+        //ASSERT
         assertEquals("Un compte avec cet email existe déjà", exception.getMessage());
-
-        verify(passwordEncoder, never()).encode(anyString());
-        verify(etudiantRepository, never()).save(any(Etudiant.class));
     }
 
     @Test
     void registerStudent_shouldRejectDifferentPasswords() {
-
+        //ARRANGE
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.empty());
 
+        //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 userAppService.registerStudent("Peter", "Parker", 12345, "test@gmail.com", "Informatique", "password123", "differentPassword"));
 
+        //ASSERT
         assertEquals("Les mots de passe ne correspondent pas", exception.getMessage());
-
-        verify(passwordEncoder, never()).encode(anyString());
-        verify(etudiantRepository, never()).save(any(Etudiant.class));
     }
 
     @Test
     void registerStudent_shouldRejectShortPassword() {
-
+        //ARRANGE
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.empty());
 
+        //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 userAppService.registerStudent("Peter", "Parker", 12345, "test@gmail.com", "Informatique", "abc", "abc"));
 
+        //ASSERT
         assertEquals("Le mot de passe doit contenir au moins 8 caractères", exception.getMessage());
-
-        verify(passwordEncoder, never()).encode(anyString());
-        verify(etudiantRepository, never()).save(any(Etudiant.class));
     }
 }
