@@ -92,7 +92,7 @@ public class UserAppService {
                                           String password, String passwordConfirmation) throws Exception
     {
         if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            throw new Exception("Le format du courriel n'est pas valide.");
+            throw new Exception("Le format du courriel n'est pas valide");
         }
 
         if (checkIfEmailExists(email)) {
@@ -100,7 +100,7 @@ public class UserAppService {
         }
 
         if (password.length() < 8) {
-            throw new Exception("Le mot de passe doit contenir au moins 8 caractères.");
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
         }
 
         if (!password.equals(passwordConfirmation)) {
