@@ -3,20 +3,18 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
-import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.GestionnaireRepository;
-import com.lacouf.rsbjwt.repository.ProfesseurRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.model.enums.CvStatus;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
-
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -28,6 +26,7 @@ public class UserAppService {
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
     private final GestionnaireRepository gestionnaireRepository;
+    private final CvRepository cvRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserAppService(AuthenticationManager authenticationManager,
@@ -36,6 +35,7 @@ public class UserAppService {
                           EtudiantRepository etudiantRepository,
                           ProfesseurRepository professeurRepository,
                           GestionnaireRepository gestionnaireRepository,
+                          CvRepository cvRepository,
                           PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -43,6 +43,7 @@ public class UserAppService {
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
         this.gestionnaireRepository = gestionnaireRepository;
+        this.cvRepository = cvRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -90,6 +91,33 @@ public class UserAppService {
         Etudiant etudiant = new Etudiant(firstName, lastName, credentials, matricule, discipline);
 
         return EtudiantDto.create(etudiantRepository.save(etudiant));
+    }
+
+    public CvDto uploadCv(Long etudiantId, MultipartFile file) throws Exception {
+        Etudiant etudiant = etudiantRepository.findById(etudiantId)
+                .orElseThrow(() -> new Exception("Étudiant non trouve"));
+
+        if (file.isEmpty()) {
+            throw new Exception("Veuillez sélectionner un fichier");
+        }
+
+        String contentType = file.getContentType();
+
+        if (contentType == null || !contentType.equals("application/pdf")) {
+            throw new Exception("Le fichier doit être un PDF");
+        }
+
+        Cv nouveauCv = etudiant.getCv();
+
+        if (nouveauCv == null) {
+            nouveauCv = new Cv();
+            nouveauCv.setEtudiant(etudiant);
+        }
+
+        nouveauCv.setData(file.getBytes());
+        nouveauCv.setCvStatus(CvStatus.EN_ATTENTE);
+
+        return CvDto.create(cvRepository.save(nouveauCv));
     }
 
     private GestionnaireDto getGestionnaireDto(Long id) {
