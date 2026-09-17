@@ -1,11 +1,15 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.enums.CvStatus;
+import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +30,9 @@ public class UserAppServiceTest {
 
     @Mock
     private EtudiantRepository etudiantRepository;
+
+    @Mock
+    private CvRepository cvRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -118,5 +126,92 @@ public class UserAppServiceTest {
 
         //ASSERT
         assertEquals("Le mot de passe doit contenir au moins 8 caractères", exception.getMessage());
+    }
+
+    @Test
+    void uploadCv_shouldUploadSuccessfully() throws Exception {
+//        ARRANGE
+        Long etudiantId = 1L;
+        Etudiant etudiant = new Etudiant();
+        etudiant.setId(etudiantId);
+
+        when(etudiantRepository.findById(etudiantId))
+                .thenReturn(Optional.of(etudiant));
+
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
+
+        Cv sauvegardeCv = new Cv();
+        sauvegardeCv.setId(10L);
+        sauvegardeCv.setCvStatus(CvStatus.EN_ATTENTE);
+        when(cvRepository.save(any(Cv.class))).thenReturn(sauvegardeCv);
+
+//        ACT
+        CvDto resultat = userAppService.uploadCv(etudiantId, file);
+
+//        ASSERT
+        assertNotNull(resultat);
+        assertEquals(10L, resultat.id());
+        assertEquals(CvStatus.EN_ATTENTE, resultat.status());
+    }
+
+    @Test
+    void uploadCv_shouldRejectIfEtudiantNotFound() {
+//        ARRANGE
+        Long etudiantId = 1L;
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(etudiantRepository.findById(etudiantId))
+                .thenReturn(Optional.empty());
+
+//        ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.uploadCv(etudiantId, file));
+
+//        ASSERT
+        assertEquals("Étudiant non trouve", exception.getMessage());
+    }
+
+    @Test
+    void uploadCv_shouldRejectIfFileIsEmpty() {
+//        ARRANGE
+        Long etudiantId = 1L;
+        Etudiant etudiant = new Etudiant();
+
+        when(etudiantRepository.findById(etudiantId))
+                .thenReturn(Optional.of(etudiant));
+
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(true);
+
+//        ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.uploadCv(etudiantId, file));
+
+//        ASSERT
+        assertEquals("Veuillez sélectionner un fichier", exception.getMessage());
+    }
+
+    @Test
+    void uploadCv_shouldRejectIfFileIsNotPdf() {
+//        ARRANGE
+        Long etudiantId = 1L;
+        Etudiant etudiant = new Etudiant();
+
+        when(etudiantRepository.findById(etudiantId))
+                .thenReturn(Optional.of(etudiant));
+
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getContentType()).thenReturn("image/png");
+
+//        ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.uploadCv(etudiantId, file));
+
+//        ARRANGE
+        assertEquals("Le fichier doit être un PDF", exception.getMessage());
     }
 }
