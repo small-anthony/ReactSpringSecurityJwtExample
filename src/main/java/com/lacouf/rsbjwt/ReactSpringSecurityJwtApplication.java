@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.service.UserAppService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final UserAppRepository userAppRepository;
 
-    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository ){
+    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository){
         this.userAppRepository = userAppRepository;
     }
 
@@ -19,5 +20,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
     }
 }
