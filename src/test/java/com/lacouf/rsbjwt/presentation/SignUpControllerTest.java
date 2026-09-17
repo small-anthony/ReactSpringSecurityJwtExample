@@ -1,0 +1,87 @@
+package com.lacouf.rsbjwt.presentation;
+
+import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.EmployeurDto;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.HashMap;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class SignUpControllerTest {
+    @Mock
+    private UserAppService userAppService;
+
+    @InjectMocks
+    private SignUpController signUpController;
+
+    @Test
+    void signUpEmployeur_shouldReturnCreated() throws Exception {
+//        ARRANGE
+        Map<String, String> request = new HashMap<>();
+        request.put("firstName", "Jimmy");
+        request.put("lastName", "Donaldson");
+        request.put("email", "test@gmail.com");
+        request.put("entreprise", "Entreprise");
+        request.put("telephone", "514 111 1111");
+        request.put("password", "password");
+        request.put("passwordConfirmation", "password");
+
+        EmployeurDto employeurDto = mock(EmployeurDto.class);
+
+        when(userAppService.registerEmployeur(
+                "Jimmy",
+                "Donaldson",
+                "test@gmail.com",
+                "Entreprise",
+                "514 111 1111",
+                "password",
+                "password"))
+                .thenReturn(employeurDto);
+
+//        ACT
+        ResponseEntity<Object> response = signUpController.signUpEmployeur(request);
+
+//        ASSERT
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(employeurDto, response.getBody());
+    }
+
+    @Test
+    void signUpEmployeur_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Map<String, String> request = new HashMap<>();
+        request.put("firstName", "Jimmy");
+        request.put("lastName", "Donaldson");
+        request.put("email", "testgmail.com");
+        request.put("entreprise", "Entreprise");
+        request.put("telephone", "514 111 1111");
+        request.put("password", "password");
+        request.put("passwordConfirmation", "password");
+
+        when(userAppService.registerEmployeur(
+                "Jimmy",
+                "Donaldson",
+                "testgmail.com",
+                "Entreprise",
+                "514 111 1111",
+                "password",
+                "password"))
+                .thenThrow(new Exception("Le format du courriel n'est pas valide"));
+
+//        ACT
+        ResponseEntity<Object> response = signUpController.signUpEmployeur(request);
+
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Le format du courriel n'est pas valide", response.getBody());
+    }
+}
