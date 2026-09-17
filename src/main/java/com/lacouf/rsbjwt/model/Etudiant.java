@@ -1,14 +1,19 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.auth.Credentials;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @DiscriminatorValue("S")
 public class Etudiant extends UserApp {
     private int matricule;
     private String discipline;
+
+    @OneToOne(mappedBy = "etudiant", cascade = CascadeType.ALL)
+    private Cv cv;
 
     public Etudiant(String firstName, String lastName, Credentials credentials, int matricule, String discipline) {
         super( firstName, lastName, credentials);
@@ -24,5 +29,13 @@ public class Etudiant extends UserApp {
 
     public String getDiscipline() {
         return discipline;
+    }
+
+    public Cv getCv() {
+        return cv;
+    }
+
+    public void setCv(Cv cv) {
+        this.cv = cv;
     }
 }
