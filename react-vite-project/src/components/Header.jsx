@@ -26,6 +26,9 @@ function Header({user}) {
         <header className="header">
             <h1>{t("sitename")}</h1>
             <nav>
+                <ul className="nav-links">
+                    <li>{user ? <a onClick={logOut}>Logout</a> : <Link to="/login">Login</Link>}</li>
+                </ul>
                 {user && (
                     <div className="user-info">
                         <p className="para-align">

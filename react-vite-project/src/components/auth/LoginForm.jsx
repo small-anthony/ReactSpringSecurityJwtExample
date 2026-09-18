@@ -60,6 +60,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     if (validateUser()) {
+      setWarnings({...warnings, result: ""})
       fetchFunc();
     }
   }
@@ -71,8 +72,12 @@ const LoginForm = () => {
       }
 
       catch(error) {
-        if(error instanceof Error) {
-          setWarnings({...warnings, result: error.message});
+        if(error instanceof LoginError) {
+          const errorObj = error.message;
+          setWarnings({...warnings, result: t(`auth:error.${errorObj.message}`)});
+        }
+        else if(error instanceof Error) {
+          setWarnings({...warnings, result: error.message})
         }
       }
   }

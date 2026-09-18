@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.ProfesseurRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
@@ -40,7 +41,8 @@ public class UserAppService {
         this.gestionnaireRepository = gestionnaireRepository;
     }
 
-    public String authenticateUser(LoginDto loginDto) {
+    public String authenticateUser(LoginDto loginDto)
+        throws AuthenticationException {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password()));
         final String token = jwtTokenProvider.generateToken(authentication);

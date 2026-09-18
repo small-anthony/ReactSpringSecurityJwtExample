@@ -14,7 +14,7 @@ function request(path: RequestInfo, method: RequestMethods, headers: object, bod
             },
             body: body ? JSON.stringify(body) : null
         }).then((response) => {
-            response.ok ? success(response) : failure(response);
+            success(response);
         }).catch((reason) => {
             if(reason instanceof Error) {
                 const error = new APIError(reason.message)

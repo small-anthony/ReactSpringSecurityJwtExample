@@ -54,10 +54,7 @@ const AuthService = ({children}) => {
                 const fetchData = async () => {
                     const requestResult = await APIHelper.get('/user/me', makeAuthHeader(sessionToken), {});
                     if(!requestResult.ok) {
-                        if(requestResult.status == 401) {
-                            throw new LoginError(await requestResult.text());
-                        }
-                        throw new AuthError(await requestResult.text());
+                        throw new AuthError(await requestResult.json());
                     }
 
                     setUserData(await requestResult.json());
@@ -72,6 +69,11 @@ const AuthService = ({children}) => {
         async login(email: string, password: string) {
             const loginResult = await APIHelper.post('/user/login', {}, {email: email.toLowerCase(), password: password});
             if(!loginResult.ok) {
+                if(loginResult.status == 401) {
+                    const err = new LoginError()
+                    err.message = await loginResult.json();
+                    throw err;
+                }
                 throw new AuthError(await loginResult.text());
             }
             const loginData = await loginResult.json();
