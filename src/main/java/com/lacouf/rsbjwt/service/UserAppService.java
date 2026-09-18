@@ -64,29 +64,21 @@ public class UserAppService {
 
     private GestionnaireDto getGestionnaireDto(Long id) {
         final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
-        return gestionnaireOptional.isPresent() ?
-                GestionnaireDto.create(gestionnaireOptional.get()) :
-                GestionnaireDto.empty();
+        return GestionnaireDto.create(gestionnaireOptional.orElseThrow(UserNotFoundException::new));
     }
 
     private ProfesseurDto getPreposeDto(Long id) {
         final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                ProfesseurDto.create(preposeOptional.get()) :
-                ProfesseurDto.empty();
+        return ProfesseurDto.create(preposeOptional.orElseThrow(UserNotFoundException::new));
     }
 
     private EtudiantDto getEmprunteurDto(Long id) {
         final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
+        return EtudiantDto.create(emprunteurOptional.orElseThrow(UserNotFoundException::new));
     }
 
     private EtudiantDto getEmployeurDto(Long id) {
         final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
+        return EtudiantDto.create(emprunteurOptional.orElseThrow(UserNotFoundException::new));
     }
 }

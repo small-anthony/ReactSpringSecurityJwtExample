@@ -15,8 +15,4 @@ public record EmployeurDto(int id, String firstName, String lastName, String ema
                 employeur.getRole()
         );
     }
-
-    public static EmployeurDto empty() {
-        return new EmployeurDto(0, null, null, null, null);
-    }
 }

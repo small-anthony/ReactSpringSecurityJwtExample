@@ -16,8 +16,4 @@ public record EtudiantDto(int id, String firstName, String lastName, String emai
                 etudiant.getRole()
         );
     }
-
-    public static EtudiantDto empty() {
-        return new EtudiantDto(0, null, null, null, null);
-    }
 }
