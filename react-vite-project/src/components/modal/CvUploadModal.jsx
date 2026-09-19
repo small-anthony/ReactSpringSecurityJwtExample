@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { uploadCv } from '../../api/CvEtudiantAPI.jsx';
+import { uploadCv } from '../../services/api/CvEtudiantAPI.jsx';
 
 export default function CvUploadModal({ etudiantId, onUploadSuccess }) {
     const [file, setFile] = useState(null);
