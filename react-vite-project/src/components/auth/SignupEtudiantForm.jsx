@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { BASE_URL } from "../config/Config";
-import useFormValidation from "../../hooks/useFormValidation";
+import { registerEtudiant } from "../../services/api/EtudiantService";
 
 const DISCIPLINES = [
   "Techniques de l'informatique",
@@ -13,13 +12,8 @@ const DISCIPLINES = [
 
 export default function SignupEtudiantForm() {
   const navigate = useNavigate();
-  const [serverError, setServerError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const initialValues = {
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     matricule: "",
@@ -27,123 +21,125 @@ export default function SignupEtudiantForm() {
     discipline: "",
     password: "",
     confirmPassword: ""
-  };
+  });
 
-  const validationRules = {
-    firstName: (val) => (!val?.trim() ? "Le prénom est requis." : ""),
-    lastName: (val) => (!val?.trim() ? "Le nom est requis." : ""),
-    matricule: (val) => {
-      if (!val?.trim()) return "Le matricule est requis.";
-      if (!/^\d{7}$/.test(val.trim())) return "Le matricule doit comporter exactement 7 chiffres.";
-      return "";
-    },
-    email: (val) => {
-      if (!val?.trim()) return "Le courriel est requis.";
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailRegex.test(val.trim())) return "Format de courriel invalide.";
-      return "";
-    },
-    discipline: (val) => (!val ? "Veuillez choisir une discipline de stage." : ""),
-    password: (val) => {
-      if (!val) return "Le mot de passe est requis.";
-      const missing = [];
-      if (val.length < 8) missing.push("au moins 8 caractères");
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-      if (missing.length > 0) {
-        return `Il manque : ${missing.join(", ")}.`;
-      }
-      return "";
-    },
-    confirmPassword: (val, allVals) => {
-      if (!val) return "La confirmation du mot de passe est requise.";
-      if (val !== allVals.password) return "Les mots de passe ne correspondent pas.";
-      return "";
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
-  const {
-    values,
-    errors,
-    touched,
-    handleChange,
-    handleBlur,
-    validateAll,
-    isValid
-  } = useFormValidation(initialValues, validationRules);
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "Le prénom est obligatoire.";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Le nom est obligatoire.";
+    }
+
+    if (!formData.matricule.trim()) {
+      newErrors.matricule = "Le matricule est obligatoire.";
+    } else if (!/^\d{7}$/.test(formData.matricule.trim())) {
+      newErrors.matricule = "Le matricule doit comporter exactement 7 chiffres.";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Le courriel est obligatoire.";
+    } else if (!/^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i.test(formData.email.trim())) {
+      newErrors.email = "Format de courriel invalide.";
+    }
+
+    if (!formData.discipline) {
+      newErrors.discipline = "Veuillez choisir une discipline.";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Le mot de passe est obligatoire.";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Le mot de passe doit contenir au moins 8 caractères.";
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "La confirmation est obligatoire.";
+    } else if (formData.confirmPassword !== formData.password) {
+      newErrors.confirmPassword = "Les mots de passe ne correspondent pas.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError("");
-    setSuccessMsg("");
+    setSuccessMessage("");
 
-    if (!validateAll()) {
+    if (!validate()) {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsLoading(true);
 
     try {
       const payload = {
-        firstName: values.firstName.trim(),
-        lastName: values.lastName.trim(),
-        matricule: values.matricule.trim(),
-        email: values.email.trim().toLowerCase(),
-        discipline: values.discipline,
-        password: values.password,
-        confirmPassword: values.confirmPassword
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        matricule: formData.matricule.trim(),
+        email: formData.email.trim().toLowerCase(),
+        discipline: formData.discipline,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
       };
 
-      const response = await fetch(`${BASE_URL}/signup/etudiant`, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json;charset=UTF-8"
-        },
-        body: JSON.stringify(payload)
-      });
+      await registerEtudiant(payload);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Erreur lors de l'enregistrement.");
-      }
-
-
-      setSuccessMsg("Inscription réussie ! Redirection vers la page de connexion...");
+      setSuccessMessage("Inscription réussie ! Redirection vers la page de connexion...");
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 1500);
 
     } catch (err) {
-      setServerError(err.message || "Impossible de contacter le serveur backend.");
+      setServerError(err.message || "Erreur lors de la communication avec le serveur.");
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-extrabold text-gray-900">
-          Inscription Étudiant
-        </h2>
-        <p className="text-gray-500 text-sm mt-1">
-          Remplissez le formulaire ci-dessous pour accéder aux offres de stage
-        </p>
-      </div>
+    <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+        Inscription Étudiant
+      </h2>
+      <p className="text-center text-gray-500 text-sm mb-6">
+        Remplissez ce formulaire pour créer votre compte étudiant.
+      </p>
 
       {serverError && (
-        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r">
+        <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
           <strong>Erreur : </strong>{serverError}
         </div>
       )}
 
-      {successMsg && (
-        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-800 text-sm rounded-r">
-          <strong>Succès : </strong>{successMsg}
+      {successMessage && (
+        <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-800 text-sm rounded">
+          <strong>Succès : </strong>{successMessage}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -152,17 +148,14 @@ export default function SignupEtudiantForm() {
             <input
               type="text"
               name="firstName"
-              value={values.firstName}
+              value={formData.firstName}
               onChange={handleChange}
-              onBlur={handleBlur}
-              className={`w-full px-3.5 py-2.5 border rounded-lg transition focus:outline-none focus:ring-2 ${touched.firstName && errors.firstName
-                ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-                : "border-gray-300 focus:ring-blue-200"
-                }`}
               placeholder="Ex: Jean"
+              className={`w-full p-2.5 border rounded-lg ${errors.firstName ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
             />
-            {touched.firstName && errors.firstName && (
-              <p className="text-red-500 text-xs mt-1 font-medium">{errors.firstName}</p>
+            {errors.firstName && (
+              <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
             )}
           </div>
 
@@ -173,39 +166,34 @@ export default function SignupEtudiantForm() {
             <input
               type="text"
               name="lastName"
-              value={values.lastName}
+              value={formData.lastName}
               onChange={handleChange}
-              onBlur={handleBlur}
-              className={`w-full px-3.5 py-2.5 border rounded-lg transition focus:outline-none focus:ring-2 ${touched.lastName && errors.lastName
-                ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-                : "border-gray-300 focus:ring-blue-200"
-                }`}
               placeholder="Ex: Tremblay"
+              className={`w-full p-2.5 border rounded-lg ${errors.lastName ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
             />
-            {touched.lastName && errors.lastName && (
-              <p className="text-red-500 text-xs mt-1 font-medium">{errors.lastName}</p>
+            {errors.lastName && (
+              <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
             )}
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Numéro d'étudiant / Matricule (7 chiffres) <span className="text-red-500">*</span>
+            Matricule (7 chiffres) <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="matricule"
-            value={values.matricule}
+            value={formData.matricule}
             onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full px-3.5 py-2.5 border rounded-lg transition focus:outline-none focus:ring-2 ${touched.matricule && errors.matricule
-              ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-              : "border-gray-300 focus:ring-blue-200"
-              }`}
             placeholder="Ex: 1234567"
+            maxLength={7}
+            className={`w-full p-2.5 border rounded-lg ${errors.matricule ? "border-red-500 bg-red-50" : "border-gray-300"
+              }`}
           />
-          {touched.matricule && errors.matricule && (
-            <p className="text-red-500 text-xs mt-1 font-medium">{errors.matricule}</p>
+          {errors.matricule && (
+            <p className="text-red-500 text-xs mt-1">{errors.matricule}</p>
           )}
         </div>
 
@@ -216,17 +204,14 @@ export default function SignupEtudiantForm() {
           <input
             type="email"
             name="email"
-            value={values.email}
+            value={formData.email}
             onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full px-3.5 py-2.5 border rounded-lg transition focus:outline-none focus:ring-2 ${touched.email && errors.email
-              ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-              : "border-gray-300 focus:ring-blue-200"
-              }`}
             placeholder="Ex: 1234567@cegep.ca"
+            className={`w-full p-2.5 border rounded-lg ${errors.email ? "border-red-500 bg-red-50" : "border-gray-300"
+              }`}
           />
-          {touched.email && errors.email && (
-            <p className="text-red-500 text-xs mt-1 font-medium">{errors.email}</p>
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           )}
         </div>
 
@@ -236,12 +221,9 @@ export default function SignupEtudiantForm() {
           </label>
           <select
             name="discipline"
-            value={values.discipline}
+            value={formData.discipline}
             onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white transition focus:outline-none focus:ring-2 ${touched.discipline && errors.discipline
-              ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-              : "border-gray-300 focus:ring-blue-200"
+            className={`w-full p-2.5 border rounded-lg bg-white ${errors.discipline ? "border-red-500 bg-red-50" : "border-gray-300"
               }`}
           >
             <option value="">-- Choisir une discipline --</option>
@@ -251,8 +233,8 @@ export default function SignupEtudiantForm() {
               </option>
             ))}
           </select>
-          {touched.discipline && errors.discipline && (
-            <p className="text-red-500 text-xs mt-1 font-medium">{errors.discipline}</p>
+          {errors.discipline && (
+            <p className="text-red-500 text-xs mt-1">{errors.discipline}</p>
           )}
         </div>
 
@@ -265,14 +247,11 @@ export default function SignupEtudiantForm() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                value={values.password}
+                value={formData.password}
                 onChange={handleChange}
-                onBlur={handleBlur}
-                className={`w-full pr-16 px-3.5 py-2.5 border rounded-lg transition focus:outline-none focus:ring-2 ${touched.password && errors.password
-                  ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-                  : "border-gray-300 focus:ring-blue-200"
+                placeholder="Au moins 8 caractères"
+                className={`w-full p-2.5 pr-20 border rounded-lg ${errors.password ? "border-red-500 bg-red-50" : "border-gray-300"
                   }`}
-                placeholder="••••••••"
               />
               <button
                 type="button"
@@ -282,9 +261,8 @@ export default function SignupEtudiantForm() {
                 {showPassword ? "Masquer" : "Afficher"}
               </button>
             </div>
-
-            {touched.password && errors.password && (
-              <p className="text-red-500 text-xs mt-1 font-medium">{errors.password}</p>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
             )}
           </div>
 
@@ -296,14 +274,11 @@ export default function SignupEtudiantForm() {
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
-                value={values.confirmPassword}
+                value={formData.confirmPassword}
                 onChange={handleChange}
-                onBlur={handleBlur}
-                className={`w-full pr-16 px-3.5 py-2.5 border rounded-lg transition focus:outline-none focus:ring-2 ${touched.confirmPassword && errors.confirmPassword
-                  ? "border-red-500 focus:ring-red-200 bg-red-50/20"
-                  : "border-gray-300 focus:ring-blue-200"
+                placeholder="Retapez le mot de passe"
+                className={`w-full p-2.5 pr-20 border rounded-lg ${errors.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300"
                   }`}
-                placeholder="••••••••"
               />
               <button
                 type="button"
@@ -313,8 +288,8 @@ export default function SignupEtudiantForm() {
                 {showConfirmPassword ? "Masquer" : "Afficher"}
               </button>
             </div>
-            {touched.confirmPassword && errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1 font-medium">{errors.confirmPassword}</p>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
             )}
           </div>
         </div>
@@ -322,17 +297,17 @@ export default function SignupEtudiantForm() {
         <div className="pt-4">
           <button
             type="submit"
-            disabled={!isValid || isSubmitting}
-            className={`w-full py-3 px-4 font-bold rounded-lg transition duration-200 shadow-md ${!isValid || isSubmitting
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300"
-              : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-blue-500/20 hover:shadow-lg"
+            disabled={isLoading}
+            className={`w-full py-3 px-4 font-bold rounded-lg text-white transition ${isLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 cursor-pointer shadow"
               }`}
           >
-            {isSubmitting ? "Enregistrement en cours..." : "S'inscrire"}
+            {isLoading ? "Inscription en cours..." : "S'inscrire"}
           </button>
         </div>
 
-        <div className="text-center text-sm text-gray-500 mt-6 pt-4 border-t border-gray-100">
+        <div className="text-center text-sm text-gray-600 pt-4 border-t border-gray-100">
           Vous avez déjà un compte ?{" "}
           <Link to="/login" className="text-blue-600 font-semibold hover:underline">
             Se connecter
