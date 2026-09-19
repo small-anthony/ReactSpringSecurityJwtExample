@@ -76,12 +76,12 @@ public class UserAppService {
             throw new Exception("Un compte avec cet email existe déjà");
         }
 
-        if (!password.equals(confirmPassword)) {
-            throw new Exception("Les mots de passe ne correspondent pas");
-        }
-
         if (password.length() < 8) {
             throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
+        }
+
+        if (!password.equals(confirmPassword)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
         }
 
         String passwordEncoded = passwordEncoder.encode(password);
