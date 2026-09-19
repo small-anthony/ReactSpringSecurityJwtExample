@@ -20,7 +20,7 @@ export const uploadCv = async (etudiantId, file) => {
         try {
             errorMessage = await response.text();
         } catch (e) {
-
+            throw new Error(errorMessage);
         }
 
         throw new Error(errorMessage);
