@@ -43,4 +43,11 @@ public class OffreStage {
     public void setEmployeur(Employeur employeur) {
         this.employeur = employeur;
     }
+
+
+    public Long setId(Long id) {
+        this.id = id;
+        return id;
+    }
+
 }
