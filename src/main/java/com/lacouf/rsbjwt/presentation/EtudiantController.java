@@ -17,11 +17,11 @@ public class EtudiantController {
         this.userAppService = userAppService;
     }
 
-    @PostMapping("/{id}/cv")
-    public ResponseEntity<Object> uploadCv(@PathVariable Long id, @RequestParam("file") MultipartFile file, Authentication authentication) {
+    @PostMapping("/cv")
+    public ResponseEntity<Object> uploadCv(@RequestParam("file") MultipartFile file, Authentication authentication) {
         try {
             String emailConnecte = authentication.getName();
-            CvDto nouveauCv = userAppService.uploadCv(id, emailConnecte, file);
+            CvDto nouveauCv = userAppService.uploadCv(emailConnecte, file);
             return ResponseEntity.status(HttpStatus.CREATED).body(nouveauCv);
         } catch (Exception e) {
             if (e.getMessage().contains("Accès refusé")) {

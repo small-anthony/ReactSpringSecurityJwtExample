@@ -89,11 +89,11 @@ public class UserAppService {
         return EtudiantDto.create(etudiantRepository.save(etudiant));
     }
 
-    public CvDto uploadCv(Long etudiantId, String emailConnecte, MultipartFile file) throws Exception {
-        Etudiant etudiant = etudiantRepository.findById(etudiantId)
-                .orElseThrow(() -> new Exception("Étudiant non trouve"));
+    public CvDto uploadCv(String emailConnecte, MultipartFile file) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailConnecte)
+                .orElseThrow(() -> new Exception("Etudiant non trouvé"));
 
-        if (!etudiant.getEmail().equals(emailConnecte)) {
+        if (!(user instanceof Etudiant etudiant)) {
             throw new Exception("Accès refusé");
         }
 
