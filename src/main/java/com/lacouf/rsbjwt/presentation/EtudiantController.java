@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/signup")
+@RequestMapping("/etudiant")
 public class EtudiantController {
     private final UserAppService userService;
 
@@ -20,7 +20,7 @@ public class EtudiantController {
         this.userService = userService;
     }
 
-    @PostMapping("/etudiant")
+    @PostMapping("/inscription")
     public ResponseEntity<Object> signUpEtudiant(@RequestBody Map<String, String> body) {
         try {
             String firstName = body.get("firstName");
