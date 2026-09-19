@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.model.enums.CvStatus;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,14 +28,19 @@ public class CvControllerTest {
     void uploadCv_shouldReturnCreatedCv() throws Exception {
 //        ARRANGE
         Long etudiantId = 1L;
+        String email = "test@gmail.com";
         MultipartFile file = mock(MultipartFile.class);
-        CvDto cvDto = new CvDto(10L, CvStatus.EN_ATTENTE);
 
-        when(userAppService.uploadCv(etudiantId, file))
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+
+        CvDto cvDto = new CvDto(10L);
+
+        when(userAppService.uploadCv(etudiantId, email, file))
                 .thenReturn(cvDto);
 
 //        ACT
-        ResponseEntity<Object> response = etudiantController.uploadCv(etudiantId, file);
+        ResponseEntity<Object> response = etudiantController.uploadCv(etudiantId, file, authentication);
 
 //        ARRANGE
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -46,16 +51,42 @@ public class CvControllerTest {
     void uploadCv_shouldReturnBadRequestOnException() throws Exception {
 //        ARRANGE
         Long etudiantId = 1L;
+        String email = "test@gmail.com";
         MultipartFile file = mock(MultipartFile.class);
 
-        when(userAppService.uploadCv(etudiantId, file))
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+
+        when(userAppService.uploadCv(etudiantId, email, file))
                 .thenThrow(new Exception("Veuillez sélectionner un fichier"));
 
 //        ACT
-        ResponseEntity<Object> response = etudiantController.uploadCv(etudiantId, file);
+        ResponseEntity<Object> response = etudiantController.uploadCv(etudiantId, file, authentication);
 
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Veuillez sélectionner un fichier", response.getBody());
+    }
+
+    @Test
+    void uploadCv_shouldReturnForbiddenOnAccessDenied() throws Exception {
+//        ARRANGE
+        Long etudiantId = 1L;
+        String emailHacker = "hacker@gmail.com";
+        MultipartFile file = mock(MultipartFile.class);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(emailHacker);
+
+
+        when(userAppService.uploadCv(etudiantId, emailHacker, file))
+                .thenThrow(new Exception("Accès refusé"));
+
+//        ACT
+        ResponseEntity<Object> response = etudiantController.uploadCv(etudiantId, file, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("Accès refusé", response.getBody());
     }
 }

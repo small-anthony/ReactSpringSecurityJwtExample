@@ -16,7 +16,7 @@ public class Etudiant extends UserApp {
     private Cv cv;
 
     public Etudiant(String firstName, String lastName, Credentials credentials, int matricule, String discipline) {
-        super( firstName, lastName, credentials);
+        super(firstName, lastName, credentials);
         this.matricule = matricule;
         this.discipline = discipline;
     }

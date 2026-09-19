@@ -3,7 +3,6 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
-import com.lacouf.rsbjwt.model.enums.CvStatus;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
@@ -90,9 +89,13 @@ public class UserAppService {
         return EtudiantDto.create(etudiantRepository.save(etudiant));
     }
 
-    public CvDto uploadCv(Long etudiantId, MultipartFile file) throws Exception {
+    public CvDto uploadCv(Long etudiantId, String emailConnecte, MultipartFile file) throws Exception {
         Etudiant etudiant = etudiantRepository.findById(etudiantId)
                 .orElseThrow(() -> new Exception("Étudiant non trouve"));
+
+        if (!etudiant.getEmail().equals(emailConnecte)) {
+            throw new Exception("Accès refusé");
+        }
 
         if (file.isEmpty()) {
             throw new Exception("Veuillez sélectionner un fichier");

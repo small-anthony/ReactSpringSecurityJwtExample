@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.model;
 
-import com.lacouf.rsbjwt.model.enums.CvStatus;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,9 +13,6 @@ public class Cv {
 //    @Column(columnDefinition = "LONGBLOB")
     private byte[] data;
 
-    @Enumerated(EnumType.STRING)
-    private CvStatus cvStatus;
-
     @OneToOne
     @JoinColumn(name = "etudiant_id")
     private Etudiant etudiant;
@@ -24,16 +20,8 @@ public class Cv {
     public Cv() {
     }
 
-    public Cv(Long id, byte[] data, CvStatus cvStatus, Etudiant etudiant) {
-        this.id = id;
-        this.data = data;
-        this.cvStatus = cvStatus;
-        this.etudiant = etudiant;
-    }
-
     public void mettreAJour(byte[] nouvelData) {
         this.data = nouvelData;
-        this.cvStatus = CvStatus.EN_ATTENTE;
     }
 
     public Long getId() {
@@ -42,10 +30,6 @@ public class Cv {
 
     public byte[] getData() {
         return data;
-    }
-
-    public CvStatus getCvStatus() {
-        return cvStatus;
     }
 
     public Etudiant getEtudiant() {
@@ -58,10 +42,6 @@ public class Cv {
 
     public void setData(byte[] data) {
         this.data = data;
-    }
-
-    public void setCvStatus(CvStatus cvStatus) {
-        this.cvStatus = cvStatus;
     }
 
     public void setEtudiant(Etudiant etudiant) {

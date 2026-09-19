@@ -1,11 +1,9 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
-import com.lacouf.rsbjwt.model.enums.CvStatus;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CvDto;
@@ -128,7 +126,8 @@ public class UserAppServiceTest {
     void uploadCv_shouldUploadSuccessfully() throws Exception {
 //        ARRANGE
         Long etudiantId = 1L;
-        Etudiant etudiant = new Etudiant();
+        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
         etudiant.setId(etudiantId);
 
         when(etudiantRepository.findById(etudiantId))
@@ -139,7 +138,7 @@ public class UserAppServiceTest {
         when(file.getContentType()).thenReturn("application/pdf");
         when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
 
-        Etudiant etudiantSauvegarde = new Etudiant();
+        Etudiant etudiantSauvegarde = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
         etudiantSauvegarde.setId(etudiantId);
         etudiantSauvegarde.soumettreCv(new byte[]{1, 2, 3});
         etudiantSauvegarde.getCv().setId(10L);
@@ -147,12 +146,11 @@ public class UserAppServiceTest {
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiantSauvegarde);
 
 //        ACT
-        CvDto resultat = userAppService.uploadCv(etudiantId, file);
+        CvDto resultat = userAppService.uploadCv(etudiantId, "test@gmail.com", file);
 
 //        ASSERT
         assertNotNull(resultat);
         assertEquals(10L, resultat.id());
-        assertEquals(CvStatus.EN_ATTENTE, resultat.status());
     }
 
     @Test
@@ -166,7 +164,7 @@ public class UserAppServiceTest {
 
 //        ACT
         Exception exception = assertThrows(Exception.class, () ->
-                userAppService.uploadCv(etudiantId, file));
+                userAppService.uploadCv(etudiantId, "test@gmail.com", file));
 
 //        ASSERT
         assertEquals("Étudiant non trouve", exception.getMessage());
@@ -176,7 +174,9 @@ public class UserAppServiceTest {
     void uploadCv_shouldRejectIfFileIsEmpty() {
 //        ARRANGE
         Long etudiantId = 1L;
-        Etudiant etudiant = new Etudiant();
+        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+        etudiant.setId(etudiantId);
 
         when(etudiantRepository.findById(etudiantId))
                 .thenReturn(Optional.of(etudiant));
@@ -186,7 +186,7 @@ public class UserAppServiceTest {
 
 //        ACT
         Exception exception = assertThrows(Exception.class, () ->
-                userAppService.uploadCv(etudiantId, file));
+                userAppService.uploadCv(etudiantId, "test@gmail.com", file));
 
 //        ASSERT
         assertEquals("Veuillez sélectionner un fichier", exception.getMessage());
@@ -196,7 +196,9 @@ public class UserAppServiceTest {
     void uploadCv_shouldRejectIfFileIsNotPdf() {
 //        ARRANGE
         Long etudiantId = 1L;
-        Etudiant etudiant = new Etudiant();
+        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+        etudiant.setId(etudiantId);
 
         when(etudiantRepository.findById(etudiantId))
                 .thenReturn(Optional.of(etudiant));
@@ -207,9 +209,30 @@ public class UserAppServiceTest {
 
 //        ACT
         Exception exception = assertThrows(Exception.class, () ->
-                userAppService.uploadCv(etudiantId, file));
+                userAppService.uploadCv(etudiantId, "test@gmail.com", file));
 
-//        ARRANGE
+//        ASSERT
         assertEquals("Le fichier doit être un PDF", exception.getMessage());
+    }
+
+    @Test
+    void uploadCv_shouldRejectIfEmailDoesNotMatch() {
+//        ARRANGE
+        Long etudiantId = 1L;
+        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+        etudiant.setId(etudiantId);
+
+        when(etudiantRepository.findById(etudiantId))
+                .thenReturn(Optional.of(etudiant));
+
+        MultipartFile file = mock(MultipartFile.class);
+
+//        ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.uploadCv(etudiantId, "hacker@gmail.com", file));
+
+//        ASSERT
+        assertEquals("Accès refusé", exception.getMessage());
     }
 }

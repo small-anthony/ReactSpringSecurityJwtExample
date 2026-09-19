@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,11 +18,15 @@ public class EtudiantController {
     }
 
     @PostMapping("/{id}/cv")
-    public ResponseEntity<Object> uploadCv(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Object> uploadCv(@PathVariable Long id, @RequestParam("file") MultipartFile file, Authentication authentication) {
         try {
-            CvDto nouveauCv = userAppService.uploadCv(id, file);
+            String emailConnecte = authentication.getName();
+            CvDto nouveauCv = userAppService.uploadCv(id, emailConnecte, file);
             return ResponseEntity.status(HttpStatus.CREATED).body(nouveauCv);
         } catch (Exception e) {
+            if (e.getMessage().contains("Accès refusé")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
