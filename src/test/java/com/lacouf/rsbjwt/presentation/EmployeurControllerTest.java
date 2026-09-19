@@ -21,7 +21,7 @@ public class SignUpControllerTest {
     private UserAppService userAppService;
 
     @InjectMocks
-    private SignUpController signUpController;
+    private EmployeurController employeurController;
 
     @Test
     void signUpEmployeur_shouldReturnCreated() throws Exception {
@@ -48,7 +48,7 @@ public class SignUpControllerTest {
                 .thenReturn(employeurDto);
 
 //        ACT
-        ResponseEntity<Object> response = signUpController.signUpEmployeur(request);
+        ResponseEntity<Object> response = employeurController.signUpEmployeur(request);
 
 //        ASSERT
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -78,7 +78,7 @@ public class SignUpControllerTest {
                 .thenThrow(new Exception("Le format du courriel n'est pas valide"));
 
 //        ACT
-        ResponseEntity<Object> response = signUpController.signUpEmployeur(request);
+        ResponseEntity<Object> response = employeurController.signUpEmployeur(request);
 
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
