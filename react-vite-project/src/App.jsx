@@ -10,6 +10,7 @@ import PreposeHome from "./components/page/PreposeHome.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
+import CvUploadModal from "./components/modal/CvUploadModal.jsx";
 
 function App() {
   const authService = useContext(AuthServiceContext);
@@ -18,7 +19,7 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<PageLayout user={userData} />}>
+        <Route path="/" element={<CvUploadModal />}>
           <Route index element={<MainContainer />} />
           <Route path='about' element={<About />} />
           <Route path='login' element={<LoginForm />} />
