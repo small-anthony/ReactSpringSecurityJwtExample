@@ -31,6 +31,11 @@ public class Cv {
         this.etudiant = etudiant;
     }
 
+    public void mettreAJour(byte[] nouvelData) {
+        this.data = nouvelData;
+        this.cvStatus = CvStatus.EN_ATTENTE;
+    }
+
     public Long getId() {
         return id;
     }

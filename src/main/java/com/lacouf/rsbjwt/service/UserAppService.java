@@ -26,7 +26,6 @@ public class UserAppService {
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
     private final GestionnaireRepository gestionnaireRepository;
-    private final CvRepository cvRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserAppService(AuthenticationManager authenticationManager,
@@ -35,7 +34,6 @@ public class UserAppService {
                           EtudiantRepository etudiantRepository,
                           ProfesseurRepository professeurRepository,
                           GestionnaireRepository gestionnaireRepository,
-                          CvRepository cvRepository,
                           PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -43,7 +41,6 @@ public class UserAppService {
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
         this.gestionnaireRepository = gestionnaireRepository;
-        this.cvRepository = cvRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -107,17 +104,11 @@ public class UserAppService {
             throw new Exception("Le fichier doit être un PDF");
         }
 
-        Cv nouveauCv = etudiant.getCv();
+        etudiant.soumettreCv(file.getBytes());
 
-        if (nouveauCv == null) {
-            nouveauCv = new Cv();
-            nouveauCv.setEtudiant(etudiant);
-        }
+        Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
 
-        nouveauCv.setData(file.getBytes());
-        nouveauCv.setCvStatus(CvStatus.EN_ATTENTE);
-
-        return CvDto.create(cvRepository.save(nouveauCv));
+        return CvDto.create(etudiantSauvegarde.getCv());
     }
 
     private GestionnaireDto getGestionnaireDto(Long id) {
