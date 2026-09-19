@@ -110,13 +110,7 @@ public class UserAppService {
         String passwordEncode = passwordEncoder.encode(password);
         Credentials credentials = new Credentials(email, passwordEncode, Role.EMPLOYEUR);
 
-        Employeur nouvelEmployeur = new Employeur(
-                firstName,
-                lastName,
-                credentials,
-                entreprise,
-                telephone
-        );
+        Employeur nouvelEmployeur = new Employeur(firstName, lastName, credentials, entreprise, telephone);
 
         return EmployeurDto.create(employeurRepository.save(nouvelEmployeur));
     }
