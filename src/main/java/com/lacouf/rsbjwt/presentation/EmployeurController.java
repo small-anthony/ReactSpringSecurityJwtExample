@@ -44,7 +44,7 @@ public class EmployeurController {
     }
 
     @PostMapping("/creerOffre")
-    public ResponseEntity<Object> creerOffre(@RequestBody Map<String, String> request, Authentication authentication) throws Exception {
+    public ResponseEntity<Object> creerOffre(@RequestBody Map<String, String> request, Authentication authentication) {
         try {
             String email = authentication.getName();
             OffreStageDto offreCree = employeurService.createOffreStage(
