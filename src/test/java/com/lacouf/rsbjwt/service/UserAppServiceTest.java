@@ -6,7 +6,6 @@ import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.enums.CvStatus;
-import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CvDto;
@@ -30,9 +29,6 @@ public class UserAppServiceTest {
 
     @Mock
     private EtudiantRepository etudiantRepository;
-
-    @Mock
-    private CvRepository cvRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -143,10 +139,12 @@ public class UserAppServiceTest {
         when(file.getContentType()).thenReturn("application/pdf");
         when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
 
-        Cv sauvegardeCv = new Cv();
-        sauvegardeCv.setId(10L);
-        sauvegardeCv.setCvStatus(CvStatus.EN_ATTENTE);
-        when(cvRepository.save(any(Cv.class))).thenReturn(sauvegardeCv);
+        Etudiant etudiantSauvegarde = new Etudiant();
+        etudiantSauvegarde.setId(etudiantId);
+        etudiantSauvegarde.soumettreCv(new byte[]{1, 2, 3});
+        etudiantSauvegarde.getCv().setId(10L);
+
+        when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiantSauvegarde);
 
 //        ACT
         CvDto resultat = userAppService.uploadCv(etudiantId, file);
