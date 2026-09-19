@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SignUpControllerTest {
+public class EtudiantControllerTest {
     @Mock
     private UserAppService userAppService;
 
@@ -24,7 +24,7 @@ public class SignUpControllerTest {
     private EtudiantController etudiantController;
 
     @Test
-    void signUpEmployeur_shouldReturnCreated() throws Exception {
+    void signUpEtudiant_shouldReturnCreated() throws Exception {
 //        ARRANGE
         Map<String, String> request = new HashMap<>();
         request.put("firstName", "Peter");
@@ -56,7 +56,7 @@ public class SignUpControllerTest {
     }
 
     @Test
-    void signUpEmployeur_shouldReturnBadRequestOnException() throws Exception {
+    void signUpEtudiant_shouldReturnBadRequestOnException() throws Exception {
 //        ARRANGE
         Map<String, String> request = new HashMap<>();
         request.put("firstName", "Peter");
