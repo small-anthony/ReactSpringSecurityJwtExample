@@ -29,25 +29,10 @@ import static org.mockito.Mockito.*;
 class UserAppServiceTest {
 
     @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Mock
     private UserAppRepository userAppRepository;
 
     @Mock
-    private EtudiantRepository etudiantRepository;
-
-    @Mock
     private ProfesseurRepository professeurRepository;
-
-    @Mock
-    private GestionnaireRepository gestionnaireRepository;
-
-    @Mock
-    private EmployeurRepository employeurRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -60,11 +45,6 @@ class UserAppServiceTest {
     private final String email = "jean.tremblay@cegep.ca";
     private final String password = "motdepasse123";
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
     @Test
     void registerProfesseur_avecDonneesValides_creeLeProfesseur() throws Exception {
         // Arrange
@@ -76,7 +56,7 @@ class UserAppServiceTest {
                 new Credentials(email, "hashedPassword", com.lacouf.rsbjwt.model.auth.Role.PROFESSEUR)
         );
 
-        ReflectionTestUtils.setField(professeurSauvegarde, "id", 1L);
+       professeurSauvegarde.setId(1L);
 
         when(professeurRepository.save(any(Professeur.class))).thenReturn(professeurSauvegarde);
 
