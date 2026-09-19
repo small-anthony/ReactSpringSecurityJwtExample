@@ -25,7 +25,7 @@ public class OffreStage {
         this.nomEntreprise = nomEntreprise;
     }
 
-    private Long getId() {
+    public Long getId() {
         return id;
     }
     public String getTitre() {
@@ -38,5 +38,9 @@ public class OffreStage {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setEmployeur(Employeur employeur) {
+        this.employeur = employeur;
     }
 }
