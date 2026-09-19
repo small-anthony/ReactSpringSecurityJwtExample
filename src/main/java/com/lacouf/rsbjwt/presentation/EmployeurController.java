@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,13 +44,14 @@ public class EmployeurController {
     }
 
     @PostMapping("/creerOffre")
-    public ResponseEntity<Object> creerOffre(@RequestBody Map<String, String> request) throws Exception {
+    public ResponseEntity<Object> creerOffre(@RequestBody Map<String, String> request, Authentication authentication) throws Exception {
         try {
+            String email = authentication.getName();
             OffreStageDto offreCree = employeurService.createOffreStage(
                     request.get("titre"),
                     request.get("nomEntreprise"),
                     request.get("description"),
-                    request.get("employeurId")
+                    email
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(offreCree);
         } catch (Exception e) {

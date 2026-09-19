@@ -22,22 +22,27 @@ public class EmployeurService {
         this.offreStageRepository = offreStageRepository;
     }
 
-    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, Long employeurId) throws Exception {
+    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new IllegalArgumentException("Le titre est obligatoire");
         }
+
         if (nomEntreprise == null || nomEntreprise.trim().isEmpty()) {
             throw new IllegalArgumentException("Le nom de l'entreprise est obligatoire");
         }
+
         if (description == null || description.trim().isEmpty()) {
             throw new IllegalArgumentException("La description est obligatoire");
         }
 
-        if (employeurId == null) {
-            throw new Exception("L'ID de l'employeur est obligatoire");
+        if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
+            throw new Exception("Le courriel de l'employeur est obligatoire");
         }
 
-        Employeur employeur = employeurRepository.findById(employeurId)
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
         OffreStage offreStage = new OffreStage(titre.trim(), description.trim(), nomEntreprise.trim());
