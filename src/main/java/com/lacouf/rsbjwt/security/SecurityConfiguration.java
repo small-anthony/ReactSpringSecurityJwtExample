@@ -52,6 +52,8 @@ public class SecurityConfiguration {
     private static final String EMPRUNTEUR_PATH = "/emprunteur/**";
     private static final String PREPOSE_PATH = "/prepose/**";
     private static final String GESTIONNAIRE_PATH = "/gestionnaire/**";
+    private static final String EMPLOYEUR_REGISTER_PATH = "/employeur/inscription";
+    private static final String EMPLOYEUR_PATH = "/employeur/**";
 
 
 
@@ -64,14 +66,16 @@ public class SecurityConfiguration {
                         .requestMatchers(POST, USER_LOGIN_PATH).permitAll()
                         .requestMatchers(POST, EMPRUNTEUR_REGISTER_PATH).permitAll()
                         .requestMatchers(POST, PREPOSE_REGISTER_PATH).permitAll()
+                        .requestMatchers(POST, EMPLOYEUR_REGISTER_PATH).permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                         .requestMatchers(H2_CONSOLE_PATH).permitAll() // Allow H2 console access
 
                         // Use Role enum names for authorities
-                        .requestMatchers(GET, USER_PATH).hasAnyAuthority(Role.ETUDIANT.name(), Role.PROFESSEUR.name(), Role.GESTIONNAIRE.name())
+                        .requestMatchers(GET, USER_PATH).hasAnyAuthority(Role.ETUDIANT.name(), Role.PROFESSEUR.name(), Role.GESTIONNAIRE.name(), Role.EMPLOYEUR.name())
                         .requestMatchers(EMPRUNTEUR_PATH).hasAuthority(Role.ETUDIANT.name())
                         .requestMatchers(PREPOSE_PATH).hasAuthority(Role.PROFESSEUR.name())
                         .requestMatchers(GESTIONNAIRE_PATH).hasAuthority(Role.GESTIONNAIRE.name())
+                        .requestMatchers(EMPLOYEUR_PATH).hasAuthority(Role.EMPLOYEUR.name())
                         .anyRequest().authenticated() // Changed from denyAll() to authenticated() - more common, adjust if denyAll is strictly needed
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console
