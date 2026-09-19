@@ -97,10 +97,8 @@ class UserAppServiceTest {
 
     @Test
     void registerProfesseur_avecEmailInvalide_lanceUneException() {
-        String emailInvalide = "pas-un-email";
-
         Exception exception = assertThrows(Exception.class, () ->
-                userAppService.registerProfesseur(firstName, lastName, emailInvalide, password, password)
+                userAppService.registerProfesseur(firstName, lastName, "pas-un-email", password, password)
         );
 
         assertEquals("Le format du courriel n'est pas valide.", exception.getMessage());

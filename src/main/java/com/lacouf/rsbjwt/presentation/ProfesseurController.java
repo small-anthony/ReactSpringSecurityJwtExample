@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/signup")
+@RequestMapping("/professeur")
 public class ProfesseurController {
     private final UserAppService userService;
 
@@ -20,7 +20,7 @@ public class ProfesseurController {
     }
 
 
-    @PostMapping("/professeur")
+    @PostMapping("/inscription")
     public ResponseEntity<Object> signUpProfesseur(@RequestBody Map<String, String> request) {
         try {
             ProfesseurDto professeurCree = userService.registerProfesseur(
