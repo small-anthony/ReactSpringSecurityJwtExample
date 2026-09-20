@@ -4,6 +4,7 @@ import {Route, Routes, useNavigate} from "react-router-dom";
 import MainContainer from "./components/MainContainer.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
+import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
@@ -21,6 +22,7 @@ function App() {
           <Route index element={<MainContainer/>}/>
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm/>}/>
+          <Route path='signup/professeur' element={<SignupProfesseurForm/>}/>
           <Route path='etudiant' element={<EmprunteurHome/>}/>
           <Route path='professeur' element={<PreposeHome/>}/>
           <Route path='gestionnaire' element={<GestionnaireHome/>}/>
