@@ -14,10 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -76,6 +73,7 @@ public class EmployeurServiceTest {
 //      Assert
         assertEquals("Le titre est obligatoire", exception.getMessage());
     }
+
     @Test
     void testCreerOffre_nomEntrepriseVide_lanceException() {
 //        ACT
@@ -85,6 +83,7 @@ public class EmployeurServiceTest {
 //      ASSERT
         assertEquals("Le nom de l'entreprise est obligatoire", exception.getMessage());
     }
+
     @Test
     void testCreerOffre_descriptionVide_lanceException() {
 //        ACT
@@ -94,6 +93,7 @@ public class EmployeurServiceTest {
 //      ASSERT
         assertEquals("La description est obligatoire", exception.getMessage());
     }
+
     @Test
     void testCreerOffre_emailVide_lanceException() {
 //      ACT
@@ -103,6 +103,7 @@ public class EmployeurServiceTest {
 //      ASSERT
         assertEquals("Le courriel de l'employeur est obligatoire", exception.getMessage());
     }
+
     @Test
     void testCreerOffre_utilisateurIntrouvable_lanceException() {
 //        ARRANGE
@@ -116,6 +117,7 @@ public class EmployeurServiceTest {
 //        Assert
         assertEquals("Utilisateur non trouvé avec l'email : " + emailInexistant, exception.getMessage());
     }
+
     @Test
     void testCreerOffre_employeurIntrouvable_lanceException() {
 //        ARRANGE
@@ -130,7 +132,6 @@ public class EmployeurServiceTest {
                 employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description", email));
 
 //        ASSeRT
-        assertEquals("Employeur non trouvé pour cet utilisateur", exception.getMessage());
+        assertEquals("Employeur non trouvé avec cette id", exception.getMessage());
     }
-
 }

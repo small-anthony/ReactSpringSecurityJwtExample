@@ -12,7 +12,6 @@ public class OffreStage {
     private String nomEntreprise;
     private String description;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
@@ -44,10 +43,7 @@ public class OffreStage {
         this.employeur = employeur;
     }
 
-
-    public Long setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
-        return id;
     }
-
 }

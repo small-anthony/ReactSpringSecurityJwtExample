@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
@@ -93,12 +92,7 @@ public class EmployeurControllerTest {
         assertEquals("Le format du courriel n'est pas valide", response.getBody());
     }
 
-
 //    TEST TELEVERSEMENT OFFRE D'OFFRE DEMPLOI
-
-
-
-
     @Test
     void testCreerOffre_succes() throws Exception {
 //        ARRANGE
@@ -146,7 +140,4 @@ public class EmployeurControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Le titre est obligatoire", response.getBody());
     }
-
-
-
 }

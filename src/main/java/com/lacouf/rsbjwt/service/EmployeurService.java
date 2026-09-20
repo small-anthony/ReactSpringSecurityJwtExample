@@ -47,7 +47,7 @@ public class EmployeurService {
 
         OffreStage offreStage = new OffreStage(titre.trim(), description.trim(), nomEntreprise.trim());
 
-        offreStage.setEmployeur(employeur);
+        employeur.ajouterOffre(offreStage);
 
         return OffreStageDto.create(offreStageRepository.save(offreStage));
     }
