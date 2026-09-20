@@ -20,22 +20,13 @@ public class UserAppService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserAppRepository userAppRepository;
-    private final EtudiantRepository etudiantRepository;
-    private final ProfesseurRepository professeurRepository;
-    private final GestionnaireRepository gestionnaireRepository;
 
     public UserAppService(AuthenticationManager authenticationManager,
                           JwtTokenProvider jwtTokenProvider,
-                          UserAppRepository userAppRepository,
-                          EtudiantRepository etudiantRepository,
-                          ProfesseurRepository professeurRepository,
-                          GestionnaireRepository gestionnaireRepository) {
+                          UserAppRepository userAppRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userAppRepository = userAppRepository;
-        this.etudiantRepository = etudiantRepository;
-        this.professeurRepository = professeurRepository;
-        this.gestionnaireRepository = gestionnaireRepository;
     }
 
     public String authenticateUser(LoginDto loginDto)

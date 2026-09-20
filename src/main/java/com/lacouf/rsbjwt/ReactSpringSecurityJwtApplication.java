@@ -11,12 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
-    private final UserAppRepository userAppRepository;
     private final GestionnaireRepository gestionnaireRepository;
     private final PasswordEncoder passwordEncoder;
 
     public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository, GestionnaireRepository gestionnaireRepository, PasswordEncoder passwordEncoder){
-        this.userAppRepository = userAppRepository;
         this.gestionnaireRepository = gestionnaireRepository;
         this.passwordEncoder = passwordEncoder;
     }
