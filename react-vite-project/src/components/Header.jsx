@@ -6,8 +6,14 @@ import { Trans, useTranslation } from "react-i18next";
 
 function Header({ user }) {
     const authService = useContext(AuthServiceContext);
-    const { t } = useTranslation("main");
+    const { t, i18n } = useTranslation("main");
     const navigate = useNavigate();
+
+    const toggleLanguage = () => {
+        const currentLang = i18n.language || "fr";
+        const newLang = currentLang.startsWith("fr") ? "en" : "fr";
+        i18n.changeLanguage(newLang);
+    };
 
     function logOut() {
         authService.logout();
@@ -33,10 +39,19 @@ function Header({ user }) {
                         <li><a onClick={logOut}>Logout</a></li>
                     ) : (
                         <>
-                            <li><Link to="/login">Login</Link></li>
-                            <li><Link to="/signup/etudiant">S'inscrire</Link></li>
+                            <li><Link to="/login">{t("pagename.login")}</Link></li>
+                            <li><Link to="/signup/etudiant">{t("pagename.signup_etudiant")}</Link></li>
                         </>
                     )}
+                    <li>
+                        <button
+                            type="button"
+                            onClick={toggleLanguage}
+                            className="px-2.5 py-1 text-xs font-bold border border-gray-400 rounded bg-white text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        >
+                            {(i18n.language || "fr").startsWith("fr") ? "EN" : "FR"}
+                        </button>
+                    </li>
                 </ul>
                 {user && (
                     <div className="user-info">

@@ -2,7 +2,9 @@
   "sitename": "My App",
   "pagename": {
     "home": "Home",
-    "about": "About us"
+    "about": "About us",
+    "login": "Login",
+    "signup_etudiant": "Register as student"
   },
   "hello-user": "Hello, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
   "role": {
@@ -10,5 +12,55 @@
     "etudiant": "Student",
     "employeur": "Employer",
     "professeur": "Tutor"
+  },
+  "signup_etudiant": {
+    "title": "Student Registration",
+    "subtitle": "Fill out this form to create your student account.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "matricule": "Student ID (7 digits)",
+    "email": "Email address",
+    "discipline": "Internship program",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Redirecting to login...",
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "defaultError": "Error communicating with the server.",
+    "placeholders": {
+      "firstName": "Ex: John",
+      "lastName": "Ex: Doe",
+      "matricule": "Ex: 1234567",
+      "email": "Ex: 1234567@cegep.ca",
+      "password": "At least 8 characters",
+      "confirmPassword": "Retype your password"
+    },
+    "disciplines": {
+      "placeholder": "-- Select a program --",
+      "info": "Computer Science Technology",
+      "soins": "Nursing",
+      "archi": "Architectural Technology",
+      "compta": "Accounting and Management Technology",
+      "gcivil": "Civil Engineering Technology"
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "matriculeRequired": "Student ID is required.",
+      "matriculeFormat": "Student ID must be exactly 7 digits.",
+      "emailRequired": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "disciplineRequired": "Please choose a program.",
+      "passwordRequired": "Password is required.",
+      "passwordLength": "Password must be at least 8 characters.",
+      "confirmPasswordRequired": "Confirmation is required.",
+      "confirmPasswordMatch": "Passwords do not match."
+    }
   }
 }
