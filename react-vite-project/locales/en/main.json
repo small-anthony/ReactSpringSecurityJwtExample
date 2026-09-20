@@ -2,7 +2,9 @@
   "sitename": "My App",
   "pagename": {
     "home": "Home",
-    "about": "About us"
+    "about": "About us",
+    "login": "Login",
+    "signup_professeur": "Register as teacher"
   },
   "hello-user": "Hello, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
   "role": {
@@ -10,5 +12,42 @@
     "etudiant": "Student",
     "employeur": "Employer",
     "professeur": "Tutor"
+  },
+  "signup_professeur": {
+    "title": "Teacher Registration",
+    "subtitle": "Fill out this form to create your teacher account.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Redirecting to login...",
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "defaultError": "Error communicating with the server.",
+    "emailExists": "An account with this email address already exists.",
+    "placeholders": {
+      "firstName": "Ex: John",
+      "lastName": "Ex: Doe",
+      "email": "Ex: john.doe@college.ca",
+      "password": "At least 8 characters",
+      "confirmPassword": "Retype your password"
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "email": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "password": "Password is required.",
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordConfirm": "Confirmation is required.",
+      "passwordMatch": "Passwords do not match."
+    }
   }
 }
