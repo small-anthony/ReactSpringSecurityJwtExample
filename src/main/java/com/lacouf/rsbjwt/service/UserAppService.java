@@ -9,14 +9,11 @@ import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
-
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserAppService {
