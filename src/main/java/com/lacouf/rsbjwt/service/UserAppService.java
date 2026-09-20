@@ -54,31 +54,11 @@ public class UserAppService {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token);
         UserApp user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
-        return switch(user.getRole()){
-            case ETUDIANT -> getEmprunteurDto(user.getId());
-            case PROFESSEUR -> getPreposeDto(user.getId());
-            case GESTIONNAIRE -> getGestionnaireDto(user.getId());
-            case EMPLOYEUR -> getEmployeurDto(user.getId());
+        return switch (user.getRole()) {
+            case ETUDIANT -> EtudiantDto.create((Etudiant) user);
+            case PROFESSEUR -> ProfesseurDto.create((Professeur) user);
+            case GESTIONNAIRE -> GestionnaireDto.create((Gestionnaire) user);
+            case EMPLOYEUR -> EmployeurDto.create((Employeur) user);
         };
-    }
-
-    private GestionnaireDto getGestionnaireDto(Long id) {
-        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
-        return GestionnaireDto.create(gestionnaireOptional.orElseThrow(UserNotFoundException::new));
-    }
-
-    private ProfesseurDto getPreposeDto(Long id) {
-        final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
-        return ProfesseurDto.create(preposeOptional.orElseThrow(UserNotFoundException::new));
-    }
-
-    private EtudiantDto getEmprunteurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return EtudiantDto.create(emprunteurOptional.orElseThrow(UserNotFoundException::new));
-    }
-
-    private EtudiantDto getEmployeurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return EtudiantDto.create(emprunteurOptional.orElseThrow(UserNotFoundException::new));
     }
 }
