@@ -69,6 +69,7 @@ public class SecurityConfiguration {
                                 Role.GESTIONNAIRE.name(),
                                 Role.EMPLOYEUR.name()
                         )
+                        .requestMatchers(POST, "/etudiants/cv").hasAuthority(Role.ETUDIANT.name())
                         .anyRequest().authenticated() // Changed from denyAll() to authenticated() - more common, adjust if denyAll is strictly needed
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console

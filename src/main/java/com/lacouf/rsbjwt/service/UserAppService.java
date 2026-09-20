@@ -89,30 +89,7 @@ public class UserAppService {
         return EtudiantDto.create(etudiantRepository.save(etudiant));
     }
 
-    public CvDto uploadCv(String emailConnecte, MultipartFile file) throws Exception {
-        UserApp user = userAppRepository.findUserAppByEmail(emailConnecte)
-                .orElseThrow(() -> new Exception("Etudiant non trouvé"));
 
-        if (!(user instanceof Etudiant etudiant)) {
-            throw new Exception("Accès refusé");
-        }
-
-        if (file.isEmpty()) {
-            throw new Exception("Veuillez sélectionner un fichier");
-        }
-
-        String contentType = file.getContentType();
-
-        if (contentType == null || !contentType.equals("application/pdf")) {
-            throw new Exception("Le fichier doit être un PDF");
-        }
-
-        etudiant.soumettreCv(file.getBytes());
-
-        Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
-
-        return CvDto.create(etudiantSauvegarde.getCv());
-    }
 
     private GestionnaireDto getGestionnaireDto(Long id) {
         final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);

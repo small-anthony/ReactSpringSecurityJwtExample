@@ -21,13 +21,12 @@ public class Etudiant extends UserApp {
         this.discipline = discipline;
     }
 
-    public void soumettreCv(byte[] fichierData) {
+    public void setCv(byte[] fichierData) {
         if (this.cv == null) {
-            this.cv = new Cv();
-            this.cv.setEtudiant(this);
+            cv = new Cv();
+            cv.setEtudiant(this);
         }
-
-        this.cv.mettreAJour(fichierData);
+        cv.mettreAJour(fichierData);
     }
 
     public Etudiant () {}

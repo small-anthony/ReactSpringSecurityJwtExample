@@ -139,7 +139,7 @@ public class UserAppServiceTest {
 
         Etudiant etudiantSauvegarde = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
         etudiantSauvegarde.setId(1L);
-        etudiantSauvegarde.soumettreCv(new byte[]{1, 2, 3});
+        etudiantSauvegarde.setCv(new byte[]{1, 2, 3});
         etudiantSauvegarde.getCv().setId(10L);
 
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiantSauvegarde);

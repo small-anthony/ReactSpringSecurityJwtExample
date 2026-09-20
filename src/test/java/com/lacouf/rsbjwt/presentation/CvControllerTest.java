@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CvControllerTest {
     @Mock
-    private UserAppService userAppService;
+    private EtudiantService etudiantService;
 
     @InjectMocks
     private EtudiantController etudiantController;
@@ -35,7 +35,7 @@ public class CvControllerTest {
 
         CvDto cvDto = new CvDto(10L);
 
-        when(userAppService.uploadCv(email, file))
+        when(etudiantService.uploadCv(email, file))
                 .thenReturn(cvDto);
 
 //        ACT
@@ -55,7 +55,7 @@ public class CvControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(email);
 
-        when(userAppService.uploadCv(email, file))
+        when(etudiantService.uploadCv(email, file))
                 .thenThrow(new Exception("Veuillez sélectionner un fichier"));
 
 //        ACT
@@ -76,7 +76,7 @@ public class CvControllerTest {
         when(authentication.getName()).thenReturn(emailHacker);
 
 
-        when(userAppService.uploadCv(emailHacker, file))
+        when(etudiantService.uploadCv(emailHacker, file))
                 .thenThrow(new Exception("Accès refusé"));
 
 //        ACT
