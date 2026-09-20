@@ -101,13 +101,17 @@ export default function SignupEmployeurForm() {
 
       await registerEmployeur(payload);
 
-      setSuccessMessage(t("signup_employeur.success"));
+      setSuccessMessage("success");
       setTimeout(() => {
         navigate("/login");
       }, 1500);
 
     } catch (err) {
-      setServerError(err.message || t("signup_employeur.defaultError"));
+      if (err.message && (err.message.includes("existe") || err.message.includes("exists"))) {
+        setServerError("emailExists");
+      } else {
+        setServerError("defaultError");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -124,13 +128,15 @@ export default function SignupEmployeurForm() {
 
       {serverError && (
         <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
-          <strong>{t("signup_employeur.errorPrefix")}</strong>{serverError}
+          <strong>{t("signup_employeur.errorPrefix")}</strong>
+          {t(`signup_employeur.${serverError}`, { defaultValue: t("signup_employeur.defaultError") })}
         </div>
       )}
 
       {successMessage && (
         <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-800 text-sm rounded">
-          <strong>{t("signup_employeur.successPrefix")}</strong>{successMessage}
+          <strong>{t("signup_employeur.successPrefix")}</strong>
+          {t(`signup_employeur.${successMessage}`, { defaultValue: t("signup_employeur.success") })}
         </div>
       )}
 

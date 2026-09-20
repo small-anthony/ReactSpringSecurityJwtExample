@@ -11,7 +11,7 @@ export async function registerEmployeur(employeurData) {
 
   if (!response.ok) {
     const messageErreur = await response.text();
-    throw new Error(messageErreur || "Erreur lors de l'inscription.");
+    throw new Error(messageErreur || "defaultError");
   }
 
   return await response.json();

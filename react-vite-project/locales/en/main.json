@@ -34,6 +34,7 @@
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
     "defaultError": "Error communicating with the server.",
+    "emailExists": "An account with this email address already exists.",
     "placeholders": {
       "firstName": "Ex: Sarah",
       "lastName": "Ex: Smith",
