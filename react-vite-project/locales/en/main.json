@@ -81,28 +81,5 @@
       "passwordConfirm": "Password confirmation is required.",
       "passwordMatch": "Passwords do not match."
     }
-  },
-  "creer_offre": {
-    "title": "Create an Internship Offer",
-    "subtitle": "Fill in the information below",
-    "titre": "Job Title",
-    "nomEntreprise": "Company Name",
-    "description": "Offer Description",
-    "placeholders": {
-      "titre": "Ex: Junior Web Developer",
-      "nomEntreprise": "Ex: TechCorp",
-      "description": "Describe the tasks and responsibilities..."
-    },
-    "errors": {
-      "titre": "Title is required.",
-      "nomEntreprise": "Company name is required.",
-      "description": "Description is required.",
-      "descriptionLength": "Description must be at least 20 characters."
-    },
-    "errorPrefix": "Error: ",
-    "successPrefix": "Success: ",
-    "success": "Your internship offer has been created successfully!",
-    "submit": "Create Offer",
-    "submitting": "Creating..."
   }
 }
