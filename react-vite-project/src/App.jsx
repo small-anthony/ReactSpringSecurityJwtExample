@@ -4,6 +4,7 @@ import {Route, Routes, useNavigate} from "react-router-dom";
 import MainContainer from "./components/MainContainer.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
+import CreateOffreForm from "./components/auth/CreateOffreForm.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
@@ -24,6 +25,7 @@ function App() {
             <Route path='etudiant' element={<EmprunteurHome/>}/>
             <Route path='professeur' element={<PreposeHome/>}/>
             <Route path='gestionnaire' element={<GestionnaireHome/>}/>
+            <Route path='employeur/creer-offre' element={<CreateOffreForm/>}/>
 
             <Route path='error' element={<ErrorPage/>}/>
           </Route>

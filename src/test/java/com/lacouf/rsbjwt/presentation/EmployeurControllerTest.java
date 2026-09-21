@@ -1,9 +1,14 @@
 package com.lacouf.rsbjwt.presentation;
 
+<<<<<<< HEAD
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+=======
+import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.EmployeurDto;
+>>>>>>> bcf0fae4f7b566ad87888c143acb15bb4008010d
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,8 +16,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.security.core.Authentication;
 
+=======
+>>>>>>> bcf0fae4f7b566ad87888c143acb15bb4008010d
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,9 +32,12 @@ public class EmployeurControllerTest {
     @Mock
     private UserAppService userAppService;
 
+<<<<<<< HEAD
     @Mock
     private EmployeurService employeurService;
 
+=======
+>>>>>>> bcf0fae4f7b566ad87888c143acb15bb4008010d
     @InjectMocks
     private EmployeurController employeurController;
 
@@ -91,6 +102,7 @@ public class EmployeurControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Le format du courriel n'est pas valide", response.getBody());
     }
+<<<<<<< HEAD
 
 //    TEST TELEVERSEMENT OFFRE D'OFFRE DEMPLOI
     @Test
@@ -140,4 +152,6 @@ public class EmployeurControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Le titre est obligatoire", response.getBody());
     }
+=======
+>>>>>>> bcf0fae4f7b566ad87888c143acb15bb4008010d
 }
