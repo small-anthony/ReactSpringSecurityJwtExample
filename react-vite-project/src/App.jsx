@@ -21,7 +21,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<PageLayout user={userData} />}>
-          <Route index element={<MainContainer />} />
+          <Route index element={<MainContainer user={userData} />} />
           <Route path='about' element={<About />} />
           <Route path='login' element={<LoginForm />} />
           <Route path='etudiant' element={<EmprunteurHome />} />

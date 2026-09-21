@@ -15,7 +15,8 @@
     "subtitle": "Internship Management Platform",
     "description": "The collaborative platform connecting students, companies, and teachers. Find a rewarding internship, recruit qualified talent, or oversee academic supervision with ease.",
     "cta_signup": "Sign up",
-    "cta_login": "Log in"
+    "cta_login": "Log in",
+    "connected_as": "Connected as"
   },
   "about": {
     "title": "About Stagify",
@@ -54,7 +55,7 @@
     "submitting": "Registering...",
     "hasAccount": "Already have an account?",
     "login": "Log in",
-    "success": "Registration successful! Redirecting to login...",
+    "success": "Registration successful! Logging in...",
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
     "defaultError": "Error communicating with the server.",
@@ -105,7 +106,7 @@
     "submitting": "Registering...",
     "hasAccount": "Already have an account?",
     "login": "Log in",
-    "success": "Registration successful! Redirecting to login page...",
+    "success": "Registration successful! Logging in...",
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
     "defaultError": "Error communicating with the server.",
@@ -148,7 +149,7 @@
     "submitting": "Registering...",
     "hasAccount": "Already have an account?",
     "login": "Log in",
-    "success": "Registration successful! Redirecting to login...",
+    "success": "Registration successful! Logging in...",
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
     "defaultError": "Error communicating with the server.",

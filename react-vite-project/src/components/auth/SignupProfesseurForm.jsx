@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { registerProfesseur } from "../../services/api/ProfesseurService";
 import SignupTabs from "./SignupTabs";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
 
 export default function SignupProfesseurForm() {
   const navigate = useNavigate();
   const { t } = useTranslation("main");
+  const authService = useContext(AuthServiceContext);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -88,9 +90,16 @@ export default function SignupProfesseurForm() {
       await registerProfesseur(payload);
 
       setSuccessMessage("success");
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      try {
+        await authService.login(payload.email, payload.password);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } catch {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      }
 
     } catch (err) {
       if (err.message && (err.message.includes("existe") || err.message.includes("exists"))) {
