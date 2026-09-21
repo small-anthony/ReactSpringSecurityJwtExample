@@ -31,9 +31,38 @@ function makeAuthHeader(token: string) {
     return {Authorization: `Bearer ${token}`}
 }
 
+function clearTokenCookie() { setTokenCookie(null, new Date(0)) }
+
+function setTokenCookie(value: string, expires?: Date) {
+    const expirationDate = !expires ? "" : expires.toUTCString();
+    document.cookie = `token=${value != null ? value : ""};${expirationDate + ';'}path=/`;
+}
+
+function getTokenCookie() : string | null {
+    const tokenIdent = "token=";
+
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookiePos = decodedCookie.indexOf(tokenIdent);
+    if(cookiePos <= -1) {
+        return null;
+    }
+
+    let endPos = decodedCookie.indexOf(' ', cookiePos)
+    if(endPos <= -1) {
+        endPos = decodedCookie.length;
+    }
+
+    const token = decodedCookie.substring(cookiePos + tokenIdent.length, endPos);
+    console.log(token);
+    if(token.length == 0) {
+        return null;
+    }
+    return token;
+}
+
 export const AuthServiceContext = createContext<IAuthService>(undefined);
 const AuthService = ({children}) => {
-    const [sessionToken, setSessionToken] = useState<string | null>(null);
+    const [sessionToken, setSessionToken] = useState<string | null>(getTokenCookie());
     const [userData, setUserData] = useState<UserData | null>(null);
 
     const authService: IAuthService = {
@@ -54,6 +83,10 @@ const AuthService = ({children}) => {
                 const fetchData = async () => {
                     const requestResult = await APIHelper.get('/user/me', makeAuthHeader(sessionToken), {});
                     if(!requestResult.ok) {
+                        if(requestResult.status == 401) { // bad token
+                            return this.logout();
+                        }
+
                         throw new AuthError(await requestResult.json());
                     }
 
@@ -78,6 +111,7 @@ const AuthService = ({children}) => {
             }
             const loginData = await loginResult.json();
 
+            setTokenCookie(loginData.accessToken);
             setSessionToken(loginData.accessToken);
             return loginResult;
         },
@@ -87,11 +121,13 @@ const AuthService = ({children}) => {
                 return;
             }
 
+            clearTokenCookie();
             setSessionToken(null);
             setUserData(null);
             return null;
         },
     }
+
     return (
         <AuthServiceContext.Provider value={authService}>
             {children}
