@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8080";
+import {BASE_URL} from "../../components/config/Config.jsx";
 
 export const uploadCv = async (file) => {
     const formData = new FormData();
@@ -6,7 +6,7 @@ export const uploadCv = async (file) => {
 
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`${API_BASE_URL}/etudiants/cv`, {
+    const response = await fetch(`${BASE_URL}/etudiants/cv`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`

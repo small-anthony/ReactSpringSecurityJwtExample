@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { uploadCv } from '../../services/api/CvEtudiantAPI.jsx';
+import {useTranslation} from "react-i18next";
 
 export default function CvUploadModal({ onUploadSuccess }) {
+    const { t } = useTranslation("main");
+
     const [file, setFile] = useState(null);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +14,7 @@ export default function CvUploadModal({ onUploadSuccess }) {
         const selectedFile = e.target.files[0];
 
         if (selectedFile && selectedFile.type !== 'application/pdf') {
-            setError('Veuillez sélectionner un fichier PDF.');
+            setError(t('cv_upload.errors.notPdf'));
             setFile(null);
         } else {
             setError('');
@@ -35,7 +38,7 @@ export default function CvUploadModal({ onUploadSuccess }) {
                 onUploadSuccess();
             }, 2000);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || t('cv_upload.errors.uploadFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -46,12 +49,12 @@ export default function CvUploadModal({ onUploadSuccess }) {
             <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl">
                 {isSuccess ? (
                     <div className="p-4 bg-green-50 text-green-700 text-center rounded-md">
-                        CV televersé avec succès!
+                        {t('cv_upload.successMessage')}
                     </div>
                 ) : (
                     <>
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                            Soumission obligatoire du CV
+                            {t('cv_upload.title')}
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,7 +78,7 @@ export default function CvUploadModal({ onUploadSuccess }) {
                                     !file || isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
                                 }`}
                             >
-                                {isLoading ? "Televersement en cours..." : "Soumettre mon CV"}
+                                {isLoading ? t('cv_upload.loading') : t('cv_upload.submit')}
                             </button>
                         </form>
                     </>
