@@ -46,10 +46,11 @@ public abstract class UserApp  {
         return credentials.getRole();
     }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
     }
-
 }

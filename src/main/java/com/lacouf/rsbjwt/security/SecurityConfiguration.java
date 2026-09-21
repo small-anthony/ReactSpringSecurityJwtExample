@@ -46,9 +46,12 @@ public class SecurityConfiguration {
 
     private static final String H2_CONSOLE_PATH = "/h2-console/**";
     private static final String USER_LOGIN_PATH = "/user/login";
+    private static final String EMPLOYEUR_INSCRIPTION_PATH = "/employeur/inscription";
     private static final String SIGNUP_PATH = "/signup/**";
     private static final String ETUDIANT_INSCRIPTION_PATH = "/etudiant/inscription";
     private static final String USER_PATH = "/user/**";
+
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -57,12 +60,21 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, USER_LOGIN_PATH).permitAll()
+                        .requestMatchers(POST, EMPLOYEUR_INSCRIPTION_PATH).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                         .requestMatchers(POST, SIGNUP_PATH).permitAll()
                         .requestMatchers(POST, ETUDIANT_INSCRIPTION_PATH).permitAll()
                         .requestMatchers(OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                         .requestMatchers(H2_CONSOLE_PATH).permitAll() // Allow H2 console access
 
                         // Use Role enum names for authorities
+                        .requestMatchers(GET, USER_PATH).hasAnyAuthority(
+                                Role.ETUDIANT.name(),
+                                Role.PROFESSEUR.name(),
+                                Role.GESTIONNAIRE.name(),
+                                Role.EMPLOYEUR.name()
+                        )
+                        .anyRequest().authenticated()
                         .requestMatchers(GET, USER_PATH).hasAnyAuthority(
                                 Role.ETUDIANT.name(),
                                 Role.PROFESSEUR.name(),

@@ -8,10 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
-    private final UserAppRepository userAppRepository;
 
-    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository){
-        this.userAppRepository = userAppRepository;
+    public ReactSpringSecurityJwtApplication(){
     }
 
     public static void main(String[] args) {

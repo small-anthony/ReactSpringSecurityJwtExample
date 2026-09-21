@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { registerEtudiant } from "../../services/api/EtudiantService";
+import SignupTabs from "./SignupTabs";
 
 const DISCIPLINES = [
   { value: "Techniques de l'informatique", labelKey: "info" },
@@ -122,6 +123,8 @@ export default function SignupEtudiantForm() {
 
   return (
     <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
+      <SignupTabs activeTab="etudiant" />
+
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
         {t("signup_etudiant.title")}
       </h2>
