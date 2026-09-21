@@ -1,9 +1,12 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.model.auth.Credentials;
-import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.repository.EtudiantRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
+import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
@@ -13,9 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Optional;
+import com.lacouf.rsbjwt.model.auth.Credentials;
+import com.lacouf.rsbjwt.model.auth.Role;
 
 @Service
 public class UserAppService {
@@ -25,6 +27,7 @@ public class UserAppService {
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
     private final GestionnaireRepository gestionnaireRepository;
+    private final EmployeurRepository employeurRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserAppService(AuthenticationManager authenticationManager,
@@ -33,6 +36,7 @@ public class UserAppService {
                           EtudiantRepository etudiantRepository,
                           ProfesseurRepository professeurRepository,
                           GestionnaireRepository gestionnaireRepository,
+                          EmployeurRepository employeurRepository,
                           PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -40,10 +44,12 @@ public class UserAppService {
         this.etudiantRepository = etudiantRepository;
         this.professeurRepository = professeurRepository;
         this.gestionnaireRepository = gestionnaireRepository;
+        this.employeurRepository = employeurRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String authenticateUser(LoginDto loginDto) {
+    public String authenticateUser(LoginDto loginDto)
+        throws AuthenticationException {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password()));
         final String token = jwtTokenProvider.generateToken(authentication);
@@ -55,11 +61,11 @@ public class UserAppService {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token);
         UserApp user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
-        return switch(user.getRole()){
-            case ETUDIANT -> getEmprunteurDto(user.getId());
-            case PROFESSEUR -> getPreposeDto(user.getId());
-            case GESTIONNAIRE -> getGestionnaireDto(user.getId());
-            case EMPLOYEUR -> getEmployeurDto(user.getId());
+        return switch (user.getRole()) {
+            case ETUDIANT -> EtudiantDto.create((Etudiant) user);
+            case PROFESSEUR -> ProfesseurDto.create((Professeur) user);
+            case GESTIONNAIRE -> GestionnaireDto.create((Gestionnaire) user);
+            case EMPLOYEUR -> EmployeurDto.create((Employeur) user);
         };
     }
 
@@ -73,12 +79,12 @@ public class UserAppService {
             throw new Exception("Un compte avec cet email existe déjà");
         }
 
-        if (!password.equals(confirmPassword)) {
-            throw new Exception("Les mots de passe ne correspondent pas");
-        }
-
         if (password.length() < 8) {
             throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
+        }
+
+        if (!password.equals(confirmPassword)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
         }
 
         String passwordEncoded = passwordEncoder.encode(password);
@@ -89,34 +95,59 @@ public class UserAppService {
         return EtudiantDto.create(etudiantRepository.save(etudiant));
     }
 
+    public EmployeurDto registerEmployeur(String firstName, String lastName,
+                                          String email, String entreprise, String telephone,
+                                          String password, String passwordConfirmation) throws Exception
+    {
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new Exception("Le format du courriel n'est pas valide");
+        }
 
+        if (checkIfEmailExists(email)) {
+            throw new Exception("Un compte avec cet email existe déjà");
+        }
 
-    private GestionnaireDto getGestionnaireDto(Long id) {
-        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
-        return gestionnaireOptional.isPresent() ?
-                GestionnaireDto.create(gestionnaireOptional.get()) :
-                GestionnaireDto.empty();
+        if (password.length() < 8) {
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
+        }
+
+        if (!password.equals(passwordConfirmation)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
+        }
+
+        String passwordEncode = passwordEncoder.encode(password);
+        Credentials credentials = new Credentials(email, passwordEncode, Role.EMPLOYEUR);
+
+        Employeur nouvelEmployeur = new Employeur(firstName, lastName, credentials, entreprise, telephone);
+
+        return EmployeurDto.create(employeurRepository.save(nouvelEmployeur));
     }
 
-    private ProfesseurDto getPreposeDto(Long id) {
-        final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                ProfesseurDto.create(preposeOptional.get()) :
-                ProfesseurDto.empty();
-    }
+    public ProfesseurDto registerProfesseur(String firstName, String lastName,
+                                            String email, String password,
+                                            String passwordConfirmation) throws Exception
+    {
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new Exception("Le format du courriel n'est pas valide.");
+        }
 
-    private EtudiantDto getEmprunteurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
-    }
+        if (checkIfEmailExists(email)) {
+            throw new Exception("Un compte avec cet email existe déjà");
+        }
 
-    private EtudiantDto getEmployeurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
+        if (password.length() < 8) {
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères.");
+        }
+
+        if (!password.equals(passwordConfirmation)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
+        }
+
+        Credentials credentials = new Credentials(email, passwordEncoder.encode(password), Role.PROFESSEUR);
+
+        Professeur nouveauProfesseur = new Professeur(firstName, lastName, credentials);
+
+        return ProfesseurDto.create(professeurRepository.save(nouveauProfesseur));
     }
 
     private boolean checkIfEmailExists(String email) {

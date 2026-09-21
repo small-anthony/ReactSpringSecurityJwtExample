@@ -1,10 +1,14 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.repository.EmployeurRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.junit.jupiter.api.Test;
@@ -13,7 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,12 +33,16 @@ public class UserAppServiceTest {
     private EtudiantRepository etudiantRepository;
 
     @Mock
+    private EmployeurRepository employeurRepository;
+
+    @Mock
+    private ProfesseurRepository professeurRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserAppService userAppService;
-
-
 
 
     @Test
@@ -43,7 +53,6 @@ public class UserAppServiceTest {
 
         when(passwordEncoder.encode("password123"))
                 .thenReturn("passwordEncode");
-
 
         Credentials credentials = new Credentials("test@gmail.com", "passwordEncode", Role.ETUDIANT);
 
@@ -69,7 +78,6 @@ public class UserAppServiceTest {
 
     @Test
     void registerStudent_shouldRejectInvalidEmail() {
-        //ARRANGE
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 userAppService.registerStudent("Peter", "Parker", 12345, "emailInvalide", "Informatique", "password123", "password123"));

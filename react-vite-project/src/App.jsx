@@ -1,16 +1,16 @@
 import PageLayout from "./components/PageLayout.jsx";
-import React, { useContext, useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import React, {useContext} from "react";
+import {Route, Routes} from "react-router-dom";
 import MainContainer from "./components/MainContainer.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
-import ErrorPage from "./components/ErrorPage.jsx";
+import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
+import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
-import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
+import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
-import CvUploadModal from "./components/modal/CvUploadModal.jsx";
 
 function App() {
   const authService = useContext(AuthServiceContext);
@@ -19,18 +19,19 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<CvUploadModal />}>
-          <Route index element={<MainContainer />} />
+        <Route path="/" element={<PageLayout user={userData} />}>
+          <Route index element={<MainContainer user={userData} />} />
           <Route path='about' element={<About />} />
           <Route path='login' element={<LoginForm />} />
           <Route path='etudiant' element={<EmprunteurHome />} />
           <Route path='professeur' element={<PreposeHome />} />
           <Route path='gestionnaire' element={<GestionnaireHome />} />
+          <Route path='signup' element={<SignupEtudiantForm />} />
           <Route path='signup/etudiant' element={<SignupEtudiantForm />} />
-          <Route path='error' element={<ErrorPage />} />
+          <Route path='signup/employeur' element={<SignupEmployeurForm />} />
+          <Route path='signup/professeur' element={<SignupProfesseurForm/>}/>
         </Route>
       </Routes>
-
     </div>
   );
 }
