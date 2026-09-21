@@ -81,5 +81,28 @@
       "passwordConfirm": "La confirmation est obligatoire.",
       "passwordMatch": "Les mots de passe ne correspondent pas."
     }
+  },
+  "creer_offre": {
+    "title": "Créer une offre de stage",
+    "subtitle": "Remplissez les informations ci-dessous",
+    "titre": "Titre du poste",
+    "nomEntreprise": "Nom de l'entreprise",
+    "description": "Description de l'offre",
+    "placeholders": {
+      "titre": "Ex: Développeur Web Junior",
+      "nomEntreprise": "Ex: TechCorp",
+      "description": "Décrivez les tâches et responsabilités..."
+    },
+    "errors": {
+      "titre": "Le titre est obligatoire.",
+      "nomEntreprise": "Le nom de l'entreprise est obligatoire.",
+      "description": "La description est obligatoire.",
+      "descriptionLength": "La description doit contenir au moins 20 caractères."
+    },
+    "errorPrefix": "Erreur : ",
+    "successPrefix": "Succès : ",
+    "success": "Votre offre de stage a été créée avec succès !",
+    "submit": "Créer l'offre",
+    "submitting": "Création en cours..."
   }
 }
