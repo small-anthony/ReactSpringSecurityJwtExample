@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AuthServiceContext } from "../../services/AuthService.tsx";
+import { AuthServiceContext } from "../../services/AuthService.tsx"
 import { createOffreStage } from "../../services/api/OffreStageService";
 
 export default function CreateOffreForm() {

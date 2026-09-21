@@ -8,7 +8,6 @@ import ErrorPage from "./components/ErrorPage.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
-import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
 import {AuthServiceContext} from "./services/AuthService.tsx";
 
 function App() {
@@ -25,7 +24,7 @@ function App() {
             <Route path='etudiant' element={<EmprunteurHome/>}/>
             <Route path='professeur' element={<PreposeHome/>}/>
             <Route path='gestionnaire' element={<GestionnaireHome/>}/>
-            <Route path='signup/employeur' element={<SignupEmployeurForm/>}/>
+
             <Route path='error' element={<ErrorPage/>}/>
           </Route>
         </Routes>
