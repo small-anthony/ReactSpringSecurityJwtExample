@@ -1,0 +1,6 @@
+.footercss {
+    text-align: center;
+    display: flex;
+    margin-top: auto;
+    flex-direction: column;
+}

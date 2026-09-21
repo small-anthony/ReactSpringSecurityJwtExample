@@ -1,6 +1,6 @@
 import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {AuthServiceContext, LoginError} from "../../services/AuthService.tsx";
+import {AuthServiceContext, LoginError, UserRole} from "../../services/AuthService.tsx";
 import {useTranslation} from "react-i18next";
 import './LoginForm.css';
 
@@ -68,7 +68,7 @@ const LoginForm = () => {
   const fetchFunc = async () => {
       try {
         await authService.login(formData.email.toLowerCase(), formData.password);
-        navigate("/home");
+        navigate("/");
       }
 
       catch(error) {
