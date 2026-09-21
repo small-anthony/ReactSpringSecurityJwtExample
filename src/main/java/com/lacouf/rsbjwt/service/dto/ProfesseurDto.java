@@ -15,8 +15,4 @@ public record ProfesseurDto(int id, String firstName, String lastName, String em
                 professeur.getRole()
         );
     }
-
-    public static ProfesseurDto empty() {
-        return new ProfesseurDto(0, null, null, null, null);
-    }
 }

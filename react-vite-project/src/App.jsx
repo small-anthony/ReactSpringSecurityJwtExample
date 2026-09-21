@@ -5,7 +5,6 @@ import MainContainer from "./components/MainContainer.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
 import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
-import ErrorPage from "./components/ErrorPage.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
@@ -30,8 +29,7 @@ function App() {
           <Route path='signup' element={<SignupEtudiantForm />} />
           <Route path='signup/etudiant' element={<SignupEtudiantForm />} />
           <Route path='signup/employeur' element={<SignupEmployeurForm />} />
-            <Route path='signup/professeur' element={<SignupProfesseurForm/>}/>
-          <Route path='error' element={<ErrorPage />} />
+          <Route path='signup/professeur' element={<SignupProfesseurForm/>}/>
         </Route>
       </Routes>
     </div>

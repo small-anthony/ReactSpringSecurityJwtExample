@@ -11,8 +11,4 @@ public record EtudiantDto(int id, String firstName, String lastName, String emai
         return new EtudiantDto(etudiant.getId().intValue(), etudiant.getFirstName(), etudiant.getLastName(),
                 etudiant.getEmail(), etudiant.getRole(), etudiant.getMatricule(), etudiant.getDiscipline());
     }
-
-    public static EtudiantDto empty() {
-        return new EtudiantDto(0, null, null, null, null, 0 , null);
-    }
 }

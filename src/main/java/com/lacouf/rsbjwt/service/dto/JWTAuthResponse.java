@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.service.dto;
 
-public record JWTAuthResponse(String accessToken, String tokenType) {
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+
+public record JWTAuthResponse(String accessToken, String tokenType) implements DataTransferObject {
     public JWTAuthResponse(String accessToken) {
         this(accessToken, "BEARER");
     }

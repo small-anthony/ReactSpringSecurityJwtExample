@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.security;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
+import com.lacouf.rsbjwt.security.exception.BadCredentialsException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -45,6 +46,6 @@ public class AuthProvider implements AuthenticationProvider{
 
 	private void validateAuthentication(Authentication authentication, UserApp user){
 		if(!passwordEncoder.matches(authentication.getCredentials().toString(), user.getPassword()))
-			throw new AuthenticationException(HttpStatus.FORBIDDEN, "Incorrect username or password");
+			throw new BadCredentialsException("Incorrect username or password");
 	}
 }
