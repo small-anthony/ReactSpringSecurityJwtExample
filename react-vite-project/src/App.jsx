@@ -25,6 +25,7 @@ function App() {
           <Route path='etudiant' element={<EmprunteurHome/>}/>
           <Route path='professeur' element={<PreposeHome/>}/>
           <Route path='gestionnaire' element={<GestionnaireHome/>}/>
+          <Route path='signup' element={<SignupEmployeurForm/>}/>
           <Route path='signup/employeur' element={<SignupEmployeurForm/>}/>
           <Route path='error' element={<ErrorPage/>}/>
         </Route>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { registerEmployeur } from "../../services/api/EmployeurService";
+import SignupTabs from "./SignupTabs";
 
 export default function SignupEmployeurForm() {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export default function SignupEmployeurForm() {
 
     if (!formData.telephone.trim()) {
       newErrors.telephone = "telephone";
-    } else if (!/^[0-9+()\-.\s]{7,20}$/.test(formData.telephone.trim())) {
+    } else if (!/^[0-9+()\s-]{10,}$/.test(formData.telephone.trim())) {
       newErrors.telephone = "telephoneFormat";
     }
 
@@ -94,6 +95,7 @@ export default function SignupEmployeurForm() {
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
         entreprise: formData.entreprise.trim(),
+        poste: formData.poste.trim(),
         telephone: formData.telephone.trim(),
         password: formData.password,
         passwordConfirmation: formData.passwordConfirmation
@@ -119,6 +121,8 @@ export default function SignupEmployeurForm() {
 
   return (
     <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
+      <SignupTabs activeTab="employeur" />
+
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
         {t("signup_employeur.title")}
       </h2>

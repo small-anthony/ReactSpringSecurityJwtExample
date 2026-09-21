@@ -1,10 +1,33 @@
 {
-  "sitename": "Mon App",
+  "sitename": "Stagify",
   "pagename": {
     "home": "Accueil",
     "about": "À propos",
     "login": "Connexion",
-    "signup_employeur": "S'inscrire comme employeur"
+    "signup": "S'inscrire",
+    "signup_employeur": "S'inscrire comme employeur",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "title": "Stagify",
+    "subtitle": "Plateforme de gestion des stages",
+    "description": "L'espace collaboratif qui réunit étudiants, entreprises et professeurs. Trouvez un stage enrichissant, recrutez des talents qualifiés ou assurez le suivi pédagogique en toute simplicité.",
+    "cta_signup": "S'inscrire",
+    "cta_login": "Se connecter"
+  },
+  "about": {
+    "title": "À propos de Stagify",
+    "version": "Version 1.0.0",
+    "description": "Plateforme centralisée facilitant la mise en relation entre étudiants, entreprises partenaires et professeurs pour la gestion des stages académiques.",
+    "go_back": "Retour à l'accueil"
+  },
+  "footer": {
+    "copyright": "Tous droits réservés © 2026 Stagify."
+  },
+  "signup_tabs": {
+    "etudiant": "Profil Étudiant",
+    "employeur": "Profil Employeur",
+    "professeur": "Profil Professeur"
   },
   "hello-user": "Bonjour, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
   "role": {
