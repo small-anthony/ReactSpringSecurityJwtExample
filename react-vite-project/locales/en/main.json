@@ -39,6 +39,30 @@
     "employeur": "Employer",
     "professeur": "Teacher"
   },
+  "login_page": {
+    "title": "Sign In",
+    "subtitle": "Access your Stagify workspace.",
+    "email": "Email address",
+    "password": "Password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Log In",
+    "submitting": "Logging in...",
+    "noAccount": "Don't have an account?",
+    "signup": "Sign up",
+    "errorPrefix": "Error: ",
+    "invalidCredentials": "Invalid email or password.",
+    "defaultError": "Error communicating with the server.",
+    "placeholders": {
+      "email": "Ex: john.doe@college.ca",
+      "password": "Your password"
+    },
+    "errors": {
+      "email": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "password": "Password is required."
+    }
+  },
   "signup_etudiant": {
     "title": "Student Registration",
     "subtitle": "Fill out this form to create your student account.",

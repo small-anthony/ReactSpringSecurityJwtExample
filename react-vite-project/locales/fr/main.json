@@ -39,6 +39,30 @@
     "employeur": "Employeur",
     "professeur": "Professeur"
   },
+  "login_page": {
+    "title": "Connexion",
+    "subtitle": "Accédez à votre espace Stagify.",
+    "email": "Adresse courriel",
+    "password": "Mot de passe",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "submit": "Se connecter",
+    "submitting": "Connexion en cours...",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signup": "S'inscrire",
+    "errorPrefix": "Erreur : ",
+    "invalidCredentials": "Courriel ou mot de passe incorrect.",
+    "defaultError": "Erreur lors de la communication avec le serveur.",
+    "placeholders": {
+      "email": "Ex: jean.tremblay@cegep.ca",
+      "password": "Votre mot de passe"
+    },
+    "errors": {
+      "email": "L'adresse courriel est obligatoire.",
+      "emailFormat": "Format de courriel invalide.",
+      "password": "Le mot de passe est obligatoire."
+    }
+  },
   "signup_etudiant": {
     "title": "Inscription Étudiant",
     "subtitle": "Remplissez ce formulaire pour créer votre compte étudiant.",
