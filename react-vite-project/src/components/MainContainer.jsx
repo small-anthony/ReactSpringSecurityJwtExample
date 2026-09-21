@@ -34,5 +34,4 @@ function MainContainer() {
     </div>
   );
 }
-
 export default MainContainer;
