@@ -1,5 +1,36 @@
 {
-  "sitename": "Mon App",
+  "sitename": "Stagify",
+  "pagename": {
+    "home": "Accueil",
+    "about": "À propos",
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "signup_employeur": "S'inscrire comme employeur",
+    "signup_etudiant": "S'inscrire comme étudiant",
+    "signup_professeur": "S'inscrire comme professeur",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "title": "Stagify",
+    "subtitle": "Plateforme de gestion des stages",
+    "description": "L'espace collaboratif qui réunit étudiants, entreprises et professeurs. Trouvez un stage enrichissant, recrutez des talents qualifiés ou assurez le suivi pédagogique en toute simplicité.",
+    "cta_signup": "S'inscrire",
+    "cta_login": "Se connecter"
+  },
+  "about": {
+    "title": "À propos de Stagify",
+    "version": "Version 1.0.0",
+    "description": "Plateforme centralisée facilitant la mise en relation entre étudiants, entreprises partenaires et professeurs pour la gestion des stages académiques.",
+    "go_back": "Retour à l'accueil"
+  },
+  "footer": {
+    "copyright": "Tous droits réservés © 2026 Stagify."
+  },
+  "signup_tabs": {
+    "etudiant": "Profil Étudiant",
+    "employeur": "Profil Employeur",
+    "professeur": "Profil Professeur"
+  },
   "hello-user": "Bonjour, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
   "role": {
     "gestionnaire": "Gestionnaire",
@@ -7,7 +38,137 @@
     "employeur": "Employeur",
     "professeur": "Professeur"
   },
-  "notification": {
-    "empty": "Aucune notification"
+  "signup_etudiant": {
+    "title": "Inscription Étudiant",
+    "subtitle": "Remplissez ce formulaire pour créer votre compte étudiant.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "matricule": "Matricule (7 chiffres)",
+    "email": "Adresse courriel",
+    "discipline": "Discipline de stage",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "submit": "S'inscrire",
+    "submitting": "Inscription en cours...",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter",
+    "success": "Inscription réussie ! Redirection vers la page de connexion...",
+    "errorPrefix": "Erreur : ",
+    "successPrefix": "Succès : ",
+    "defaultError": "Erreur lors de la communication avec le serveur.",
+    "placeholders": {
+      "firstName": "Ex: Jean",
+      "lastName": "Ex: Tremblay",
+      "matricule": "Ex: 1234567",
+      "email": "Ex: 1234567@cegep.ca",
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Retapez le mot de passe"
+    },
+    "disciplines": {
+      "placeholder": "-- Choisir une discipline --",
+      "info": "Techniques de l'informatique",
+      "soins": "Soins infirmiers",
+      "archi": "Technologie de l'architecture",
+      "compta": "Techniques de comptabilité et de gestion",
+      "gcivil": "Techniques de génie civil"
+    },
+    "errors": {
+      "firstName": "Le prénom est obligatoire.",
+      "lastName": "Le nom est obligatoire.",
+      "matriculeRequired": "Le matricule est obligatoire.",
+      "matriculeFormat": "Le matricule doit comporter exactement 7 chiffres.",
+      "emailRequired": "Le courriel est obligatoire.",
+      "emailFormat": "Format de courriel invalide.",
+      "disciplineRequired": "Veuillez choisir une discipline.",
+      "passwordRequired": "Le mot de passe est obligatoire.",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
+      "confirmPasswordRequired": "La confirmation est obligatoire.",
+      "confirmPasswordMatch": "Les mots de passe ne correspondent pas."
+    }
+  },
+  "signup_employeur": {
+    "title": "Inscription Employeur",
+    "subtitle": "Remplissez ce formulaire pour créer votre compte entreprise.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Courriel professionnel",
+    "entreprise": "Nom de l'entreprise",
+    "poste": "Poste occupé",
+    "telephone": "Numéro de téléphone",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "submit": "S'inscrire",
+    "submitting": "Inscription en cours...",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter",
+    "success": "Inscription réussie ! Redirection vers la page de connexion...",
+    "errorPrefix": "Erreur : ",
+    "successPrefix": "Succès : ",
+    "defaultError": "Erreur lors de la communication avec le serveur.",
+    "emailExists": "Un compte avec cette adresse courriel existe déjà.",
+    "placeholders": {
+      "firstName": "Ex: Sophie",
+      "lastName": "Ex: Martin",
+      "email": "Ex: contact@entreprise.com",
+      "entreprise": "Ex: Acme Inc.",
+      "poste": "Ex: Directeur RH",
+      "telephone": "Ex: 514-555-1234",
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Retapez le mot de passe"
+    },
+    "errors": {
+      "firstName": "Le prénom est obligatoire.",
+      "lastName": "Le nom est obligatoire.",
+      "email": "Le courriel est obligatoire.",
+      "emailFormat": "Format de courriel invalide.",
+      "entreprise": "Le nom de l'entreprise est obligatoire.",
+      "telephone": "Le numéro de téléphone est obligatoire.",
+      "telephoneFormat": "Format de numéro de téléphone invalide.",
+      "password": "Le mot de passe est obligatoire.",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
+      "passwordConfirm": "La confirmation est obligatoire.",
+      "passwordMatch": "Les mots de passe ne correspondent pas."
+    }
+  },
+  "signup_professeur": {
+    "title": "Inscription Professeur",
+    "subtitle": "Remplissez ce formulaire pour créer votre compte enseignant.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Adresse courriel",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "submit": "S'inscrire",
+    "submitting": "Inscription en cours...",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter",
+    "success": "Inscription réussie ! Redirection vers la page de connexion...",
+    "errorPrefix": "Erreur : ",
+    "successPrefix": "Succès : ",
+    "defaultError": "Erreur lors de la communication avec le serveur.",
+    "emailExists": "Un compte avec cette adresse courriel existe déjà.",
+    "placeholders": {
+      "firstName": "Ex: Jean",
+      "lastName": "Ex: Tremblay",
+      "email": "Ex: jean.tremblay@cegep.ca",
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Retapez le mot de passe"
+    },
+    "errors": {
+      "firstName": "Le prénom est obligatoire.",
+      "lastName": "Le nom est obligatoire.",
+      "email": "Le courriel est obligatoire.",
+      "emailFormat": "Format de courriel invalide.",
+      "password": "Le mot de passe est obligatoire.",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
+      "passwordConfirm": "La confirmation est obligatoire.",
+      "passwordMatch": "Les mots de passe ne correspondent pas."
+    }
   }
 }
