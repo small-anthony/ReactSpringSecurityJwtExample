@@ -15,7 +15,8 @@
     "subtitle": "Plateforme de gestion des stages",
     "description": "L'espace collaboratif qui réunit étudiants, entreprises et professeurs. Trouvez un stage enrichissant, recrutez des talents qualifiés ou assurez le suivi pédagogique en toute simplicité.",
     "cta_signup": "S'inscrire",
-    "cta_login": "Se connecter"
+    "cta_login": "Se connecter",
+    "connected_as": "Connecté en tant que"
   },
   "about": {
     "title": "À propos de Stagify",
@@ -54,7 +55,7 @@
     "submitting": "Inscription en cours...",
     "hasAccount": "Vous avez déjà un compte ?",
     "login": "Se connecter",
-    "success": "Inscription réussie ! Redirection vers la page de connexion...",
+    "success": "Inscription réussie ! Connexion en cours...",
     "errorPrefix": "Erreur : ",
     "successPrefix": "Succès : ",
     "defaultError": "Erreur lors de la communication avec le serveur.",
@@ -105,7 +106,7 @@
     "submitting": "Inscription en cours...",
     "hasAccount": "Vous avez déjà un compte ?",
     "login": "Se connecter",
-    "success": "Inscription réussie ! Redirection vers la page de connexion...",
+    "success": "Inscription réussie ! Connexion en cours...",
     "errorPrefix": "Erreur : ",
     "successPrefix": "Succès : ",
     "defaultError": "Erreur lors de la communication avec le serveur.",
@@ -148,7 +149,7 @@
     "submitting": "Inscription en cours...",
     "hasAccount": "Vous avez déjà un compte ?",
     "login": "Se connecter",
-    "success": "Inscription réussie ! Redirection vers la page de connexion...",
+    "success": "Inscription réussie ! Connexion en cours...",
     "errorPrefix": "Erreur : ",
     "successPrefix": "Succès : ",
     "defaultError": "Erreur lors de la communication avec le serveur.",
