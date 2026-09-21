@@ -61,7 +61,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, USER_LOGIN_PATH).permitAll()
                         .requestMatchers(POST, EMPLOYEUR_INSCRIPTION_PATH).permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                         .requestMatchers(POST, SIGNUP_PATH).permitAll()
                         .requestMatchers(POST, ETUDIANT_INSCRIPTION_PATH).permitAll()
                         .requestMatchers(OPTIONS, "/**").permitAll() // Allow CORS preflight requests
@@ -75,13 +74,6 @@ public class SecurityConfiguration {
                                 Role.EMPLOYEUR.name()
                         )
                         .anyRequest().authenticated()
-                        .requestMatchers(GET, USER_PATH).hasAnyAuthority(
-                                Role.ETUDIANT.name(),
-                                Role.PROFESSEUR.name(),
-                                Role.GESTIONNAIRE.name(),
-                                Role.EMPLOYEUR.name()
-                        )
-                        .anyRequest().authenticated() // Changed from denyAll() to authenticated() - more common, adjust if denyAll is strictly needed
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console
                 .sessionManagement((secuManagement) -> {
