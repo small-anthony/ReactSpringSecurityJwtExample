@@ -18,72 +18,71 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CvControllerTest {
-    @Mock
-    private EtudiantService etudiantService;
+        @Mock
+        private EtudiantService etudiantService;
 
-    @InjectMocks
-    private EtudiantController etudiantController;
+        @InjectMocks
+        private EtudiantController etudiantController;
 
-    @Test
-    void uploadCv_shouldReturnCreatedCv() throws Exception {
-//        ARRANGE
-        String email = "test@gmail.com";
-        MultipartFile file = mock(MultipartFile.class);
+        @Test
+        void uploadCv_shouldReturnCreatedCv() throws Exception {
+                // ARRANGE
+                String email = "test@gmail.com";
+                MultipartFile file = mock(MultipartFile.class);
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn(email);
+                Authentication authentication = mock(Authentication.class);
+                when(authentication.getName()).thenReturn(email);
 
-        CvDto cvDto = new CvDto(10L);
+                CvDto cvDto = new CvDto(10L);
 
-        when(etudiantService.uploadCv(email, file))
-                .thenReturn(cvDto);
+                when(etudiantService.uploadCv(email, file))
+                                .thenReturn(cvDto);
 
-//        ACT
-        ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
+                // ACT
+                ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
 
-//        ARRANGE
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(cvDto, response.getBody());
-    }
+                // ARRANGE
+                assertEquals(HttpStatus.CREATED, response.getStatusCode());
+                assertEquals(cvDto, response.getBody());
+        }
 
-    @Test
-    void uploadCv_shouldReturnBadRequestOnException() throws Exception {
-//        ARRANGE
-        String email = "test@gmail.com";
-        MultipartFile file = mock(MultipartFile.class);
+        @Test
+        void uploadCv_shouldReturnBadRequestOnException() throws Exception {
+                // ARRANGE
+                String email = "test@gmail.com";
+                MultipartFile file = mock(MultipartFile.class);
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn(email);
+                Authentication authentication = mock(Authentication.class);
+                when(authentication.getName()).thenReturn(email);
 
-        when(etudiantService.uploadCv(email, file))
-                .thenThrow(new Exception("Veuillez sélectionner un fichier"));
+                when(etudiantService.uploadCv(email, file))
+                                .thenThrow(new Exception("Veuillez sélectionner un fichier"));
 
-//        ACT
-        ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
+                // ACT
+                ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
 
-//        ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Veuillez sélectionner un fichier", response.getBody());
-    }
+                // ASSERT
+                assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+                assertEquals("Veuillez sélectionner un fichier", response.getBody());
+        }
 
-    @Test
-    void uploadCv_shouldReturnForbiddenOnAccessDenied() throws Exception {
-//        ARRANGE
-        String emailHacker = "hacker@gmail.com";
-        MultipartFile file = mock(MultipartFile.class);
+        @Test
+        void uploadCv_shouldReturnForbiddenOnAccessDenied() throws Exception {
+                // ARRANGE
+                String emailHacker = "hacker@gmail.com";
+                MultipartFile file = mock(MultipartFile.class);
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn(emailHacker);
+                Authentication authentication = mock(Authentication.class);
+                when(authentication.getName()).thenReturn(emailHacker);
 
+                when(etudiantService.uploadCv(emailHacker, file))
+                                .thenThrow(new Exception("Accès refusé"));
 
-        when(etudiantService.uploadCv(emailHacker, file))
-                .thenThrow(new Exception("Accès refusé"));
+                // ACT
+                ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
 
-//        ACT
-        ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
-
-//        ASSERT
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Accès refusé", response.getBody());
-    }
+                // ASSERT
+                assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+                assertEquals("Accès refusé", response.getBody());
+        }
 }

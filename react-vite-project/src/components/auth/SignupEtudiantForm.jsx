@@ -313,8 +313,8 @@ export default function SignupEtudiantForm() {
             type="submit"
             disabled={isLoading}
             className={`w-full py-3 px-4 font-bold rounded-lg text-white transition ${isLoading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 cursor-pointer shadow"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 cursor-pointer shadow"
               }`}
           >
             {isLoading ? t("signup_etudiant.submitting") : t("signup_etudiant.submit")}

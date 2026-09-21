@@ -29,17 +29,15 @@ function Header({ user }) {
   const currentLang = i18n.language || "fr";
 
   const navLinkClasses = ({ isActive }) =>
-    `px-3.5 py-2 rounded-lg text-sm font-medium transition duration-150 ${
-      isActive
-        ? "text-blue-600 bg-blue-50/80 font-semibold"
-        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+    `px-3.5 py-2 rounded-lg text-sm font-medium transition duration-150 ${isActive
+      ? "text-blue-600 bg-blue-50/80 font-semibold"
+      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
     }`;
 
   const mobileNavLinkClasses = ({ isActive }) =>
-    `block px-3.5 py-2.5 rounded-lg text-base font-medium transition duration-150 ${
-      isActive
-        ? "text-blue-600 bg-blue-50 font-semibold"
-        : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+    `block px-3.5 py-2.5 rounded-lg text-base font-medium transition duration-150 ${isActive
+      ? "text-blue-600 bg-blue-50 font-semibold"
+      : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
     }`;
 
   const initials = user
@@ -80,22 +78,20 @@ function Header({ user }) {
               <button
                 type="button"
                 onClick={() => setLanguage("fr")}
-                className={`px-2.5 py-1 rounded-md transition duration-150 cursor-pointer ${
-                  currentLang.startsWith("fr")
+                className={`px-2.5 py-1 rounded-md transition duration-150 cursor-pointer ${currentLang.startsWith("fr")
                     ? "bg-white text-blue-600 shadow-xs font-bold"
                     : "text-gray-500 hover:text-gray-800"
-                }`}
+                  }`}
               >
                 FR
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage("en")}
-                className={`px-2.5 py-1 rounded-md transition duration-150 cursor-pointer ${
-                  currentLang.startsWith("en")
+                className={`px-2.5 py-1 rounded-md transition duration-150 cursor-pointer ${currentLang.startsWith("en")
                     ? "bg-white text-blue-600 shadow-xs font-bold"
                     : "text-gray-500 hover:text-gray-800"
-                }`}
+                  }`}
               >
                 EN
               </button>
@@ -163,18 +159,16 @@ function Header({ user }) {
               <button
                 type="button"
                 onClick={() => setLanguage("fr")}
-                className={`px-2 py-0.5 rounded ${
-                  currentLang.startsWith("fr") ? "bg-white text-blue-600 font-bold" : "text-gray-500"
-                }`}
+                className={`px-2 py-0.5 rounded ${currentLang.startsWith("fr") ? "bg-white text-blue-600 font-bold" : "text-gray-500"
+                  }`}
               >
                 FR
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage("en")}
-                className={`px-2 py-0.5 rounded ${
-                  currentLang.startsWith("en") ? "bg-white text-blue-600 font-bold" : "text-gray-500"
-                }`}
+                className={`px-2 py-0.5 rounded ${currentLang.startsWith("en") ? "bg-white text-blue-600 font-bold" : "text-gray-500"
+                  }`}
               >
                 EN
               </button>

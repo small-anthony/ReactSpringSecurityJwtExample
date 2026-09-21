@@ -1,12 +1,13 @@
-import {BASE_URL} from "../../components/config/Config.jsx";
+import { BASE_URL } from "../../components/config/Config.jsx";
+import { getTokenCookie } from "../AuthService.tsx";
 
 export const uploadCv = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const token = localStorage.getItem("token");
+    const token = getTokenCookie() || localStorage.getItem("token");
 
-    const response = await fetch(`${BASE_URL}/etudiants/cv`, {
+    const response = await fetch(`${BASE_URL}/etudiant/cv`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`

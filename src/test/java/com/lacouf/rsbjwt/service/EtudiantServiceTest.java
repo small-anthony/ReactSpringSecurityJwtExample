@@ -21,103 +21,103 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension .class)
+@ExtendWith(MockitoExtension.class)
 public class EtudiantServiceTest {
-    @Mock
-    UserAppRepository userAppRepository;
+        @Mock
+        UserAppRepository userAppRepository;
 
-    @Mock
-    EtudiantRepository etudiantRepository;
+        @Mock
+        EtudiantRepository etudiantRepository;
 
-    @InjectMocks
-    EtudiantService etudiantService;
+        @InjectMocks
+        EtudiantService etudiantService;
 
-    @Test
-    void uploadCv_shouldUploadSuccessfully() throws Exception {
-//        ARRANGE
-        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-        etudiant.setId(1L);
+        @Test
+        void uploadCv_shouldUploadSuccessfully() throws Exception {
+                // ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
 
-        when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                .thenReturn(Optional.of(etudiant));
+                when(userAppRepository.findUserAppByEmail("test@gmail.com"))
+                                .thenReturn(Optional.of(etudiant));
 
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.isEmpty()).thenReturn(false);
-        when(file.getContentType()).thenReturn("application/pdf");
-        when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
+                MultipartFile file = mock(MultipartFile.class);
+                when(file.isEmpty()).thenReturn(false);
+                when(file.getContentType()).thenReturn("application/pdf");
+                when(file.getBytes()).thenReturn(new byte[] { 1, 2, 3 });
 
-        Etudiant etudiantSauvegarde = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-        etudiantSauvegarde.setId(1L);
-        etudiantSauvegarde.setCv(new byte[]{1, 2, 3});
-        etudiantSauvegarde.getCv().setId(10L);
+                Etudiant etudiantSauvegarde = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiantSauvegarde.setId(1L);
+                etudiantSauvegarde.setCv(new byte[] { 1, 2, 3 });
+                etudiantSauvegarde.getCv().setId(10L);
 
-        when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiantSauvegarde);
+                when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiantSauvegarde);
 
-//        ACT
-        CvDto resultat = etudiantService.uploadCv("test@gmail.com", file);
+                // ACT
+                CvDto resultat = etudiantService.uploadCv("test@gmail.com", file);
 
-//        ASSERT
-        assertNotNull(resultat);
-        assertEquals(10L, resultat.id());
-    }
+                // ASSERT
+                assertNotNull(resultat);
+                assertEquals(10L, resultat.id());
+        }
 
-    @Test
-    void uploadCv_shouldRejectIfUserNotFound() {
-//        ARRANGE
-        MultipartFile file = mock(MultipartFile.class);
+        @Test
+        void uploadCv_shouldRejectIfUserNotFound() {
+                // ARRANGE
+                MultipartFile file = mock(MultipartFile.class);
 
-        when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                .thenReturn(Optional.empty());
+                when(userAppRepository.findUserAppByEmail("test@gmail.com"))
+                                .thenReturn(Optional.empty());
 
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                etudiantService.uploadCv("test@gmail.com", file));
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                                () -> etudiantService.uploadCv("test@gmail.com", file));
 
-//        ASSERT
-        assertEquals("Etudiant non trouvé", exception.getMessage());
-    }
+                // ASSERT
+                assertEquals("Etudiant non trouvé", exception.getMessage());
+        }
 
-    @Test
-    void uploadCv_shouldRejectIfFileIsEmpty() {
-//        ARRANGE
-        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-        etudiant.setId(1L);
+        @Test
+        void uploadCv_shouldRejectIfFileIsEmpty() {
+                // ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
 
-        when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                .thenReturn(Optional.of(etudiant));
+                when(userAppRepository.findUserAppByEmail("test@gmail.com"))
+                                .thenReturn(Optional.of(etudiant));
 
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.isEmpty()).thenReturn(true);
+                MultipartFile file = mock(MultipartFile.class);
+                when(file.isEmpty()).thenReturn(true);
 
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                etudiantService.uploadCv("test@gmail.com", file));
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                                () -> etudiantService.uploadCv("test@gmail.com", file));
 
-//        ASSERT
-        assertEquals("Veuillez sélectionner un fichier", exception.getMessage());
-    }
+                // ASSERT
+                assertEquals("Veuillez sélectionner un fichier", exception.getMessage());
+        }
 
-    @Test
-    void uploadCv_shouldRejectIfFileIsNotPdf() {
-//        ARRANGE
-        Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-        etudiant.setId(1L);
+        @Test
+        void uploadCv_shouldRejectIfFileIsNotPdf() {
+                // ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
 
-        when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                .thenReturn(Optional.of(etudiant));
+                when(userAppRepository.findUserAppByEmail("test@gmail.com"))
+                                .thenReturn(Optional.of(etudiant));
 
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.isEmpty()).thenReturn(false);
-        when(file.getContentType()).thenReturn("image/png");
+                MultipartFile file = mock(MultipartFile.class);
+                when(file.isEmpty()).thenReturn(false);
+                when(file.getContentType()).thenReturn("image/png");
 
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                etudiantService.uploadCv("test@gmail.com", file));
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                                () -> etudiantService.uploadCv("test@gmail.com", file));
 
-//        ASSERT
-        assertEquals("Le fichier doit être un PDF", exception.getMessage());
-    }
+                // ASSERT
+                assertEquals("Le fichier doit être un PDF", exception.getMessage());
+        }
 }

@@ -4,7 +4,8 @@ import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
 
-public record EtudiantDto(int id, String firstName, String lastName, String email, Role role, int matricule, String discipline)
+public record EtudiantDto(int id, String firstName, String lastName, String email, Role role, int matricule,
+        String discipline)
         implements UserDto {
 
     public static EtudiantDto create(Etudiant etudiant) {
@@ -13,6 +14,6 @@ public record EtudiantDto(int id, String firstName, String lastName, String emai
     }
 
     public static EtudiantDto empty() {
-        return new EtudiantDto(0, null, null, null, null, 0 , null);
+        return new EtudiantDto(0, null, null, null, null, 0, null);
     }
 }
