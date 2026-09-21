@@ -1,8 +1,19 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["es2022", "dom", "dom.iterable"],
-    "jsx": "react",
+    "noEmit": true,
+    "lib": [
+      "es2022",
+      "dom",
+      "dom.iterable"
+    ],
+    "jsx": "react"
   },
-  "exclude": ["node_modules"],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
