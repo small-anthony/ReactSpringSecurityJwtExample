@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { registerEtudiant } from "../../services/api/EtudiantService";
 import SignupTabs from "./SignupTabs";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
 
 const DISCIPLINES = [
   { value: "Techniques de l'informatique", labelKey: "info" },
@@ -15,6 +16,7 @@ const DISCIPLINES = [
 export default function SignupEtudiantForm() {
   const navigate = useNavigate();
   const { t } = useTranslation("main");
+  const authService = useContext(AuthServiceContext);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -110,9 +112,16 @@ export default function SignupEtudiantForm() {
       await registerEtudiant(payload);
 
       setSuccessMessage(t("signup_etudiant.success"));
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      try {
+        await authService.login(payload.email, payload.password);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } catch {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      }
 
     } catch (err) {
       setServerError(err.message || t("signup_etudiant.defaultError"));
