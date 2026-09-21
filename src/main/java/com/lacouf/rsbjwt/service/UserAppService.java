@@ -8,13 +8,12 @@ import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -92,27 +91,6 @@ public class UserAppService {
         return EtudiantDto.create(etudiantRepository.save(etudiant));
     }
 
-    private GestionnaireDto getGestionnaireDto(Long id) {
-        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
-        return gestionnaireOptional.isPresent() ?
-                GestionnaireDto.create(gestionnaireOptional.get()) :
-                GestionnaireDto.empty();
-    }
-
-    private ProfesseurDto getPreposeDto(Long id) {
-        final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                ProfesseurDto.create(preposeOptional.get()) :
-                ProfesseurDto.empty();
-    }
-
-    private EtudiantDto getEmprunteurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
-    }
-
     public EmployeurDto registerEmployeur(String firstName, String lastName,
                                           String email, String entreprise, String telephone,
                                           String password, String passwordConfirmation) throws Exception
@@ -139,6 +117,54 @@ public class UserAppService {
         Employeur nouvelEmployeur = new Employeur(firstName, lastName, credentials, entreprise, telephone);
 
         return EmployeurDto.create(employeurRepository.save(nouvelEmployeur));
+    }
+
+    public ProfesseurDto registerProfesseur(String firstName, String lastName,
+                                            String email, String password,
+                                            String passwordConfirmation) throws Exception
+    {
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new Exception("Le format du courriel n'est pas valide.");
+        }
+
+        if (checkIfEmailExists(email)) {
+            throw new Exception("Un compte avec cet email existe déjà");
+        }
+
+        if (password.length() < 8) {
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères.");
+        }
+
+        if (!password.equals(passwordConfirmation)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
+        }
+
+        Credentials credentials = new Credentials(email, passwordEncoder.encode(password), Role.PROFESSEUR);
+
+        Professeur nouveauProfesseur = new Professeur(firstName, lastName, credentials);
+
+        return ProfesseurDto.create(professeurRepository.save(nouveauProfesseur));
+    }
+
+    private GestionnaireDto getGestionnaireDto(Long id) {
+        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
+        return gestionnaireOptional.isPresent() ?
+                GestionnaireDto.create(gestionnaireOptional.get()) :
+                GestionnaireDto.empty();
+    }
+
+    private ProfesseurDto getPreposeDto(Long id) {
+        final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
+        return preposeOptional.isPresent() ?
+                ProfesseurDto.create(preposeOptional.get()) :
+                ProfesseurDto.empty();
+    }
+
+    private EtudiantDto getEmprunteurDto(Long id) {
+        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
+        return emprunteurOptional.isPresent() ?
+                EtudiantDto.create(emprunteurOptional.get()) :
+                EtudiantDto.empty();
     }
 
     private EmployeurDto getEmployeurDto(Long id) {

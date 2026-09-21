@@ -7,6 +7,7 @@
     "signup": "Sign up",
     "signup_employeur": "Register as employer",
     "signup_etudiant": "Register as student",
+    "signup_professeur": "Register as teacher",
     "logout": "Logout"
   },
   "home": {
@@ -35,53 +36,7 @@
     "gestionnaire": "Coordinator",
     "etudiant": "Student",
     "employeur": "Employer",
-    "professeur": "Tutor"
-  },
-  "signup_employeur": {
-    "title": "Employer Registration",
-    "subtitle": "Fill out this form to create your company account.",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "email": "Work Email",
-    "entreprise": "Company Name",
-    "poste": "Job Title",
-    "telephone": "Phone Number",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "show": "Show",
-    "hide": "Hide",
-    "submit": "Register",
-    "submitting": "Registering...",
-    "hasAccount": "Already have an account?",
-    "login": "Log in",
-    "success": "Registration successful! Redirecting to login page...",
-    "errorPrefix": "Error: ",
-    "successPrefix": "Success: ",
-    "defaultError": "Error communicating with the server.",
-    "emailExists": "An account with this email address already exists.",
-    "placeholders": {
-      "firstName": "Ex: Sarah",
-      "lastName": "Ex: Smith",
-      "email": "Ex: contact@company.com",
-      "entreprise": "Ex: Acme Inc.",
-      "poste": "Ex: HR Director",
-      "telephone": "Ex: 514-555-1234",
-      "password": "At least 8 characters",
-      "confirmPassword": "Retype your password"
-    },
-    "errors": {
-      "firstName": "First name is required.",
-      "lastName": "Last name is required.",
-      "email": "Email is required.",
-      "emailFormat": "Invalid email format.",
-      "entreprise": "Company name is required.",
-      "telephone": "Phone number is required.",
-      "telephoneFormat": "Invalid phone number format.",
-      "password": "Password is required.",
-      "passwordLength": "Password must contain at least 8 characters.",
-      "passwordConfirm": "Password confirmation is required.",
-      "passwordMatch": "Passwords do not match."
-    }
+    "professeur": "Teacher"
   },
   "signup_etudiant": {
     "title": "Student Registration",
@@ -131,6 +86,89 @@
       "passwordLength": "Password must be at least 8 characters.",
       "confirmPasswordRequired": "Confirmation is required.",
       "confirmPasswordMatch": "Passwords do not match."
+    }
+  },
+  "signup_employeur": {
+    "title": "Employer Registration",
+    "subtitle": "Fill out this form to create your company account.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Work Email",
+    "entreprise": "Company Name",
+    "poste": "Job Title",
+    "telephone": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Redirecting to login page...",
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "defaultError": "Error communicating with the server.",
+    "emailExists": "An account with this email address already exists.",
+    "placeholders": {
+      "firstName": "Ex: Sarah",
+      "lastName": "Ex: Smith",
+      "email": "Ex: contact@company.com",
+      "entreprise": "Ex: Acme Inc.",
+      "poste": "Ex: HR Director",
+      "telephone": "Ex: 514-555-1234",
+      "password": "At least 8 characters",
+      "confirmPassword": "Retype your password"
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "email": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "entreprise": "Company name is required.",
+      "telephone": "Phone number is required.",
+      "telephoneFormat": "Invalid phone number format.",
+      "password": "Password is required.",
+      "passwordLength": "Password must contain at least 8 characters.",
+      "passwordConfirm": "Password confirmation is required.",
+      "passwordMatch": "Passwords do not match."
+    }
+  },
+  "signup_professeur": {
+    "title": "Teacher Registration",
+    "subtitle": "Fill out this form to create your teacher account.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Redirecting to login...",
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "defaultError": "Error communicating with the server.",
+    "emailExists": "An account with this email address already exists.",
+    "placeholders": {
+      "firstName": "Ex: John",
+      "lastName": "Ex: Doe",
+      "email": "Ex: john.doe@college.ca",
+      "password": "At least 8 characters",
+      "confirmPassword": "Retype your password"
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "email": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "password": "Password is required.",
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordConfirm": "Confirmation is required.",
+      "passwordMatch": "Passwords do not match."
     }
   }
 }

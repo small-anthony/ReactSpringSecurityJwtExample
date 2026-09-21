@@ -2,14 +2,17 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.EmployeurRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
+import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +36,9 @@ public class UserAppServiceTest {
 
     @Mock
     private EmployeurRepository employeurRepository;
+
+    @Mock
+    private ProfesseurRepository professeurRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -211,5 +217,92 @@ public class UserAppServiceTest {
 
         //ASSERT
         assertEquals("Les mots de passe ne correspondent pas", exception.getMessage());
+    }
+
+    // --- Tests Professeur ---
+
+    @Test
+    void registerProfesseur_avecDonneesValides_creeLeProfesseur() throws Exception {
+        // Arrange
+        String firstName = "Jean";
+        String lastName = "Tremblay";
+        String email = "jean.tremblay@cegep.ca";
+        String password = "motdepasse123";
+
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(password)).thenReturn("hashedPassword");
+
+        Professeur professeurSauvegarde = new Professeur(
+                firstName, lastName,
+                new Credentials(email, "hashedPassword", Role.PROFESSEUR)
+        );
+        professeurSauvegarde.setId(1L);
+
+        when(professeurRepository.save(any(Professeur.class))).thenReturn(professeurSauvegarde);
+
+        // Act
+        ProfesseurDto result = userAppService.registerProfesseur(
+                firstName, lastName, email, password, password
+        );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(firstName, result.firstName());
+        assertEquals(lastName, result.lastName());
+        assertEquals(email, result.email());
+
+        verify(passwordEncoder).encode(password);
+        verify(professeurRepository).save(any(Professeur.class));
+    }
+
+    @Test
+    void registerProfesseur_avecEmailInvalide_lanceUneException() {
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.registerProfesseur("Jean", "Tremblay", "pas-un-email", "motdepasse123", "motdepasse123")
+        );
+
+        assertEquals("Le format du courriel n'est pas valide.", exception.getMessage());
+        verifyNoInteractions(professeurRepository);
+    }
+
+    @Test
+    void registerProfesseur_avecEmailDejaExistant_lanceUneException() {
+        String email = "jean.tremblay@cegep.ca";
+        when(userAppRepository.findUserAppByEmail(email))
+                .thenReturn(Optional.of(mock(UserApp.class)));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.registerProfesseur("Jean", "Tremblay", email, "motdepasse123", "motdepasse123")
+        );
+
+        assertEquals("Un compte avec cet email existe déjà", exception.getMessage());
+        verify(professeurRepository, never()).save(any());
+    }
+
+    @Test
+    void registerProfesseur_avecMotDePasseTropCourt_lanceUneException() {
+        String email = "jean.tremblay@cegep.ca";
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.empty());
+        String motDePasseCourt = "abc123";
+
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.registerProfesseur("Jean", "Tremblay", email, motDePasseCourt, motDePasseCourt)
+        );
+
+        assertEquals("Le mot de passe doit contenir au moins 8 caractères.", exception.getMessage());
+        verify(professeurRepository, never()).save(any());
+    }
+
+    @Test
+    void registerProfesseur_avecMotsDePasseDifferents_lanceUneException() {
+        String email = "jean.tremblay@cegep.ca";
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.registerProfesseur("Jean", "Tremblay", email, "motdepasse123", "autreMotDePasse")
+        );
+
+        assertEquals("Les mots de passe ne correspondent pas", exception.getMessage());
+        verify(professeurRepository, never()).save(any());
     }
 }
