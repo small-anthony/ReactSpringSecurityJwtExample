@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("E")
 public class Employeur extends UserApp {
-
     private String entreprise;
     private String telephone;
 
@@ -25,16 +24,7 @@ public class Employeur extends UserApp {
         return entreprise;
     }
 
-    public void setEntreprise(String entreprise) {
-        this.entreprise = entreprise;
-    }
-
     public String getTelephone() {
         return telephone;
     }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
 }
-

@@ -8,13 +8,12 @@ import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.UserDto;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -66,33 +65,10 @@ public class UserAppService {
         };
     }
 
-    private GestionnaireDto getGestionnaireDto(Long id) {
-        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
-        return gestionnaireOptional.isPresent() ?
-                GestionnaireDto.create(gestionnaireOptional.get()) :
-                GestionnaireDto.empty();
-    }
+    public EtudiantDto registerStudent(String firstName, String lastName, int matricule, String email, String discipline, String password, String confirmPassword) throws Exception {
 
-    private ProfesseurDto getPreposeDto(Long id) {
-        final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                ProfesseurDto.create(preposeOptional.get()) :
-                ProfesseurDto.empty();
-    }
-
-    private EtudiantDto getEmprunteurDto(Long id) {
-        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EtudiantDto.create(emprunteurOptional.get()) :
-                EtudiantDto.empty();
-    }
-
-    public EmployeurDto registerEmployeur(String firstName, String lastName,
-                                          String email, String entreprise, String telephone,
-                                          String password, String passwordConfirmation) throws Exception
-    {
         if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            throw new Exception("Le format du courriel n'est pas valide.");
+            throw new Exception("Le format de l'email est invalide");
         }
 
         if (checkIfEmailExists(email)) {
@@ -100,35 +76,47 @@ public class UserAppService {
         }
 
         if (password.length() < 8) {
-            throw new Exception("Le mot de passe doit contenir au moins 8 caractères.");
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
+        }
+
+        if (!password.equals(confirmPassword)) {
+            throw new Exception("Les mots de passe ne correspondent pas");
+        }
+
+        String passwordEncoded = passwordEncoder.encode(password);
+
+        Credentials credentials = new Credentials(email, passwordEncoded, Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant(firstName, lastName, credentials, matricule, discipline);
+
+        return EtudiantDto.create(etudiantRepository.save(etudiant));
+    }
+
+    public EmployeurDto registerEmployeur(String firstName, String lastName,
+                                          String email, String entreprise, String telephone,
+                                          String password, String passwordConfirmation) throws Exception
+    {
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new Exception("Le format du courriel n'est pas valide");
+        }
+
+        if (checkIfEmailExists(email)) {
+            throw new Exception("Un compte avec cet email existe déjà");
+        }
+
+        if (password.length() < 8) {
+            throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
         }
 
         if (!password.equals(passwordConfirmation)) {
             throw new Exception("Les mots de passe ne correspondent pas");
         }
 
-        Credentials credentials = new Credentials(email, passwordEncoder.encode(password), Role.EMPLOYEUR);
+        String passwordEncode = passwordEncoder.encode(password);
+        Credentials credentials = new Credentials(email, passwordEncode, Role.EMPLOYEUR);
 
-        Employeur nouvelEmployeur = new Employeur(
-                firstName,
-                lastName,
-                credentials,
-                entreprise,
-                telephone
-        );
+        Employeur nouvelEmployeur = new Employeur(firstName, lastName, credentials, entreprise, telephone);
 
         return EmployeurDto.create(employeurRepository.save(nouvelEmployeur));
-    }
-
-    private EmployeurDto getEmployeurDto(Long id) {
-        final Optional<Employeur> emprunteurOptional = employeurRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EmployeurDto.create(emprunteurOptional.get()) :
-                EmployeurDto.empty();
-    }
-
-    private boolean checkIfEmailExists(String email) {
-        return userAppRepository.findUserAppByEmail(email).isPresent();
     }
 
     public ProfesseurDto registerProfesseur(String firstName, String lastName,
@@ -158,7 +146,35 @@ public class UserAppService {
         return ProfesseurDto.create(professeurRepository.save(nouveauProfesseur));
     }
 
+    private GestionnaireDto getGestionnaireDto(Long id) {
+        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
+        return gestionnaireOptional.isPresent() ?
+                GestionnaireDto.create(gestionnaireOptional.get()) :
+                GestionnaireDto.empty();
+    }
 
+    private ProfesseurDto getPreposeDto(Long id) {
+        final Optional<Professeur> preposeOptional = professeurRepository.findById(id);
+        return preposeOptional.isPresent() ?
+                ProfesseurDto.create(preposeOptional.get()) :
+                ProfesseurDto.empty();
+    }
 
+    private EtudiantDto getEmprunteurDto(Long id) {
+        final Optional<Etudiant> emprunteurOptional = etudiantRepository.findById(id);
+        return emprunteurOptional.isPresent() ?
+                EtudiantDto.create(emprunteurOptional.get()) :
+                EtudiantDto.empty();
+    }
 
+    private EmployeurDto getEmployeurDto(Long id) {
+        final Optional<Employeur> emprunteurOptional = employeurRepository.findById(id);
+        return emprunteurOptional.isPresent() ?
+                EmployeurDto.create(emprunteurOptional.get()) :
+                EmployeurDto.empty();
+    }
+
+    private boolean checkIfEmailExists(String email) {
+        return userAppRepository.findUserAppByEmail(email).isPresent();
+    }
 }
