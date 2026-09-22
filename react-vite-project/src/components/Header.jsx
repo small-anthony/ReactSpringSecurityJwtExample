@@ -26,6 +26,8 @@ function Header({ user }) {
     return t(`role.${roleName.toLowerCase()}`, { defaultValue: roleName });
   };
 
+  const isEtudiant = user?.role?.toString() === "ROLE_ETUDIANT";
+
   const isEmployeur = user?.role?.toString() === "ROLE_EMPLOYEUR";
 
   const currentLang = i18n.language || "fr";
@@ -71,9 +73,14 @@ function Header({ user }) {
               <NavLink to="/about" className={navLinkClasses}>
                 {t("pagename.about")}
               </NavLink>
+              {isEtudiant && (
+                  <NavLink to="/etudiant" className={navLinkClasses}>
+                      {t("pagename.etudiant")}
+                  </NavLink>
+              )}
               {isEmployeur && (
                   <NavLink to="/employeur" className={navLinkClasses}>
-                    {t("pagename.voir_offres", { defaultValue: "Voir offres" })}
+                    {t("pagename.voir_offres")}
                   </NavLink>
               )}
             </nav>
@@ -113,7 +120,7 @@ function Header({ user }) {
                       <span className="font-semibold text-gray-800">
                     {user.firstName} {user.lastName}
                   </span>
-                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
                     {formatRole(user?.role?.toString())}
                   </span>
                     </div>
@@ -215,13 +222,22 @@ function Header({ user }) {
               >
                 {t("pagename.about")}
               </NavLink>
+                {isEtudiant && (
+                    <NavLink
+                        to="/etudiant"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                        {t("pagename.etudiant")}
+                    </NavLink>
+                )}
               {isEmployeur && (
                   <NavLink
-                      to="/employeur/creer-offre"
+                      to="/employeur"
                       onClick={() => setMobileMenuOpen(false)}
                       className={mobileNavLinkClasses}
                   >
-                    {t("pagename.creer_offre", { defaultValue: "Créer une offre" })}
+                    {t("pagename.voir_offres")}
                   </NavLink>
               )}
 

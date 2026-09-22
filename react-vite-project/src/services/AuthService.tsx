@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-import {createContext, useState} from "react";
+import React, { useEffect } from "react";
+import { createContext, useState } from "react";
 import APIHelper from "../utils/APIHelper";
 
 export enum UserRole {
@@ -14,6 +14,7 @@ interface UserData {
     lastName: string;
     email: string;
     role: UserRole;
+    hasCv?: boolean;
 }
 
 interface IAuthService {
@@ -28,40 +29,60 @@ interface IAuthService {
 }
 
 function makeAuthHeader(token: string) {
-    return {Authorization: `Bearer ${token}`}
+    return { Authorization: `Bearer ${token}` }
 }
 
-function clearTokenCookie() { setTokenCookie(null, new Date(0)) }
+function clearTokenCookie() {
+    setTokenCookie(null, new Date(0));
+    try { localStorage.removeItem("token"); } catch (_) { }
+}
 
-function setTokenCookie(value: string, expires?: Date) {
+function setTokenCookie(value: string | null, expires?: Date) {
     const expirationDate = !expires ? "" : expires.toUTCString();
     document.cookie = `token=${value != null ? value : ""};${expirationDate + ';'}path=/`;
+    try {
+        if (value) {
+            localStorage.setItem("token", value);
+        } else {
+            localStorage.removeItem("token");
+        }
+    } catch (_) { }
 }
 
-function getTokenCookie() : string | null {
+export function getTokenCookie(): string | null {
     const tokenIdent = "token=";
 
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookiePos = decodedCookie.indexOf(tokenIdent);
-    if(cookiePos <= -1) {
-        return null;
+    if (cookiePos <= -1) {
+        try {
+            return localStorage.getItem("token");
+        } catch (_) {
+            return null;
+        }
     }
 
-    let endPos = decodedCookie.indexOf(' ', cookiePos)
-    if(endPos <= -1) {
+    let endPos = decodedCookie.indexOf(';', cookiePos);
+    if (endPos <= -1) {
+        endPos = decodedCookie.indexOf(' ', cookiePos);
+    }
+    if (endPos <= -1) {
         endPos = decodedCookie.length;
     }
 
-    const token = decodedCookie.substring(cookiePos + tokenIdent.length, endPos);
-    console.log(token);
-    if(token.length == 0) {
-        return null;
+    const token = decodedCookie.substring(cookiePos + tokenIdent.length, endPos).trim();
+    if (token.length === 0) {
+        try {
+            return localStorage.getItem("token");
+        } catch (_) {
+            return null;
+        }
     }
     return token;
 }
 
 export const AuthServiceContext = createContext<IAuthService>(undefined);
-const AuthService = ({children}) => {
+const AuthService = ({ children }) => {
     const [sessionToken, setSessionToken] = useState<string | null>(getTokenCookie());
     const [userData, setUserData] = useState<UserData | null>(null);
 
@@ -72,18 +93,18 @@ const AuthService = ({children}) => {
 
         getUserData() {
             useEffect(() => {
-                if(sessionToken === null) {
+                if (sessionToken === null) {
                     return;
                 }
 
-                if(userData) {
+                if (userData) {
                     return;
                 }
 
                 const fetchData = async () => {
                     const requestResult = await APIHelper.get('/user/me', makeAuthHeader(sessionToken), {});
-                    if(!requestResult.ok) {
-                        if(requestResult.status == 401) { // bad token
+                    if (!requestResult.ok) {
+                        if (requestResult.status == 401) { // bad token
                             return this.logout();
                         }
 
@@ -100,9 +121,9 @@ const AuthService = ({children}) => {
         },
 
         async login(email: string, password: string) {
-            const loginResult = await APIHelper.post('/user/login', {}, {email: email.toLowerCase(), password: password});
-            if(!loginResult.ok) {
-                if(loginResult.status == 401) {
+            const loginResult = await APIHelper.post('/user/login', {}, { email: email.toLowerCase(), password: password });
+            if (!loginResult.ok) {
+                if (loginResult.status == 401) {
                     const err = new LoginError()
                     err.message = await loginResult.json();
                     throw err;
@@ -117,7 +138,7 @@ const AuthService = ({children}) => {
         },
 
         async logout() {
-            if(!this.isAuthed()) {
+            if (!this.isAuthed()) {
                 return;
             }
 
@@ -135,7 +156,7 @@ const AuthService = ({children}) => {
     );
 }
 
-export class AuthError extends Error {}
-export class LoginError extends AuthError {}
+export class AuthError extends Error { }
+export class LoginError extends AuthError { }
 
 export default AuthService

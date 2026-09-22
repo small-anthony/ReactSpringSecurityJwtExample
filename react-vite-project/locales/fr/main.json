@@ -8,6 +8,7 @@
     "signup_employeur": "S'inscrire comme employeur",
     "signup_etudiant": "S'inscrire comme étudiant",
     "signup_professeur": "S'inscrire comme professeur",
+    "etudiant": "Mon profil",
     "voir_offres": "Voir offres",
     "logout": "Déconnexion"
   },
@@ -219,6 +220,21 @@
       "passwordConfirm": "La confirmation est obligatoire.",
       "passwordMatch": "Les mots de passe ne correspondent pas."
     }
+  },
+  "cv_upload": {
+    "title": "Televerser votre CV",
+    "successMessage": "Votre CV a été televersé avec succès!",
+    "loading": "Téléversement en cours...",
+    "submit": "Soumettre mon CV",
+    "errors": {
+      "notPdf": "Veuillez sélectionner un fichier PDF.",
+      "default": "Une erreur est survenue lors du téléversement."
+    }
+  },
+  "etudiant_profile": {
+    "title": "Profil Etudiant",
+    "cv_uploaded": "Votre CV a été téléversé avec succès",
+    "loading": "Chargement..."
   },
   "employeur_home": {
     "title": "Mes offres de stage",

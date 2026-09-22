@@ -8,6 +8,7 @@
     "signup_employeur": "Register as employer",
     "signup_etudiant": "Register as student",
     "signup_professeur": "Register as teacher",
+    "etudiant": "My profile",
     "voir_offres": "View offers",
     "logout": "Logout"
   },
@@ -219,6 +220,21 @@
       "passwordConfirm": "Confirmation is required.",
       "passwordMatch": "Passwords do not match."
     }
+  },
+  "cv_upload": {
+    "title": "Upload your CV",
+    "successMessage": "Your CV has been uploaded successfully!",
+    "loading": "Uploading...",
+    "submit": "Submit my CV",
+    "errors": {
+      "notPdf": "Please select a PDF file.",
+      "default": "An error occurred during the upload."
+    }
+  },
+  "etudiant_profile": {
+    "title": "Student Profile",
+    "cv_uploaded": "Your CV has been uploaded successfully",
+    "loading": "Loading..."
   },
   "employeur_home": {
     "title": "My internship offers",
