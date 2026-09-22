@@ -99,8 +99,6 @@ public class EmployeurControllerTest {
         assertEquals("Le format du courriel n'est pas valide", response.getBody());
     }
 
-
-//    TEST TELEVERSEMENT OFFRE D'OFFRE DEMPLOI
     @Test
     void testCreerOffre_succes() throws Exception {
 //        ARRANGE
