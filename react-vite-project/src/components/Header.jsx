@@ -26,6 +26,8 @@ function Header({ user }) {
     return t(`role.${roleName.toLowerCase()}`, { defaultValue: roleName });
   };
 
+  const isEtudiant = user?.role?.toString() === "ROLE_ETUDIANT";
+
   const currentLang = i18n.language || "fr";
 
   const navLinkClasses = ({ isActive }) =>
@@ -69,6 +71,11 @@ function Header({ user }) {
             <NavLink to="/about" className={navLinkClasses}>
               {t("pagename.about")}
             </NavLink>
+            {isEtudiant && (
+                <NavLink to="/etudiant" className={navLinkClasses}>
+                  {t("pagename.etudiant")}
+                </NavLink>
+            )}
           </nav>
 
           {/* Actions Droite Desktop */}
@@ -222,6 +229,15 @@ function Header({ user }) {
                   {formatRole(user?.role?.toString())}
                 </span>
               </div>
+              {isEtudiant && (
+                <Link
+                  to="/etudiant"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={mobileNavLinkClasses({ isActive: false })}
+                >
+                  Mon profil
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={logOut}

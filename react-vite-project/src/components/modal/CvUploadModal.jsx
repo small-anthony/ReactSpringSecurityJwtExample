@@ -38,7 +38,7 @@ export default function CvUploadModal({ onUploadSuccess }) {
                 onUploadSuccess();
             }, 2000);
         } catch (err) {
-            setError(err.message || t('cv_upload.errors.uploadFailed'));
+            setError(err.message || t('cv_upload.errors.default'));
         } finally {
             setIsLoading(false);
         }

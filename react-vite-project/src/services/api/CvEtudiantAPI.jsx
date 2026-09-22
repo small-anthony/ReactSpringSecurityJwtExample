@@ -48,5 +48,5 @@ export const checkCvExists = async () => {
 
     const data = await response.json();
 
-    return data.hasCv != null || data.hasCv === true;
+    return data.hasCv === true;
 }
