@@ -2,29 +2,31 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getOffresStages } from "../../services/api/OffreStageService";
+import {useTranslation} from "react-i18next";
 
 export default function EmployeurHome() {
+  const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
   const [offres, setOffres] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let isMounted = true;
+    let offresChargees = true;
 
     getOffresStages(authService.buildAuthHeader())
       .then((data) => {
-        if (isMounted) setOffres(data);
+        if (offresChargees) setOffres(data);
       })
       .catch((err) => {
-        if (isMounted) setError(err.message);
+        if (offresChargees) setError(err.message);
       })
       .finally(() => {
-        if (isMounted) setIsLoading(false);
+        if (offresChargees) setIsLoading(false);
       });
 
     return () => {
-      isMounted = false;
+      offresChargees = false;
     };
   }, [authService]);
 
@@ -32,22 +34,22 @@ export default function EmployeurHome() {
     <main className="max-w-5xl mx-auto my-10 px-4">
       <div className="flex items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Mes offres de stage</h1>
-          <p className="text-gray-500 mt-1">Gérez les offres publiées par votre entreprise.</p>
+          <h1 className="text-3xl font-bold text-gray-800">{t("employeur_home.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("employeur_home.subtitle")}</p>
         </div>
         <Link
           to="/employeur/creer-offre"
           className="shrink-0 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
         >
-          Créer une offre
+            {t("employeur_home.create_offer")}
         </Link>
       </div>
 
-      {isLoading && <p className="text-gray-500">Chargement des offres...</p>}
+      {isLoading && <p className="text-gray-500">{t("employeur_home.loading")}</p>}
       {error && <p className="p-4 rounded-lg bg-red-50 text-red-700">{error}</p>}
       {!isLoading && !error && offres.length === 0 && (
         <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
-          Aucune offre de stage n&apos;a encore été créée.
+            {t("employeur_home.no_offers")}
         </p>
       )}
       <div className="grid gap-4">

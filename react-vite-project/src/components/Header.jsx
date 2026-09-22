@@ -52,7 +52,6 @@ function Header({ user }) {
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo / Marque Stagify */}
             <Link
                 to="/"
                 className="flex items-center gap-2.5 group select-none"
@@ -65,7 +64,6 @@ function Header({ user }) {
             </span>
             </Link>
 
-            {/* Navigation Liens Desktop */}
             <nav className="hidden md:flex items-center gap-2">
               <NavLink to="/" className={navLinkClasses}>
                 {t("pagename.home")}
@@ -74,15 +72,13 @@ function Header({ user }) {
                 {t("pagename.about")}
               </NavLink>
               {isEmployeur && (
-                  <NavLink to="/employeur/creer-offre" className={navLinkClasses}>
-                    {t("pagename.creer_offre", { defaultValue: "Créer une offre" })}
+                  <NavLink to="/employeur" className={navLinkClasses}>
+                    {t("pagename.voir_offres", { defaultValue: "Voir offres" })}
                   </NavLink>
               )}
             </nav>
 
-            {/* Actions Droite Desktop */}
             <div className="hidden md:flex items-center gap-3">
-              {/* Sélecteur de Langue Segmenté (FR / EN) */}
               <div className="inline-flex p-1 bg-gray-100 rounded-lg border border-gray-200/80 text-xs font-semibold">
                 <button
                     type="button"
@@ -110,7 +106,6 @@ function Header({ user }) {
 
               {user ? (
                   <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
-                    {/* Badge Profil Utilisateur */}
                     <div className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs shadow-xs">
                       <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
                         {initials || "U"}
@@ -123,7 +118,6 @@ function Header({ user }) {
                   </span>
                     </div>
 
-                    {/* Bouton Déconnexion */}
                     <button
                         type="button"
                         onClick={logOut}
@@ -163,9 +157,7 @@ function Header({ user }) {
               )}
             </div>
 
-            {/* Bouton Menu Mobile (Hamburger) */}
             <div className="flex items-center gap-2 md:hidden">
-              {/* Langue Mobile */}
               <div className="inline-flex p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-xs font-semibold">
                 <button
                     type="button"
@@ -207,7 +199,6 @@ function Header({ user }) {
           </div>
         </div>
 
-        {/* Menu Déroulant Mobile */}
         {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-3 pb-5 space-y-2 shadow-lg">
               <NavLink

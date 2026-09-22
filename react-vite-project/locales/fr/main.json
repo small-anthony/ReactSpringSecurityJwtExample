@@ -8,6 +8,7 @@
     "signup_employeur": "S'inscrire comme employeur",
     "signup_etudiant": "S'inscrire comme étudiant",
     "signup_professeur": "S'inscrire comme professeur",
+    "voir_offres": "Voir offres",
     "logout": "Déconnexion"
   },
   "home": {
@@ -218,5 +219,12 @@
       "passwordConfirm": "La confirmation est obligatoire.",
       "passwordMatch": "Les mots de passe ne correspondent pas."
     }
+  },
+  "employeur_home": {
+    "title": "Mes offres de stage",
+    "subtitle": "Gérez les offres publiées par votre entreprise.",
+    "create_offer": "Créer une offre",
+    "loading": "Chargement des offres...",
+    "no_offers": "Aucune offre de stage n'a encore été créée."
   }
 }

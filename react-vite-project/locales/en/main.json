@@ -8,6 +8,7 @@
     "signup_employeur": "Register as employer",
     "signup_etudiant": "Register as student",
     "signup_professeur": "Register as teacher",
+    "voir_offres": "View offers",
     "logout": "Logout"
   },
   "home": {
@@ -218,5 +219,12 @@
       "passwordConfirm": "Confirmation is required.",
       "passwordMatch": "Passwords do not match."
     }
+  },
+  "employeur_home": {
+    "title": "My internship offers",
+    "subtitle": "Manage the offers published by your company.",
+    "create_offer": "Create an offer",
+    "loading": "Loading offers...",
+    "no_offers": "No internship offer has been created yet."
   }
 }
