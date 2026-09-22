@@ -62,16 +62,16 @@ public class JwtTokenProvider{
 				.verifyWith((javax.crypto.SecretKey) getSigningKey())
 				.build()
 				.parseSignedClaims(token);
-		}catch(SecurityException ex){
-			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Invalid JWT signature");
-		}catch(MalformedJwtException ex){
-			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
-		}catch(ExpiredJwtException ex){
-			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Expired JWT token");
-		}catch(UnsupportedJwtException ex){
-			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
-		}catch(IllegalArgumentException ex){
-			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
+		}catch(SecurityException ex) {
+			throw new InvalidJwtTokenException("Invalid JWT signature");
+		}catch(MalformedJwtException ex) {
+			throw new InvalidJwtTokenException("Invalid JWT token");
+		}catch(ExpiredJwtException ex) {
+			throw new InvalidJwtTokenException("Expired JWT token");
+		}catch(UnsupportedJwtException ex) {
+			throw new InvalidJwtTokenException("Unsupported JWT token");
+		}catch(IllegalArgumentException ex) {
+			throw new InvalidJwtTokenException("JWT claims string is empty");
 		}
 	}
 

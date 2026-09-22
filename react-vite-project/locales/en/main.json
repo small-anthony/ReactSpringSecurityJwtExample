@@ -6,6 +6,8 @@
     "login": "Login",
     "signup": "Sign up",
     "signup_employeur": "Register as employer",
+    "signup_etudiant": "Register as student",
+    "signup_professeur": "Register as teacher",
     "logout": "Logout"
   },
   "home": {
@@ -13,7 +15,8 @@
     "subtitle": "Internship Management Platform",
     "description": "The collaborative platform connecting students, companies, and teachers. Find a rewarding internship, recruit qualified talent, or oversee academic supervision with ease.",
     "cta_signup": "Sign up",
-    "cta_login": "Log in"
+    "cta_login": "Log in",
+    "connected_as": "Connected as"
   },
   "about": {
     "title": "About Stagify",
@@ -34,7 +37,81 @@
     "gestionnaire": "Coordinator",
     "etudiant": "Student",
     "employeur": "Employer",
-    "professeur": "Tutor"
+    "professeur": "Teacher"
+  },
+  "login_page": {
+    "title": "Sign In",
+    "subtitle": "Access your Stagify workspace.",
+    "email": "Email address",
+    "password": "Password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Log In",
+    "submitting": "Logging in...",
+    "noAccount": "Don't have an account?",
+    "signup": "Sign up",
+    "errorPrefix": "Error: ",
+    "invalidCredentials": "Invalid email or password.",
+    "defaultError": "Error communicating with the server.",
+    "placeholders": {
+      "email": "Ex: john.doe@college.ca",
+      "password": "Your password"
+    },
+    "errors": {
+      "email": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "password": "Password is required."
+    }
+  },
+  "signup_etudiant": {
+    "title": "Student Registration",
+    "subtitle": "Fill out this form to create your student account.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "matricule": "Student ID (7 digits)",
+    "email": "Email address",
+    "discipline": "Internship program",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Logging in...",
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "defaultError": "Error communicating with the server.",
+    "placeholders": {
+      "firstName": "Ex: John",
+      "lastName": "Ex: Doe",
+      "matricule": "Ex: 1234567",
+      "email": "Ex: 1234567@cegep.ca",
+      "password": "At least 8 characters",
+      "confirmPassword": "Retype your password"
+    },
+    "disciplines": {
+      "placeholder": "-- Select a program --",
+      "info": "Computer Science Technology",
+      "soins": "Nursing",
+      "archi": "Architectural Technology",
+      "compta": "Accounting and Management Technology",
+      "gcivil": "Civil Engineering Technology"
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "matriculeRequired": "Student ID is required.",
+      "matriculeFormat": "Student ID must be exactly 7 digits.",
+      "emailRequired": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "disciplineRequired": "Please choose a program.",
+      "passwordRequired": "Password is required.",
+      "passwordLength": "Password must be at least 8 characters.",
+      "confirmPasswordRequired": "Confirmation is required.",
+      "confirmPasswordMatch": "Passwords do not match."
+    }
   },
   "signup_employeur": {
     "title": "Employer Registration",
@@ -53,7 +130,7 @@
     "submitting": "Registering...",
     "hasAccount": "Already have an account?",
     "login": "Log in",
-    "success": "Registration successful! Redirecting to login page...",
+    "success": "Registration successful! Logging in...",
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
     "defaultError": "Error communicating with the server.",
@@ -104,5 +181,42 @@
     "success": "Your internship offer has been created successfully!",
     "submit": "Create Offer",
     "submitting": "Creating..."
+  },
+  "signup_professeur": {
+    "title": "Teacher Registration",
+    "subtitle": "Fill out this form to create your teacher account.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "show": "Show",
+    "hide": "Hide",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Logging in...",
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "defaultError": "Error communicating with the server.",
+    "emailExists": "An account with this email address already exists.",
+    "placeholders": {
+      "firstName": "Ex: John",
+      "lastName": "Ex: Doe",
+      "email": "Ex: john.doe@college.ca",
+      "password": "At least 8 characters",
+      "confirmPassword": "Retype your password"
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "email": "Email is required.",
+      "emailFormat": "Invalid email format.",
+      "password": "Password is required.",
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordConfirm": "Confirmation is required.",
+      "passwordMatch": "Passwords do not match."
+    }
   }
 }

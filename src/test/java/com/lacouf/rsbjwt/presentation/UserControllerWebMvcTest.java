@@ -1,79 +1,113 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.repository.EtudiantRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
+import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.security.exception.BadCredentialsException;
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.LoginDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class UserControllerWebMvcTest {
-    // TODO
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
-//    @Autowired
-//    private WebApplicationContext webApplicationContext;
-//
-//    private ObjectMapper objectMapper;
-//
-//    @MockitoBean
-//    private UserAppService userService;
-//
-//    @MockitoBean
-//    private GestionnaireRepository gestionnaireRepository;
-//
-//    @MockitoBean
-//    private EtudiantRepository etudiantRepository;
-//
-//    @MockitoBean
-//    private ProfesseurRepository professeurRepository;
-//
-//    @MockitoBean
-//    private UserAppRepository userAppRepository;
-//
-//    @MockitoBean
-//    private PasswordEncoder passwordEncoder;
-//
-//    private MockMvc mockMvc;
-//
-//    @BeforeEach
-//    void setUp() {
-//        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-//                .build();
-//        objectMapper = new ObjectMapper();
-//    }
-//
-//    @Test
-//    @DisplayName("POST /user/login returns 202 and token on success")
-//    void authenticateUser_success_returnsAcceptedAndToken() throws Exception {
-//        // Arrange
-//        LoginDTO login = new LoginDTO("user@example.com", "password");
-//        when(userService.authenticateUser(any(LoginDTO.class))).thenReturn("token123");
-//
-//        // Act + Assert
-//        mockMvc.perform(post("/user/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(login)))
-//                .andExpect(status().isAccepted())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.tokenType").value("BEARER"))
-//                .andExpect(jsonPath("$.accessToken").value("token123"));
-//    }
-//
-//    @Test
-//    @DisplayName("POST /user/login returns 401 on failure")
-//    void authenticateUser_failure_returnsUnauthorized() throws Exception {
-//        // Arrange
-//        LoginDTO login = new LoginDTO("user@example.com", "wrong");
-//        when(userService.authenticateUser(any(LoginDTO.class))).thenThrow(new RuntimeException("bad creds"));
-//
-//        // Act + Assert
-//        mockMvc.perform(post("/user/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(login)))
-//                .andExpect(status().isUnauthorized())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.tokenType").value("BEARER"))
-//                .andExpect(jsonPath("$.accessToken").value(org.hamcrest.Matchers.nullValue()));
-//    }
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private UserAppService userService;
+
+    @MockitoBean
+    private GestionnaireRepository gestionnaireRepository;
+
+    @MockitoBean
+    private EtudiantRepository etudiantRepository;
+
+    @MockitoBean
+    private ProfesseurRepository professeurRepository;
+
+    @MockitoBean
+    private UserAppRepository userAppRepository;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .build();
+        objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    @DisplayName("POST /user/login returns 202 and token on success")
+    void authenticateUser_success_returnsAcceptedAndToken() throws Exception {
+        // Arrange
+        LoginDto login = new LoginDto("user@example.com", "password");
+        when(userService.authenticateUser(any(LoginDto.class))).thenReturn("token123");
+
+        // Act + Assert
+        mockMvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.tokenType").value("BEARER"))
+                .andExpect(jsonPath("$.accessToken").value("token123"));
+    }
+
+    @Test
+    @DisplayName("POST /user/login returns 401 for invalid password")
+    void authenticateUser_badPassword_returnsUnauthorized() throws Exception {
+        // Arrange
+        LoginDto login = new LoginDto("user@example.com", "wrong");
+        when(userService.authenticateUser(any(LoginDto.class))).thenThrow(new BadCredentialsException());
+
+        // Act + Assert
+        mockMvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("bad_credentials"));
+    }
+
+    @Test
+    @DisplayName("POST /user/login returns 401 for nonexistant user")
+    void authenticateUser_badEmail_returnsUnauthorized() throws Exception {
+        // Arrange
+        LoginDto login = new LoginDto("wrong@example.com", "password");
+        when(userService.authenticateUser(any(LoginDto.class))).thenThrow(new UserNotFoundException());
+
+        // Act + Assert
+        mockMvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("bad_credentials"));
+    }
 }

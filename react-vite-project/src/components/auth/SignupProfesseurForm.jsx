@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { registerEmployeur } from "../../services/api/EmployeurService";
+import { registerProfesseur } from "../../services/api/ProfesseurService";
 import SignupTabs from "./SignupTabs";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 
-export default function SignupEmployeurForm() {
+export default function SignupProfesseurForm() {
   const navigate = useNavigate();
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
@@ -14,9 +14,6 @@ export default function SignupEmployeurForm() {
     firstName: "",
     lastName: "",
     email: "",
-    entreprise: "",
-    poste: "",
-    telephone: "",
     password: "",
     passwordConfirmation: ""
   });
@@ -54,16 +51,6 @@ export default function SignupEmployeurForm() {
       newErrors.email = "emailFormat";
     }
 
-    if (!formData.entreprise.trim()) {
-      newErrors.entreprise = "entreprise";
-    }
-
-    if (!formData.telephone.trim()) {
-      newErrors.telephone = "telephone";
-    } else if (!/^[0-9+()\-.\s]{7,20}$/.test(formData.telephone.trim())) {
-      newErrors.telephone = "telephoneFormat";
-    }
-
     if (!formData.password) {
       newErrors.password = "password";
     } else if (formData.password.length < 8) {
@@ -96,13 +83,11 @@ export default function SignupEmployeurForm() {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
-        entreprise: formData.entreprise.trim(),
-        telephone: formData.telephone.trim(),
         password: formData.password,
         passwordConfirmation: formData.passwordConfirmation
       };
 
-      await registerEmployeur(payload);
+      await registerProfesseur(payload);
 
       setSuccessMessage("success");
       try {
@@ -129,26 +114,26 @@ export default function SignupEmployeurForm() {
 
   return (
     <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
-      <SignupTabs activeTab="employeur" />
+      <SignupTabs activeTab="professeur" />
 
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
-        {t("signup_employeur.title")}
+        {t("signup_professeur.title")}
       </h2>
       <p className="text-center text-gray-500 text-sm mb-6">
-        {t("signup_employeur.subtitle")}
+        {t("signup_professeur.subtitle")}
       </p>
 
       {serverError && (
         <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
-          <strong>{t("signup_employeur.errorPrefix")}</strong>
-          {t(`signup_employeur.${serverError}`, { defaultValue: t("signup_employeur.defaultError") })}
+          <strong>{t("signup_professeur.errorPrefix")}</strong>
+          {t(`signup_professeur.${serverError}`, { defaultValue: t("signup_professeur.defaultError") })}
         </div>
       )}
 
       {successMessage && (
         <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-800 text-sm rounded">
-          <strong>{t("signup_employeur.successPrefix")}</strong>
-          {t(`signup_employeur.${successMessage}`, { defaultValue: t("signup_employeur.success") })}
+          <strong>{t("signup_professeur.successPrefix")}</strong>
+          {t(`signup_professeur.${successMessage}`, { defaultValue: t("signup_professeur.success") })}
         </div>
       )}
 
@@ -156,42 +141,42 @@ export default function SignupEmployeurForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("signup_employeur.firstName")} <span className="text-red-500">*</span>
+              {t("signup_professeur.firstName")} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
-              placeholder={t("signup_employeur.placeholders.firstName")}
+              placeholder={t("signup_professeur.placeholders.firstName")}
               className={`w-full p-2.5 border rounded-lg ${
                 errors.firstName ? "border-red-500 bg-red-50" : "border-gray-300"
               }`}
             />
             {errors.firstName && (
               <p className="text-red-500 text-xs mt-1">
-                {t(`signup_employeur.errors.${errors.firstName}`)}
+                {t(`signup_professeur.errors.${errors.firstName}`)}
               </p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("signup_employeur.lastName")} <span className="text-red-500">*</span>
+              {t("signup_professeur.lastName")} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              placeholder={t("signup_employeur.placeholders.lastName")}
+              placeholder={t("signup_professeur.placeholders.lastName")}
               className={`w-full p-2.5 border rounded-lg ${
                 errors.lastName ? "border-red-500 bg-red-50" : "border-gray-300"
               }`}
             />
             {errors.lastName && (
               <p className="text-red-500 text-xs mt-1">
-                {t(`signup_employeur.errors.${errors.lastName}`)}
+                {t(`signup_professeur.errors.${errors.lastName}`)}
               </p>
             )}
           </div>
@@ -199,21 +184,21 @@ export default function SignupEmployeurForm() {
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
-            {t("signup_employeur.email")} <span className="text-red-500">*</span>
+            {t("signup_professeur.email")} <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder={t("signup_employeur.placeholders.email")}
+            placeholder={t("signup_professeur.placeholders.email")}
             className={`w-full p-2.5 border rounded-lg ${
               errors.email ? "border-red-500 bg-red-50" : "border-gray-300"
             }`}
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">
-              {t(`signup_employeur.errors.${errors.email}`)}
+              {t(`signup_professeur.errors.${errors.email}`)}
             </p>
           )}
         </div>
@@ -221,65 +206,7 @@ export default function SignupEmployeurForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("signup_employeur.entreprise")} <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="entreprise"
-              value={formData.entreprise}
-              onChange={handleChange}
-              placeholder={t("signup_employeur.placeholders.entreprise")}
-              className={`w-full p-2.5 border rounded-lg ${
-                errors.entreprise ? "border-red-500 bg-red-50" : "border-gray-300"
-              }`}
-            />
-            {errors.entreprise && (
-              <p className="text-red-500 text-xs mt-1">
-                {t(`signup_employeur.errors.${errors.entreprise}`)}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("signup_employeur.poste")}
-            </label>
-            <input
-              type="text"
-              name="poste"
-              value={formData.poste}
-              onChange={handleChange}
-              placeholder={t("signup_employeur.placeholders.poste")}
-              className="w-full p-2.5 border border-gray-300 rounded-lg"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            {t("signup_employeur.telephone")} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="tel"
-            name="telephone"
-            value={formData.telephone}
-            onChange={handleChange}
-            placeholder={t("signup_employeur.placeholders.telephone")}
-            className={`w-full p-2.5 border rounded-lg ${
-              errors.telephone ? "border-red-500 bg-red-50" : "border-gray-300"
-            }`}
-          />
-          {errors.telephone && (
-            <p className="text-red-500 text-xs mt-1">
-              {t(`signup_employeur.errors.${errors.telephone}`)}
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("signup_employeur.password")} <span className="text-red-500">*</span>
+              {t("signup_professeur.password")} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -287,7 +214,7 @@ export default function SignupEmployeurForm() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder={t("signup_employeur.placeholders.password")}
+                placeholder={t("signup_professeur.placeholders.password")}
                 className={`w-full p-2.5 pr-20 border rounded-lg ${
                   errors.password ? "border-red-500 bg-red-50" : "border-gray-300"
                 }`}
@@ -297,19 +224,19 @@ export default function SignupEmployeurForm() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer select-none"
               >
-                {showPassword ? t("signup_employeur.hide") : t("signup_employeur.show")}
+                {showPassword ? t("signup_professeur.hide") : t("signup_professeur.show")}
               </button>
             </div>
             {errors.password && (
               <p className="text-red-500 text-xs mt-1">
-                {t(`signup_employeur.errors.${errors.password}`)}
+                {t(`signup_professeur.errors.${errors.password}`)}
               </p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("signup_employeur.confirmPassword")} <span className="text-red-500">*</span>
+              {t("signup_professeur.confirmPassword")} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -317,7 +244,7 @@ export default function SignupEmployeurForm() {
                 name="passwordConfirmation"
                 value={formData.passwordConfirmation}
                 onChange={handleChange}
-                placeholder={t("signup_employeur.placeholders.confirmPassword")}
+                placeholder={t("signup_professeur.placeholders.confirmPassword")}
                 className={`w-full p-2.5 pr-20 border rounded-lg ${
                   errors.passwordConfirmation ? "border-red-500 bg-red-50" : "border-gray-300"
                 }`}
@@ -327,12 +254,12 @@ export default function SignupEmployeurForm() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer select-none"
               >
-                {showConfirmPassword ? t("signup_employeur.hide") : t("signup_employeur.show")}
+                {showConfirmPassword ? t("signup_professeur.hide") : t("signup_professeur.show")}
               </button>
             </div>
             {errors.passwordConfirmation && (
               <p className="text-red-500 text-xs mt-1">
-                {t(`signup_employeur.errors.${errors.passwordConfirmation}`)}
+                {t(`signup_professeur.errors.${errors.passwordConfirmation}`)}
               </p>
             )}
           </div>
@@ -348,14 +275,14 @@ export default function SignupEmployeurForm() {
                 : "bg-blue-600 hover:bg-blue-700 cursor-pointer shadow"
             }`}
           >
-            {isLoading ? t("signup_employeur.submitting") : t("signup_employeur.submit")}
+            {isLoading ? t("signup_professeur.submitting") : t("signup_professeur.submit")}
           </button>
         </div>
 
         <div className="text-center text-sm text-gray-600 pt-4 border-t border-gray-100">
-          {t("signup_employeur.hasAccount")}{" "}
+          {t("signup_professeur.hasAccount")}{" "}
           <Link to="/login" className="text-blue-600 font-semibold hover:underline">
-            {t("signup_employeur.login")}
+            {t("signup_professeur.login")}
           </Link>
         </div>
       </form>

@@ -2,4 +2,4 @@ package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 
-public record LoginDto(String email, String password) implements DataTransferObject { }
+public record ErrorResponse(String message) implements DataTransferObject { }

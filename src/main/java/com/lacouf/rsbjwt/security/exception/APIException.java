@@ -1,13 +1,9 @@
 package com.lacouf.rsbjwt.security.exception;
 
-import org.springframework.http.HttpStatus;
-
-public abstract class APIException extends RuntimeException{
-	protected final HttpStatus status;
+public abstract class APIException extends RuntimeException {
 	protected final String message;
 
-	public APIException(HttpStatus status, String message){
-		this.status = status;
+	public APIException(String message) {
 		this.message = message;
 	}
 
