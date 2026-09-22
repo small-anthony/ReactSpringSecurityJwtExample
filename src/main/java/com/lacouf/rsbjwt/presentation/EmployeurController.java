@@ -1,23 +1,29 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/employeur")
-public class EmployeurController {
+public class    EmployeurController {
     private final UserAppService userService;
+    private final EmployeurService employeurService;
 
-    public EmployeurController(UserAppService userService) {
+    public EmployeurController(UserAppService userService, EmployeurService employeurService) {
         this.userService = userService;
+        this.employeurService = employeurService;
     }
 
     @PostMapping("/inscription")
@@ -33,6 +39,32 @@ public class EmployeurController {
                     request.get("passwordConfirmation")
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(employeurCree);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/creerOffre")
+    public ResponseEntity<Object> creerOffre(@RequestBody Map<String, String> request, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            OffreStageDto offreCree = employeurService.createOffreStage(
+                    request.get("titre"),
+                    request.get("nomEntreprise"),
+                    request.get("description"),
+                    email
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(offreCree);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/offres")
+    public ResponseEntity<Object> getOffres(Authentication authentication) {
+        try {
+            List<OffreStageDto> offres = employeurService.getOffres(authentication.getName());
+            return ResponseEntity.ok(offres);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

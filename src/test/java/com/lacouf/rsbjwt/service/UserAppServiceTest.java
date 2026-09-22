@@ -46,8 +46,6 @@ public class UserAppServiceTest {
     @InjectMocks
     private UserAppService userAppService;
 
-    // --- Tests Étudiant ---
-
     @Test
     void registerStudent_shouldCreateStudent() throws Exception {
         //ARRANGE
@@ -132,8 +130,6 @@ public class UserAppServiceTest {
         //ASSERT
         assertEquals("Le mot de passe doit contenir au moins 8 caractères", exception.getMessage());
     }
-
-    // --- Tests Employeur ---
 
     @Test
     void registerEmployeur_shouldCreateEmployeur() throws Exception {

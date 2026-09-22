@@ -8,6 +8,7 @@
     "signup_employeur": "S'inscrire comme employeur",
     "signup_etudiant": "S'inscrire comme étudiant",
     "signup_professeur": "S'inscrire comme professeur",
+    "voir_offres": "Voir offres",
     "logout": "Déconnexion"
   },
   "home": {
@@ -159,6 +160,29 @@
       "passwordMatch": "Les mots de passe ne correspondent pas."
     }
   },
+  "creer_offre": {
+    "title": "Créer une offre de stage",
+    "subtitle": "Remplissez les informations ci-dessous",
+    "titre": "Titre du poste",
+    "nomEntreprise": "Nom de l'entreprise",
+    "description": "Description de l'offre",
+    "placeholders": {
+      "titre": "Ex: Développeur Web Junior",
+      "nomEntreprise": "Ex: TechCorp",
+      "description": "Décrivez les tâches et responsabilités..."
+    },
+    "errors": {
+      "titre": "Le titre est obligatoire.",
+      "nomEntreprise": "Le nom de l'entreprise est obligatoire.",
+      "description": "La description est obligatoire.",
+      "descriptionLength": "La description doit contenir au moins 20 caractères."
+    },
+    "errorPrefix": "Erreur : ",
+    "successPrefix": "Succès : ",
+    "success": "Votre offre de stage a été créée avec succès !",
+    "submit": "Créer l'offre",
+    "submitting": "Création en cours..."
+  },
   "signup_professeur": {
     "title": "Inscription Professeur",
     "subtitle": "Remplissez ce formulaire pour créer votre compte enseignant.",
@@ -195,5 +219,12 @@
       "passwordConfirm": "La confirmation est obligatoire.",
       "passwordMatch": "Les mots de passe ne correspondent pas."
     }
+  },
+  "employeur_home": {
+    "title": "Mes offres de stage",
+    "subtitle": "Gérez les offres publiées par votre entreprise.",
+    "create_offer": "Créer une offre",
+    "loading": "Chargement des offres...",
+    "no_offers": "Aucune offre de stage n'a encore été créée."
   }
 }

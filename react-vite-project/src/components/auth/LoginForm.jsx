@@ -55,8 +55,20 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      await authService.login(formData.email.trim().toLowerCase(), formData.password);
-      navigate("/");
+      const loggedUser = await authService.login(formData.email.trim().toLowerCase(), formData.password);
+      const role = (loggedUser?.role || "").toString().toUpperCase();
+
+      if (role.includes("ETUDIANT")) {
+        navigate("/etudiant");
+      } else if (role.includes("EMPLOYEUR")) {
+        navigate("/employeur");
+      } else if (role.includes("PROFESSEUR")) {
+        navigate("/professeur");
+      } else if (role.includes("GESTIONNAIRE")) {
+        navigate("/gestionnaire");
+      } else {
+        navigate("/");
+      }
     } catch {
       setServerError("invalidCredentials");
     } finally {
