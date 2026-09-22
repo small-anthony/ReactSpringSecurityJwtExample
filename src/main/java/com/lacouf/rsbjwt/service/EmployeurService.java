@@ -8,6 +8,8 @@ import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeurService {
@@ -50,5 +52,17 @@ public class EmployeurService {
         employeur.ajouterOffre(offreStage);
 
         return OffreStageDto.create(offreStageRepository.save(offreStage));
+    }
+
+    public List<OffreStageDto> getOffres(String emailEmployeur) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        return offreStageRepository.findByEmployeur(employeur).stream()
+                .map(OffreStageDto::create)
+                .collect(Collectors.toList());
     }
 }

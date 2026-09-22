@@ -8,15 +8,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/employeur")
-public class EmployeurController {
+public class    EmployeurController {
     private final UserAppService userService;
     private final EmployeurService employeurService;
 
@@ -54,6 +55,16 @@ public class EmployeurController {
                     email
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(offreCree);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/offres")
+    public ResponseEntity<Object> getOffres(Authentication authentication) {
+        try {
+            List<OffreStageDto> offres = employeurService.getOffres(authentication.getName());
+            return ResponseEntity.ok(offres);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
