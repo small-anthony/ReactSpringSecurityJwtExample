@@ -11,8 +11,6 @@ import CreateOffreForm from "./components/auth/CreateOffreForm.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
-import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
-import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
 
