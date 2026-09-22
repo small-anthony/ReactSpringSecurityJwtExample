@@ -194,16 +194,16 @@
       "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
       "passwordConfirm": "La confirmation est obligatoire.",
       "passwordMatch": "Les mots de passe ne correspondent pas."
-    },
-    "cv_upload": {
-      "title": "Televerser votre CV",
-      "success": "Votre CV a été televersé avec succès!",
-      "uploading": "Téléversement en cours...",
-      "submit": "Soumettre mon CV",
-      "errors": {
-        "notPdf": "Veuillez sélectionner un fichier PDF.",
-        "default": "Une erreur est survenue lors du téléversement."
-      }
+    }
+  },
+  "cv_upload": {
+    "title": "Televerser votre CV",
+    "successMessage": "Votre CV a été televersé avec succès!",
+    "uploading": "Téléversement en cours...",
+    "submit": "Soumettre mon CV",
+    "errors": {
+      "notPdf": "Veuillez sélectionner un fichier PDF.",
+      "default": "Une erreur est survenue lors du téléversement."
     }
   }
 }

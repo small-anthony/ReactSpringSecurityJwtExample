@@ -29,3 +29,24 @@ export const uploadCv = async (file) => {
 
     return response.json();
 };
+
+export const checkCvExists = async () => {
+    const token = getTokenCookie() || localStorage.getItem("token");
+
+    if (!token) return false;
+
+    const response = await fetch(`${BASE_URL}/user/me`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Une erreur est survenue lors de la vérification du CV');
+    }
+
+    const data = await response.json();
+
+    return data.hasCv != null || data.hasCv === true;
+}

@@ -6,11 +6,11 @@ import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
 import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
-import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
 import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
+import {EtudiantHome} from "./components/page/EtudiantHome.jsx";
 
 function App() {
   const authService = useContext(AuthServiceContext);
@@ -23,7 +23,7 @@ function App() {
           <Route index element={<MainContainer user={userData} />} />
           <Route path='about' element={<About />} />
           <Route path='login' element={<LoginForm />} />
-          <Route path='etudiant' element={<EmprunteurHome />} />
+          <Route path='etudiant' element={<EtudiantHome />} />
           <Route path='professeur' element={<PreposeHome />} />
           <Route path='gestionnaire' element={<GestionnaireHome />} />
           <Route path='signup' element={<SignupEtudiantForm />} />

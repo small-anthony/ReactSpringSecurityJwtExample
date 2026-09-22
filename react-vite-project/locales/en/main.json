@@ -194,16 +194,16 @@
       "passwordLength": "Password must be at least 8 characters.",
       "passwordConfirm": "Confirmation is required.",
       "passwordMatch": "Passwords do not match."
-    },
-    "cv_upload": {
-      "title": "Upload your CV",
-      "success": "Your CV has been uploaded successfully!",
-      "uploading": "Uploading...",
-      "submit": "Submit my CV",
-      "errors": {
-        "notPdf": "Please select a PDF file.",
-        "default": "An error occurred during the upload."
-      }
+    }
+  },
+  "cv_upload": {
+    "title": "Upload your CV",
+    "successMessage": "Your CV has been uploaded successfully!",
+    "uploading": "Uploading...",
+    "submit": "Submit my CV",
+    "errors": {
+      "notPdf": "Please select a PDF file.",
+      "default": "An error occurred during the upload."
     }
   }
 }

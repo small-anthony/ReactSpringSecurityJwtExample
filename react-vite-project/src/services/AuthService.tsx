@@ -14,6 +14,7 @@ interface UserData {
     lastName: string;
     email: string;
     role: UserRole;
+    hasCv?: boolean;
 }
 
 interface IAuthService {
