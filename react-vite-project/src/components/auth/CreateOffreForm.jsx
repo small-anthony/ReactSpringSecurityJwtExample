@@ -1,10 +1,12 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx"
 import { createOffreStage } from "../../services/api/OffreStageService";
 
 export default function CreateOffreForm() {
   const authService = useContext(AuthServiceContext);
+  const navigate = useNavigate();
   const { t } = useTranslation("main");
 
   const [formData, setFormData] = useState({
@@ -71,6 +73,7 @@ export default function CreateOffreForm() {
 
       setSuccessMessage("success");
       setFormData({ titre: "", nomEntreprise: "", description: "" });
+      navigate("/employeur");
 
     } catch (err) {
       setServerError(err.message || "defaultError");

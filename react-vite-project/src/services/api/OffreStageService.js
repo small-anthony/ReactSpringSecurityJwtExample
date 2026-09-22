@@ -17,3 +17,16 @@ export async function createOffreStage(titre, description, nomEntreprise, authHe
 
   return response.json();
 }
+
+export async function getOffresStages(authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/offres`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger les offres");
+  }
+
+  return response.json();
+}
