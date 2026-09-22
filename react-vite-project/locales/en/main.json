@@ -9,6 +9,7 @@
     "signup_etudiant": "Register as student",
     "signup_professeur": "Register as teacher",
     "etudiant": "My profile",
+    "voir_offres": "View offers",
     "logout": "Logout"
   },
   "home": {
@@ -160,6 +161,29 @@
       "passwordMatch": "Passwords do not match."
     }
   },
+  "creer_offre": {
+    "title": "Create an Internship Offer",
+    "subtitle": "Fill in the information below",
+    "titre": "Job Title",
+    "nomEntreprise": "Company Name",
+    "description": "Offer Description",
+    "placeholders": {
+      "titre": "Ex: Junior Web Developer",
+      "nomEntreprise": "Ex: TechCorp",
+      "description": "Describe the tasks and responsibilities..."
+    },
+    "errors": {
+      "titre": "Title is required.",
+      "nomEntreprise": "Company name is required.",
+      "description": "Description is required.",
+      "descriptionLength": "Description must be at least 20 characters."
+    },
+    "errorPrefix": "Error: ",
+    "successPrefix": "Success: ",
+    "success": "Your internship offer has been created successfully!",
+    "submit": "Create Offer",
+    "submitting": "Creating..."
+  },
   "signup_professeur": {
     "title": "Teacher Registration",
     "subtitle": "Fill out this form to create your teacher account.",
@@ -211,5 +235,12 @@
     "title": "Student Profile",
     "cv_uploaded": "Your CV has been uploaded successfully",
     "loading": "Loading..."
+  },
+  "employeur_home": {
+    "title": "My internship offers",
+    "subtitle": "Manage the offers published by your company.",
+    "create_offer": "Create an offer",
+    "loading": "Loading offers...",
+    "no_offers": "No internship offer has been created yet."
   }
 }

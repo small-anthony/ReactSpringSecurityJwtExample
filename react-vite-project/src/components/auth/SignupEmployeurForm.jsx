@@ -60,7 +60,7 @@ export default function SignupEmployeurForm() {
 
     if (!formData.telephone.trim()) {
       newErrors.telephone = "telephone";
-    } else if (!/^[0-9+()\s-]{10,}$/.test(formData.telephone.trim())) {
+    } else if (!/^[0-9+()\-.\s]{7,20}$/.test(formData.telephone.trim())) {
       newErrors.telephone = "telephoneFormat";
     }
 
@@ -97,7 +97,6 @@ export default function SignupEmployeurForm() {
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
         entreprise: formData.entreprise.trim(),
-        poste: formData.poste.trim(),
         telephone: formData.telephone.trim(),
         password: formData.password,
         passwordConfirmation: formData.passwordConfirmation
