@@ -79,6 +79,10 @@ public class UserAppService {
             throw new Exception("Un compte avec cet email existe déjà");
         }
 
+        if (checkIfMatriculeExists(matricule)) {
+            throw new Exception("Un compte avec ce matricule existe déjà");
+        }
+
         if (password.length() < 8) {
             throw new Exception("Le mot de passe doit contenir au moins 8 caractères");
         }
@@ -152,5 +156,9 @@ public class UserAppService {
 
     private boolean checkIfEmailExists(String email) {
         return userAppRepository.findUserAppByEmail(email).isPresent();
+    }
+
+    private boolean checkIfMatriculeExists(int matricule) {
+        return etudiantRepository.existsByMatricule(matricule);
     }
 }

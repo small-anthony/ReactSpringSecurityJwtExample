@@ -52,6 +52,9 @@ public class UserAppServiceTest {
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.empty());
 
+        when(etudiantRepository.existsByMatricule(12345))
+                .thenReturn(false);
+
         when(passwordEncoder.encode("password123"))
                 .thenReturn("passwordEncode");
 
@@ -95,6 +98,7 @@ public class UserAppServiceTest {
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.of(user));
 
+
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 userAppService.registerStudent("Peter", "Parker", 12345, "test@gmail.com", "Informatique", "password123", "password123"));
@@ -104,10 +108,31 @@ public class UserAppServiceTest {
     }
 
     @Test
+    void registerStudent_shouldRejectExistingMatricule() {
+        //Arramge
+        when(userAppRepository.findUserAppByEmail("test@gmail.com"))
+                .thenReturn(Optional.empty());
+
+        when(etudiantRepository.existsByMatricule(12345))
+                .thenReturn(true);
+
+        //Act
+        Exception exception = assertThrows(Exception.class, () ->
+                userAppService.registerStudent("Peter", "Parker", 12345, "test@gmail.com", "Informatique", "password123", "password123"));
+
+        //Assert
+        assertEquals("Un compte avec ce matricule existe déjà", exception.getMessage());
+    }
+
+
+    @Test
     void registerStudent_shouldRejectDifferentPasswords() {
         //ARRANGE
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.empty());
+
+        when(etudiantRepository.existsByMatricule(12345))
+                .thenReturn(false);
 
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
@@ -122,6 +147,9 @@ public class UserAppServiceTest {
         //ARRANGE
         when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                 .thenReturn(Optional.empty());
+
+        when(etudiantRepository.existsByMatricule(12345))
+                .thenReturn(false);
 
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
