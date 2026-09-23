@@ -14,6 +14,7 @@ import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
 
+
 function App() {
   const authService = useContext(AuthServiceContext);
   const userData = authService.getUserData();
