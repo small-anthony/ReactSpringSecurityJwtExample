@@ -15,8 +15,4 @@ public record GestionnaireDto(int id, String firstName, String lastName, String 
                 gestionnaire.getRole()
         );
     }
-
-    public static GestionnaireDto empty() {
-        return new GestionnaireDto(0, null, null, null, null);
-    }
 }

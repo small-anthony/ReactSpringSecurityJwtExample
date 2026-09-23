@@ -20,8 +20,4 @@ public record EmployeurDto(int id, String firstName,
                 employeur.getTelephone()
         );
     }
-
-    public static EmployeurDto empty() {
-        return new EmployeurDto(0, null, null, null, null, null, null);
-    }
 }

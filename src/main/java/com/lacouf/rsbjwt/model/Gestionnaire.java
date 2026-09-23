@@ -11,7 +11,5 @@ public class Gestionnaire extends UserApp {
 		super(firstName, lastName, credentials);
 	}
 
-	public Gestionnaire() {
-
-	}
+	public Gestionnaire() { }
 }
