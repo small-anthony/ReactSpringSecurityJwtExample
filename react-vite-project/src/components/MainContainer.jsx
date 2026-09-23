@@ -36,5 +36,4 @@ function MainContainer({ user }) {
     </div>
   );
 }
-
 export default MainContainer;
