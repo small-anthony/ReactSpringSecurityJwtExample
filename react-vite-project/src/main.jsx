@@ -7,11 +7,11 @@ import ServiceHolder from "./components/ServiceHolder.jsx";
 import '../i18n.config.js';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-        <ServiceHolder>
-            <App />
-        </ServiceHolder>
-    </BrowserRouter>
-  </React.StrictMode>
+    <React.StrictMode>
+        <BrowserRouter>
+            <ServiceHolder>
+                <App />
+            </ServiceHolder>
+        </BrowserRouter>
+    </React.StrictMode>
 );

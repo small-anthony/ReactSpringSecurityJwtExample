@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
+import {BASE_URL} from "../config/Config.jsx";
 
 export default function LoginForm() {
   const authService = useContext(AuthServiceContext);
@@ -56,7 +57,28 @@ export default function LoginForm() {
 
     try {
       await authService.login(formData.email.trim().toLowerCase(), formData.password);
-      navigate("/");
+      const token = localStorage.getItem("token");
+
+      const userResponse = await fetch(`${BASE_URL}/user/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      console.log(userResponse.data);
+
+      if (!userResponse.ok) throw new Error("Impossible de récupérer les informations de l'utilisateur");
+
+      const userData = await userResponse.json();
+      const role = (userData?.role || "").toString().toUpperCase();
+
+      if (role.includes("ETUDIANT")) {
+        navigate("/etudiant");
+      } else if (role.includes("PROFESSEUR")) {
+        navigate("/professeur");
+      } else if (role.includes("GESTIONNAIRE")) {
+        navigate("/gestionnaire");
+      } else {
+        navigate("/");
+      }
     } catch {
       setServerError("invalidCredentials");
     } finally {
