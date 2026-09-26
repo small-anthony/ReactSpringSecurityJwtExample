@@ -8,9 +8,7 @@ public class Cv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-//    Si c'est pas H2, utiliser
-//    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "bytea")
     private byte[] data;
 
     @OneToOne
