@@ -21,8 +21,8 @@ public class Approbation {
         this.status = StatusAcceptation.REFUSE;
     }
 
-    public void accepter(String message){
-        this.messageReponse = message;
+    public void accepter(){
+        this.messageReponse = null;
         this.status = StatusAcceptation.ACCEPTE;
     }
 

@@ -75,4 +75,38 @@ public class OffreStage {
     public void setEtudiantsAutorises(List<Etudiant> etudiantsAutorises) {
         this.etudiantsAutorises = etudiantsAutorises;
     }
+
+    public boolean isEnAttente() {
+        return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
+    }
+
+    public void accepter() throws Exception {
+        if (!isEnAttente()) {
+            throw new Exception("Cette offre a déjà été traitée.");
+        }
+        this.approbation.accepter();
+    }
+
+    public void refuser(String message) throws Exception {
+        if (!isEnAttente()) {
+            throw new Exception("Cette offre a déjà été traitée.");
+        }
+        this.approbation.refuser(message);
+    }
+
+    public void attribuerVisibilite(List<Etudiant> etudiants) {
+        if (etudiants != null && !etudiants.isEmpty()) {
+            this.etudiantsAutorises = etudiants;
+        } else {
+            this.etudiantsAutorises.clear();
+        }
+    }
+
+    public StatusAcceptation getStatus() {
+        return this.approbation.getStatus();
+    }
+
+    public String getMessageReponse() {
+        return this.approbation.getMessageRefus();
+    }
 }

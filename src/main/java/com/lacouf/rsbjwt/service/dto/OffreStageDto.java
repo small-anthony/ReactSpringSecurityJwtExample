@@ -12,8 +12,8 @@ public record OffreStageDto(int id, String titre, String description, String nom
                 offreStage.getTitre(),
                 offreStage.getDescription(),
                 offreStage.getNomEntreprise(),
-                offreStage.getApprobation().getStatus(),
-                offreStage.getApprobation().getMessageRefus()
+                offreStage.getStatus(),
+                offreStage.getMessageReponse()
         );
     }
 }
