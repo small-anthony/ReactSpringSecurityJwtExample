@@ -1,6 +1,10 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class OffreStage {
@@ -16,6 +20,14 @@ public class OffreStage {
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Etudiant> etudiantsAutorises = new ArrayList<>();
+
+    @Embedded
+    private Approbation approbation = new Approbation();
+
+
+
     public OffreStage() {}
 
     public OffreStage(String titre, String description, String nomEntreprise) {
@@ -27,6 +39,7 @@ public class OffreStage {
     public Long getId() {
         return id;
     }
+
     public String getTitre() {
         return titre;
     }
@@ -39,11 +52,27 @@ public class OffreStage {
         return description;
     }
 
+    public Approbation getApprobation() {
+        return approbation;
+    }
+
+    public void setApprobation(Approbation approbation) {
+        this.approbation = approbation;
+    }
+
     public void setEmployeur(Employeur employeur) {
         this.employeur = employeur;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Etudiant> getEtudiantsAutorises() {
+        return etudiantsAutorises;
+    }
+
+    public void setEtudiantsAutorises(List<Etudiant> etudiantsAutorises) {
+        this.etudiantsAutorises = etudiantsAutorises;
     }
 }
