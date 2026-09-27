@@ -20,7 +20,7 @@ public class GestionnaireController {
         this.gestionnaireService = gestionnaireService;
     }
 
-    @PutMapping("/offres/accepterOffre")
+    @PutMapping("/offre/accepterOffre")
     public ResponseEntity<?> accepterOffreStage(@RequestBody AcceptationOffreDto request) {
         try {
             return ResponseEntity.ok(gestionnaireService.accepterOffreStage(request.id(), request.etudiantsIds()));
@@ -29,7 +29,7 @@ public class GestionnaireController {
         }
     }
 
-    @PutMapping("/offres/refuserOffre")
+    @PutMapping("/offre/refuserOffre")
     public ResponseEntity<?> refuserOffreStage(@RequestBody RejetOffreDto request) {
         try {
             return ResponseEntity.ok(gestionnaireService.refuserOffreStage(request.id(), request.commentaire()));
@@ -38,7 +38,7 @@ public class GestionnaireController {
         }
     }
 
-    @GetMapping("/offres/pending")
+    @GetMapping("/offre/pending")
     public ResponseEntity<List<OffreStageDto>> getOffresEnAttente() {
         try {
             return ResponseEntity.ok(gestionnaireService.getOffresEnAttente());

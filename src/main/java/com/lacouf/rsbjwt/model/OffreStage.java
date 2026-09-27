@@ -34,17 +34,7 @@ public class OffreStage {
         this.nomEntreprise = nomEntreprise;
     }
 
-    public List<Etudiant> getEtudiantsAutorises() {
-        return etudiantsAutorises;
-    }
 
-    public void setEtudiantsAutorises(List<Etudiant> etudiantsAutorises) {
-        this.etudiantsAutorises = etudiantsAutorises;
-    }
-
-    public boolean isEnAttente() {
-        return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
-    }
 
     public void accepter() throws Exception {
         if (!isEnAttente()) {
@@ -85,16 +75,22 @@ public class OffreStage {
         return description;
     }
 
+    public List<Etudiant> getEtudiantsAutorises() {
+        return etudiantsAutorises;
+    }
+
+
+
+    public boolean isEnAttente() {
+        return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
+    }
+
     public StatusAcceptation getStatus() {
         return this.approbation.getStatus();
     }
 
     public String getMessageReponse() {
         return this.approbation.getMessageRefus();
-    }
-
-    public void setApprobation(Approbation approbation) {
-        this.approbation = approbation;
     }
 
     public void setEmployeur(Employeur employeur) {
