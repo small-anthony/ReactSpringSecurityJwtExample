@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class CvControllerTest {
                 Authentication authentication = mock(Authentication.class);
                 when(authentication.getName()).thenReturn(email);
 
-                CvDto cvDto = new CvDto(10L);
+                CvDto cvDto = new CvDto(10L, StatusAcceptation.EN_ATTENTE, null, 1L);
 
                 when(etudiantService.uploadCv(email, file))
                                 .thenReturn(cvDto);
