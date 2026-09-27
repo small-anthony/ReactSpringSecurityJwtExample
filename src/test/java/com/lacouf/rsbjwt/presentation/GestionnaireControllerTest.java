@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
@@ -71,5 +72,36 @@ public class GestionnaireControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void refuserOffreStage_shouldReturnOk() throws Exception {
+//        ARRANGE
+        RejetOffreDto request = new RejetOffreDto(1L, "Refusé");
+        OffreStageDto offreDto = mock(OffreStageDto.class);
+
+        when(gestionnaireService.refuserOffreStage(1L, "Refusé")).thenReturn(offreDto);
+
+//        ACT
+        ResponseEntity<?> response = gestionnaireController.refuserOffreStage(request);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
+    }
+    @Test
+    void refuserOffreStage_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        RejetOffreDto request = new RejetOffreDto(1L, "Refusé");
+
+        when(gestionnaireService.refuserOffreStage(1L, "Refusé"))
+                .thenThrow(new Exception("Offre de stage non trouvée"));
+//        ACT
+
+        ResponseEntity<?> response = gestionnaireController.refuserOffreStage(request);
+
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Offre de stage non trouvée", response.getBody());
     }
 }

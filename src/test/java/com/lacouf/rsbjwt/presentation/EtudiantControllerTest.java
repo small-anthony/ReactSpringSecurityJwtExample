@@ -88,4 +88,32 @@ public class EtudiantControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Le format de l'email est invalide", response.getBody());
     }
+
+    @Test
+    void getMatricule_shouldReturnOk() throws Exception {
+//        ARRANGE
+        EtudiantDto etudiantDto = mock(EtudiantDto.class);
+
+        when(etudiantService.getEtudiantByMatricule(12345)).thenReturn(etudiantDto);
+
+//        ACT
+        ResponseEntity<?> response = etudiantController.getMatricule(12345);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(etudiantDto, response.getBody());
+    }
+    @Test
+    void getMatricule_shouldReturnNotFoundOnException() throws Exception {
+//        ARRANGE
+        when(etudiantService.getEtudiantByMatricule(99999)).thenThrow(new Exception("Aucun étudiant trouvé avec ce matricule"));
+
+//        ACT
+        ResponseEntity<?> response = etudiantController.getMatricule(99999);
+
+//        ASSERT
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Aucun étudiant trouvé avec ce matricule", response.getBody());
+    }
+
 }

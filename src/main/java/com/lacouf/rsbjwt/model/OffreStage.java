@@ -32,6 +32,7 @@ public class OffreStage {
         this.titre = titre;
         this.description = description;
         this.nomEntreprise = nomEntreprise;
+        this.etudiantsAutorises = new ArrayList<>();
     }
 
 
