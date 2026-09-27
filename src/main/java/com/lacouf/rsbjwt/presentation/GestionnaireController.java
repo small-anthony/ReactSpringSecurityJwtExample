@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.presentation.RequestDto.AccepterCvDto;
-import com.lacouf.rsbjwt.presentation.RequestDto.RefuserCvDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.AccepterCvRequest;
+import com.lacouf.rsbjwt.presentation.RequestDto.RefuserCvRequest;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,9 @@ public class GestionnaireController {
     }
 
     @PutMapping("/cv/accepter")
-    public ResponseEntity<Object> acceptCv(@RequestBody AccepterCvDto dto) {
+    public ResponseEntity<Object> acceptCv(@RequestBody AccepterCvRequest request) {
         try {
-            CvDto cvDto = gestionnaireService.accepterCv(dto.id());
+            CvDto cvDto = gestionnaireService.accepterCv(request.id());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
@@ -29,9 +29,9 @@ public class GestionnaireController {
     }
 
     @PutMapping("/cv/refuser")
-    public ResponseEntity<Object> refuseCv(@RequestBody RefuserCvDto dto) {
+    public ResponseEntity<Object> refuseCv(@RequestBody RefuserCvRequest request) {
         try {
-            CvDto cvDto = gestionnaireService.refuserCv(dto.id(), dto.message());
+            CvDto cvDto = gestionnaireService.refuserCv(request.id(), request.message());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {

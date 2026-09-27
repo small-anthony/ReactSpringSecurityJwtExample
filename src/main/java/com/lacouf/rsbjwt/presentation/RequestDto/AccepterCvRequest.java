@@ -1,4 +1,4 @@
 package com.lacouf.rsbjwt.presentation.RequestDto;
 
-public record RefuserCvDto(Long id, String message) {
+public record AccepterCvRequest(Long id) {
 }
