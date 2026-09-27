@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,9 @@ import static org.mockito.Mockito.when;
 public class EtudiantControllerTest {
     @Mock
     private UserAppService userAppService;
+
+    @Mock
+    private EtudiantService etudiantService;
 
     @InjectMocks
     private EtudiantController etudiantController;
