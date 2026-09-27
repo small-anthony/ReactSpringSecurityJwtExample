@@ -3,12 +3,12 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/gestionnaire")
@@ -20,21 +20,30 @@ public class GestionnaireController {
         this.gestionnaireService = gestionnaireService;
     }
 
-    @PutMapping("/accepter")
-    public ResponseEntity<?> accepterOffreStage(@RequestBody AcceptationOffreDto dto) {
+    @PutMapping("/offres/accepterOffre")
+    public ResponseEntity<?> accepterOffreStage(@RequestBody AcceptationOffreDto request) {
         try {
-            return ResponseEntity.ok(gestionnaireService.accepterOffreStage(dto.id(), dto.etudiantsIds()));
+            return ResponseEntity.ok(gestionnaireService.accepterOffreStage(request.id(), request.etudiantsIds()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("/refuser")
-    public ResponseEntity<?> refuserOffreStage(@RequestBody RejetOffreDto dto) {
+    @PutMapping("/offres/refuserOffre")
+    public ResponseEntity<?> refuserOffreStage(@RequestBody RejetOffreDto request) {
         try {
-            return ResponseEntity.ok(gestionnaireService.refuserOffreStage(dto.id(), dto.commentaire()));
+            return ResponseEntity.ok(gestionnaireService.refuserOffreStage(request.id(), request.commentaire()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/offres/pending")
+    public ResponseEntity<List<OffreStageDto>> getOffresEnAttente() {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getOffresEnAttente());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

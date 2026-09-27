@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GestionnaireService {
@@ -43,5 +44,12 @@ public class GestionnaireService {
         offre.refuser(commentaire);
 
         return OffreStageDto.create(offreStageRepository.save(offre));
+    }
+
+    public List<OffreStageDto> getOffresEnAttente() {
+        return offreStageRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE)
+                .stream()
+                .map(OffreStageDto::create)
+                .collect(Collectors.toList());
     }
 }
