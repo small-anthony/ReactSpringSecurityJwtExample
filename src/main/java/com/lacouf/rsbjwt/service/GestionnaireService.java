@@ -20,4 +20,28 @@ public class GestionnaireService {
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
     }
+
+    public OffreStageDto accepterOffreStage(Long offreStageId, List<Long> etudiantsIds) throws Exception {
+        OffreStage offre = offreStageRepository.findById(offreStageId)
+                .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
+
+        offre.accepter();
+
+        if (etudiantsIds != null && !etudiantsIds.isEmpty()) {
+            offre.attribuerVisibilite(etudiantRepository.findAllById(etudiantsIds));
+        } else {
+            offre.attribuerVisibilite(null);
+        }
+
+        return OffreStageDto.create(offreStageRepository.save(offre));
+    }
+
+    public OffreStageDto refuserOffreStage(Long offreStageId, String commentaire) throws Exception {
+        OffreStage offre = offreStageRepository.findById(offreStageId)
+                .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
+
+        offre.refuser(commentaire);
+
+        return OffreStageDto.create(offreStageRepository.save(offre));
+    }
 }
