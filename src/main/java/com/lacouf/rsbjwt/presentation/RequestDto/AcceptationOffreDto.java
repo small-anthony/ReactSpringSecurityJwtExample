@@ -1,4 +1,6 @@
 package com.lacouf.rsbjwt.presentation.RequestDto;
 
-public record AcceptationOffreDto() {
+import java.util.List;
+
+public record AcceptationOffreDto(Long id, List<Long> etudiantsIds) {
 }

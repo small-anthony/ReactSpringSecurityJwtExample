@@ -26,46 +26,12 @@ public class OffreStage {
     @Embedded
     private Approbation approbation = new Approbation();
 
-
-
     public OffreStage() {}
 
     public OffreStage(String titre, String description, String nomEntreprise) {
         this.titre = titre;
         this.description = description;
         this.nomEntreprise = nomEntreprise;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitre() {
-        return titre;
-    }
-
-    public String getNomEntreprise() {
-        return nomEntreprise;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Approbation getApprobation() {
-        return approbation;
-    }
-
-    public void setApprobation(Approbation approbation) {
-        this.approbation = approbation;
-    }
-
-    public void setEmployeur(Employeur employeur) {
-        this.employeur = employeur;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public List<Etudiant> getEtudiantsAutorises() {
@@ -102,11 +68,40 @@ public class OffreStage {
         }
     }
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public String getNomEntreprise() {
+        return nomEntreprise;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public StatusAcceptation getStatus() {
         return this.approbation.getStatus();
     }
 
     public String getMessageReponse() {
         return this.approbation.getMessageRefus();
+    }
+
+    public void setApprobation(Approbation approbation) {
+        this.approbation = approbation;
+    }
+
+    public void setEmployeur(Employeur employeur) {
+        this.employeur = employeur;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
