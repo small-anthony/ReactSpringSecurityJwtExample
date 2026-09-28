@@ -12,6 +12,8 @@ import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EtudiantService {
@@ -69,5 +71,17 @@ public class EtudiantService {
         Candidature candidature = candidatureRepository.save(new Candidature(etudiant, offre));
 
         return CandidatureDto.create(candidature);
+    }
+
+    public List<CandidatureDto> getMesCandidatures(String emailConnecte) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailConnecte)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailConnecte));
+
+        Etudiant etudiant = etudiantRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Etudiant non trouvé"));
+
+        return candidatureRepository.findByEtudiant(etudiant).stream()
+                .map(CandidatureDto::create)
+                .collect(Collectors.toList());
     }
 }
