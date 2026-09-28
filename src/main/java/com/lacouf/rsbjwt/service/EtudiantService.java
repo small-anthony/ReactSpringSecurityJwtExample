@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
+import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -83,5 +84,12 @@ public class EtudiantService {
         return candidatureRepository.findByEtudiant(etudiant).stream()
                 .map(CandidatureDto::create)
                 .collect(Collectors.toList());
+    }
+
+    public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {
+        Etudiant etudiant = etudiantRepository.findByMatricule(matricule)
+                .orElseThrow(() -> new Exception("Aucun étudiant trouvé avec ce matricule"));
+
+        return EtudiantDto.create(etudiant);
     }
 }
