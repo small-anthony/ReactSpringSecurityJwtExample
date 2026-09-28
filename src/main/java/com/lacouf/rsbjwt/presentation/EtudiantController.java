@@ -83,4 +83,13 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/candidatures")
+    public ResponseEntity<Object> getMesCandidatures(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(etudiantService.getMesCandidatures(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
