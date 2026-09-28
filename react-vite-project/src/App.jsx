@@ -13,7 +13,7 @@ import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
-
+import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
 
 function App() {
   const authService = useContext(AuthServiceContext);
@@ -32,7 +32,7 @@ function App() {
             <Route path="signup" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
             <Route path="signup/etudiant" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
             <Route path="signup/employeur" element={token ? <Navigate to="/" /> : <SignupEmployeurForm />} />
-            <Route path="signup/professeur" element={token ? <Navigate to="/" /> : <SignupProfesseurForm />} />
+            <Route path="signup/professeur" element={token ? <Navigate to="/" /> : <SignupProfesseurForm />} /><Route path='employeur/offres/:offreId/candidatures' element={<CandidaturesOffre/>}/>
 
             <Route
                 path="etudiant"
@@ -79,6 +79,9 @@ function App() {
                               <Navigate to="/" />
                 }
             />
+
+              <Route path='employeur/offres/:offreId/candidatures' element={<CandidaturesOffre/>}/>
+
           </Route>
         </Routes>
       </div>

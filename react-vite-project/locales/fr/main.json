@@ -236,11 +236,29 @@
     "cv_uploaded": "Votre CV a été téléversé avec succès",
     "loading": "Chargement..."
   },
+
+
   "employeur_home": {
     "title": "Mes offres de stage",
-    "subtitle": "Gérez les offres publiées par votre entreprise.",
+    "subtitle": "Gérez vos offres et consultez les candidatures reçues",
     "create_offer": "Créer une offre",
     "loading": "Chargement des offres...",
-    "no_offers": "Aucune offre de stage n'a encore été créée."
+    "no_offers": "Vous n'avez encore créé aucune offre de stage.",
+    "view_candidates": "Voir les candidatures"
+  },
+  "candidatures_offre": {
+    "back": "Retour à mes offres",
+    "title": "Candidatures reçues",
+    "subtitle": "Consultez les étudiants ayant postulé à cette offre",
+    "loading": "Chargement des candidatures...",
+    "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
+    "view_cv": "Voir le CV",
+    "no_cv": "Aucun CV disponible",
+    "statuts": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTEE": "Acceptée",
+      "REFUSEE": "Refusée",
+      "EN_ATTENTE_REPONSE": "En attente de réponse"
+    }
   }
 }
