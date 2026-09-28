@@ -30,3 +30,17 @@ export async function getOffresStages(authHeader) {
 
   return response.json();
 }
+
+
+export async function getCandidatures(offreId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}/candidatures`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger les candidatures");
+  }
+
+  return response.json();
+}
