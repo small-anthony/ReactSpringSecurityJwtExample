@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 
 import java.util.Map;
 
@@ -69,6 +70,16 @@ public class EtudiantController {
             if (e.getMessage() != null && e.getMessage().contains("Accès refusé")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
             }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/offres/{offreId}/postuler")
+    public ResponseEntity<Object> postuler(@PathVariable Long offreId, Authentication authentication) {
+        try {
+            CandidatureDto candidature = etudiantService.postuler(offreId, authentication.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(candidature);
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
