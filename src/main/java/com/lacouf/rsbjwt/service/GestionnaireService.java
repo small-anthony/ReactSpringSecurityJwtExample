@@ -39,4 +39,10 @@ public class GestionnaireService {
                 .map(CvDto::create)
                 .toList();
     }
+
+    public byte[] getCvPdf(Long cvId) throws Exception {
+        Cv cv = cvRepository.findById(cvId)
+                .orElseThrow(() -> new Exception("CV non trouvé"));
+        return cv.getData();
+    }
 }

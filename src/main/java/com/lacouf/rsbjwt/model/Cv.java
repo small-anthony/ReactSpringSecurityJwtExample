@@ -26,6 +26,14 @@ public class Cv {
         this.data = nouvelData;
     }
 
+    public void accepterApprobation() {
+        this.approbation.accepter();
+    }
+
+    public void refuserApprobation(String message) {
+        this.approbation.refuser(message);
+    }
+
     public Long getId() {
         return id;
     }
@@ -38,20 +46,24 @@ public class Cv {
         return etudiant;
     }
 
+    public String getEtudiantFirstName() {
+        return this.etudiant != null ? etudiant.getFirstName() : null;
+    }
+
+    public String getEtudiantLastName() {
+        return this.etudiant != null ? this.etudiant.getLastName() : null;
+    }
+
+    public int getEtudiantMatricule() {
+        return this.etudiant != null ? this.etudiant.getMatricule() : 0;
+    }
+
     public StatusAcceptation getStatusAcceptation() {
         return this.approbation.getStatus();
     }
 
     public String getMessageRefusApprobation() {
         return this.approbation.getMessageRefus();
-    }
-
-    public void accepterApprobation() {
-        this.approbation.accepter();
-    }
-
-    public void refuserApprobation(String message) {
-        this.approbation.refuser(message);
     }
 
     public Long getEtudiantId() {
