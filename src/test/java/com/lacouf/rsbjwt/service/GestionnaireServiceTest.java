@@ -62,7 +62,7 @@ public class GestionnaireServiceTest {
         Cv cv = new Cv();
         cv.setId(1L);
 
-        when(cvRepository.findById(1L)).thenReturn(java.util.Optional.of(cv));
+        when(cvRepository.findById(1L)).thenReturn(Optional.of(cv));
 
         when(cvRepository.save(cv)).thenReturn(cv);
 
@@ -81,7 +81,7 @@ public class GestionnaireServiceTest {
         String messageRefus = "Message de refus";
 
         when(cvRepository.findById(1L))
-                .thenReturn(java.util.Optional.of(cv));
+                .thenReturn(Optional.of(cv));
 
         when(cvRepository.save(cv)).thenReturn(cv);
 
@@ -191,6 +191,6 @@ public class GestionnaireServiceTest {
 
         // ASSERT
         assertEquals(1, resultat.size());
-        assertEquals(1, resultat.get(0).id());
+        assertEquals(1, resultat.getFirst().id());
     }
 }

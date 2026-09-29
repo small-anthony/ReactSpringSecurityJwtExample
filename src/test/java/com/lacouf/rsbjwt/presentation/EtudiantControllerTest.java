@@ -104,7 +104,7 @@ public class EtudiantControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(email);
 
-        CvDto cvDto = new CvDto(10L, StatusAcceptation.EN_ATTENTE, null, 1L);
+        CvDto cvDto = new CvDto(10L, StatusAcceptation.EN_ATTENTE, null, 1L, "Prenom", "Nom", 12345);
 
         when(etudiantService.uploadCv(email, file))
                 .thenReturn(cvDto);
