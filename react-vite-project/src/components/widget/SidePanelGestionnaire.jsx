@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export default function SidePanelGestionnaire({ activeTab = "none" }) {
-
+    const { t } = useTranslation("main");
     const tabs = [
         { key: "approbationsOffres", label: "Approbations des offres", to: "/gestionnaire/approbations/offres" },
-        { key: "approbationsCvs", label: "Approbations des CVs", to: "/gestionnaire/approbations/cvs" },
+        { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
     ];
 
     return (

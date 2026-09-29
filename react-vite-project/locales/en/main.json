@@ -242,5 +242,31 @@
     "create_offer": "Create an offer",
     "loading": "Loading offers...",
     "no_offers": "No internship offer has been created yet."
+  },
+  "sidepanel": {
+    "cvs": "Resume Approvals"
+  },
+  "approbation": {
+    "cvs": {
+      "errors": {
+        "fetch": "Error fetching resumes.",
+        "approve": "Error approving the resume.",
+        "reject": "Error rejecting the resume."
+      },
+      "title": "Resumes pending approval",
+      "loading": "Loading resumes...",
+      "reject": "Reject",
+      "approve": "Approve",
+      "matricule": "Employee ID",
+      "pdf": "View PDF document",
+      "visualisationPdf": "Resume preview",
+      "reason": "Reason for rejection",
+      "explain": "Please explain why this resume is being rejected...",
+      "cancel": "Cancel",
+      "confirm": "Confirm rejection",
+      "nocvs": "No resumes pending approval.",
+      "close": "Close",
+      "cvPdf": "PDF resume"
+    }
   }
 }

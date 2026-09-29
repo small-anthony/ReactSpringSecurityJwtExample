@@ -3,8 +3,10 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { accepterCv, getCvsEnAttente, refuserCv, voirCvPdf } from "../../services/api/GestionnaireService.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import { Check, Eye, IdCard, X } from "lucide-react";
+import {useTranslation} from "react-i18next";
 
 const ApprobationCvs = () => {
+    const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const [cvs, setCvs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const ApprobationCvs = () => {
             const data = await getCvsEnAttente(authService.buildAuthHeader());
             setCvs(data);
         } catch (error) {
-            setError("Impossible de charger les CVs pour le moment");
+            setError(t('approbation.cvs.errors.fetch'));
         } finally {
             setLoading(false);
         }
@@ -36,7 +38,7 @@ const ApprobationCvs = () => {
             await accepterCv(id, authService.buildAuthHeader());
             setCvs(cvs.filter(cv => cv.id !== id));
         } catch (error) {
-            setActionError("Une erreur est survenue lors de l'approbation du CV");
+            setActionError(t('approbation.cvs.errors.accept'));
         }
     };
 
@@ -44,7 +46,7 @@ const ApprobationCvs = () => {
         setActionError(null);
 
         if (!messageRefus.trim()) {
-            setActionError("Le motif de refus est obligatoire pour rejeter un CV");
+            setActionError(t('approbation.cvs.errors.reject'));
             return;
         }
 
@@ -54,7 +56,7 @@ const ApprobationCvs = () => {
             setCvEnCoursRefus(null);
             setMessageRefus("");
         } catch (error) {
-            setActionError("Une erreur est survenue lors du refus du CV");
+            setActionError(t('approbation.cvs.errors.reject'));
         }
     };
 
@@ -84,7 +86,7 @@ const ApprobationCvs = () => {
         <main className="flex flex-col md:flex-row w-full bg-gray-50/30 overflow-hidden">
             <SidePanelGestionnaire activeTab="approbations" />
             <div className="flex-1 p-8 md:p-12 animate-in fade-in duration-300">
-                <h2 className="text-2xl font-bold mb-8 text-gray-800">CV en attente d'approbation</h2>
+                <h2 className="text-2xl font-bold mb-8 text-gray-800">{t('approbation.cvs.title')}</h2>
                 {actionError && (
                     <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md font-medium shadow-sm">
                         {actionError}
@@ -97,7 +99,7 @@ const ApprobationCvs = () => {
                 )}
                 {loading ? (
                     <div className="text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-16">
-                        <p className="text-gray-500 font-medium">Chargement des CVs...</p>
+                        <p className="text-gray-500 font-medium">{t('approbation.cvs.loading')}</p>
                     </div>
                 ) : (
                     <div className="grid gap-6">
@@ -110,14 +112,14 @@ const ApprobationCvs = () => {
                                             else setCvEnCoursRefus(cv.id);
                                         }}
                                         className="group w-4 h-4 bg-red-500 border border-red-600 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm"
-                                        title="Refuser"
+                                        title={t('approbation.cvs.reject')}
                                     >
                                         <X className="w-2.5 h-2.5 text-red-900 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
                                     </button>
                                     <button
                                         onClick={() => handleAccepter(cv.id)}
                                         className="group w-4 h-4 bg-green-500 border border-green-600 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors shadow-sm"
-                                        title="Accepter"
+                                        title={t('approbation.cvs.approve')}
                                     >
                                         <Check className="w-2.5 h-2.5 text-green-900 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
                                     </button>
@@ -127,24 +129,24 @@ const ApprobationCvs = () => {
                                 </h3>
                                 <p className="text-gray-600 font-medium mb-4 flex items-center gap-1.5">
                                     <IdCard className="w-4 h-4" strokeWidth={2} />
-                                    Matricule : {cv.etudiantMatricule}
+                                    {t('approbation.cvs.matricule')} : {cv.etudiantMatricule}
                                 </p>
                                 <button
                                     onClick={() => handleVoirPdf(cv.id)}
                                     className="inline-flex items-center gap-2 text-blue-600 bg-blue-50 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors"
                                 >
                                     <Eye className="w-4 h-4" strokeWidth={2} />
-                                    Consulter le document PDF
+                                    {t('approbation.cvs.pdf')}
                                 </button>
                                 {cvEnCoursRefus === cv.id && (
                                     <div className="mt-6 pt-5 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Motif du refus <span className="text-red-500">*</span>
+                                            {t('approbation.cvs.reason')} <span className="text-red-500">*</span>
                                         </label>
                                         <textarea
                                             value={messageRefus}
                                             onChange={(e) => setMessageRefus(e.target.value)}
-                                            placeholder="Veuillez expliquer pourquoi ce CV est refusé..."
+                                            placeholder={t('approbation.cvs.explain')}
                                             className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-gray-50"
                                             rows="3"
                                         />
@@ -153,13 +155,13 @@ const ApprobationCvs = () => {
                                                 onClick={annulerRefus}
                                                 className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
                                             >
-                                                Annuler
+                                                {t('approbation.cvs.cancel')}
                                             </button>
                                             <button
                                                 onClick={() => handleRefuser(cv.id)}
                                                 className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
                                             >
-                                                Confirmer le refus
+                                                {t('approbation.cvs.confirm')}
                                             </button>
                                         </div>
                                     </div>
@@ -168,7 +170,7 @@ const ApprobationCvs = () => {
                         ))}
                         {cvs.length === 0 && !error && (
                             <div className="text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-16">
-                                <p className="text-gray-500 font-medium">Aucun CV en attente de validation.</p>
+                                <p className="text-gray-500 font-medium">{t('approbation.cvs.nocvs')}</p>
                             </div>
                         )}
                     </div>
@@ -179,11 +181,11 @@ const ApprobationCvs = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
-                            <h3 className="text-lg font-bold text-gray-800">Visualisation du CV</h3>
+                            <h3 className="text-lg font-bold text-gray-800">{t('approbation.cvs.visualisationPdf')}</h3>
                             <button
                                 onClick={fermerModalPdf}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors"
-                                title="Fermer"
+                                title={t('approbation.cvs.close')}
                             >
                                 <X className="w-4 h-4" strokeWidth={2.5} />
                             </button>
@@ -192,7 +194,7 @@ const ApprobationCvs = () => {
                             <iframe
                                 src={pdfUrlModal}
                                 className="w-full h-full rounded-xl border-none shadow-inner"
-                                title="CV PDF"
+                                title={t('approbation.cvs.cvPdf')}
                             ></iframe>
                         </div>
                     </div>
