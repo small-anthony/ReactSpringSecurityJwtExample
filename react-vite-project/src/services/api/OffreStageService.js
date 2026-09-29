@@ -44,3 +44,16 @@ export async function getCandidatures(offreId, authHeader) {
 
   return response.json();
 }
+
+export async function getCvCandidat(candidatureId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/cv`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger le CV");
+  }
+
+  return response.blob();
+}

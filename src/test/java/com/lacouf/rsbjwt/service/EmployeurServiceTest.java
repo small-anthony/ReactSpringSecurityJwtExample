@@ -1,19 +1,26 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.Employeur;
+import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
-import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.EmployeurRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.model.UserApp;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,6 +35,8 @@ public class EmployeurServiceTest {
     private EmployeurRepository employeurRepository;
     @Mock
     private OffreStageRepository offreStageRepository;
+    @Mock
+    private CandidatureRepository candidatureRepository;
     @InjectMocks
     private EmployeurService employeurService;
 
@@ -56,7 +65,7 @@ public class EmployeurServiceTest {
         //ACT
         OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, email);
 
-       //ASSERT
+        //ASSERT
         assertNotNull(resultat);
         assertEquals(1, resultat.id());
         assertEquals(titre, resultat.titre());
@@ -133,5 +142,124 @@ public class EmployeurServiceTest {
 
 //        ASSeRT
         assertEquals("Employeur non trouvé avec cette id", exception.getMessage());
+    }
+
+    @Test
+    void getCandidatures_avecOffreValide_retourneLaListe() throws Exception {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+
+        OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
+        offre.setId(10L);
+        when(offreStageRepository.findByIdAndEmployeur(10L, employeur)).thenReturn(Optional.of(offre));
+
+        Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "Informatique");
+        etudiant.setId(2L);
+
+        Candidature candidature = new Candidature(etudiant, offre);
+        ReflectionTestUtils.setField(candidature, "id", 100L);
+        when(candidatureRepository.findByOffreStage(offre)).thenReturn(List.of(candidature));
+
+        //ACT
+        List<CandidatureDto> resultat = employeurService.getCandidatures(10L, email);
+
+        //ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("Sophie", resultat.get(0).firstName());
+        assertEquals("Stagiaire en informatique", resultat.get(0).offreTitre());
+    }
+
+    @Test
+    void getCandidatures_avecOffreDunAutreEmployeur_lanceException() {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+
+        when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
+
+        //ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                employeurService.getCandidatures(99L, email));
+
+        //ASSERT
+        assertEquals("Offre introuvable pour cet employeur", exception.getMessage());
+    }
+
+    @Test
+    void getCvCandidat_avecCandidatureValide_retourneLesDonneesDuCv() throws Exception {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+
+        Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "Informatique");
+        etudiant.setCv(new byte[] { 1, 2, 3 });
+
+        OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
+        Candidature candidature = new Candidature(etudiant, offre);
+        ReflectionTestUtils.setField(candidature, "id", 100L);
+        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
+
+        //ACT
+        byte[] resultat = employeurService.getCvCandidat(100L, email);
+
+        //ASSERT
+        assertArrayEquals(new byte[] { 1, 2, 3 }, resultat);
+    }
+
+    @Test
+    void getCvCandidat_sansCv_lanceException() {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+
+        Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "Informatique");
+
+        OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
+        Candidature candidature = new Candidature(etudiant, offre);
+        ReflectionTestUtils.setField(candidature, "id", 100L);
+        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
+
+        //ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                employeurService.getCvCandidat(100L, email));
+
+        //ASSERT
+        assertEquals("Aucun CV disponible pour ce candidat", exception.getMessage());
     }
 }

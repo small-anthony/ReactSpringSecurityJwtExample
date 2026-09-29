@@ -2,31 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-
-const CANDIDATURES_FICTIVES = [
-    {
-        id: 1,
-        firstName: "Sophie",
-        lastName: "Martin",
-        email: "sophie.martin@test.com",
-        matricule: 123456,
-        discipline: "Informatique",
-        cvDisponible: true,
-        statut: "EN_ATTENTE",
-        dateCandidature: "2026-09-20T10:00:00",
-    },
-    {
-        id: 2,
-        firstName: "Marc",
-        lastName: "Tremblay",
-        email: "marc.tremblay@test.com",
-        matricule: 789012,
-        discipline: "Informatique",
-        cvDisponible: false,
-        statut: "EN_ATTENTE",
-        dateCandidature: "2026-09-21T14:30:00",
-    },
-];
+import { getCandidatures, getCvCandidat } from "../../services/api/OffreStageService";
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
@@ -38,14 +14,22 @@ export default function CandidaturesOffre() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // TODO : remplacer par un vrai appel a getCandidatures(offreId, authService.buildAuthHeader())
-        // une fois l'entite Candidature mergee dans main.
-        const chargement = setTimeout(() => {
-            setCandidatures(CANDIDATURES_FICTIVES);
-            setIsLoading(false);
-        }, 300);
+        let candidaturesChargees = true;
 
-        return () => clearTimeout(chargement);
+        getCandidatures(offreId, authService.buildAuthHeader())
+            .then((data) => {
+                if (candidaturesChargees) setCandidatures(data);
+            })
+            .catch((err) => {
+                if (candidaturesChargees) setError(err.message);
+            })
+            .finally(() => {
+                if (candidaturesChargees) setIsLoading(false);
+            });
+
+        return () => {
+            candidaturesChargees = false;
+        };
     }, [offreId, authService]);
 
     const formatStatut = (statut) => t(`candidatures_offre.statuts.${statut}`, { defaultValue: statut });
@@ -60,6 +44,16 @@ export default function CandidaturesOffre() {
                 return "bg-blue-100 text-blue-800 border-blue-200";
             default:
                 return "bg-gray-100 text-gray-800 border-gray-200";
+        }
+    };
+
+    const handleVoirCv = async (candidatureId) => {
+        try {
+            const blob = await getCvCandidat(candidatureId, authService.buildAuthHeader());
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
+        } catch (err) {
+            setError(err.message);
         }
     };
 
@@ -101,9 +95,13 @@ export default function CandidaturesOffre() {
 
                         <div className="mt-4 flex items-center gap-3">
                             {candidat.cvDisponible ? (
-                                <span className="text-sm font-semibold text-blue-600">
-                  {t("candidatures_offre.view_cv")}
-                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleVoirCv(candidat.id)}
+                                    className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+                                >
+                                    {t("candidatures_offre.view_cv")}
+                                </button>
                             ) : (
                                 <span className="text-sm text-gray-400">
                   {t("candidatures_offre.no_cv")}
