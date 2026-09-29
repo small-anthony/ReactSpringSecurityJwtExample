@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CvDto;
+import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,5 +37,12 @@ public class EtudiantService {
         Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
 
         return CvDto.create(etudiantSauvegarde.getCv());
+    }
+
+    public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {
+        Etudiant etudiant = etudiantRepository.findByMatricule(matricule)
+                .orElseThrow(() -> new Exception("Aucun étudiant trouvé avec ce matricule"));
+
+        return EtudiantDto.create(etudiant);
     }
 }

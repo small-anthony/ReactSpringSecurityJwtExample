@@ -26,15 +26,39 @@ public class OffreStage {
     @Embedded
     private Approbation approbation = new Approbation();
 
-
-
     public OffreStage() {}
 
     public OffreStage(String titre, String description, String nomEntreprise) {
         this.titre = titre;
         this.description = description;
         this.nomEntreprise = nomEntreprise;
+        this.etudiantsAutorises = new ArrayList<>();
     }
+
+
+
+    public void accepter() throws Exception {
+        if (!isEnAttente()) {
+            throw new Exception("Cette offre a déjà été traitée.");
+        }
+        this.approbation.accepter();
+    }
+
+    public void refuser(String message) throws Exception {
+        if (!isEnAttente()) {
+            throw new Exception("Cette offre a déjà été traitée.");
+        }
+        this.approbation.refuser(message);
+    }
+
+    public void attribuerVisibilite(List<Etudiant> etudiants) {
+        if (etudiants != null && !etudiants.isEmpty()) {
+            this.etudiantsAutorises = etudiants;
+        } else {
+            this.etudiantsAutorises.clear();
+        }
+    }
+
 
     public Long getId() {
         return id;
@@ -52,12 +76,22 @@ public class OffreStage {
         return description;
     }
 
-    public Approbation getApprobation() {
-        return approbation;
+    public List<Etudiant> getEtudiantsAutorises() {
+        return etudiantsAutorises;
     }
 
-    public void setApprobation(Approbation approbation) {
-        this.approbation = approbation;
+
+
+    public boolean isEnAttente() {
+        return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
+    }
+
+    public StatusAcceptation getStatus() {
+        return this.approbation.getStatus();
+    }
+
+    public String getMessageReponse() {
+        return this.approbation.getMessageRefus();
     }
 
     public void setEmployeur(Employeur employeur) {
@@ -66,13 +100,5 @@ public class OffreStage {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<Etudiant> getEtudiantsAutorises() {
-        return etudiantsAutorises;
-    }
-
-    public void setEtudiantsAutorises(List<Etudiant> etudiantsAutorises) {
-        this.etudiantsAutorises = etudiantsAutorises;
     }
 }
