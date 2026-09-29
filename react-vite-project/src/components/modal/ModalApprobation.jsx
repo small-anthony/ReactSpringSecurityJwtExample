@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { verifierMatricule } from "../../services/api/EtudiantService";
+import { Check, Plus, X } from "lucide-react";
 
 export default function ModalApprobation({ offre, onClose, onConfirm, authHeader }) {
     const [etudiantsCibles, setEtudiantsCibles] = useState([]);
@@ -31,19 +32,16 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
     return (
         <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h3 className="text-lg font-bold text-gray-900">Approuver l'offre</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 focus:outline-none">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <X className="w-5 h-5" strokeWidth={2} />
                     </button>
                 </div>
-
                 <div className="p-6">
                     <p className="text-sm text-gray-600 mb-6">
                         Souhaitez-vous rendre <span className="font-semibold text-gray-900">"{offre.titre}"</span> visible pour tous les étudiants, ou la restreindre ?
                     </p>
-
                     <div className="mb-8">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Étudiants ciblés (Optionnel)</label>
                         <div className="flex items-center gap-2">
@@ -64,11 +62,11 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
                                     className="absolute right-3 top-2.5 text-gray-400 hover:text-blue-600 transition-colors"
                                 >
                                     {verificationStatus === 'success' ? (
-                                        <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                        <Check className="w-5 h-5 text-green-500" strokeWidth={2.5} />
                                     ) : verificationStatus === 'error' ? (
-                                        <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        <X className="w-5 h-5 text-red-500" strokeWidth={2.5} />
                                     ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                                        <Plus className="w-5 h-5" strokeWidth={2.5} />
                                     )}
                                 </button>
                             </div>
@@ -80,7 +78,7 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
                                     <span key={etud.id} className="inline-flex items-center gap-1.5 bg-white text-blue-800 text-xs font-semibold px-2.5 py-1.5 rounded-md border border-blue-200 shadow-sm">
                                         {etud.firstName} {etud.lastName}
                                         <button onClick={() => handleRetirer(etud.id)} className="text-blue-400 hover:text-red-500 focus:outline-none">
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <X className="w-3.5 h-3.5" strokeWidth={3} />
                                         </button>
                                     </span>
                                 ))}
@@ -94,7 +92,7 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
                             onClick={() => onConfirm(offre.id, etudiantsCibles.map(e => e.id))}
                             className="px-5 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center gap-2"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                            <Check className="w-4 h-4" strokeWidth={2.5} />
                             Confirmer
                         </button>
                     </div>

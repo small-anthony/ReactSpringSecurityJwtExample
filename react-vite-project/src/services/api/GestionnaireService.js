@@ -5,7 +5,7 @@ export async function getCvsEnAttente(authHeader) {
         headers: authHeader,
     });
 
-    if (!response.ok) throw new Error("Erreur lors de la rÃ©cupÃ©ration des CVs");
+    if (!response.ok) throw new Error("Erreur lors de la récupération des CVs");
 
     return response.json();
 }

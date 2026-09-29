@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 export default function SidePanelGestionnaire({ activeTab = "none" }) {
 
     const tabs = [
-        { key: "approbations", label: "Approbations des offres", to: "/gestionnaire/approbations" },
+        { key: "approbationsOffres", label: "Approbations des offres", to: "/gestionnaire/approbations/offres" },
+        { key: "approbationsCvs", label: "Approbations des CVs", to: "/gestionnaire/approbations/cvs" },
     ];
 
     return (
