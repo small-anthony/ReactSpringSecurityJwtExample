@@ -84,6 +84,15 @@ const ApprobationOffres = () => {
                                 {offre.nomEntreprise}
                             </p>
                             <p className="text-gray-700 leading-relaxed">{offre.description}</p>
+
+
+                            {offreToRefuse?.id === offre.id && (
+                                <ModalRefusOffre
+                                    offre={offreToRefuse}
+                                    onClose={() => setOffreToRefuse(null)}
+                                    onConfirm={handleRefuser}
+                                />
+                            )}
                         </article>
                     ))}
 
@@ -101,14 +110,6 @@ const ApprobationOffres = () => {
                     onClose={() => setOffreToApprove(null)}
                     onConfirm={handleAccepter}
                     authHeader={authService.buildAuthHeader()}
-                />
-            )}
-
-            {offreToRefuse && (
-                <ModalRefusOffre
-                    offre={offreToRefuse}
-                    onClose={() => setOffreToRefuse(null)}
-                    onConfirm={handleRefuser}
                 />
             )}
         </main>
