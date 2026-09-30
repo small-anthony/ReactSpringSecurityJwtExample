@@ -84,7 +84,7 @@ export default function CandidaturesOffre() {
                                     {candidat.firstName} {candidat.lastName}
                                 </h2>
                                 <p className="text-sm text-gray-500">{candidat.email}</p>
-                                <p className="text-sm text-blue-700 mt-1">{candidat.discipline}</p>
+                                <p className={"text-sm text-blue-600"}>{t(`signup_etudiant.disciplines.${candidat.discipline}`, { defaultValue: candidat.discipline })}</p>
                             </div>
                             <span
                                 className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
