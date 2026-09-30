@@ -5,28 +5,24 @@ import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.Etudiant;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-public record CandidatureDto(int id, int offreId, String offreTitre,
-                             int etudiantId, String firstName, String lastName,
-                             String email, int matricule, String discipline,
-                             boolean cvDisponible, StatutCandidature statut,
-                             LocalDateTime dateCandidature) {
+public record CandidatureDto(int id,
+                             StatutCandidature statut,
+                             LocalDateTime dateCandidature,
+                             EtudiantDto etudiant) {
 
     public static CandidatureDto create(Candidature candidature) {
         Etudiant etudiant = candidature.getEtudiant();
         return new CandidatureDto(
                 candidature.getId().intValue(),
-                candidature.getOffreStage().getId().intValue(),
-                candidature.getOffreStage().getTitre(),
-                etudiant.getId().intValue(),
-                etudiant.getFirstName(),
-                etudiant.getLastName(),
-                etudiant.getEmail(),
-                etudiant.getMatricule(),
-                etudiant.getDiscipline(),
-                etudiant.getCv() != null,
                 candidature.getStatut(),
-                candidature.getDateCandidature()
+                candidature.getDateCandidature(),
+                EtudiantDto.create(etudiant)
         );
+    }
+
+    public static List<CandidatureDto> create(List<Candidature> candidatures) {
+        return candidatures.stream().map(CandidatureDto::create).toList();
     }
 }

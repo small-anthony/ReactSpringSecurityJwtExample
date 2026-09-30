@@ -2,6 +2,9 @@ package com.lacouf.rsbjwt.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class OffreStage {
 
@@ -15,6 +18,9 @@ public class OffreStage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
+
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY)
+    private final List<Candidature> candidatures = new ArrayList<>();
 
     public OffreStage() {}
 
@@ -37,6 +43,14 @@ public class OffreStage {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
+
+    public void addCandidature(Candidature candidature) {
+        candidatures.add(candidature);
     }
 
     public void setEmployeur(Employeur employeur) {

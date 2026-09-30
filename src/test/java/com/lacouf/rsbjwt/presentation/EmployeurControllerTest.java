@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -111,7 +112,7 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
 
-        OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI");
+        OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", new ArrayList<>());
 
         when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", "employeur@entreprise.com"))
                 .thenReturn(offreDto);

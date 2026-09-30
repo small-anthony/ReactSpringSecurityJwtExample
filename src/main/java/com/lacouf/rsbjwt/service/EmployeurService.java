@@ -61,8 +61,6 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        return offreStageRepository.findByEmployeur(employeur).stream()
-                .map(OffreStageDto::create)
-                .collect(Collectors.toList());
+        return OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur));
     }
 }
