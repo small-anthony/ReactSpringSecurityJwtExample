@@ -265,7 +265,7 @@
       "approve": "Approuver",
       "matricule": "Matricule",
       "pdf": "Consulter le document PDF",
-      "visualisationPdf": "Visualisation du CV",
+      "pdf_title": "Visualisation du CV",
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF"
