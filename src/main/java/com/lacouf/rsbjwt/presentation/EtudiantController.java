@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,11 +75,11 @@ public class EtudiantController {
         }
     }
 
-    @PostMapping("/offres/{offreId}/postuler")
+    @PostMapping("/offres/{offreId}")
     public ResponseEntity<Object> postuler(@PathVariable Long offreId, Authentication authentication) {
         try {
-            CandidatureDto candidature = etudiantService.postuler(offreId, authentication.getName());
-            return ResponseEntity.status(HttpStatus.CREATED).body(candidature);
+            OffreStageDto offre = etudiantService.postuler(offreId, authentication.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(offre);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

@@ -12,6 +12,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -55,7 +56,7 @@ public class EtudiantService {
         return CvDto.create(etudiantSauvegarde.getCv());
     }
 
-    public CandidatureDto postuler(Long offreId, String emailConnecte) throws Exception {
+    public OffreStageDto postuler(Long offreId, String emailConnecte) throws Exception {
         UserApp user = userAppRepository.findUserAppByEmail(emailConnecte)
                 .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailConnecte));
 
@@ -82,21 +83,22 @@ public class EtudiantService {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
 
-        Candidature candidature = candidatureRepository.save(new Candidature(etudiant, offre));
+        offre.addCandidature(new Candidature(etudiant, offre));
+        offreStageRepository.save(offre);
 
-        return CandidatureDto.create(candidature);
+        return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
 
-    public List<CandidatureDto> getMesCandidatures(String emailConnecte) throws Exception {
+    public List<OffreStageDto> getMesCandidatures(String emailConnecte) throws Exception {
         UserApp user = userAppRepository.findUserAppByEmail(emailConnecte)
                 .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailConnecte));
 
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Etudiant non trouvé"));
 
-        return candidatureRepository.findByEtudiant(etudiant).stream()
-                .map(CandidatureDto::create)
-                .collect(Collectors.toList());
+        List<OffreStage> offre = offreStageRepository.findByEtudiant(etudiant);
+
+        return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
 
     public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {

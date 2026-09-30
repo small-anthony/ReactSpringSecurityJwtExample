@@ -26,6 +26,9 @@ public class OffreStage {
     @Embedded
     private Approbation approbation = new Approbation();
 
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<Candidature> candidatures = new ArrayList<>();
+
     public OffreStage() {}
 
     public OffreStage(String titre, String description, String nomEntreprise) {
@@ -74,6 +77,14 @@ public class OffreStage {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
+
+    public void addCandidature(Candidature candidature) {
+        candidatures.add(candidature);
     }
 
     public List<Etudiant> getEtudiantsAutorises() {
