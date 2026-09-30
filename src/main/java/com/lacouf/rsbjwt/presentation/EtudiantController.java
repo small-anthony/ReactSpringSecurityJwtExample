@@ -75,7 +75,7 @@ public class EtudiantController {
         }
     }
 
-    @PostMapping("/offres/{offreId}/postuler")
+    @PostMapping("/offres/{offreId}")
     public ResponseEntity<Object> postuler(@PathVariable Long offreId, Authentication authentication) {
         try {
             OffreStageDto offre = etudiantService.postuler(offreId, authentication.getName());
