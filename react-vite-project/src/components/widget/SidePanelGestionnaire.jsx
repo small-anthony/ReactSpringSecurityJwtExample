@@ -5,14 +5,14 @@ import {useTranslation} from "react-i18next";
 export default function SidePanelGestionnaire({ activeTab = "none" }) {
     const { t } = useTranslation("main");
     const tabs = [
-        { key: "approbationsOffres", label: "Approbations des offres", to: "/gestionnaire/approbations/offres" },
+        { key: "approbationsOffres", label: t('sidepanel.offres'), to: "/gestionnaire/approbations/offres" },
         { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
     ];
 
     return (
         <aside className="w-full md:w-72 bg-white border-r border-gray-200 flex-shrink-0 p-6 min-h-full">
             <h1 className="text-2xl font-extrabold text-gray-900 mb-8 tracking-tight">
-                Tableau de bord
+                {t('sidepanel.title')}
             </h1>
 
             <nav className="flex flex-col gap-3">

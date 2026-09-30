@@ -245,7 +245,13 @@
     "no_offers": "Aucune offre de stage n'a encore été créée."
   },
   "sidepanel": {
-    "cvs": "Approbations des CVs"
+    "title": "Tableau de bord",
+    "cvs": "Approbations des CVs",
+    "offres": "Approbations des offres"
+  },
+  "gestionnaire_home": {
+    "title": "Bienvenue dans votre Espace Gestionnaire",
+    "subtitle": "Gérez les offres de stage, supervisez les étudiants et suivez les contrats en toute simplicité. Sélectionnez une action dans le menu pour commencer."
   },
   "approbation": {
     "cvs": {
@@ -261,13 +267,41 @@
       "matricule": "Matricule",
       "pdf": "Consulter le document PDF",
       "visualisationPdf": "Visualisation du CV",
-      "reason": "Motif du refus",
-      "explain": "Veuillez expliquer pourquoi ce CV est refusé...",
-      "cancel": "Annuler",
-      "confirm": "Confirmer le refus",
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF"
+    },
+    "offres": {
+      "title": "Offres en attente d'approbation",
+      "errors": {
+        "fetch": "Impossible de charger les offres pour le moment.",
+        "approve": "Une erreur est survenue lors de l'approbation de l'offre.",
+        "reject": "Une erreur est survenue lors du rejet de l'offre."
+      },
+      "no_offres": "Aucune offre en attente d'approbation.",
+      "approbation": {
+        "title": "Approuver l'offre",
+        "quesiton": "Souhaitez-vous rendre \\\"{{titre}}\\\" visible pour tous les étudiants, ou la restreindre ?",
+        "target": "Étudiants ciblés (Optionnel)",
+        "search": "Chercher par matricule (ex: 12345)",
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
+      }
+    },
+    "modal_refus": {
+      "offre": {
+        "titre": "Refuser l'offre",
+        "description": "Vous êtes sur le point de refuser l'offre \"{{nom}}\". Veuillez indiquer le motif du refus pour l'employeur.",
+        "placeholder": "Veuillez expliquer pourquoi cette offre est refusée..."
+      },
+      "cv": {
+        "titre": "Refuser le CV",
+        "description": "Vous êtes sur le point de refuser le CV de {{nom}}. Veuillez indiquer le motif du refus.",
+        "placeholder": "Veuillez expliquer pourquoi ce CV est refusé..."
+      },
+      "label_motif": "Motif du refus",
+      "annuler": "Annuler",
+      "confirmer": "Confirmer le refus"
     }
   }
 }
