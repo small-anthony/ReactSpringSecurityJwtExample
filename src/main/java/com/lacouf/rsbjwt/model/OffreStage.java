@@ -19,7 +19,7 @@ public class OffreStage {
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
-    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Candidature> candidatures = new ArrayList<>();
 
     public OffreStage() {}
