@@ -282,12 +282,6 @@
         "reject": "An error occurred while rejecting the offer."
       },
       "no_offres": "No offers pending.",
-      "refus": {
-        "reason": "Reason for refusal",
-        "explain": "Ex: The internship description is too short...",
-        "cancel": "Cancel",
-        "confirm": "Confirm refusal"
-      },
       "approbation": {
         "title": "Approve offer",
         "question": "Would you like to make \"{{titre}}\" visible to all students, or restrict it?",
@@ -296,6 +290,21 @@
         "cancel": "Cancel",
         "confirm": "Confirm"
       }
+    },
+    "modal_refus": {
+      "offre": {
+        "titre": "Reject Offer",
+        "description": "You are about to reject the offer \"{{nom}}\". Please state the reason for the employer.",
+        "placeholder": "Please explain why this offer is rejected..."
+      },
+      "cv": {
+        "titre": "Reject Resume",
+        "description": "You are about to reject {{nom}}'s resume. Please state the reason.",
+        "placeholder": "Please explain why this resume is rejected..."
+      },
+      "label_motif": "Reason for rejection",
+      "annuler": "Cancel",
+      "confirmer": "Confirm rejection"
     }
   }
 }

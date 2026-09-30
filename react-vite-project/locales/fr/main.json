@@ -266,10 +266,6 @@
       "matricule": "Matricule",
       "pdf": "Consulter le document PDF",
       "visualisationPdf": "Visualisation du CV",
-      "reason": "Motif du refus",
-      "explain": "Veuillez expliquer pourquoi ce CV est refusé...",
-      "cancel": "Annuler",
-      "confirm": "Confirmer le refus",
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF"
@@ -282,12 +278,6 @@
         "reject": "Une erreur est survenue lors du rejet de l'offre."
       },
       "no_offres": "Aucune offre en attente d'approbation.",
-      "refus": {
-        "reason": "Motif du refus",
-        "explain": "Ex: La description du stage est trop courte...",
-        "cancel": "Annuler",
-        "confirm": "Confirmer le refus"
-      },
       "approbation": {
         "title": "Approuver l'offre",
         "quesiton": "Souhaitez-vous rendre \\\"{{titre}}\\\" visible pour tous les étudiants, ou la restreindre ?",
@@ -296,6 +286,21 @@
         "cancel": "Annuler",
         "confirm": "Confirmer"
       }
+    },
+    "modal_refus": {
+      "offre": {
+        "titre": "Refuser l'offre",
+        "description": "Vous êtes sur le point de refuser l'offre \"{{nom}}\". Veuillez indiquer le motif du refus pour l'employeur.",
+        "placeholder": "Veuillez expliquer pourquoi cette offre est refusée..."
+      },
+      "cv": {
+        "titre": "Refuser le CV",
+        "description": "Vous êtes sur le point de refuser le CV de {{nom}}. Veuillez indiquer le motif du refus.",
+        "placeholder": "Veuillez expliquer pourquoi ce CV est refusé..."
+      },
+      "label_motif": "Motif du refus",
+      "annuler": "Annuler",
+      "confirmer": "Confirmer le refus"
     }
   }
 }
