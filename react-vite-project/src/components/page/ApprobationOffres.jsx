@@ -7,8 +7,10 @@ import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefusOffre from "../modal/ModalRefusOffre.jsx";
 import { Briefcase, Check, X } from "lucide-react";
+import {useTranslation} from "react-i18next";
 
 const ApprobationOffres = () => {
+    const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const [offres, setOffres] = useState([]);
     const [offreToApprove, setOffreToApprove] = useState(null);
@@ -22,7 +24,7 @@ const ApprobationOffres = () => {
                 setErrorMessage("")
             })
             .catch(() => {
-                setErrorMessage("Impossible de charger les offres pour le moment.");
+                setErrorMessage(t("approbation.offres.errors.fetch"));
             });
     }, [authService]);
 
@@ -35,7 +37,7 @@ const ApprobationOffres = () => {
                 setErrorMessage("");
             })
             .catch(() => {
-                setErrorMessage("Une erreur est survenue lors de l'approbation de l'offre.");
+                setErrorMessage(t("approbation.offres.errors.approve"));
                 setOffreToApprove(null);
             });
     };
@@ -50,16 +52,16 @@ const ApprobationOffres = () => {
                 setErrorMessage("");
             })
             .catch(() => {
-                setErrorMessage("Une erreur est survenue lors du refus de l'offre.");
+                setErrorMessage(t("approbation.offres.errors.reject"));
                 setOffreToRefuse(null);
             });
     };
 
     return (
         <main className="flex flex-col md:flex-row w-full bg-gray-50/30">
-            <SidePanelGestionnaire activeTab="approbations" />
+            <SidePanelGestionnaire activeTab="approbationsOffres" />
             <div className="flex-1 p-8 md:p-12 animate-in fade-in duration-300">
-                <h2 className="text-2xl font-bold mb-8 text-gray-800">Offres en attente d'approbation</h2>
+                <h2 className="text-2xl font-bold mb-8 text-gray-800">{t('approbation.offres.title')}</h2>
 
                 {errorMessage && (
                     <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md font-medium shadow-sm">
@@ -98,7 +100,7 @@ const ApprobationOffres = () => {
 
                     {offres.length === 0 && !errorMessage && (
                         <div className="text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-16">
-                            <p className="text-gray-500 font-medium">Aucune offre en attente.</p>
+                            <p className="text-gray-500 font-medium">{t('approbation.offres.no_offres')}</p>
                         </div>
                     )}
                 </div>

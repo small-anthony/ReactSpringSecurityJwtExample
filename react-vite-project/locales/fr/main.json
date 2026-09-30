@@ -244,7 +244,13 @@
     "no_offers": "Aucune offre de stage n'a encore été créée."
   },
   "sidepanel": {
-    "cvs": "Approbations des CVs"
+    "title": "Tableau de bord",
+    "cvs": "Approbations des CVs",
+    "offres": "Approbations des offres"
+  },
+  "gestionnaire_home": {
+    "title": "Bienvenue dans votre Espace Gestionnaire",
+    "subtitle": "Gérez les offres de stage, supervisez les étudiants et suivez les contrats en toute simplicité. Sélectionnez une action dans le menu pour commencer."
   },
   "approbation": {
     "cvs": {
@@ -267,6 +273,29 @@
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF"
+    },
+    "offres": {
+      "title": "Offres en attente d'approbation",
+      "errors": {
+        "fetch": "Impossible de charger les offres pour le moment.",
+        "approve": "Une erreur est survenue lors de l'approbation de l'offre.",
+        "reject": "Une erreur est survenue lors du rejet de l'offre."
+      },
+      "no_offres": "Aucune offre en attente d'approbation.",
+      "refus": {
+        "reason": "Motif du refus",
+        "explain": "Ex: La description du stage est trop courte...",
+        "cancel": "Annuler",
+        "confirm": "Confirmer le refus"
+      },
+      "approbation": {
+        "title": "Approuver l'offre",
+        "quesiton": "Souhaitez-vous rendre \\\"{{titre}}\\\" visible pour tous les étudiants, ou la restreindre ?",
+        "target": "Étudiants ciblés (Optionnel)",
+        "search": "Chercher par matricule (ex: 12345)",
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
+      }
     }
   }
 }

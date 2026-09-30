@@ -1,12 +1,14 @@
 import { useState } from "react";
+import {useTranslation} from "react-i18next";
 
 export default function ModalRefusOffre({ offre, onClose, onConfirm }) {
+    const { t } = useTranslation("main");
     const [message, setMessage] = useState("");
 
     return (
         <div className="mt-6 pt-5 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-                Motif du refus <span className="text-red-500">*</span>
+                {t('approbation.offres.refus.reason')} <span className="text-red-500">*</span>
             </label>
             <textarea
                 value={message}
@@ -20,7 +22,7 @@ export default function ModalRefusOffre({ offre, onClose, onConfirm }) {
                     onClick={onClose}
                     className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
                 >
-                    Annuler
+                    {t('approbation.offres.refus.cancel')}
                 </button>
                 <button
                     onClick={() => onConfirm(offre.id, message)}
@@ -29,7 +31,7 @@ export default function ModalRefusOffre({ offre, onClose, onConfirm }) {
                         !message.trim() ? "bg-red-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
                     }`}
                 >
-                    Confirmer le refus
+                    {t('approbation.offres.refus.confirm')}
                 </button>
             </div>
         </div>

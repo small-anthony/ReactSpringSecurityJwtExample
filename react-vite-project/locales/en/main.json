@@ -244,7 +244,13 @@
     "no_offers": "No internship offer has been created yet."
   },
   "sidepanel": {
-    "cvs": "Resume Approvals"
+    "title": "Manager Workspace",
+    "cvs": "Resume Approvals",
+    "offres": "Offer Approvals"
+  },
+  "gestionnaire_home": {
+    "title": "Welcome to your Manager Workspace",
+    "subtitle": "Manage internship offers, supervise students, and track contracts with ease. Select an action from the menu to get started."
   },
   "approbation": {
     "cvs": {
@@ -257,7 +263,7 @@
       "loading": "Loading resumes...",
       "reject": "Reject",
       "approve": "Approve",
-      "matricule": "Employee ID",
+      "matricule": "Student ID",
       "pdf": "View PDF document",
       "visualisationPdf": "Resume preview",
       "reason": "Reason for rejection",
@@ -267,6 +273,29 @@
       "nocvs": "No resumes pending approval.",
       "close": "Close",
       "cvPdf": "PDF resume"
+    },
+    "offres": {
+      "title": "Offers pending approval",
+      "errors": {
+        "fetch": "Unable to load offers at this time.",
+        "approve": "An error occurred while approving the offer.",
+        "reject": "An error occurred while rejecting the offer."
+      },
+      "no_offres": "No offers pending.",
+      "refus": {
+        "reason": "Reason for refusal",
+        "explain": "Ex: The internship description is too short...",
+        "cancel": "Cancel",
+        "confirm": "Confirm refusal"
+      },
+      "approbation": {
+        "title": "Approve offer",
+        "question": "Would you like to make \"{{titre}}\" visible to all students, or restrict it?",
+        "target": "Targeted students (Optional)",
+        "search": "Search by student ID (ex: 12345)",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
     }
   }
 }
