@@ -81,10 +81,10 @@ export default function CandidaturesOffre() {
                         <div className="flex items-start justify-between gap-4">
                             <div>
                                 <h2 className="text-lg font-semibold text-gray-800">
-                                    {candidat.firstName} {candidat.lastName}
+                                    {candidat.etudiant.firstName} {candidat.etudiant.lastName}
                                 </h2>
-                                <p className="text-sm text-gray-500">{candidat.email}</p>
-                                <p className={"text-sm text-blue-600"}>{t(`signup_etudiant.disciplines.${candidat.discipline}`, { defaultValue: candidat.discipline })}</p>
+                                <p className="text-sm text-gray-500">{candidat.etudiant.email}</p>
+                                <p className={"text-sm text-blue-600"}>{t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, { defaultValue: candidat.etudiant.discipline })}</p>
                             </div>
                             <span
                                 className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
@@ -94,7 +94,7 @@ export default function CandidaturesOffre() {
                         </div>
 
                         <div className="mt-4 flex items-center gap-3">
-                            {candidat.cvDisponible ? (
+                            {candidat.etudiant.hasCv ? (
                                 <button
                                     type="button"
                                     onClick={() => handleVoirCv(candidat.id)}

@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
@@ -8,7 +8,8 @@ import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 import java.util.List;
 
 public record OffreStageDto
-        (int id, String titre, String description, String nomEntreprise, List<CandidatureDto> candidatures)
+        (int id, String titre, String description, String nomEntreprise,
+         StatusAcceptation status, String messageReponse, List<CandidatureDto> candidatures)
         implements DataTransferObject {
 
     public static OffreStageDto create(OffreStage offreStage) {
@@ -17,6 +18,8 @@ public record OffreStageDto
                 offreStage.getTitre(),
                 offreStage.getDescription(),
                 offreStage.getNomEntreprise(),
+                offreStage.getStatus(),
+                offreStage.getMessageReponse(),
                 CandidatureDto.create(offreStage.getCandidatures())
         );
     }
@@ -31,6 +34,8 @@ public record OffreStageDto
                 offreStage.getTitre(),
                 offreStage.getDescription(),
                 offreStage.getNomEntreprise(),
+                offreStage.getStatus(),
+                offreStage.getMessageReponse(),
                 CandidatureDto.create(
                         offreStage.getCandidatures().stream()
                                 .filter(candidat -> candidat.getEtudiant().equals(etudiant))

@@ -29,7 +29,9 @@ export async function getOffresStages(authHeader) {
     throw new Error(errorText || "Impossible de charger les offres");
   }
 
-  return response.json();
+  const json = await response.json();
+  console.log(json);
+  return json;
 }
 
 
