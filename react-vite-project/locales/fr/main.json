@@ -236,11 +236,9 @@
     "cv_uploaded": "Votre CV a été téléversé avec succès",
     "loading": "Chargement..."
   },
-
-
   "employeur_home": {
     "title": "Mes offres de stage",
-    "subtitle": "Gérez vos offres et consultez les candidatures reçues",
+    "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
     "loading": "Chargement des offres...",
     "no_offers": "Vous n'avez encore créé aucune offre de stage.",
@@ -259,6 +257,62 @@
       "ACCEPTEE": "Acceptée",
       "REFUSEE": "Refusée",
       "EN_ATTENTE_REPONSE": "En attente de réponse"
+    },
+    "no_offers": "Aucune offre de stage n'a encore été créée."
+  },
+  "sidepanel": {
+    "title": "Tableau de bord",
+    "cvs": "Approbations des CVs",
+    "offres": "Approbations des offres"
+  },
+  "gestionnaire_home": {
+    "title": "Bienvenue dans votre Espace Gestionnaire",
+    "subtitle": "Gérez les offres de stage, supervisez les étudiants et suivez les contrats en toute simplicité. Sélectionnez une action dans le menu pour commencer."
+  },
+  "approbation": {
+    "cvs": {
+      "errors": {
+        "fetch": "Erreur lors de la récupération des CVs.",
+        "approve": "Erreur lors de l'approbation du CV.",
+        "reject": "Erreur lors du rejet du CV."
+      },
+      "title": "CVs en attente d'approbation",
+      "loading": "Chargement des CVs...",
+      "reject": "Rejeter",
+      "approve": "Approuver",
+      "matricule": "Matricule",
+      "pdf": "Consulter le document PDF",
+      "visualisationPdf": "Visualisation du CV",
+      "reason": "Motif du refus",
+      "explain": "Veuillez expliquer pourquoi ce CV est refusé...",
+      "cancel": "Annuler",
+      "confirm": "Confirmer le refus",
+      "nocvs": "Aucun CV en attente de validation.",
+      "close": "Fermer",
+      "cvPdf": "CV PDF"
+    },
+    "offres": {
+      "title": "Offres en attente d'approbation",
+      "errors": {
+        "fetch": "Impossible de charger les offres pour le moment.",
+        "approve": "Une erreur est survenue lors de l'approbation de l'offre.",
+        "reject": "Une erreur est survenue lors du rejet de l'offre."
+      },
+      "no_offres": "Aucune offre en attente d'approbation.",
+      "refus": {
+        "reason": "Motif du refus",
+        "explain": "Ex: La description du stage est trop courte...",
+        "cancel": "Annuler",
+        "confirm": "Confirmer le refus"
+      },
+      "approbation": {
+        "title": "Approuver l'offre",
+        "quesiton": "Souhaitez-vous rendre \\\"{{titre}}\\\" visible pour tous les étudiants, ou la restreindre ?",
+        "target": "Étudiants ciblés (Optionnel)",
+        "search": "Chercher par matricule (ex: 12345)",
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
+      }
     }
   }
 }

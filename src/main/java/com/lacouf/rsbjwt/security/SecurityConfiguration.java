@@ -49,11 +49,11 @@ public class SecurityConfiguration {
     private static final String ETUDIANT_INSCRIPTION_PATH = "/etudiant/inscription";
     private static final String EMPLOYEUR_INSCRIPTION_PATH = "/employeur/inscription";
     private static final String PROFESSEUR_INSCRIPTION_PATH = "/professeur/inscription";
-    private static final String USER_PATH = "/user/";
-    private static final String ETUDIANT_PATH = "/etudiant/";
-    private static final String EMPLOYEUR_PATH = "/employeur/";
-    private static final String PROFESSEUR_PATH = "/professeur/";
-    private static final String GESTIONNAIRE_PATH = "/gestionnaire/";
+    private static final String USER_PATH = "/user/**";
+    private static final String ETUDIANT_PATH = "/etudiant/**";
+    private static final String EMPLOYEUR_PATH = "/employeur/**";
+    private static final String PROFESSEUR_PATH = "/professeur/**";
+    private static final String GESTIONNAIRE_PATH = "/gestionnaire/**";
 
 
     @Bean
@@ -75,6 +75,8 @@ public class SecurityConfiguration {
                                 Role.PROFESSEUR.name(),
                                 Role.GESTIONNAIRE.name(),
                                 Role.EMPLOYEUR.name())
+
+                        .requestMatchers(GET, "/etudiant/matricule/**").hasAuthority(Role.GESTIONNAIRE.name())
 
                         .requestMatchers(ETUDIANT_PATH).hasAuthority(Role.ETUDIANT.name())
                         .requestMatchers(EMPLOYEUR_PATH).hasAuthority(Role.EMPLOYEUR.name())

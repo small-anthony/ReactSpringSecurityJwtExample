@@ -13,6 +13,7 @@ import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
+import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -147,6 +148,7 @@ public class EtudiantServiceTest {
 
                 OffreStage offre = new OffreStage("Développeur Web Junior", "Stage de quatre mois.", "TechCorp");
                 offre.setId(10L);
+                offre.accepter();
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                         .thenReturn(Optional.of(etudiant));
@@ -174,7 +176,7 @@ public class EtudiantServiceTest {
         }
 
         @Test
-        void postuler_shouldRejectIfAlreadyApplied() {
+        void postuler_shouldRejectIfAlreadyApplied() throws Exception {
                 // ARRANGE
                 Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
                 Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
@@ -182,6 +184,7 @@ public class EtudiantServiceTest {
 
                 OffreStage offre = new OffreStage("Développeur Web Junior", "Stage de quatre mois.", "TechCorp");
                 offre.setId(10L);
+                offre.accepter();
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                         .thenReturn(Optional.of(etudiant));
@@ -313,5 +316,37 @@ public class EtudiantServiceTest {
 
                 // ASSERT
                 assertEquals("Utilisateur non trouvé avec l'email : test@gmail.com", exception.getMessage());
+        }
+
+        @Test
+        void getEtudiantByMatricule_succes() throws Exception {
+                // ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+
+                etudiant.setId(1L);
+
+                when(etudiantRepository.findByMatricule(12345)).thenReturn(Optional.of(etudiant));
+
+                // ACT
+                EtudiantDto resultat = etudiantService.getEtudiantByMatricule(12345);
+
+                // ASSERT
+                assertNotNull(resultat);
+                assertEquals(12345, resultat.matricule());
+                assertEquals("Peter", resultat.firstName());
+        }
+
+        @Test
+        void getEtudiantByMatricule_introuvable_lanceException() {
+                // ARRANGE
+                when(etudiantRepository.findByMatricule(99999)).thenReturn(Optional.empty());
+
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                        () -> etudiantService.getEtudiantByMatricule(99999));
+
+                // ASSERT
+                assertEquals("Aucun étudiant trouvé avec ce matricule", exception.getMessage());
         }
 }

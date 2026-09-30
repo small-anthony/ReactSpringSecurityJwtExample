@@ -14,6 +14,9 @@ import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
+import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
+import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
+
 
 function App() {
   const authService = useContext(AuthServiceContext);
@@ -32,7 +35,7 @@ function App() {
             <Route path="signup" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
             <Route path="signup/etudiant" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
             <Route path="signup/employeur" element={token ? <Navigate to="/" /> : <SignupEmployeurForm />} />
-            <Route path="signup/professeur" element={token ? <Navigate to="/" /> : <SignupProfesseurForm />} /><Route path='employeur/offres/:offreId/candidatures' element={<CandidaturesOffre/>}/>
+            <Route path="signup/professeur" element={token ? <Navigate to="/" /> : <SignupProfesseurForm />} />
 
             <Route
                 path="etudiant"
@@ -61,6 +64,16 @@ function App() {
                               <Navigate to="/" />
                 }
             />
+              <Route
+                  path="employeur/offres/:offreId/candidatures"
+                  element={
+                      !token ? <Navigate to="/login" /> :
+                          !userData ? null :
+                              role === "EMPLOYEUR" ? <CandidaturesOffre /> :
+                                  <Navigate to="/" />
+                  }
+              />
+
             <Route
                 path="professeur"
                 element={
@@ -79,8 +92,27 @@ function App() {
                               <Navigate to="/" />
                 }
             />
+              <Route
+                  path="gestionnaire/approbations/offres"
+                  element={
+                      !token ? <Navigate to="/login" /> :
+                          !userData ? null :
+                              role === "GESTIONNAIRE" ? <ApprobationOffres /> :
+                                  <Navigate to="/" />
+                  }
+              />
+              <Route
+                  path="gestionnaire/approbations/cvs"
+                  element={
+                      !token ? <Navigate to="/login" /> :
+                          !userData ? null :
+                              role === "GESTIONNAIRE" ? <ApprobationCvs /> :
+                                  <Navigate to="/" />
+                  }
+              />
 
-              <Route path='employeur/offres/:offreId/candidatures' element={<CandidaturesOffre/>}/>
+
+
 
           </Route>
         </Routes>
