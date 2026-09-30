@@ -242,7 +242,12 @@
     "create_offer": "Create an offer",
     "loading": "Loading offers...",
     "no_offers": "You haven't created any internship offers yet.",
-    "view_candidates": "View Candidates"
+    "view_candidates": "View Candidates",
+    "statuts": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
+      "REFUSE": "Rejected"
+    }
   },
   "candidatures_offre": {
     "back": "Back to my offers",

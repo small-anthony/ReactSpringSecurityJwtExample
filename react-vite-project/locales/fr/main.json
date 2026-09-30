@@ -242,7 +242,12 @@
     "create_offer": "Créer une offre",
     "loading": "Chargement des offres...",
     "no_offers": "Vous n'avez encore créé aucune offre de stage.",
-    "view_candidates": "Voir les candidatures"
+    "view_candidates": "Voir les candidatures",
+    "statuts": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
+    }
   },
   "candidatures_offre": {
     "back": "Retour à mes offres",
