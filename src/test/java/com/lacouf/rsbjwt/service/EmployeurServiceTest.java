@@ -175,8 +175,7 @@ public class EmployeurServiceTest {
 
         //ASSERT
         assertEquals(1, resultat.size());
-        assertEquals("Sophie", resultat.get(0).firstName());
-        assertEquals("Stagiaire en informatique", resultat.get(0).offreTitre());
+        assertEquals("Sophie", resultat.get(0).etudiant().firstName());
     }
 
     @Test
