@@ -52,7 +52,7 @@ export default function EtudiantProfile() {
     const status = cvStatut?.status;
 
     return (
-        <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-h-full bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto space-y-6">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
