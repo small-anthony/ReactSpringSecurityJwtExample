@@ -77,7 +77,6 @@ export default function ModalDetailOffre({ offre, onClose }) {
                         </div>
                     </div>
 
-                    {/* Exigences particulières */}
                     {offre.exigences && (
                         <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-4">
                             <h3 className="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1">
