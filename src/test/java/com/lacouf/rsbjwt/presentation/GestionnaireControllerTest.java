@@ -90,6 +90,39 @@ public class GestionnaireControllerTest {
     }
 
     @Test
+
+    void getCvPdf_shouldReturnOkPdfData() throws Exception {
+//        ARRANGE
+        DecisionCvRequest request = new DecisionCvRequest(1L, null);
+        byte[] expectedPdfData = "Contenu PDF factice".getBytes();
+
+        when(gestionnaireService.getCvPdf(request.id())).thenReturn(expectedPdfData);
+
+//        ACT
+        ResponseEntity<byte[]> response = gestionnaireController.getCvPdf(request);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedPdfData, response.getBody());
+    }
+
+    @Test
+    void getCvPdf_shouldReturnBadRequest() throws Exception {
+//        ARRANGE
+        DecisionCvRequest request = new DecisionCvRequest(1L, null);
+
+        when(gestionnaireService.getCvPdf(request.id())).thenThrow(new Exception("Erreur lors de la récupération"));
+
+//        ACT
+        ResponseEntity<byte[]> response = gestionnaireController.getCvPdf(request);
+
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
+
+    @Test
+
     void accepterOffreStage_shouldReturnOk() throws Exception {
 //        ARRANGE
         AcceptationOffreDto request = new AcceptationOffreDto(1L, List.of(2L));

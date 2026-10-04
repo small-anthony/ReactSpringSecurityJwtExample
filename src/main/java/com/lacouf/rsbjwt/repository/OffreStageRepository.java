@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.repository;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Employeur;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +31,3 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	""")
 	List<OffreStage> findByEtudiant(Etudiant etudiant);
 }
-

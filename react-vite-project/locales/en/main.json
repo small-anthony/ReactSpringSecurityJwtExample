@@ -266,15 +266,8 @@
 
     "no_offers": "No internship offer has been created yet."
   },
-  "sidepanel": {
-    "title": "Manager Workspace",
-    "cvs": "Resume Approvals",
-    "offres": "Offer Approvals"
-  },
-  "gestionnaire_home": {
-    "title": "Welcome to your Manager Workspace",
-    "subtitle": "Manage internship offers, supervise students, and track contracts with ease. Select an action from the menu to get started."
-  },
+
+
   "approbation": {
     "cvs": {
       "errors": {
@@ -288,7 +281,7 @@
       "approve": "Approve",
       "matricule": "Student ID",
       "pdf": "View PDF document",
-      "visualisationPdf": "Resume preview",
+      "pdf_title": "Resume preview",
       "reason": "Reason for rejection",
       "explain": "Please explain why this resume is being rejected...",
       "cancel": "Cancel",
@@ -305,12 +298,6 @@
         "reject": "An error occurred while rejecting the offer."
       },
       "no_offres": "No offers pending.",
-      "refus": {
-        "reason": "Reason for refusal",
-        "explain": "Ex: The internship description is too short...",
-        "cancel": "Cancel",
-        "confirm": "Confirm refusal"
-      },
       "approbation": {
         "title": "Approve offer",
         "question": "Would you like to make \"{{titre}}\" visible to all students, or restrict it?",
@@ -319,6 +306,31 @@
         "cancel": "Cancel",
         "confirm": "Confirm"
       }
+    },
+    "modal_refus": {
+      "offre": {
+        "titre": "Reject Offer",
+        "description": "You are about to reject the offer \"{{nom}}\". Please state the reason for the employer.",
+        "placeholder": "Please explain why this offer is rejected..."
+      },
+      "cv": {
+        "titre": "Reject Resume",
+        "description": "You are about to reject {{nom}}'s resume. Please state the reason.",
+        "placeholder": "Please explain why this resume is rejected..."
+      },
+      "label_motif": "Reason for rejection",
+      "annuler": "Cancel",
+      "confirmer": "Confirm rejection"
     }
+  },
+  "sidepanel": {
+    "title": "Manager Workspace",
+    "cvs": "Resume Approvals",
+    "offres": "Offer Approvals"
+  },
+  "gestionnaire_home": {
+    "title": "Welcome to your Manager Workspace",
+    "subtitle": "Manage internship offers, supervise students, and track contracts with ease. Select an action from the menu to get started."
   }
+
 }

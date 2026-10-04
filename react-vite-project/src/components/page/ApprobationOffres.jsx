@@ -5,7 +5,7 @@ import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/
 
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
-import ModalRefusOffre from "../modal/ModalRefusOffre.jsx";
+import ModalRefus from "../modal/ModalRefus.jsx";
 import { Briefcase, Check, X } from "lucide-react";
 import {useTranslation} from "react-i18next";
 
@@ -86,13 +86,11 @@ const ApprobationOffres = () => {
                                 {offre.nomEntreprise}
                             </p>
                             <p className="text-gray-700 leading-relaxed">{offre.description}</p>
-
-
-                            {offreToRefuse?.id === offre.id && (
-                                <ModalRefusOffre
-                                    offre={offreToRefuse}
+                            {offreToRefuse && offreToRefuse.id === offre.id && (
+                                <ModalRefus
+                                    mode="offre"
                                     onClose={() => setOffreToRefuse(null)}
-                                    onConfirm={handleRefuser}
+                                    onConfirm={(message) => handleRefuser(offre.id, message)}
                                 />
                             )}
                         </article>
@@ -119,3 +117,4 @@ const ApprobationOffres = () => {
 }
 
 export default ApprobationOffres;
+

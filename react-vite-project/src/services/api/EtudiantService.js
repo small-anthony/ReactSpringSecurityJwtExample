@@ -17,6 +17,8 @@ export async function registerEtudiant(etudiantData) {
   return await response.json();
 }
 
+
+
 export async function getMesCandidatures(authHeader) {
   const response = await APIHelper.get("/etudiant/candidatures", authHeader);
 

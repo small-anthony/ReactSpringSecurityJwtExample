@@ -47,6 +47,5 @@ public record OffreStageDto
     public static List<OffreStageDto> createFilteredByEtudiant(List<OffreStage> offreStages, Etudiant etudiant) {
         return offreStages.stream()
                 .map(offre -> createFilteredByEtudiant(offre, etudiant)).toList();
-
     }
 }

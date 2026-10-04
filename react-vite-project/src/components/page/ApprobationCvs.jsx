@@ -4,6 +4,8 @@ import { accepterCv, getCvsEnAttente, refuserCv, voirCvPdf } from "../../service
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import { Check, Eye, IdCard, X } from "lucide-react";
 import {useTranslation} from "react-i18next";
+import ModalRefus from "../modal/ModalRefus.jsx";
+import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
 const ApprobationCvs = () => {
     const { t } = useTranslation("main");
@@ -12,8 +14,7 @@ const ApprobationCvs = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [actionError, setActionError] = useState(null);
-    const [cvEnCoursRefus, setCvEnCoursRefus] = useState(null);
-    const [messageRefus, setMessageRefus] = useState("");
+    const [cvRefuser, setCvRefuser] = useState(null);
     const [pdfUrlModal, setPdfUrlModal] = useState(null);
 
     useEffect(() => {
@@ -31,7 +32,7 @@ const ApprobationCvs = () => {
         }
     };
 
-    const handleAccepter = async (id) => {
+    const handleAccepter = async (id, message) => {
         setActionError(null);
 
         try {
@@ -42,28 +43,16 @@ const ApprobationCvs = () => {
         }
     };
 
-    const handleRefuser = async (id) => {
+    const handleRefuser = async (id, message) => {
         setActionError(null);
 
-        if (!messageRefus.trim()) {
-            setActionError(t('approbation.cvs.errors.reject'));
-            return;
-        }
-
         try {
-            await refuserCv(id, messageRefus, authService.buildAuthHeader());
+            await refuserCv(id, message, authService.buildAuthHeader());
             setCvs(cvs.filter(cv => cv.id !== id));
-            setCvEnCoursRefus(null);
-            setMessageRefus("");
+            setCvRefuser(null);
         } catch (error) {
             setActionError(t('approbation.cvs.errors.reject'));
         }
-    };
-
-    const annulerRefus = () => {
-        setCvEnCoursRefus(null);
-        setMessageRefus("");
-        setActionError(null);
     };
 
     const handleVoirPdf = async (id) => {
@@ -107,10 +96,7 @@ const ApprobationCvs = () => {
                             <article key={cv.id} className="relative p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                                 <div className="absolute top-5 right-5 flex gap-2">
                                     <button
-                                        onClick={() => {
-                                            if (cvEnCoursRefus === cv.id) annulerRefus();
-                                            else setCvEnCoursRefus(cv.id);
-                                        }}
+                                        onClick={() => setCvRefuser(cv)}
                                         className="group w-4 h-4 bg-red-500 border border-red-600 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm"
                                         title={t('approbation.cvs.reject')}
                                     >
@@ -138,33 +124,12 @@ const ApprobationCvs = () => {
                                     <Eye className="w-4 h-4" strokeWidth={2} />
                                     {t('approbation.cvs.pdf')}
                                 </button>
-                                {cvEnCoursRefus === cv.id && (
-                                    <div className="mt-6 pt-5 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('approbation.cvs.reason')} <span className="text-red-500">*</span>
-                                        </label>
-                                        <textarea
-                                            value={messageRefus}
-                                            onChange={(e) => setMessageRefus(e.target.value)}
-                                            placeholder={t('approbation.cvs.explain')}
-                                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-gray-50"
-                                            rows="3"
-                                        />
-                                        <div className="flex gap-3 mt-3 justify-end">
-                                            <button
-                                                onClick={annulerRefus}
-                                                className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
-                                            >
-                                                {t('approbation.cvs.cancel')}
-                                            </button>
-                                            <button
-                                                onClick={() => handleRefuser(cv.id)}
-                                                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
-                                            >
-                                                {t('approbation.cvs.confirm')}
-                                            </button>
-                                        </div>
-                                    </div>
+                                {cvRefuser && cvRefuser.id === cv.id && (
+                                    <ModalRefus
+                                        mode="cv"
+                                        onClose={() => setCvRefuser(null)}
+                                        onConfirm={(message) => handleRefuser(cv.id, message)}
+                                    />
                                 )}
                             </article>
                         ))}
@@ -178,27 +143,11 @@ const ApprobationCvs = () => {
             </div>
 
             {pdfUrlModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
-                            <h3 className="text-lg font-bold text-gray-800">{t('approbation.cvs.visualisationPdf')}</h3>
-                            <button
-                                onClick={fermerModalPdf}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors"
-                                title={t('approbation.cvs.close')}
-                            >
-                                <X className="w-4 h-4" strokeWidth={2.5} />
-                            </button>
-                        </div>
-                        <div className="flex-grow bg-gray-100 p-2">
-                            <iframe
-                                src={pdfUrlModal}
-                                className="w-full h-full rounded-xl border-none shadow-inner"
-                                title={t('approbation.cvs.cvPdf')}
-                            ></iframe>
-                        </div>
-                    </div>
-                </div>
+                <ModalCvPdf
+                    pdfUrl={pdfUrlModal}
+                    onClose={fermerModalPdf}
+                    titre={t('approbation.cvs.pdf_title')}
+                />
             )}
         </main>
     );
