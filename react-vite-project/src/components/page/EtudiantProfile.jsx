@@ -5,15 +5,7 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStatutCv } from "../../services/api/EtudiantService.js";
 import { checkCvExists } from "../../services/api/CvEtudiantAPI.jsx";
 import { useTranslation } from "react-i18next";
-import {
-    CheckCircle2,
-    Clock3,
-    XCircle,
-    ArrowRight,
-    Briefcase,
-    FileText,
-    UploadCloud
-} from "lucide-react";
+import { CheckCircle2, Clock3, XCircle, ArrowRight, Briefcase, UploadCloud } from "lucide-react";
 
 export default function EtudiantProfile() {
     const { t } = useTranslation("main");
@@ -69,7 +61,6 @@ export default function EtudiantProfile() {
                     </div>
                 )}
 
-                {/* Cas 1: Aucun CV téléversé */}
                 {!cvExiste && (
                     <div className="space-y-4">
                         <CvUploadModal
@@ -80,7 +71,6 @@ export default function EtudiantProfile() {
                     </div>
                 )}
 
-                {/* Cas 2: CV présent et statut EN_ATTENTE */}
                 {cvExiste && status === "EN_ATTENTE" && (
                     <div className="bg-white p-6 rounded-2xl border border-blue-200 shadow-xs space-y-4">
                         <div className="flex items-start gap-4">
@@ -102,7 +92,6 @@ export default function EtudiantProfile() {
                     </div>
                 )}
 
-                {/* Cas 3: CV présent et statut ACCEPTE */}
                 {cvExiste && status === "ACCEPTE" && (
                     <div className="bg-white p-6 rounded-2xl border border-emerald-200 shadow-xs space-y-5">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -156,7 +145,6 @@ export default function EtudiantProfile() {
                     </div>
                 )}
 
-                {/* Cas 4: CV présent et statut REFUSE */}
                 {cvExiste && status === "REFUSE" && (
                     <div className="space-y-6">
                         <div className="bg-white p-6 rounded-2xl border border-red-200 shadow-xs space-y-3">
@@ -164,7 +152,7 @@ export default function EtudiantProfile() {
                                 <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
                                     <XCircle className="w-6 h-6" />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 w-full">
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                         {t("etudiant_profile.refused_badge")}
                                     </span>
@@ -179,25 +167,32 @@ export default function EtudiantProfile() {
                                     <p className="text-xs text-gray-500">
                                         {t("etudiant_profile.refused_desc")}
                                     </p>
+
+                                    {/* NOUVEAU: Le bouton pour ouvrir la modale d'upload */}
+                                    <div className="pt-4 mt-2">
+                                        <button
+                                            onClick={() => setAfficherUploadModal(true)}
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl shadow-xs transition cursor-pointer"
+                                        >
+                                            <UploadCloud className="w-4 h-4" />
+                                            <span>{t("etudiant_profile.upload_corrected_title")}</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
-                            <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-blue-600" />
-                                <span>{t("etudiant_profile.upload_corrected_title")}</span>
-                            </h4>
+                        {afficherUploadModal && (
                             <CvUploadModal
                                 onUploadSuccess={() => {
+                                    setAfficherUploadModal(false);
                                     chargerStatut();
                                 }}
                             />
-                        </div>
+                        )}
                     </div>
                 )}
 
-                {/* Cas 5: cvExiste est true mais cvStatut est null ou statut non reconnu */}
                 {cvExiste && !status && (
                     <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
                         <h2 className="text-xl font-semibold mb-2">{t("etudiant_profile.cv_uploaded")}</h2>
