@@ -13,6 +13,7 @@ import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +53,13 @@ public class EtudiantService {
         Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
 
         return CvDto.create(etudiantSauvegarde.getCv());
+    }
+
+    public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {
+        Etudiant etudiant = etudiantRepository.findByMatricule(matricule)
+                .orElseThrow(() -> new Exception("Aucun étudiant trouvé avec ce matricule"));
+
+        return EtudiantDto.create(etudiant);
     }
 
     public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {

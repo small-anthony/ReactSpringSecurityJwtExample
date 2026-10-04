@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Etudiant;
-import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
@@ -22,10 +21,7 @@ import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -166,10 +162,6 @@ public class EtudiantServiceTest {
                 assertEquals("Aucun étudiant trouvé avec ce matricule", exception.getMessage());
         }
 
-        // ==========================================
-        // Tests pour getStatutCv
-        // ==========================================
-
         @Test
         void getStatutCv_sansCv_retourneHasCvFalse() {
                 // ARRANGE
@@ -209,10 +201,6 @@ public class EtudiantServiceTest {
                 assertTrue(resultat.hasCv());
                 assertEquals(StatusAcceptation.ACCEPTE, resultat.status());
         }
-
-        // ==========================================
-        // Tests pour getOffresDisponibles
-        // ==========================================
 
         @Test
         void getOffresDisponibles_cvNonApprouve_lanceExceptionForbidden() {
@@ -261,10 +249,6 @@ public class EtudiantServiceTest {
                 assertEquals(1, resultat.size());
                 assertEquals("Stage Dev", resultat.get(0).titre());
         }
-
-        // ==========================================
-        // Tests pour getOffreDetail
-        // ==========================================
 
         @Test
         void getOffreDetail_succes_retourneDetailOffre() throws Exception {

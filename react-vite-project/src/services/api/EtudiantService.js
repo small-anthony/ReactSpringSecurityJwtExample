@@ -23,7 +23,7 @@ export async function verifierMatricule(matricule, authHeader) {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader, // On passe l'objet de sécurité correctement !
+      ...authHeader,
     },
   });
   if (!response.ok) {

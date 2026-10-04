@@ -35,6 +35,14 @@ public class Cv {
         this.approbation.refuser(message);
     }
 
+    public void accepterApprobation() {
+        this.approbation.accepter();
+    }
+
+    public void refuserApprobation(String message) {
+        this.approbation.refuser(message);
+    }
+
     public Long getId() {
         return id;
     }
