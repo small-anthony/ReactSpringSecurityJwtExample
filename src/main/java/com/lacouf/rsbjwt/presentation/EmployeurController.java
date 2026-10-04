@@ -48,12 +48,31 @@ public class    EmployeurController {
     public ResponseEntity<Object> creerOffre(@RequestBody Map<String, String> request, Authentication authentication) {
         try {
             String email = authentication.getName();
-            OffreStageDto offreCree = employeurService.createOffreStage(
-                    request.get("titre"),
-                    request.get("nomEntreprise"),
-                    request.get("description"),
-                    email
-            );
+            String discipline = request.get("discipline");
+            String duree = request.get("duree");
+            String salaire = request.get("salaire");
+            String exigences = request.get("exigences");
+
+            OffreStageDto offreCree;
+            if (discipline != null || duree != null || salaire != null || exigences != null) {
+                offreCree = employeurService.createOffreStage(
+                        request.get("titre"),
+                        request.get("nomEntreprise"),
+                        request.get("description"),
+                        discipline,
+                        duree,
+                        salaire,
+                        exigences,
+                        email
+                );
+            } else {
+                offreCree = employeurService.createOffreStage(
+                        request.get("titre"),
+                        request.get("nomEntreprise"),
+                        request.get("description"),
+                        email
+                );
+            }
             return ResponseEntity.status(HttpStatus.CREATED).body(offreCree);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
