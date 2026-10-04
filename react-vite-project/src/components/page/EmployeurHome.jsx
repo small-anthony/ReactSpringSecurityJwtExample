@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getOffresStages } from "../../services/api/OffreStageService";
 import {useTranslation} from "react-i18next";
+import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
 
 const STATUS_STYLES = {
   EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -60,18 +61,73 @@ export default function EmployeurHome() {
         )}
         <div className="grid gap-4">
           {offres.map((offre) => (
-              <article key={offre.id} className="p-5 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-xl font-semibold text-gray-800">{offre.titre}</h2>
-                  <span className={`shrink-0 px-2.5 py-1 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
-                {t(`employeur_home.status.${offre.status}`)}
-              </span>
+              <article key={offre.id} className="p-7 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">{offre.titre}</h2>
+                    <p className="text-blue-600 font-medium mt-1 flex items-center gap-1.5 pb-4 border-b border-gray-100">
+                        <Briefcase className="w-4 h-4" strokeWidth={2} />
+                        {offre.nomEntreprise}
+                    </p>
+                  </div>
+                  <span className={`shrink-0 px-3 py-1.5 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
+                    {t(`employeur_home.status.${offre.status}`)}
+                  </span>
                 </div>
-                <p className="text-sm text-blue-700 mt-1">{offre.nomEntreprise}</p>
-                <p className="text-gray-600 mt-3 whitespace-pre-line">{offre.description}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="flex items-start gap-3">
+                        <div className="bg-blue-50 p-2 rounded-lg border border-blue-100">
+                            <GraduationCap className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                            <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
+                            <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                        <div className="bg-green-50 p-2 rounded-lg border border-green-100">
+                            <DollarSign className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                            <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
+                            <span className="text-gray-800 text-sm font-medium">{offre.salaire}</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                        <div className="bg-orange-50 p-2 rounded-lg border border-orange-100">
+                            <Clock className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div>
+                            <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
+                            <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-4 bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                    <div>
+                        <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                            <AlignLeft className="w-4 h-4 text-blue-500" />
+                            {t('approbation.offres.attributes.description')}
+                        </h4>
+                        <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.description}</p>
+                    </div>
+
+                    <div className="pt-2">
+                        <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                            <ClipboardList className="w-4 h-4 text-purple-500" />
+                            {t('approbation.offres.attributes.exigences')}
+                        </h4>
+                        <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
+                    </div>
+                </div>
+
                 {offre.status === "REFUSE" && offre.messageReponse && (
-                    <div className="mt-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
-                      <strong>{t("employeur_home.motif_refus")} </strong>{offre.messageReponse}
+                    <div className="mt-5 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 text-sm rounded-lg shadow-sm">
+                      <strong className="text-red-900">{t("employeur_home.motif_refus")} </strong>{offre.messageReponse}
                     </div>
                 )}
               </article>
