@@ -241,7 +241,13 @@
     "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
     "loading": "Chargement des offres...",
-    "no_offers": "Aucune offre de stage n'a encore été créée."
+    "no_offers": "Aucune offre de stage n'a encore été créée.",
+    "motif_refus": "Motif du refus :",
+    "status": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
+    }
   },
   "sidepanel": {
     "title": "Tableau de bord",
