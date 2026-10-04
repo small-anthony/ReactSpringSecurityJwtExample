@@ -304,6 +304,13 @@
     },
     "offres": {
       "title": "Offres en attente d'approbation",
+      "attributes": {
+        "description": "Description",
+        "discipline": "Discipline",
+        "salaire": "Salaire",
+        "duree": "Durée",
+        "exigences": "Exigences"
+      },
       "errors": {
         "fetch": "Impossible de charger les offres pour le moment.",
         "approve": "Une erreur est survenue lors de l'approbation de l'offre.",
