@@ -107,6 +107,34 @@ public class GestionnaireServiceTest {
     }
 
     @Test
+    void getCvPdf_shouldReturnPdfDataCvExists() throws Exception {
+//        ARRANGE
+        byte[] expectedData = "Faux contenu PDF".getBytes();
+        Cv cv = new Cv();
+        cv.setData(expectedData);
+
+        when(cvRepository.findById(1L)).thenReturn(Optional.of(cv));
+
+//        ACT
+        byte[] actualData = gestionnaireService.getCvPdf(1L);
+
+//        ASSERT
+        assertArrayEquals(expectedData, actualData);
+    }
+
+    @Test
+    void getCvPdf_shouldThrowExceptionCvDoesNotExist() {
+//        ARRANGE
+        when(cvRepository.findById(1L)).thenReturn(Optional.empty());
+
+//        ACT
+        Exception exception = assertThrows(Exception.class, () -> gestionnaireService.getCvPdf(1L));
+
+//        ASSERT
+        assertEquals("CV non trouvé", exception.getMessage());
+    }
+
+    @Test
     public void accepterOffreStage_succes() throws Exception{
         // ARRANGE
         OffreStage offre = new OffreStage("Titre", "Description", "CGI");

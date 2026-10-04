@@ -292,6 +292,7 @@
       "matricule": "Student ID",
       "pdf": "View PDF document",
       "visualisationPdf": "Resume preview",
+      "pdf_title": "Resume preview",
       "reason": "Reason for rejection",
       "explain": "Please explain why this resume is being rejected...",
       "cancel": "Cancel",

@@ -61,6 +61,7 @@ public class OffreStage {
         this.salaire = salaire;
         this.duree = duree;
         this.exigences = exigences;
+        this.etudiantsAutorises = new ArrayList<>();
     }
 
     public void accepter() throws Exception {

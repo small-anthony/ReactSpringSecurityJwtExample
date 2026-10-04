@@ -32,7 +32,6 @@ export async function verifierMatricule(matricule, authHeader) {
   }
   return response.json();
 }
-
 function getHeaders(authHeader) {
   if (authHeader) return authHeader;
   const token = getTokenCookie() || localStorage.getItem("token");
@@ -84,4 +83,3 @@ export async function getOffreDetail(id, authHeader) {
 
   return response.json();
 }
-

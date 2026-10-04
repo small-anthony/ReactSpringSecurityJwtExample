@@ -128,5 +128,4 @@ public class EtudiantService {
 
         return OffreStageDto.create(offre);
     }
-
 }
