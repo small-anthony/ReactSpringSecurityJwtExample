@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt;
 
+import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Gestionnaire;
 import com.lacouf.rsbjwt.model.auth.Credentials;
@@ -14,11 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final GestionnaireRepository gestionnaireRepository;
     private final EtudiantRepository etudiantRepository;
+    private final EmployeurRepository employeurRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository, GestionnaireRepository gestionnaireRepository, EtudiantRepository etudiantRepository, PasswordEncoder passwordEncoder){
+    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository, GestionnaireRepository gestionnaireRepository, EtudiantRepository etudiantRepository, EmployeurRepository employeurRepository, PasswordEncoder passwordEncoder){
         this.gestionnaireRepository = gestionnaireRepository;
         this.etudiantRepository = etudiantRepository;
+        this.employeurRepository = employeurRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -34,9 +37,21 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         );
 
         etudiantRepository.save(
-                new Etudiant("etudiant", "test",
-                        new Credentials("etudiant@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
+                new Etudiant("Hatim", "Fakhour",
+                        new Credentials("hatim@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
+                        1234567, "Informatique")
+        );
+
+        etudiantRepository.save(
+                new Etudiant("Daniil", "Dimov",
+                        new Credentials("daniil@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
                         12345, "Informatique")
+        );
+
+        employeurRepository.save(
+                new Employeur("Valentin", "Dimitrov",
+                        new Credentials("valentin@test.com", passwordEncoder.encode("password"), Role.EMPLOYEUR),
+                        "Google", "514 111 1111")
         );
     }
 }
