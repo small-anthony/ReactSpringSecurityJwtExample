@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt;
 
+import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Gestionnaire;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
@@ -12,10 +13,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final GestionnaireRepository gestionnaireRepository;
+    private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository, GestionnaireRepository gestionnaireRepository, PasswordEncoder passwordEncoder){
+    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository, GestionnaireRepository gestionnaireRepository, EtudiantRepository etudiantRepository, PasswordEncoder passwordEncoder){
         this.gestionnaireRepository = gestionnaireRepository;
+        this.etudiantRepository = etudiantRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -28,6 +31,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         gestionnaireRepository.save(
                 new Gestionnaire("john", "gestion",
                 new Credentials("gestionnaire@test.com", passwordEncoder.encode("bib"), Role.GESTIONNAIRE))
+        );
+
+        etudiantRepository.save(
+                new Etudiant("etudiant", "test",
+                        new Credentials("etudiant@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
+                        12345, "Informatique")
         );
     }
 }
