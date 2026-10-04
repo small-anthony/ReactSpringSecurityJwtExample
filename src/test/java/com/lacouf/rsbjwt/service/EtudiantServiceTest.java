@@ -24,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -139,6 +141,38 @@ public class EtudiantServiceTest {
                 assertEquals("Le fichier doit être un PDF", exception.getMessage());
         }
 
+
+        @Test
+        void getEtudiantByMatricule_succes() throws Exception {
+                // ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+
+                etudiant.setId(1L);
+
+                when(etudiantRepository.findByMatricule(12345)).thenReturn(Optional.of(etudiant));
+
+                // ACT
+                EtudiantDto resultat = etudiantService.getEtudiantByMatricule(12345);
+
+                // ASSERT
+                assertNotNull(resultat);
+                assertEquals(12345, resultat.matricule());
+                assertEquals("Peter", resultat.firstName());
+        }
+        @Test
+        void getEtudiantByMatricule_introuvable_lanceException() {
+                // ARRANGE
+                when(etudiantRepository.findByMatricule(99999)).thenReturn(Optional.empty());
+
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                        () -> etudiantService.getEtudiantByMatricule(99999));
+
+                // ASSERT
+                assertEquals("Aucun étudiant trouvé avec ce matricule", exception.getMessage());
+        }
+
         @Test
         void postuler_shouldCreateCandidatureSuccessfully() throws Exception {
                 // ARRANGE
@@ -153,11 +187,13 @@ public class EtudiantServiceTest {
                         .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
                 when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
-                when(candidatureRepository.existsByEtudiantAndOffreStage(etudiant, offre)).thenReturn(false);
-                when(candidatureRepository.save(any(Candidature.class))).thenAnswer(invocation -> {
-                        Candidature candidature = invocation.getArgument(0);
-                        ReflectionTestUtils.setField(candidature, "id", 100L);
-                        return candidature;
+                when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(invocation -> {
+                        OffreStage stage = invocation.getArgument(0);
+                        AtomicLong incr = new AtomicLong();
+                        stage.getCandidatures().forEach(candidature -> {
+                                ReflectionTestUtils.setField(candidature, "id", 100L + (incr.getAndIncrement()));
+                        });
+                        return stage;
                 });
 
                 // ACT
@@ -173,7 +209,6 @@ public class EtudiantServiceTest {
                 assertEquals("test@gmail.com", etudiantResultat.email());
                 assertEquals("Informatique", etudiantResultat.discipline());
                 assertEquals(StatutCandidature.EN_ATTENTE, candidatureResultat.statut());
-                verify(candidatureRepository).save(any(Candidature.class));
         }
 
         @Test

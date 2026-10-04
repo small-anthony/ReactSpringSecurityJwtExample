@@ -18,6 +18,21 @@ export async function registerEtudiant(etudiantData) {
   return await response.json();
 }
 
+export async function verifierMatricule(matricule, authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/matricule/${matricule}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader, // On passe l'objet de sécurité correctement !
+    },
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Étudiant non trouvé");
+  }
+  return response.json();
+}
+
 export async function getMesCandidatures(authHeader) {
   const response = await APIHelper.get("/etudiant/candidatures", authHeader);
 

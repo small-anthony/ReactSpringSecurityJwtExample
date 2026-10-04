@@ -13,6 +13,8 @@ import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
+import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
+import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 
 
 function App() {
@@ -73,11 +75,29 @@ function App() {
             <Route
                 path="gestionnaire"
                 element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "GESTIONNAIRE" ? <GestionnaireHome /> :
-                              <Navigate to="/" />
+                    !token ? <Navigate to="/login" /> :
+                        !userData ? null :
+                            role === "GESTIONNAIRE" ? <GestionnaireHome /> :
+                                <Navigate to="/" />
                 }
+            />
+            <Route
+                path="gestionnaire/approbations/offres"
+                element={
+                    !token ? <Navigate to="/login" /> :
+                        !userData ? null :
+                            role === "GESTIONNAIRE" ? <ApprobationOffres /> :
+                                <Navigate to="/" />
+                }
+            />
+            <Route
+                path="gestionnaire/approbations/cvs"
+                element={
+                    !token ? <Navigate to="/login" /> :
+                        !userData ? null :
+                            role === "GESTIONNAIRE" ? <ApprobationCvs /> :
+                                <Navigate to="/" />
+              }
             />
           </Route>
         </Routes>

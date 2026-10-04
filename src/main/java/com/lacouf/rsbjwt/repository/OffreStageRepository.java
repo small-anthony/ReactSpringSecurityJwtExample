@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.repository;
 
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Employeur;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	List<OffreStage> findByEmployeur(Employeur employeur);
+	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	@Query("""
 	SELECT DISTINCT offre
 		FROM OffreStage offre

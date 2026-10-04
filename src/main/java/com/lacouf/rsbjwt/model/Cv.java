@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,20 +9,29 @@ public class Cv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-//    Si c'est pas H2, utiliser
-//    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "bytea")
     private byte[] data;
 
     @OneToOne
     @JoinColumn(name = "etudiant_id")
     private Etudiant etudiant;
 
+    @Embedded
+    private Approbation approbation = new Approbation();
+
     public Cv() {
     }
 
     public void mettreAJour(byte[] nouvelData) {
         this.data = nouvelData;
+    }
+
+    public void accepterApprobation() {
+        this.approbation.accepter();
+    }
+
+    public void refuserApprobation(String message) {
+        this.approbation.refuser(message);
     }
 
     public Long getId() {
@@ -34,6 +44,30 @@ public class Cv {
 
     public Etudiant getEtudiant() {
         return etudiant;
+    }
+
+    public String getEtudiantFirstName() {
+        return this.etudiant != null ? etudiant.getFirstName() : null;
+    }
+
+    public String getEtudiantLastName() {
+        return this.etudiant != null ? this.etudiant.getLastName() : null;
+    }
+
+    public int getEtudiantMatricule() {
+        return this.etudiant != null ? this.etudiant.getMatricule() : 0;
+    }
+
+    public StatusAcceptation getStatusAcceptation() {
+        return this.approbation.getStatus();
+    }
+
+    public String getMessageRefusApprobation() {
+        return this.approbation.getMessageRefus();
+    }
+
+    public Long getEtudiantId() {
+        return this.etudiant != null ? this.etudiant.getId() : null;
     }
 
     public void setId(Long id) {

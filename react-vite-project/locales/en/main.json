@@ -242,5 +242,69 @@
     "create_offer": "Create an offer",
     "loading": "Loading offers...",
     "no_offers": "No internship offer has been created yet."
+  },
+  "sidepanel": {
+    "title": "Manager Workspace",
+    "cvs": "Resume Approvals",
+    "offres": "Offer Approvals"
+  },
+  "gestionnaire_home": {
+    "title": "Welcome to your Manager Workspace",
+    "subtitle": "Manage internship offers, supervise students, and track contracts with ease. Select an action from the menu to get started."
+  },
+  "approbation": {
+    "cvs": {
+      "errors": {
+        "fetch": "Error fetching resumes.",
+        "approve": "Error approving the resume.",
+        "reject": "Error rejecting the resume."
+      },
+      "title": "Resumes pending approval",
+      "loading": "Loading resumes...",
+      "reject": "Reject",
+      "approve": "Approve",
+      "matricule": "Student ID",
+      "pdf": "View PDF document",
+      "pdf_title": "Resume preview",
+      "reason": "Reason for rejection",
+      "explain": "Please explain why this resume is being rejected...",
+      "cancel": "Cancel",
+      "confirm": "Confirm rejection",
+      "nocvs": "No resumes pending approval.",
+      "close": "Close",
+      "cvPdf": "PDF resume"
+    },
+    "offres": {
+      "title": "Offers pending approval",
+      "errors": {
+        "fetch": "Unable to load offers at this time.",
+        "approve": "An error occurred while approving the offer.",
+        "reject": "An error occurred while rejecting the offer."
+      },
+      "no_offres": "No offers pending.",
+      "approbation": {
+        "title": "Approve offer",
+        "question": "Would you like to make \"{{titre}}\" visible to all students, or restrict it?",
+        "target": "Targeted students (Optional)",
+        "search": "Search by student ID (ex: 12345)",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
+    },
+    "modal_refus": {
+      "offre": {
+        "titre": "Reject Offer",
+        "description": "You are about to reject the offer \"{{nom}}\". Please state the reason for the employer.",
+        "placeholder": "Please explain why this offer is rejected..."
+      },
+      "cv": {
+        "titre": "Reject Resume",
+        "description": "You are about to reject {{nom}}'s resume. Please state the reason.",
+        "placeholder": "Please explain why this resume is rejected..."
+      },
+      "label_motif": "Reason for rejection",
+      "annuler": "Cancel",
+      "confirmer": "Confirm rejection"
+    }
   }
 }
