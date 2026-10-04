@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../components/config/Config";
+import { getTokenCookie } from "../AuthService.tsx";
 
 export async function registerEtudiant(etudiantData) {
   const response = await fetch(`${BASE_URL}/etudiant/inscription`, {
@@ -31,3 +32,56 @@ export async function verifierMatricule(matricule, authHeader) {
   }
   return response.json();
 }
+
+function getHeaders(authHeader) {
+  if (authHeader) return authHeader;
+  const token = getTokenCookie() || localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+export async function getStatutCv(authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/cv/statut`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la récupération du statut du CV");
+  }
+
+  return response.json();
+}
+
+export async function getOffresDisponibles(authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/offres`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la récupération des offres");
+  }
+
+  return response.json();
+}
+
+
+export async function getOffreDetail(id, authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/offres/${id}`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la récupération du détail de l'offre");
+  }
+
+  return response.json();
+}
+

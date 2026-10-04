@@ -1,50 +1,210 @@
 import CvUploadModal from "../modal/CvUploadModal.jsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
+import { getStatutCv } from "../../services/api/EtudiantService.js";
 import { checkCvExists } from "../../services/api/CvEtudiantAPI.jsx";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
+import {
+    CheckCircle2,
+    Clock3,
+    XCircle,
+    ArrowRight,
+    Briefcase,
+    FileText,
+    UploadCloud
+} from "lucide-react";
 
 export default function EtudiantProfile() {
     const { t } = useTranslation("main");
+    const authService = useContext(AuthServiceContext);
+    const [cvStatut, setCvStatut] = useState(null);
     const [cvExiste, setCvExiste] = useState(null);
     const [erreur, setErreur] = useState(null);
+    const [afficherUploadModal, setAfficherUploadModal] = useState(false);
 
-    useEffect(() => {
-        const verifierCv = async () => {
+    const chargerStatut = async () => {
+        try {
+            setErreur(null);
+            const authHeader = authService.buildAuthHeader();
+            const statut = await getStatutCv(authHeader);
+            setCvStatut(statut);
+            setCvExiste(Boolean(statut?.hasCv));
+        } catch (error) {
             try {
-                setCvExiste(await checkCvExists());
-            } catch (error) {
+                const exists = await checkCvExists();
+                setCvExiste(exists);
+            } catch (e) {
                 setErreur("Une erreur est survenue lors de la vérification du CV");
                 setCvExiste(false);
             }
-        };
+        }
+    };
 
-        verifierCv();
-    }, []);
+    useEffect(() => {
+        chargerStatut();
+    }, [authService]);
 
     if (cvExiste === null && !erreur) {
         return <div className="p-8 text-center text-slate-500">{t("etudiant_profile.loading")}</div>;
     }
 
+    const status = cvStatut?.status;
+
     return (
-        <div className="min-h-screen bg-slate-50 p-8">
-            <h1 className="text-3xl font-bold mb-6">{t("etudiant_profile.title")}</h1>
-
-            {erreur && (
-                <div className="mb-6 p-4 bg-red-50 text-red-700 border-l-4 border-red-500 rounded-md">
-                    {erreur}
+        <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto space-y-6">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                        {t("etudiant_profile.title")}
+                    </h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                        Gérez vos documents académiques et le statut de votre dossier de stage.
+                    </p>
                 </div>
-            )}
 
-            {cvExiste === false ? (
-                <CvUploadModal
-                    onUploadSuccess={() => {
-                        setCvExiste(true);
-                        setErreur(null);
-                    }}
-                />
-            ) : (
-                <h2 className="text-xl font-semibold mb-4">{t("etudiant_profile.cv_uploaded")}</h2>
-            )}
+                {erreur && (
+                    <div className="p-4 bg-red-50 text-red-700 border-l-4 border-red-500 rounded-xl">
+                        {erreur}
+                    </div>
+                )}
+
+                {/* Cas 1: Aucun CV téléversé */}
+                {!cvExiste && (
+                    <div className="space-y-4">
+                        <CvUploadModal
+                            onUploadSuccess={() => {
+                                chargerStatut();
+                            }}
+                        />
+                    </div>
+                )}
+
+                {/* Cas 2: CV présent et statut EN_ATTENTE */}
+                {cvExiste && status === "EN_ATTENTE" && (
+                    <div className="bg-white p-6 rounded-2xl border border-blue-200 shadow-xs space-y-4">
+                        <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                <Clock3 className="w-6 h-6" />
+                            </div>
+                            <div className="space-y-1">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                    En attente de révision
+                                </span>
+                                <h3 className="text-lg font-bold text-gray-900">
+                                    {t("etudiant_profile.cv_uploaded")}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                    Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage. Vous recevrez l'accès aux offres dès sa validation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Cas 3: CV présent et statut ACCEPTE */}
+                {cvExiste && status === "ACCEPTE" && (
+                    <div className="bg-white p-6 rounded-2xl border border-emerald-200 shadow-xs space-y-5">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                    <CheckCircle2 className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-1">
+                                        CV Approuvé
+                                    </span>
+                                    <h3 className="text-lg font-bold text-gray-900">
+                                        Votre CV a été validé !
+                                    </h3>
+                                    <p className="text-sm text-gray-600">
+                                        Félicitations, vous pouvez désormais explorer toutes les offres de stage approuvées et y postuler.
+                                    </p>
+                                </div>
+                            </div>
+                            <Link
+                                to="/etudiant/offres"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-xs transition shrink-0 cursor-pointer"
+                            >
+                                <Briefcase className="w-4 h-4" />
+                                <span>Voir les offres</span>
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+
+                        <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                            <span>Besoin de mettre à jour votre CV ?</span>
+                            <button
+                                onClick={() => setAfficherUploadModal(!afficherUploadModal)}
+                                className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+                            >
+                                <UploadCloud className="w-4 h-4" />
+                                <span>{afficherUploadModal ? "Masquer le formulaire" : "Téléverser un nouveau CV"}</span>
+                            </button>
+                        </div>
+
+                        {afficherUploadModal && (
+                            <div className="pt-2">
+                                <CvUploadModal
+                                    onUploadSuccess={() => {
+                                        setAfficherUploadModal(false);
+                                        chargerStatut();
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Cas 4: CV présent et statut REFUSE */}
+                {cvExiste && status === "REFUSE" && (
+                    <div className="space-y-6">
+                        <div className="bg-white p-6 rounded-2xl border border-red-200 shadow-xs space-y-3">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                                    <XCircle className="w-6 h-6" />
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                        CV Refusé
+                                    </span>
+                                    <h3 className="text-lg font-bold text-gray-900">
+                                        Votre CV nécessite des modifications
+                                    </h3>
+                                    <p className="text-sm text-red-700 font-medium">
+                                        Motif : {cvStatut?.messageRefus || "Aucun motif spécifique fourni."}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        Veuillez apporter les corrections nécessaires à votre document puis déposez votre nouvelle version ci-dessous.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
+                            <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-blue-600" />
+                                <span>Déposer votre CV corrigé</span>
+                            </h4>
+                            <CvUploadModal
+                                onUploadSuccess={() => {
+                                    chargerStatut();
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Cas 5: cvExiste est true mais cvStatut est null ou statut non reconnu */}
+                {cvExiste && !status && (
+                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
+                        <h2 className="text-xl font-semibold mb-2">{t("etudiant_profile.cv_uploaded")}</h2>
+                        <p className="text-sm text-gray-600">
+                            Votre document est bien enregistré dans notre système.
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
