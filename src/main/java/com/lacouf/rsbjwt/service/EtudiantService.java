@@ -62,13 +62,6 @@ public class EtudiantService {
         return EtudiantDto.create(etudiant);
     }
 
-    public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {
-        Etudiant etudiant = etudiantRepository.findByMatricule(matricule)
-                .orElseThrow(() -> new Exception("Aucun étudiant trouvé avec ce matricule"));
-
-        return EtudiantDto.create(etudiant);
-    }
-
     public StatutCvDto getStatutCv(String email) {
         UserApp user = userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
@@ -92,7 +85,6 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        // Règle de sécurité : CV obligatoire et accepté
         if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Accès refusé : votre CV doit être approuvé par un gestionnaire.");

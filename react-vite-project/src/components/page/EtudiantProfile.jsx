@@ -168,7 +168,6 @@ export default function EtudiantProfile() {
                                         {t("etudiant_profile.refused_desc")}
                                     </p>
 
-                                    {/* NOUVEAU: Le bouton pour ouvrir la modale d'upload */}
                                     <div className="pt-4 mt-2">
                                         <button
                                             onClick={() => setAfficherUploadModal(true)}

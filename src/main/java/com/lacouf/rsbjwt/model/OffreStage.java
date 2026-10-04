@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,14 +73,6 @@ public class OffreStage {
             throw new Exception("Cette offre a déjà été traitée.");
         }
         this.approbation.refuser(message);
-    }
-
-    public void attribuerVisibilite(List<Etudiant> etudiants) {
-        if (etudiants != null && !etudiants.isEmpty()) {
-            this.etudiantsAutorises = etudiants;
-        } else {
-            this.etudiantsAutorises.clear();
-        }
     }
 
     public void attribuerVisibilite(List<Etudiant> etudiants) {
