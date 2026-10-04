@@ -4,14 +4,7 @@ import { useTranslation } from "react-i18next";
 import { registerEtudiant } from "../../services/api/EtudiantService";
 import SignupTabs from "./SignupTabs";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-
-const DISCIPLINES = [
-  { value: "Techniques de l'informatique", labelKey: "info" },
-  { value: "Soins infirmiers", labelKey: "soins" },
-  { value: "Technologie de l'architecture", labelKey: "archi" },
-  { value: "Techniques de comptabilité et de gestion", labelKey: "compta" },
-  { value: "Techniques de génie civil", labelKey: "gcivil" }
-];
+import { DISCIPLINES } from "../../constants/disciplines";
 
 export default function SignupEtudiantForm() {
   const navigate = useNavigate();

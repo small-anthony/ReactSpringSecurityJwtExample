@@ -59,7 +59,7 @@ export default function EtudiantProfile() {
                         {t("etudiant_profile.title")}
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        Gérez vos documents académiques et le statut de votre dossier de stage.
+                        {t("etudiant_profile.subtitle")}
                     </p>
                 </div>
 
@@ -89,13 +89,13 @@ export default function EtudiantProfile() {
                             </div>
                             <div className="space-y-1">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                    En attente de révision
+                                    {t("etudiant_profile.pending_badge")}
                                 </span>
                                 <h3 className="text-lg font-bold text-gray-900">
                                     {t("etudiant_profile.cv_uploaded")}
                                 </h3>
                                 <p className="text-sm text-gray-600">
-                                    Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage. Vous recevrez l'accès aux offres dès sa validation.
+                                    {t("etudiant_profile.pending_desc")}
                                 </p>
                             </div>
                         </div>
@@ -112,13 +112,13 @@ export default function EtudiantProfile() {
                                 </div>
                                 <div>
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-1">
-                                        CV Approuvé
+                                        {t("etudiant_profile.approved_badge")}
                                     </span>
                                     <h3 className="text-lg font-bold text-gray-900">
-                                        Votre CV a été validé !
+                                        {t("etudiant_profile.approved_title")}
                                     </h3>
                                     <p className="text-sm text-gray-600">
-                                        Félicitations, vous pouvez désormais explorer toutes les offres de stage approuvées et y postuler.
+                                        {t("etudiant_profile.approved_desc")}
                                     </p>
                                 </div>
                             </div>
@@ -127,19 +127,19 @@ export default function EtudiantProfile() {
                                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-xs transition shrink-0 cursor-pointer"
                             >
                                 <Briefcase className="w-4 h-4" />
-                                <span>Voir les offres</span>
+                                <span>{t("etudiant_profile.btn_view_offers")}</span>
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
 
                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                            <span>Besoin de mettre à jour votre CV ?</span>
+                            <span>{t("etudiant_profile.update_help")}</span>
                             <button
                                 onClick={() => setAfficherUploadModal(!afficherUploadModal)}
                                 className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
                             >
                                 <UploadCloud className="w-4 h-4" />
-                                <span>{afficherUploadModal ? "Masquer le formulaire" : "Téléverser un nouveau CV"}</span>
+                                <span>{afficherUploadModal ? t("etudiant_profile.btn_hide_upload") : t("etudiant_profile.btn_show_upload")}</span>
                             </button>
                         </div>
 
@@ -166,16 +166,18 @@ export default function EtudiantProfile() {
                                 </div>
                                 <div className="space-y-1">
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                        CV Refusé
+                                        {t("etudiant_profile.refused_badge")}
                                     </span>
                                     <h3 className="text-lg font-bold text-gray-900">
-                                        Votre CV nécessite des modifications
+                                        {t("etudiant_profile.refused_title")}
                                     </h3>
                                     <p className="text-sm text-red-700 font-medium">
-                                        Motif : {cvStatut?.messageRefus || "Aucun motif spécifique fourni."}
+                                        {cvStatut?.messageRefus
+                                            ? t("etudiant_profile.refused_motif", { motif: cvStatut.messageRefus })
+                                            : t("etudiant_profile.refused_no_motif")}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                        Veuillez apporter les corrections nécessaires à votre document puis déposez votre nouvelle version ci-dessous.
+                                        {t("etudiant_profile.refused_desc")}
                                     </p>
                                 </div>
                             </div>
@@ -184,7 +186,7 @@ export default function EtudiantProfile() {
                         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
                             <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                                 <FileText className="w-4 h-4 text-blue-600" />
-                                <span>Déposer votre CV corrigé</span>
+                                <span>{t("etudiant_profile.upload_corrected_title")}</span>
                             </h4>
                             <CvUploadModal
                                 onUploadSuccess={() => {
@@ -200,7 +202,7 @@ export default function EtudiantProfile() {
                     <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
                         <h2 className="text-xl font-semibold mb-2">{t("etudiant_profile.cv_uploaded")}</h2>
                         <p className="text-sm text-gray-600">
-                            Votre document est bien enregistré dans notre système.
+                            {t("etudiant_profile.registered_desc")}
                         </p>
                     </div>
                 )}
