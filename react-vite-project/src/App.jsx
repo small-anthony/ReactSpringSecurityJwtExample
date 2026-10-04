@@ -15,6 +15,7 @@ import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
+import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 
 
 function App() {
@@ -42,6 +43,19 @@ function App() {
                   !token ? <Navigate to="/login" /> :
                       !userData ? null :
                           role === "ETUDIANT" ? <EtudiantProfile /> :
+                              <Navigate to="/" />
+                }
+            />
+            <Route
+                path="etudiant/profile"
+                element={<Navigate to="/etudiant" replace />}
+            />
+            <Route
+                path="etudiant/offres"
+                element={
+                  !token ? <Navigate to="/login" /> :
+                      !userData ? null :
+                          role === "ETUDIANT" ? <OffreStagesEtudiant /> :
                               <Navigate to="/" />
                 }
             />
