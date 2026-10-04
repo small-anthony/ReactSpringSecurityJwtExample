@@ -6,7 +6,7 @@ import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
-import { Briefcase, Check, X } from "lucide-react";
+import { Briefcase, Check, X, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
 import {useTranslation} from "react-i18next";
 
 const ApprobationOffres = () => {
@@ -81,11 +81,57 @@ const ApprobationOffres = () => {
                                 </button>
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 pr-20 mb-1">{offre.titre}</h3>
-                            <p className="text-blue-600 font-medium mb-3 flex items-center gap-1.5">
+                            <p className="text-blue-600 font-medium mb-5 flex items-center gap-1.5 pb-4 border-b border-gray-100">
                                 <Briefcase className="w-4 h-4" strokeWidth={2} />
                                 {offre.nomEntreprise}
                             </p>
-                            <p className="text-gray-700 leading-relaxed">{offre.description}</p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div className="flex items-start gap-3">
+                                    <div className="bg-blue-50 p-2 rounded-lg border border-blue-100">
+                                        <GraduationCap className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-3">
+                                    <div className="bg-green-50 p-2 rounded-lg border border-green-100">
+                                        <DollarSign className="w-4 h-4 text-green-600" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{offre.salaire}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="bg-orange-50 p-2 rounded-lg border border-orange-100">
+                                        <Clock className="w-4 h-4 text-orange-600" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                                <div>
+                                    <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                                        <AlignLeft className="w-4 h-4 text-blue-500" />
+                                        {t('approbation.offres.attributes.description')}
+                                    </h4>
+                                    <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.description}</p>
+                                </div>
+                                <div className="pt-2">
+                                    <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                                        <ClipboardList className="w-4 h-4 text-purple-500" />
+                                        {t('approbation.offres.attributes.exigences')}
+                                    </h4>
+                                    <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
+                                </div>
+                            </div>
                             {offreToRefuse && offreToRefuse.id === offre.id && (
                                 <ModalRefus
                                     mode="offre"

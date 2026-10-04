@@ -267,7 +267,13 @@
     "subtitle": "Manage the offers published by your company.",
     "create_offer": "Create an offer",
     "loading": "Loading offers...",
-    "no_offers": "No internship offer has been created yet."
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "status": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
+      "REFUSE": "Refused"
+    }
   },
   "sidepanel": {
     "title": "Manager Workspace",
@@ -302,6 +308,13 @@
     },
     "offres": {
       "title": "Offers pending approval",
+      "attributes": {
+        "description": "Description",
+        "discipline": "Discipline",
+        "salaire": "Salary",
+        "duree": "Duration",
+        "exigences": "Requirements"
+      },
       "errors": {
         "fetch": "Unable to load offers at this time.",
         "approve": "An error occurred while approving the offer.",
