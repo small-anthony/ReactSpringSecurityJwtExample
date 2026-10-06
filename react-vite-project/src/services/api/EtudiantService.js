@@ -20,15 +20,6 @@ export async function registerEtudiant(etudiantData) {
 
 
 
-export async function getMesCandidatures(authHeader) {
-  const response = await APIHelper.get("/etudiant/candidatures", authHeader);
-
-  if(!response.ok) {
-    throw new Error(await response.text() || "Unknown error")
-  }
-
-  return await response.json();
-}
 export async function verifierMatricule(matricule, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/matricule/${matricule}`, {
     method: "GET",
