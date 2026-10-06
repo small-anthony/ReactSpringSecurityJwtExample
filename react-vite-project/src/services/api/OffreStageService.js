@@ -1,14 +1,36 @@
 import { BASE_URL } from "../../components/config/Config";
 import APIHelper from "../../utils/APIHelper.ts";
 
-export async function createOffreStage(titre, description, nomEntreprise, authHeader) {
+export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, duree, salaire, exigences, authHeader) {
+  let bodyData;
+  let headers;
+
+  if (typeof offreOrTitre === "object" && offreOrTitre !== null) {
+    bodyData = offreOrTitre;
+    headers = description;
+  } else if (typeof discipline === "object" && discipline !== null && !duree) {
+    bodyData = { titre: offreOrTitre, description, nomEntreprise };
+    headers = discipline;
+  } else {
+    bodyData = {
+      titre: offreOrTitre,
+      description,
+      nomEntreprise,
+      discipline,
+      duree,
+      salaire,
+      exigences,
+    };
+    headers = authHeader;
+  }
+
   const response = await fetch(`${BASE_URL}/employeur/creerOffre`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader,
+      ...headers,
     },
-    body: JSON.stringify({ titre, description, nomEntreprise }),
+    body: JSON.stringify(bodyData),
   });
 
   if (!response.ok) {
