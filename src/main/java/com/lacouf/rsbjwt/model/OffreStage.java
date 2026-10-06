@@ -2,7 +2,6 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 

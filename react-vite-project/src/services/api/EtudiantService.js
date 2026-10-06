@@ -1,5 +1,4 @@
 import { BASE_URL } from "../../components/config/Config";
-import APIHelper from "../../utils/APIHelper.ts";
 import { getTokenCookie } from "../AuthService.tsx";
 
 export async function registerEtudiant(etudiantData) {
@@ -47,7 +46,6 @@ export async function getMesCandidatures(authHeader) {
 
   return response.json();
 }
-
 function getHeaders(authHeader) {
   if (authHeader) return authHeader;
   const token = getTokenCookie() || localStorage.getItem("token");

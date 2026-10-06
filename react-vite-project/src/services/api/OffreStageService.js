@@ -24,6 +24,7 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
     headers = authHeader;
   }
 
+
   const response = await fetch(`${BASE_URL}/employeur/creerOffre`, {
     method: "POST",
     headers: {
@@ -90,7 +91,7 @@ export const refuserOffre = async (id, message, authHeader) => {
       "Content-Type": "application/json",
       ...authHeader,
     },
-    body: JSON.stringify({ id, message }),
+    body: JSON.stringify({ id, commentaire: message }),
   });
   if (!response.ok) {
     throw new Error("Erreur lors du refus");

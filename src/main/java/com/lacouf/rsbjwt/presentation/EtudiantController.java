@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import java.util.List;
-
 import java.util.Map;
 
 @RestController
