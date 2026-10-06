@@ -3,9 +3,11 @@ package com.lacouf.rsbjwt;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Gestionnaire;
+import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +20,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final EmployeurRepository employeurRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ReactSpringSecurityJwtApplication(UserAppRepository userAppRepository, GestionnaireRepository gestionnaireRepository, EtudiantRepository etudiantRepository, EmployeurRepository employeurRepository, PasswordEncoder passwordEncoder){
+    public ReactSpringSecurityJwtApplication(
+            UserAppRepository userAppRepository,
+            GestionnaireRepository gestionnaireRepository,
+            EtudiantRepository etudiantRepository,
+            EmployeurRepository employeurRepository,
+            PasswordEncoder passwordEncoder) {
         this.gestionnaireRepository = gestionnaireRepository;
         this.etudiantRepository = etudiantRepository;
         this.employeurRepository = employeurRepository;
@@ -31,27 +38,79 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        String bibPass = passwordEncoder != null ? passwordEncoder.encode("bib") : null;
+        if (bibPass == null) bibPass = "bib";
+
+        String defaultPass = passwordEncoder != null ? passwordEncoder.encode("password") : null;
+        if (defaultPass == null) defaultPass = "password";
+
         gestionnaireRepository.save(
                 new Gestionnaire("john", "gestion",
-                new Credentials("gestionnaire@test.com", passwordEncoder.encode("bib"), Role.GESTIONNAIRE))
+                new Credentials("gestionnaire@test.com", bibPass, Role.GESTIONNAIRE))
         );
+
+        Etudiant etudiant = new Etudiant(
+                "Hatim",
+                "Fakhour",
+                new Credentials("etudiant@test.com", defaultPass, Role.ETUDIANT),
+                1234567,
+                "Techniques de l'informatique"
+        );
+        etudiant.setCv(new byte[]{1, 2, 3});
+        etudiant.getCv().accepterApprobation();
+        etudiantRepository.save(etudiant);
 
         etudiantRepository.save(
                 new Etudiant("Hatim", "Fakhour",
-                        new Credentials("hatim@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
+                        new Credentials("hatim@test.com", defaultPass, Role.ETUDIANT),
                         1234567, "Informatique")
         );
 
         etudiantRepository.save(
                 new Etudiant("Daniil", "Dimov",
-                        new Credentials("daniil@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
+                        new Credentials("daniil@test.com", defaultPass, Role.ETUDIANT),
                         1234578, "Informatique")
         );
 
+        Employeur employeur = new Employeur(
+                "Valentin",
+                "Dimitrov",
+                new Credentials("employeur@test.com", defaultPass, Role.EMPLOYEUR),
+                "CGI Inc.",
+                "514-555-1234"
+        );
+
+        OffreStage offre1 = new OffreStage(
+                "Développeur Full Stack Web",
+                "Participer au développement d'applications web avec React et Spring Boot en méthodologie Agile.",
+                "CGI Inc.",
+                "Techniques de l'informatique",
+                "24$/h",
+                "15 semaines",
+                "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie."
+        );
+        offre1.accepter();
+        employeur.ajouterOffre(offre1);
+
+        OffreStage offre2 = new OffreStage(
+                "Stagiaire DevOps & Cloud",
+                "Mise en place de pipelines CI/CD, automatisation et surveillance d'infrastructures Docker.",
+                "CGI Inc.",
+                "Techniques de l'informatique",
+                "26$/h",
+                "15 semaines",
+                "Connaissance de Linux, Git et Docker. Notions de cloud computing un atout."
+        );
+        offre2.accepter();
+        employeur.ajouterOffre(offre2);
+
+        employeurRepository.save(employeur);
+
         employeurRepository.save(
                 new Employeur("Valentin", "Dimitrov",
-                        new Credentials("valentin@test.com", passwordEncoder.encode("password"), Role.EMPLOYEUR),
+                        new Credentials("valentin@test.com", defaultPass, Role.EMPLOYEUR),
                         "Google", "514 111 1111")
         );
     }
 }
+
