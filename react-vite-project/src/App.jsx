@@ -16,6 +16,7 @@ import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
+import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 
 
 function App() {
@@ -47,6 +48,19 @@ function App() {
                         }
                     />
                     <Route
+                        path="etudiant/profile"
+                        element={<Navigate to="/etudiant" replace />}
+                    />
+                    <Route
+                        path="etudiant/offres"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "ETUDIANT" ? <OffreStagesEtudiant /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
                         path="employeur"
                         element={
                             !token ? <Navigate to="/login" /> :
@@ -73,7 +87,6 @@ function App() {
                                         <Navigate to="/" />
                         }
                     />
-
                     <Route
                         path="professeur"
                         element={
@@ -110,10 +123,6 @@ function App() {
                                         <Navigate to="/" />
                         }
                     />
-
-
-
-
                 </Route>
             </Routes>
         </div>

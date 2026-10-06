@@ -1,11 +1,12 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,27 +16,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class EtudiantControllerTest {
-    @Mock
-    private UserAppService userAppService;
+        @Mock
+        private UserAppService userAppService;
 
-    @Mock
-    private EtudiantService etudiantService;
+        @Mock
+        private EtudiantService etudiantService;
 
-    @InjectMocks
-    private EtudiantController etudiantController;
+        @InjectMocks
+        private EtudiantController etudiantController;
 
     @Test
     void signUpEtudiant_shouldReturnCreated() throws Exception {
-//        ARRANGE
+    //    ARRANGE
         Map<String, String> request = new HashMap<>();
         request.put("firstName", "Peter");
         request.put("lastName", "Parker");
@@ -48,26 +50,26 @@ public class EtudiantControllerTest {
         EtudiantDto etudiantDto = mock(EtudiantDto.class);
 
         when(userAppService.registerStudent(
-                "Peter",
-                "Parker",
-                12345,
-                "test@gmail.com",
-                "Informatique",
-                "password",
-                "password"))
-                .thenReturn(etudiantDto);
+                        "Peter",
+                        "Parker",
+                        12345,
+                        "test@gmail.com",
+                        "Informatique",
+                        "password",
+                        "password"))
+                        .thenReturn(etudiantDto);
 
-//        ACT
+    //    ACT
         ResponseEntity<Object> response = etudiantController.signUpEtudiant(request);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(etudiantDto, response.getBody());
     }
 
     @Test
     void signUpEtudiant_shouldReturnBadRequestOnException() throws Exception {
-//        ARRANGE
+    //    ARRANGE
         Map<String, String> request = new HashMap<>();
         request.put("firstName", "Peter");
         request.put("lastName", "Parker");
@@ -78,26 +80,26 @@ public class EtudiantControllerTest {
         request.put("confirmPassword", "password");
 
         when(userAppService.registerStudent(
-                "Peter",
-                "Parker",
-                12345,
-                "testgmail.com",
-                "Informatique",
-                "password",
-                "password"))
-                .thenThrow(new Exception("Le format de l'email est invalide"));
+                        "Peter",
+                        "Parker",
+                        12345,
+                        "testgmail.com",
+                        "Informatique",
+                        "password",
+                        "password"))
+                        .thenThrow(new Exception("Le format de l'email est invalide"));
 
-//        ACT
+    //    ACT
         ResponseEntity<Object> response = etudiantController.signUpEtudiant(request);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Le format de l'email est invalide", response.getBody());
     }
 
     @Test
     void uploadCv_shouldReturnCreatedCv() throws Exception {
-//        ARRANGE
+    //    ARRANGE
         String email = "test@gmail.com";
         MultipartFile file = mock(MultipartFile.class);
 
@@ -107,19 +109,19 @@ public class EtudiantControllerTest {
         CvDto cvDto = new CvDto(10L, StatusAcceptation.EN_ATTENTE, null, 1L, "Prenom", "Nom", 12345);
 
         when(etudiantService.uploadCv(email, file))
-                .thenReturn(cvDto);
+                        .thenReturn(cvDto);
 
-//        ACT
+    //    ACT
         ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(cvDto, response.getBody());
     }
 
     @Test
     void uploadCv_shouldReturnBadRequestOnException() throws Exception {
-//        ARRANGE
+    //    ARRANGE
         String email = "test@gmail.com";
         MultipartFile file = mock(MultipartFile.class);
 
@@ -127,19 +129,19 @@ public class EtudiantControllerTest {
         when(authentication.getName()).thenReturn(email);
 
         when(etudiantService.uploadCv(email, file))
-                .thenThrow(new Exception("Veuillez sélectionner un fichier"));
+                        .thenThrow(new Exception("Veuillez sélectionner un fichier"));
 
-//        ACT
+    //    ACT
         ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Veuillez sélectionner un fichier", response.getBody());
     }
 
     @Test
     void uploadCv_shouldReturnForbiddenOnAccessDenied() throws Exception {
-//        ARRANGE
+    //    ARRANGE
         String emailHacker = "hacker@gmail.com";
         MultipartFile file = mock(MultipartFile.class);
 
@@ -147,41 +149,97 @@ public class EtudiantControllerTest {
         when(authentication.getName()).thenReturn(emailHacker);
 
         when(etudiantService.uploadCv(emailHacker, file))
-                .thenThrow(new Exception("Accès refusé"));
+                        .thenThrow(new Exception("Accès refusé"));
 
-//        ACT
+    //    ACT
         ResponseEntity<Object> response = etudiantController.uploadCv(file, authentication);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Accès refusé", response.getBody());
     }
 
     @Test
     void getMatricule_shouldReturnOk() throws Exception {
-//        ARRANGE
+    //    ARRANGE
         EtudiantDto etudiantDto = mock(EtudiantDto.class);
 
         when(etudiantService.getEtudiantByMatricule(12345)).thenReturn(etudiantDto);
 
-//        ACT
+    //    ACT
         ResponseEntity<?> response = etudiantController.getMatricule(12345);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(etudiantDto, response.getBody());
     }
+
     @Test
     void getMatricule_shouldReturnNotFoundOnException() throws Exception {
-//        ARRANGE
-        when(etudiantService.getEtudiantByMatricule(99999)).thenThrow(new Exception("Aucun étudiant trouvé avec ce matricule"));
+    //    ARRANGE
+        when(etudiantService.getEtudiantByMatricule(99999))
+                        .thenThrow(new Exception("Aucun étudiant trouvé avec ce matricule"));
 
-//        ACT
+    //    ACT
         ResponseEntity<?> response = etudiantController.getMatricule(99999);
 
-//        ASSERT
+    //    ASSERT
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Aucun étudiant trouvé avec ce matricule", response.getBody());
     }
 
+    @Test
+    void getStatutCv_shouldReturnOk() {
+    //    ARRANGE
+        String email = "etudiant@gmail.com";
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+
+        StatutCvDto statutCvDto = new StatutCvDto(true, StatusAcceptation.ACCEPTE, null);
+        when(etudiantService.getStatutCv(email)).thenReturn(statutCvDto);
+
+    //    ACT
+        ResponseEntity<StatutCvDto> response = etudiantController.getStatutCv(authentication);
+
+    //    ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(statutCvDto, response.getBody());
+    }
+
+    @Test
+    void getOffresDisponibles_shouldReturnOk() {
+    //    ARRANGE
+        String email = "etudiant@gmail.com";
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+
+        OffreStageDto offreDto = mock(OffreStageDto.class);
+        when(etudiantService.getOffresDisponibles(email)).thenReturn(List.of(offreDto));
+
+    //    ACT
+        ResponseEntity<List<OffreStageDto>> response = etudiantController.getOffresDisponibles(authentication);
+
+    //    ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getOffreDetail_shouldReturnOk() {
+    //    ARRANGE
+        String email = "etudiant@gmail.com";
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+
+        OffreStageDto offreDto = mock(OffreStageDto.class);
+        when(etudiantService.getOffreDetail(1L, email)).thenReturn(offreDto);
+
+    //    ACT
+        ResponseEntity<OffreStageDto> response = etudiantController.getOffreDetail(1L, authentication);
+
+    //    ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
+    }
 }

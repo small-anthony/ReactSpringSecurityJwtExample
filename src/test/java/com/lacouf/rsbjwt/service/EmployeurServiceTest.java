@@ -65,7 +65,7 @@ public class EmployeurServiceTest {
         //ACT
         OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, email);
 
-        //ASSERT
+       //ASSERT
         assertNotNull(resultat);
         assertEquals(1, resultat.id());
         assertEquals(titre, resultat.titre());
@@ -260,5 +260,97 @@ public class EmployeurServiceTest {
 
         //ASSERT
         assertEquals("Aucun CV disponible pour ce candidat", exception.getMessage());
+    }
+
+    @Test
+    void creerOffreStage_avecDetailsComplets_succes() throws Exception {
+        // ARRANGE
+        String email = "employeur@entreprise.com";
+        String titre = "Stagiaire en informatique";
+        String nomEntreprise = "CGI";
+        String description = "Développement web";
+        String discipline = "Informatique";
+        String duree = "4 mois";
+        String salaire = "25$/h";
+        String exigences = "React, Java";
+
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+
+        Credentials credentials = new Credentials(email, "password123", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentials, nomEntreprise, "514-555-1234");
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+
+        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree, exigences);
+        offreEnregistree.setId(1L);
+        offreEnregistree.setEmployeur(employeur);
+        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
+
+        // ACT
+        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences, email);
+
+        // ASSERT
+        assertNotNull(resultat);
+        assertEquals(1, resultat.id());
+        assertEquals(titre, resultat.titre());
+        assertEquals(discipline, resultat.discipline());
+        assertEquals(salaire, resultat.salaire());
+    }
+
+    @Test
+    void getOffres_avecEmployeurValide_retourneListeOffres() throws Exception {
+        // ARRANGE
+        String email = "employeur@entreprise.com";
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+
+        Employeur employeur = new Employeur();
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+
+        OffreStage offre = new OffreStage("Titre", "Desc", "CGI");
+        offre.setId(1L);
+        offre.setEmployeur(employeur);
+
+        when(offreStageRepository.findWithCandidaturesByEmployeur(employeur)).thenReturn(java.util.List.of(offre));
+
+        // ACT
+        java.util.List<OffreStageDto> resultats = employeurService.getOffres(email);
+
+        // ASSERT
+        assertEquals(1, resultats.size());
+        assertEquals("Titre", resultats.get(0).titre());
+    }
+
+    @Test
+    void getOffres_quandUtilisateurInexistant_lanceException() {
+        // ARRANGE
+        String emailInexistant = "inconnu@entreprise.com";
+        when(userAppRepository.findUserAppByEmail(emailInexistant)).thenReturn(Optional.empty());
+
+        // ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService.getOffres(emailInexistant));
+
+        // ASSERT
+        assertEquals("Utilisateur non trouvé avec l'email : " + emailInexistant, exception.getMessage());
+    }
+
+    @Test
+    void getOffres_quandEmployeurInexistant_lanceException() {
+        // ARRANGE
+        String email = "employeur@entreprise.com";
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(99L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+        when(employeurRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService.getOffres(email));
+
+        // ASSERT
+        assertEquals("Employeur non trouvé avec cette id", exception.getMessage());
     }
 }

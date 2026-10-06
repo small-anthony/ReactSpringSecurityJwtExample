@@ -2,7 +2,6 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +14,10 @@ public class OffreStage {
     private String titre;
     private String nomEntreprise;
     private String description;
+    private String discipline;
+    private String salaire;
+    private String duree;
+    private String exigences;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeur_id")
@@ -38,7 +41,29 @@ public class OffreStage {
         this.etudiantsAutorises = new ArrayList<>();
     }
 
+    public OffreStage(String titre, String description, String nomEntreprise, String discipline, String salaire,
+            String duree, String exigences) {
+        this.titre = titre;
+        this.description = description;
+        this.nomEntreprise = nomEntreprise;
+        this.discipline = discipline;
+        this.salaire = salaire;
+        this.duree = duree;
+        this.exigences = exigences;
+        this.etudiantsAutorises = new ArrayList<>();
+    }
 
+    public OffreStage(String titre, String description, Employeur employeur,
+            String discipline, String salaire, String duree, String exigences) {
+        this.titre = titre;
+        this.description = description;
+        this.employeur = employeur;
+        this.discipline = discipline;
+        this.salaire = salaire;
+        this.duree = duree;
+        this.exigences = exigences;
+        this.etudiantsAutorises = new ArrayList<>();
+    }
 
     public void accepter() throws Exception {
         if (!isEnAttente()) {
@@ -61,7 +86,6 @@ public class OffreStage {
             this.etudiantsAutorises.clear();
         }
     }
-
 
     public Long getId() {
         return id;
@@ -91,8 +115,6 @@ public class OffreStage {
         return etudiantsAutorises;
     }
 
-
-
     public boolean isEnAttente() {
         return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
     }
@@ -111,5 +133,37 @@ public class OffreStage {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDiscipline() {
+        return discipline;
+    }
+
+    public void setDiscipline(String discipline) {
+        this.discipline = discipline;
+    }
+
+    public String getSalaire() {
+        return salaire;
+    }
+
+    public void setSalaire(String salaire) {
+        this.salaire = salaire;
+    }
+
+    public String getDuree() {
+        return duree;
+    }
+
+    public void setDuree(String duree) {
+        this.duree = duree;
+    }
+
+    public String getExigences() {
+        return exigences;
+    }
+
+    public void setExigences(String exigences) {
+        this.exigences = exigences;
     }
 }

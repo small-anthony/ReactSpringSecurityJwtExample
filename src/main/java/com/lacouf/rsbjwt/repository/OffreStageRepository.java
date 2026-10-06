@@ -2,7 +2,6 @@ package com.lacouf.rsbjwt.repository;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
-import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Employeur;
 import org.springframework.data.jpa.repository.JpaRepository;

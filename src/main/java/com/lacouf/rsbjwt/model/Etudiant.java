@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
@@ -41,6 +42,14 @@ public class Etudiant extends UserApp {
 
     public Cv getCv() {
         return cv;
+    }
+
+    public StatusAcceptation getCvStatus() {
+        return this.cv != null ? this.cv.getStatusAcceptation() : null;
+    }
+
+    public String getCvMessageRefus() {
+        return this.cv != null ? this.cv.getMessageRefusApprobation() : null;
     }
 
     public void setCv(Cv cv) {

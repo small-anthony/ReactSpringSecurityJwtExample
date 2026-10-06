@@ -1,5 +1,4 @@
 package com.lacouf.rsbjwt.service;
-
 import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
@@ -9,14 +8,16 @@ import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.StatutCvDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EtudiantService {
@@ -25,6 +26,7 @@ public class EtudiantService {
     private final OffreStageRepository offreStageRepository;
     private final CandidatureRepository candidatureRepository;
 
+    @Autowired
     public EtudiantService(UserAppRepository userAppRepository,
                            EtudiantRepository etudiantRepository,
                            OffreStageRepository offreStageRepository,
@@ -106,5 +108,74 @@ public class EtudiantService {
                 .orElseThrow(() -> new Exception("Aucun étudiant trouvé avec ce matricule"));
 
         return EtudiantDto.create(etudiant);
+    }
+
+    public StatutCvDto getStatutCv(String email) {
+        UserApp user = userAppRepository.findUserAppByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        Etudiant etudiant = etudiantRepository.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
+
+        if (etudiant.getCv() == null) {
+            return new StatutCvDto(false, null, null);
+        }
+        return new StatutCvDto(
+                true,
+                etudiant.getCv().getStatusAcceptation(),
+                etudiant.getCv().getMessageRefusApprobation());
+    }
+
+    public List<OffreStageDto> getOffresDisponibles(String email) {
+        UserApp user = userAppRepository.findUserAppByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        Etudiant etudiant = etudiantRepository.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
+
+        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Accès refusé : votre CV doit être approuvé par un gestionnaire.");
+        }
+
+        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
+
+        // createFilteredByEtudiant : l'etudiant ne voit que SES candidatures,
+        // jamais celles des autres etudiants.
+        return offresAcceptees.stream()
+                .filter(offre -> offre.getEtudiantsAutorises() == null
+                        || offre.getEtudiantsAutorises().isEmpty()
+                        || offre.getEtudiantsAutorises().stream().anyMatch(e -> e.getId().equals(etudiant.getId())))
+                .map(offre -> OffreStageDto.createFilteredByEtudiant(offre, etudiant))
+                .toList();
+    }
+
+    public OffreStageDto getOffreDetail(Long id, String email) {
+        UserApp user = userAppRepository.findUserAppByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        Etudiant etudiant = etudiantRepository.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
+
+        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accès refusé : votre CV doit être approuvé.");
+        }
+
+        OffreStage offre = offreStageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offre de stage introuvable"));
+
+        if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette offre n'est pas disponible.");
+        }
+
+        boolean autorise = offre.getEtudiantsAutorises() == null
+                || offre.getEtudiantsAutorises().isEmpty()
+                || offre.getEtudiantsAutorises().stream().anyMatch(e -> e.getId().equals(etudiant.getId()));
+
+        if (!autorise) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'avez pas accès à cette offre de stage.");
+        }
+
+        return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
 }

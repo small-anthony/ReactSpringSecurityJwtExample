@@ -32,6 +32,12 @@ public class EmployeurService {
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
+        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur);
+    }
+
+    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
+                                          String discipline, String duree, String salaire, String exigences,
+                                          String emailEmployeur) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new IllegalArgumentException("Le titre est obligatoire");
         }
@@ -54,7 +60,15 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        OffreStage offreStage = new OffreStage(titre.trim(), description.trim(), nomEntreprise.trim());
+        OffreStage offreStage = new OffreStage(
+                titre.trim(),
+                description.trim(),
+                nomEntreprise.trim(),
+                discipline != null && !discipline.trim().isEmpty() ? discipline.trim() : null,
+                salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null,
+                duree != null && !duree.trim().isEmpty() ? duree.trim() : null,
+                exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
+        );
 
         employeur.ajouterOffre(offreStage);
 

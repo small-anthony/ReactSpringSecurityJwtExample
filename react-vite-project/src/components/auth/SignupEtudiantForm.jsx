@@ -5,6 +5,8 @@ import { registerEtudiant } from "../../services/api/EtudiantService";
 import SignupTabs from "./SignupTabs";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 
+
+
 const DISCIPLINES = [
   { value: "info", labelKey: "info" },
   { value: "soins", labelKey: "soins" },

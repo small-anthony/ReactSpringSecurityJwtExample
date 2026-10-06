@@ -9,6 +9,7 @@
     "signup_etudiant": "S'inscrire comme étudiant",
     "signup_professeur": "S'inscrire comme professeur",
     "etudiant": "Mon profil",
+    "offres_stages": "Offres de stages",
     "voir_offres": "Voir offres",
     "logout": "Déconnexion"
   },
@@ -166,10 +167,18 @@
     "subtitle": "Remplissez les informations ci-dessous",
     "titre": "Titre du poste",
     "nomEntreprise": "Nom de l'entreprise",
+    "discipline": "Discipline d'études",
+    "duree": "Durée du stage",
+    "salaire": "Rémunération / Salaire",
+    "exigences": "Exigences particulières (compétences, technologies)",
     "description": "Description de l'offre",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
       "nomEntreprise": "Ex: TechCorp",
+      "discipline": "-- Choisir une discipline --",
+      "duree": "-- Choisir une durée --",
+      "salaire": "Ex: 22.50 $/h ou À discuter",
+      "exigences": "Ex: Connaissances en React, Spring Boot, Git...",
       "description": "Décrivez les tâches et responsabilités..."
     },
     "errors": {
@@ -232,16 +241,40 @@
     }
   },
   "etudiant_profile": {
-    "title": "Profil Etudiant",
+    "title": "Profil Étudiant",
+    "subtitle": "Gérez vos documents académiques et le statut de votre dossier de stage.",
     "cv_uploaded": "Votre CV a été téléversé avec succès",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "pending_badge": "En attente de révision",
+    "pending_desc": "Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage. Vous recevrez l'accès aux offres dès sa validation.",
+    "approved_badge": "CV Approuvé",
+    "approved_title": "Votre CV a été validé !",
+    "approved_desc": "Félicitations, vous pouvez désormais explorer toutes les offres de stage approuvées et y postuler.",
+    "btn_view_offers": "Voir les offres",
+    "update_help": "Besoin de mettre à jour votre CV ?",
+    "btn_hide_upload": "Masquer le formulaire",
+    "btn_show_upload": "Téléverser un nouveau CV",
+    "refused_badge": "CV Refusé",
+    "refused_title": "Votre CV nécessite des modifications",
+    "refused_motif": "Motif : {{motif}}",
+    "refused_no_motif": "Aucun motif spécifique fourni.",
+    "refused_desc": "Veuillez apporter les corrections nécessaires à votre document puis déposez votre nouvelle version ci-dessous.",
+    "upload_corrected_title": "Déposer votre CV corrigé",
+    "registered_desc": "Votre document est bien enregistré dans notre système."
   },
   "employeur_home": {
     "title": "Mes offres de stage",
     "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
     "loading": "Chargement des offres...",
-    "no_offers": "Vous n'avez encore créé aucune offre de stage.",
+    "no_offers": "Aucune offre de stage n'a encore été créée.",
+    "motif_refus": "Motif du refus :",
+    "status": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
+    },
+
     "view_candidates": "Voir les candidatures",
     "statuts": {
       "EN_ATTENTE": "En attente",
@@ -265,7 +298,6 @@
     },
     "no_offers": "Aucune offre de stage n'a encore été créée."
   },
-
   "sidepanel": {
     "title": "Tableau de bord",
     "cvs": "Approbations des CVs",
@@ -295,6 +327,13 @@
     },
     "offres": {
       "title": "Offres en attente d'approbation",
+      "attributes": {
+        "description": "Description",
+        "discipline": "Discipline",
+        "salaire": "Salaire",
+        "duree": "Durée",
+        "exigences": "Exigences"
+      },
       "errors": {
         "fetch": "Impossible de charger les offres pour le moment.",
         "approve": "Une erreur est survenue lors de l'approbation de l'offre.",
@@ -324,6 +363,46 @@
       "label_motif": "Motif du refus",
       "annuler": "Annuler",
       "confirmer": "Confirmer le refus"
+    }
+  },
+  "offres_etudiant": {
+    "badge": "Espace Étudiant",
+    "title": "Offres de stages disponibles",
+    "subtitle": "Consultez et postulez aux opportunités de stages approuvées par votre établissement.",
+    "loading": "Chargement des offres de stages...",
+    "error_fetch": "Une erreur est survenue lors de la récupération des données.",
+    "cv_manquant_title": "Curriculum Vitae manquant",
+    "cv_manquant_desc": "Vous devez déposer votre CV sur votre profil et attendre sa validation par un gestionnaire de stage pour pouvoir consulter les offres.",
+    "btn_deposer_cv": "Déposer mon CV",
+    "cv_attente_title": "CV en cours d'examen",
+    "cv_attente_desc": "Votre CV a bien été téléversé et est actuellement en cours de révision par l'équipe des stages. Les offres de stages seront débloquées dès sa validation.",
+    "cv_refuse_title": "CV refusé par le gestionnaire",
+    "cv_refuse_motif": "Motif : {{motif}}",
+    "cv_refuse_no_motif": "Aucun motif spécifique fourni.",
+    "cv_refuse_desc": "Veuillez corriger votre CV et soumettre une nouvelle version depuis votre profil.",
+    "btn_maj_cv": "Mettre à jour mon CV",
+    "search_placeholder": "Rechercher par titre, entreprise ou mot-clé...",
+    "all_companies": "Toutes les entreprises",
+    "all_disciplines": "Toutes les disciplines",
+    "all_durations": "Toutes les durées",
+    "offers_count": "{{count}} offre trouvée",
+    "offers_count_plural": "{{count}} offres trouvées",
+    "reset_filters": "Réinitialiser les filtres",
+    "empty_title": "Aucune offre disponible",
+    "empty_filtered": "Aucune offre ne correspond à vos critères de recherche. Essayez d'ajuster vos filtres.",
+    "empty_none": "Il n'y a actuellement aucune offre de stage validée pour votre profil.",
+    "salary_to_discuss": "À discuter",
+    "btn_see_details": "Voir détails",
+    "modal": {
+      "validated_badge": "Offre validée",
+      "discipline": "Discipline",
+      "duration": "Durée",
+      "salary": "Rémunération",
+      "not_specified": "Non spécifiée",
+      "requirements": "Exigences particulières",
+      "description": "Description du stage",
+      "no_description": "Aucune description fournie.",
+      "close": "Fermer"
     }
   }
 }
