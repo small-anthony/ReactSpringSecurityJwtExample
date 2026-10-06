@@ -63,7 +63,7 @@ public class EtudiantServiceTest {
                 etudiant.setId(1L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
 
                 MultipartFile file = mock(MultipartFile.class);
                 when(file.isEmpty()).thenReturn(false);
@@ -91,11 +91,11 @@ public class EtudiantServiceTest {
                 MultipartFile file = mock(MultipartFile.class);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.empty());
+                                .thenReturn(Optional.empty());
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.uploadCv("test@gmail.com", file));
+                                () -> etudiantService.uploadCv("test@gmail.com", file));
 
                 // ASSERT
                 assertEquals("Etudiant non trouvé", exception.getMessage());
@@ -109,14 +109,14 @@ public class EtudiantServiceTest {
                 etudiant.setId(1L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
 
                 MultipartFile file = mock(MultipartFile.class);
                 when(file.isEmpty()).thenReturn(true);
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.uploadCv("test@gmail.com", file));
+                                () -> etudiantService.uploadCv("test@gmail.com", file));
 
                 // ASSERT
                 assertEquals("Veuillez sélectionner un fichier", exception.getMessage());
@@ -130,7 +130,7 @@ public class EtudiantServiceTest {
                 etudiant.setId(1L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
 
                 MultipartFile file = mock(MultipartFile.class);
                 when(file.isEmpty()).thenReturn(false);
@@ -138,7 +138,7 @@ public class EtudiantServiceTest {
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.uploadCv("test@gmail.com", file));
+                                () -> etudiantService.uploadCv("test@gmail.com", file));
 
                 // ASSERT
                 assertEquals("Le fichier doit être un PDF", exception.getMessage());
@@ -187,7 +187,7 @@ public class EtudiantServiceTest {
                 offre.setId(10L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
                 when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
                 when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(invocation -> {
@@ -225,14 +225,14 @@ public class EtudiantServiceTest {
                 offre.setId(10L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
                 when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
                 when(candidatureRepository.existsByEtudiantAndOffreStage(etudiant, offre)).thenReturn(true);
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.postuler(10L, "test@gmail.com"));
+                                () -> etudiantService.postuler(10L, "test@gmail.com"));
 
                 // ASSERT
                 assertEquals("Vous avez déjà postulé à cette offre", exception.getMessage());
@@ -247,13 +247,13 @@ public class EtudiantServiceTest {
                 etudiant.setId(1L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
                 when(offreStageRepository.findById(99L)).thenReturn(Optional.empty());
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.postuler(99L, "test@gmail.com"));
+                                () -> etudiantService.postuler(99L, "test@gmail.com"));
 
                 // ASSERT
                 assertEquals("Offre de stage introuvable", exception.getMessage());
@@ -268,12 +268,12 @@ public class EtudiantServiceTest {
                 utilisateur.setId(1L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(utilisateur));
+                                .thenReturn(Optional.of(utilisateur));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.empty());
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.postuler(10L, "test@gmail.com"));
+                                () -> etudiantService.postuler(10L, "test@gmail.com"));
 
                 // ASSERT
                 assertEquals("Etudiant non trouvé", exception.getMessage());
@@ -284,11 +284,11 @@ public class EtudiantServiceTest {
         void postuler_shouldRejectIfEmailUnknown() {
                 // ARRANGE
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.empty());
+                                .thenReturn(Optional.empty());
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.postuler(10L, "test@gmail.com"));
+                                () -> etudiantService.postuler(10L, "test@gmail.com"));
 
                 // ASSERT
                 assertEquals("Utilisateur non trouvé avec l'email : test@gmail.com", exception.getMessage());
@@ -318,7 +318,7 @@ public class EtudiantServiceTest {
                 offre.addCandidature(dummyCandidature);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
                 when(offreStageRepository.findByEtudiant(etudiant)).thenReturn(List.of(offre));
 
@@ -347,7 +347,7 @@ public class EtudiantServiceTest {
                 etudiant.setId(1L);
 
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
+                                .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
                 when(offreStageRepository.findByEtudiant(etudiant)).thenReturn(List.of());
 
@@ -362,19 +362,15 @@ public class EtudiantServiceTest {
         void getMesCandidatures_shouldRejectIfEmailUnknown() {
                 // ARRANGE
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.empty());
+                                .thenReturn(Optional.empty());
 
                 // ACT
                 Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.getMesCandidatures("test@gmail.com"));
+                                () -> etudiantService.getMesCandidatures("test@gmail.com"));
 
                 // ASSERT
                 assertEquals("Utilisateur non trouvé avec l'email : test@gmail.com", exception.getMessage());
         }
-
-        // ==========================================
-        // Tests pour getStatutCv
-        // ==========================================
 
         @Test
         void getStatutCv_sansCv_retourneHasCvFalse() {
@@ -416,10 +412,6 @@ public class EtudiantServiceTest {
                 assertEquals(StatusAcceptation.ACCEPTE, resultat.status());
         }
 
-        // ==========================================
-        // Tests pour getOffresDisponibles
-        // ==========================================
-
         @Test
         void getOffresDisponibles_cvNonApprouve_lanceExceptionForbidden() {
                 // ARRANGE
@@ -454,7 +446,7 @@ public class EtudiantServiceTest {
                 OffreStage offrePublique = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h",
                                 "15 semaines", "Java");
                 offrePublique.setId(10L);
-                offrePublique.getEtudiantsAutorises().clear(); // Publique
+                offrePublique.getEtudiantsAutorises().clear();
 
                 when(offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE))
                                 .thenReturn(List.of(offrePublique));
@@ -467,10 +459,6 @@ public class EtudiantServiceTest {
                 assertEquals(1, resultat.size());
                 assertEquals("Stage Dev", resultat.get(0).titre());
         }
-
-        // ==========================================
-        // Tests pour getOffreDetail
-        // ==========================================
 
         @Test
         void getOffreDetail_succes_retourneDetailOffre() throws Exception {
