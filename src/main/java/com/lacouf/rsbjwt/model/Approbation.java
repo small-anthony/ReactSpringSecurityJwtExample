@@ -26,11 +26,6 @@ public class Approbation {
         this.status = StatusAcceptation.ACCEPTE;
     }
 
-    public void remettreEnAttente() {
-        this.status = StatusAcceptation.EN_ATTENTE;
-        this.messageReponse = null;
-    }
-
     public StatusAcceptation getStatus() {
         return status;
     }
@@ -41,9 +36,5 @@ public class Approbation {
 
     public String getMessageRefus() {
         return messageReponse;
-    }
-
-    public void setMessageRefus(String messageRefus) {
-        this.messageReponse = messageRefus;
     }
 }
