@@ -267,12 +267,12 @@
     "subtitle": "Manage the offers published by your company.",
     "create_offer": "Create an offer",
     "loading": "Loading offers...",
-    "no_offers": "You haven't created any internship offers yet.",
-    "view_candidates": "View Candidates",
-    "statuts": {
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "status": {
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
-      "REFUSE": "Rejected"
+      "REFUSE": "Refused"
     }
   },
   "candidatures_offre": {
@@ -289,8 +289,6 @@
       "REFUSEE": "Rejected",
       "EN_ATTENTE_REPONSE": "Awaiting response"
     },
-
-
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",
     "status": {
@@ -410,6 +408,4 @@
       "close": "Close"
     }
   }
-
-
 }

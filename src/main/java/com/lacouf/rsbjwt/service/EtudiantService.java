@@ -1,4 +1,5 @@
 package com.lacouf.rsbjwt.service;
+
 import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
@@ -140,8 +141,7 @@ public class EtudiantService {
 
         List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
 
-        // createFilteredByEtudiant : l'etudiant ne voit que SES candidatures,
-        // jamais celles des autres etudiants.
+
         return offresAcceptees.stream()
                 .filter(offre -> offre.getEtudiantsAutorises() == null
                         || offre.getEtudiantsAutorises().isEmpty()

@@ -54,6 +54,7 @@ public class EtudiantServiceTest {
         @Mock
         CandidatureRepository candidatureRepository;
 
+
         @InjectMocks
         EtudiantService etudiantService;
 

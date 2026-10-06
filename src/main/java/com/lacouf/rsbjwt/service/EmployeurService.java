@@ -17,7 +17,6 @@ import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 
 @Service
 public class EmployeurService {
-
     private final UserAppRepository userAppRepository;
     private final EmployeurRepository employeurRepository;
     private final OffreStageRepository offreStageRepository;

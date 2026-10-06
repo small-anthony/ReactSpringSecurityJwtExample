@@ -105,10 +105,6 @@ public class EtudiantController {
         }
     }
 
-
-
-
-
     @GetMapping("/cv/statut")
     public ResponseEntity<StatutCvDto> getStatutCv(Authentication authentication) {
         String email = authentication.getName();
@@ -126,4 +122,5 @@ public class EtudiantController {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
+
 }

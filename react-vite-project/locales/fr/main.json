@@ -342,7 +342,7 @@
       "no_offres": "Aucune offre en attente d'approbation.",
       "approbation": {
         "title": "Approuver l'offre",
-        "quesiton": "Souhaitez-vous rendre \\\"{{titre}}\\\" visible pour tous les étudiants, ou la restreindre ?",
+        "question": "Souhaitez-vous rendre \"{{titre}}\" visible pour tous les étudiants, ou la restreindre ?",
         "target": "Étudiants ciblés (Optionnel)",
         "search": "Chercher par matricule (ex: 12345)",
         "cancel": "Annuler",
