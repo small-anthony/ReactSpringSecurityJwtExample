@@ -45,7 +45,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         etudiantRepository.save(
                 new Etudiant("Daniil", "Dimov",
                         new Credentials("daniil@test.com", passwordEncoder.encode("password"), Role.ETUDIANT),
-                        12345, "Informatique")
+                        1234578, "Informatique")
         );
 
         employeurRepository.save(
