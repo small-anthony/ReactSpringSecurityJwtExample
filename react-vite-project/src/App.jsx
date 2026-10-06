@@ -13,9 +13,9 @@ import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
-import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
+import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 
 
 function App() {

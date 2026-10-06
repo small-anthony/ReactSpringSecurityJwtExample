@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import java.util.List;
-
 import java.util.Map;
 
 @RestController
@@ -102,5 +101,4 @@ public class EtudiantController {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
-
 }

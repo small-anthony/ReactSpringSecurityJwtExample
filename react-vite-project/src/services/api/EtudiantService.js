@@ -70,7 +70,6 @@ export async function getOffresDisponibles(authHeader) {
   return response.json();
 }
 
-
 export async function getOffreDetail(id, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/offres/${id}`, {
     method: "GET",
@@ -84,4 +83,3 @@ export async function getOffreDetail(id, authHeader) {
 
   return response.json();
 }
-

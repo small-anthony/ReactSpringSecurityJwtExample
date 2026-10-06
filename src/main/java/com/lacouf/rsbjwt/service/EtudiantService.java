@@ -13,11 +13,9 @@ import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 
 @Service
@@ -128,5 +126,4 @@ public class EtudiantService {
 
         return OffreStageDto.create(offre);
     }
-
 }

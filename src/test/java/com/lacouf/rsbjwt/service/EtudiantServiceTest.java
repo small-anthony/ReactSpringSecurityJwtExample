@@ -299,5 +299,4 @@ public class EtudiantServiceTest {
 
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         }
-
 }
