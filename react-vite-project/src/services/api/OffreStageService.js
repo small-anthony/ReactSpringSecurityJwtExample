@@ -24,6 +24,7 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
     headers = authHeader;
   }
 
+
   const response = await fetch(`${BASE_URL}/employeur/creerOffre`, {
     method: "POST",
     headers: {
@@ -134,5 +135,3 @@ export async function postuler(authHeader, offreId) {
 
   return response.json();
 }
-
-

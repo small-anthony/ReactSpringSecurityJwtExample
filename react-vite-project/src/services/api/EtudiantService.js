@@ -20,15 +20,6 @@ export async function registerEtudiant(etudiantData) {
 
 
 
-export async function getMesCandidatures(authHeader) {
-  const response = await APIHelper.get("/etudiant/candidatures", authHeader);
-
-  if(!response.ok) {
-    throw new Error(await response.text() || "Unknown error")
-  }
-
-  return await response.json();
-}
 export async function verifierMatricule(matricule, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/matricule/${matricule}`, {
     method: "GET",
@@ -44,6 +35,19 @@ export async function verifierMatricule(matricule, authHeader) {
   return response.json();
 }
 
+export async function getMesCandidatures(authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/candidatures`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de récupérer les candidatures");
+  }
+
+  return response.json();
+}
 function getHeaders(authHeader) {
   if (authHeader) return authHeader;
   const token = getTokenCookie() || localStorage.getItem("token");

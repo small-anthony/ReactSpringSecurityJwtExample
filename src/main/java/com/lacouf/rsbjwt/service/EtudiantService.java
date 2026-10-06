@@ -9,6 +9,7 @@ import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -36,6 +38,12 @@ public class EtudiantService {
         this.etudiantRepository = etudiantRepository;
         this.offreStageRepository = offreStageRepository;
         this.candidatureRepository = candidatureRepository;
+    }
+
+    public EtudiantService(UserAppRepository userAppRepository,
+                           EtudiantRepository etudiantRepository,
+                           OffreStageRepository offreStageRepository) {
+        this(userAppRepository, etudiantRepository, offreStageRepository, null);
     }
 
     public CvDto uploadCv(String emailConnecte, MultipartFile file) throws Exception {
@@ -134,6 +142,7 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
+        // Règle de sécurité : CV obligatoire et accepté
         if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Accès refusé : votre CV doit être approuvé par un gestionnaire.");

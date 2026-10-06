@@ -4,7 +4,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public record OffreStageDto(
@@ -20,18 +20,12 @@ public record OffreStageDto(
         String exigences,
         List<CandidatureDto> candidatures
 ) implements DataTransferObject {
-
-    // Constructeurs de compatibilite : evitent de casser le code et les tests
-    // qui utilisaient les anciennes formes du DTO.
-
-    // Ancienne forme (id, titre, description, entreprise, statut, message)
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
                 null, null, null, null, List.of());
     }
 
-    // Forme avec candidatures, sans les nouveaux champs d'offre
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          List<CandidatureDto> candidatures) {
@@ -39,7 +33,6 @@ public record OffreStageDto(
                 null, null, null, null, candidatures);
     }
 
-    // Forme avec les nouveaux champs d'offre, sans candidatures
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          String discipline, String salaire, String duree, String exigences) {
@@ -59,7 +52,7 @@ public record OffreStageDto(
                 offreStage.getSalaire(),
                 offreStage.getDuree(),
                 offreStage.getExigences(),
-                CandidatureDto.create(offreStage.getCandidatures())
+                offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>()
         );
     }
 
@@ -80,9 +73,10 @@ public record OffreStageDto(
                 offreStage.getDuree(),
                 offreStage.getExigences(),
                 CandidatureDto.create(
+                        offreStage.getCandidatures() != null ?
                         offreStage.getCandidatures().stream()
                                 .filter(candidat -> candidat.getEtudiant().equals(etudiant))
-                                .toList()
+                                .toList() : List.of()
                 )
         );
     }

@@ -1,3 +1,4 @@
+
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
@@ -5,7 +6,6 @@ import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,10 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.core.Authentication;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +26,6 @@ import static org.mockito.Mockito.when;
 public class EmployeurControllerTest {
     @Mock
     private UserAppService userAppService;
-
 
     @Mock
     private EmployeurService employeurService;

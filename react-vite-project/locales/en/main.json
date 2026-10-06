@@ -396,6 +396,10 @@
     "empty_none": "There are currently no validated internship offers for your profile.",
     "salary_to_discuss": "To be discussed",
     "btn_see_details": "View details",
+    "tab_all_offers": "All Offers",
+    "tab_my_applications": "My Applications ({{count}})",
+    "applied_badge": "Application sent",
+    "empty_applied": "You have not applied to any internship offers yet.",
     "modal": {
       "validated_badge": "Validated offer",
       "discipline": "Discipline",
@@ -405,7 +409,12 @@
       "requirements": "Special requirements",
       "description": "Internship description",
       "no_description": "No description provided.",
-      "close": "Close"
+      "close": "Close",
+      "btn_apply": "Apply for this offer",
+      "btn_applied": "Already applied",
+      "applying": "Submitting application...",
+      "apply_success": "Congratulations! Your application has been sent to the employer.",
+      "apply_error": "Error submitting your application."
     }
   }
 }
