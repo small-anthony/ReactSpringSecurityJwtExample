@@ -52,7 +52,6 @@ export async function getOffresStages(authHeader) {
   }
 
   const json = await response.json();
-  console.log(json);
   return json;
 }
 
