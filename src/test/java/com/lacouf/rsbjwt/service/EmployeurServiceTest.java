@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,7 +35,7 @@ public class EmployeurServiceTest {
 
     @Test
     void testCreerOffre_succes() throws Exception {
-        //ARRANGE
+        // ARRANGE
         String email = "employeur@entreprise.com";
         String titre = "Stagiaire en informatique";
         String nomEntreprise = "CGI";
@@ -53,10 +55,10 @@ public class EmployeurServiceTest {
         offreEnregistree.setEmployeur(employeur);
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
 
-        //ACT
+        // ACT
         OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, email);
 
-       //ASSERT
+        // ASSERT
         assertNotNull(resultat);
         assertEquals(1, resultat.id());
         assertEquals(titre, resultat.titre());
@@ -66,72 +68,72 @@ public class EmployeurServiceTest {
 
     @Test
     void testCreerOffre_titreVide_lanceException() {
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.createOffreStage("", "CGI", "Description valide", "employeur@entreprise.com"));
+        // ACT
+        Exception exception = assertThrows(Exception.class,
+                () -> employeurService.createOffreStage("", "CGI", "Description valide", "employeur@entreprise.com"));
 
-//      Assert
+        // Assert
         assertEquals("Le titre est obligatoire", exception.getMessage());
     }
 
     @Test
     void testCreerOffre_nomEntrepriseVide_lanceException() {
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.createOffreStage("Stagiaire en informatique", "", "Description valide", "employeur@entreprise.com"));
+        // ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .createOffreStage("Stagiaire en informatique", "", "Description valide", "employeur@entreprise.com"));
 
-//      ASSERT
+        // ASSERT
         assertEquals("Le nom de l'entreprise est obligatoire", exception.getMessage());
     }
 
     @Test
     void testCreerOffre_descriptionVide_lanceException() {
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.createOffreStage("Stagiaire en informatique", "CGI", "", "employeur@entreprise.com"));
+        // ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .createOffreStage("Stagiaire en informatique", "CGI", "", "employeur@entreprise.com"));
 
-//      ASSERT
+        // ASSERT
         assertEquals("La description est obligatoire", exception.getMessage());
     }
 
     @Test
     void testCreerOffre_emailVide_lanceException() {
-//      ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", ""));
+        // ACT
+        Exception exception = assertThrows(Exception.class,
+                () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", ""));
 
-//      ASSERT
+        // ASSERT
         assertEquals("Le courriel de l'employeur est obligatoire", exception.getMessage());
     }
 
     @Test
     void testCreerOffre_utilisateurIntrouvable_lanceException() {
-//        ARRANGE
+        // ARRANGE
         String emailInexistant = "inconnu@entreprise.com";
         when(userAppRepository.findUserAppByEmail(emailInexistant)).thenReturn(Optional.empty());
 
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description", emailInexistant));
+        // ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .createOffreStage("Stagiaire en informatique", "CGI", "Description", emailInexistant));
 
-//        Assert
+        // Assert
         assertEquals("Utilisateur non trouvé avec l'email : " + emailInexistant, exception.getMessage());
     }
 
     @Test
     void testCreerOffre_employeurIntrouvable_lanceException() {
-//        ARRANGE
+        // ARRANGE
         String email = "utilisateur@entreprise.com";
         UserApp userMock = mock(UserApp.class);
         when(userMock.getId()).thenReturn(99L);
         when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
         when(employeurRepository.findById(99L)).thenReturn(Optional.empty());
 
-//        ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description", email));
+        // ACT
+        Exception exception = assertThrows(Exception.class,
+                () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description", email));
 
-//        ASSeRT
+        // ASSeRT
         assertEquals("Employeur non trouvé avec cette id", exception.getMessage());
     }
 
@@ -156,13 +158,15 @@ public class EmployeurServiceTest {
         employeur.setId(1L);
         when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
-        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree, exigences);
+        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree,
+                exigences);
         offreEnregistree.setId(1L);
         offreEnregistree.setEmployeur(employeur);
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
 
         // ACT
-        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences, email);
+        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree,
+                salaire, exigences, email);
 
         // ASSERT
         assertNotNull(resultat);
@@ -188,7 +192,7 @@ public class EmployeurServiceTest {
         offre.setId(1L);
         offre.setEmployeur(employeur);
 
-        when(offreStageRepository.findByEmployeur(employeur)).thenReturn(java.util.List.of(offre));
+        when(offreStageRepository.findWithCandidaturesByEmployeur(employeur)).thenReturn(List.of(offre));
 
         // ACT
         java.util.List<OffreStageDto> resultats = employeurService.getOffres(email);

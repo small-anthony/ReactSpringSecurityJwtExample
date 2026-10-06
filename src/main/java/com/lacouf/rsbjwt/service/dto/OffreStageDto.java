@@ -1,7 +1,12 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public record OffreStageDto(
         int id,
@@ -13,11 +18,20 @@ public record OffreStageDto(
         String discipline,
         String salaire,
         String duree,
-        String exigences
-) {
+        String exigences,
+        List<CandidatureDto> candidatures
+) implements DataTransferObject {
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse) {
-        this(id, titre, description, nomEntreprise, status, messageReponse, null, null, null, null);
+        this(id, titre, description, nomEntreprise, status, messageReponse, null, null, null, null, new ArrayList<>());
+    }
+
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse, List<CandidatureDto> candidatures) {
+        this(id, titre, description, nomEntreprise, status, messageReponse, null, null, null, null, candidatures);
+    }
+
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse, String discipline, String salaire, String duree, String exigences) {
+        this(id, titre, description, nomEntreprise, status, messageReponse, discipline, salaire, duree, exigences, new ArrayList<>());
     }
 
     public static OffreStageDto create(OffreStage offreStage) {
@@ -31,7 +45,38 @@ public record OffreStageDto(
                 offreStage.getDiscipline(),
                 offreStage.getSalaire(),
                 offreStage.getDuree(),
-                offreStage.getExigences()
+                offreStage.getExigences(),
+                offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>()
         );
+    }
+
+    public static List<OffreStageDto> create(List<OffreStage> offreStages) {
+        return offreStages.stream().map(OffreStageDto::create).toList();
+    }
+
+    public static OffreStageDto createFilteredByEtudiant(OffreStage offreStage, Etudiant etudiant) {
+        return new OffreStageDto(
+                offreStage.getId() != null ? offreStage.getId().intValue() : 0,
+                offreStage.getTitre(),
+                offreStage.getDescription(),
+                offreStage.getNomEntreprise(),
+                offreStage.getStatus(),
+                offreStage.getMessageReponse(),
+                offreStage.getDiscipline(),
+                offreStage.getSalaire(),
+                offreStage.getDuree(),
+                offreStage.getExigences(),
+                CandidatureDto.create(
+                        offreStage.getCandidatures() != null ?
+                        offreStage.getCandidatures().stream()
+                                .filter(candidat -> candidat.getEtudiant().equals(etudiant))
+                                .toList() : List.of()
+                )
+        );
+    }
+
+    public static List<OffreStageDto> createFilteredByEtudiant(List<OffreStage> offreStages, Etudiant etudiant) {
+        return offreStages.stream()
+                .map(offre -> createFilteredByEtudiant(offre, etudiant)).toList();
     }
 }

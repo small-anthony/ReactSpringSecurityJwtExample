@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../components/config/Config";
+import APIHelper from "../../utils/APIHelper.ts";
 
 export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, duree, salaire, exigences, authHeader) {
   let bodyData;
@@ -22,6 +23,7 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
     };
     headers = authHeader;
   }
+
 
   const response = await fetch(`${BASE_URL}/employeur/creerOffre`, {
     method: "POST",
@@ -96,3 +98,13 @@ export const refuserOffre = async (id, message, authHeader) => {
   }
   return response.json();
 };
+
+export async function postuler(authHeader, offreId) {
+  const response = await APIHelper.post(`/etudiant/offres/${offreId}`, authHeader);
+
+  if(!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return response.json();
+}

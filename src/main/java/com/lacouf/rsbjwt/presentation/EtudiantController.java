@@ -4,13 +4,14 @@ import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,26 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/offres/{offreId}")
+    public ResponseEntity<Object> postuler(@PathVariable Long offreId, Authentication authentication) {
+        try {
+            OffreStageDto offre = etudiantService.postuler(offreId, authentication.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(offre);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/candidatures")
+    public ResponseEntity<Object> getMesCandidatures(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(etudiantService.getMesCandidatures(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
     @GetMapping("/matricule/{matricule}")
     public ResponseEntity<?> getMatricule(@PathVariable("matricule") int matricule) {
