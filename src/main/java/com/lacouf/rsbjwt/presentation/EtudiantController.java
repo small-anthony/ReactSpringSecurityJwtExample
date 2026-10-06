@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.StatutCvDto;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -80,5 +82,23 @@ public class EtudiantController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/cv/statut")
+    public ResponseEntity<StatutCvDto> getStatutCv(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(etudiantService.getStatutCv(email));
+    }
+
+    @GetMapping("/offres")
+    public ResponseEntity<List<OffreStageDto>> getOffresDisponibles(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(etudiantService.getOffresDisponibles(email));
+    }
+
+    @GetMapping("/offres/{id}")
+    public ResponseEntity<OffreStageDto> getOffreDetail(@PathVariable("id") Long id, Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
 }

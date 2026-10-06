@@ -9,6 +9,7 @@
     "signup_etudiant": "Register as student",
     "signup_professeur": "Register as teacher",
     "etudiant": "My profile",
+    "offres_stages": "Internship offers",
     "voir_offres": "View offers",
     "logout": "Logout"
   },
@@ -166,10 +167,18 @@
     "subtitle": "Fill in the information below",
     "titre": "Job Title",
     "nomEntreprise": "Company Name",
+    "discipline": "Field / Discipline",
+    "duree": "Internship Duration",
+    "salaire": "Compensation / Salary",
+    "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
     "placeholders": {
       "titre": "Ex: Junior Web Developer",
       "nomEntreprise": "Ex: TechCorp",
+      "discipline": "-- Select a discipline --",
+      "duree": "-- Select a duration --",
+      "salaire": "Ex: $22.50/h or To be discussed",
+      "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
     },
     "errors": {
@@ -233,15 +242,38 @@
   },
   "etudiant_profile": {
     "title": "Student Profile",
+    "subtitle": "Manage your academic documents and internship file status.",
     "cv_uploaded": "Your CV has been uploaded successfully",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "pending_badge": "Pending review",
+    "pending_desc": "Your resume was submitted and is currently being evaluated by an internship coordinator. You will gain access to offers upon approval.",
+    "approved_badge": "Resume Approved",
+    "approved_title": "Your resume has been validated!",
+    "approved_desc": "Congratulations, you can now explore all approved internship offers and apply.",
+    "btn_view_offers": "View offers",
+    "update_help": "Need to update your resume?",
+    "btn_hide_upload": "Hide form",
+    "btn_show_upload": "Upload a new resume",
+    "refused_badge": "Resume Rejected",
+    "refused_title": "Your resume requires revisions",
+    "refused_motif": "Reason: {{motif}}",
+    "refused_no_motif": "No specific reason provided.",
+    "refused_desc": "Please make the necessary changes to your document and submit your new version below.",
+    "upload_corrected_title": "Upload your revised resume",
+    "registered_desc": "Your document is securely stored in our system."
   },
   "employeur_home": {
     "title": "My internship offers",
     "subtitle": "Manage the offers published by your company.",
     "create_offer": "Create an offer",
     "loading": "Loading offers...",
-    "no_offers": "No internship offer has been created yet."
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "status": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
+      "REFUSE": "Refused"
+    }
   },
   "sidepanel": {
     "title": "Manager Workspace",
@@ -276,6 +308,13 @@
     },
     "offres": {
       "title": "Offers pending approval",
+      "attributes": {
+        "description": "Description",
+        "discipline": "Discipline",
+        "salaire": "Salary",
+        "duree": "Duration",
+        "exigences": "Requirements"
+      },
       "errors": {
         "fetch": "Unable to load offers at this time.",
         "approve": "An error occurred while approving the offer.",
@@ -305,6 +344,46 @@
       "label_motif": "Reason for rejection",
       "annuler": "Cancel",
       "confirmer": "Confirm rejection"
+    }
+  },
+  "offres_etudiant": {
+    "badge": "Student Area",
+    "title": "Available Internship Offers",
+    "subtitle": "Browse and apply for internship opportunities approved by your institution.",
+    "loading": "Loading internship offers...",
+    "error_fetch": "An error occurred while fetching data.",
+    "cv_manquant_title": "Missing Curriculum Vitae",
+    "cv_manquant_desc": "You must upload your resume to your profile and await approval from an internship coordinator to view offers.",
+    "btn_deposer_cv": "Upload my resume",
+    "cv_attente_title": "Resume under review",
+    "cv_attente_desc": "Your resume has been uploaded and is currently being reviewed by the internship team. Internship offers will be unlocked upon approval.",
+    "cv_refuse_title": "Resume rejected by coordinator",
+    "cv_refuse_motif": "Reason: {{motif}}",
+    "cv_refuse_no_motif": "No specific reason provided.",
+    "cv_refuse_desc": "Please revise your resume and submit a new version from your profile.",
+    "btn_maj_cv": "Update my resume",
+    "search_placeholder": "Search by title, company or keyword...",
+    "all_companies": "All companies",
+    "all_disciplines": "All disciplines",
+    "all_durations": "All durations",
+    "offers_count": "{{count}} offer found",
+    "offers_count_plural": "{{count}} offers found",
+    "reset_filters": "Reset filters",
+    "empty_title": "No offers available",
+    "empty_filtered": "No offers match your search criteria. Try adjusting your filters.",
+    "empty_none": "There are currently no validated internship offers for your profile.",
+    "salary_to_discuss": "To be discussed",
+    "btn_see_details": "View details",
+    "modal": {
+      "validated_badge": "Validated offer",
+      "discipline": "Discipline",
+      "duration": "Duration",
+      "salary": "Compensation",
+      "not_specified": "Not specified",
+      "requirements": "Special requirements",
+      "description": "Internship description",
+      "no_description": "No description provided.",
+      "close": "Close"
     }
   }
 }

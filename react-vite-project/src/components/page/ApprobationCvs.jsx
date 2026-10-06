@@ -1,4 +1,4 @@
-﻿import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { accepterCv, getCvsEnAttente, refuserCv, voirCvPdf } from "../../services/api/GestionnaireService.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";

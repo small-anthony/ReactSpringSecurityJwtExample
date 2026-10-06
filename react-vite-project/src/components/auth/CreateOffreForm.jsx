@@ -1,17 +1,25 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx"
 import { createOffreStage } from "../../services/api/OffreStageService";
+import { DISCIPLINES } from "../../constants/disciplines";
+import { DUREES } from "../../constants/durees";
 
 export default function CreateOffreForm() {
   const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
   const { t } = useTranslation("main");
 
+  const userData = authService?.getUserData ? authService.getUserData() : null;
+
   const [formData, setFormData] = useState({
     titre: "",
     nomEntreprise: "",
+    discipline: "",
+    duree: "",
+    salaire: "",
+    exigences: "",
     description: ""
   });
 
@@ -19,6 +27,15 @@ export default function CreateOffreForm() {
   const [serverError, setServerError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (userData?.entreprise && !formData.nomEntreprise) {
+      setFormData((prev) => ({
+        ...prev,
+        nomEntreprise: userData.entreprise,
+      }));
+    }
+  }, [userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,11 +85,23 @@ export default function CreateOffreForm() {
         formData.titre.trim(),
         formData.description.trim(),
         formData.nomEntreprise.trim(),
+        formData.discipline.trim(),
+        formData.duree.trim(),
+        formData.salaire.trim(),
+        formData.exigences.trim(),
         authHeader
       );
 
       setSuccessMessage("success");
-      setFormData({ titre: "", nomEntreprise: "", description: "" });
+      setFormData({
+        titre: "",
+        nomEntreprise: "",
+        discipline: "",
+        duree: "",
+        salaire: "",
+        exigences: "",
+        description: ""
+      });
       navigate("/employeur");
 
     } catch (err) {
@@ -146,6 +175,74 @@ export default function CreateOffreForm() {
               {t(`creer_offre.errors.${errors.nomEntreprise}`)}
             </p>
           )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.discipline")}
+            </label>
+            <select
+              name="discipline"
+              value={formData.discipline}
+              onChange={handleChange}
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">{t("creer_offre.placeholders.discipline")}</option>
+              {DISCIPLINES.map((disc) => (
+                <option key={disc.value} value={disc.value}>
+                  {t(`signup_etudiant.disciplines.${disc.labelKey}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.duree")}
+            </label>
+            <select
+              name="duree"
+              value={formData.duree}
+              onChange={handleChange}
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">{t("creer_offre.placeholders.duree")}</option>
+              {DUREES.map((dur) => (
+                <option key={dur} value={dur}>
+                  {dur}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            {t("creer_offre.salaire")}
+          </label>
+          <input
+            type="text"
+            name="salaire"
+            value={formData.salaire}
+            onChange={handleChange}
+            placeholder={t("creer_offre.placeholders.salaire")}
+            className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            {t("creer_offre.exigences")}
+          </label>
+          <textarea
+            name="exigences"
+            rows={2}
+            value={formData.exigences}
+            onChange={handleChange}
+            placeholder={t("creer_offre.placeholders.exigences")}
+            className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         <div>
