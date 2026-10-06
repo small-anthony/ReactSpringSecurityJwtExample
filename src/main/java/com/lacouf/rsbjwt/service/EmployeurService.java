@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeurService {
-
     private final UserAppRepository userAppRepository;
     private final EmployeurRepository employeurRepository;
     private final OffreStageRepository offreStageRepository;
