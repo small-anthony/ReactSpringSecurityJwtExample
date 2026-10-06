@@ -24,7 +24,7 @@ export async function verifierMatricule(matricule, authHeader) {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader, // On passe l'objet de sécurité correctement !
+      ...authHeader,
     },
   });
   if (!response.ok) {
@@ -35,13 +35,17 @@ export async function verifierMatricule(matricule, authHeader) {
 }
 
 export async function getMesCandidatures(authHeader) {
-  const response = await APIHelper.get("/etudiant/candidatures", authHeader);
+  const response = await fetch(`${BASE_URL}/etudiant/candidatures`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
 
-  if(!response.ok) {
-    throw new Error(await response.text() || "Unknown error")
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de récupérer les candidatures");
   }
 
-  return await response.json();
+  return response.json();
 }
 
 function getHeaders(authHeader) {

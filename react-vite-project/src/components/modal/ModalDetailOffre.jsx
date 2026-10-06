@@ -44,7 +44,14 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                 onPostulerSucces(offre.id);
             }
         } catch (err) {
-            setErrorMessage(err.message || t("offres_etudiant.modal.apply_error"));
+            const msg = err.message || t("offres_etudiant.modal.apply_error");
+            if (msg.toLowerCase().includes("déjà postulé") || msg.toLowerCase().includes("deja postule")) {
+                setHasApplied(true);
+                if (onPostulerSucces) {
+                    onPostulerSucces(offre.id);
+                }
+            }
+            setErrorMessage(msg);
         } finally {
             setIsApplying(false);
         }
