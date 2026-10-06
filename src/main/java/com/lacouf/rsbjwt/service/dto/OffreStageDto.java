@@ -30,6 +30,10 @@ public record OffreStageDto(
         this(id, titre, description, nomEntreprise, status, messageReponse, null, null, null, null, candidatures);
     }
 
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse, String discipline, String salaire, String duree, String exigences) {
+        this(id, titre, description, nomEntreprise, status, messageReponse, discipline, salaire, duree, exigences, new ArrayList<>());
+    }
+
     public static OffreStageDto create(OffreStage offreStage) {
         return new OffreStageDto(
                 offreStage.getId() != null ? offreStage.getId().intValue() : 0,
