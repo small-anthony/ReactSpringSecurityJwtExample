@@ -13,112 +13,119 @@ import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
+import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 
 
 function App() {
-  const authService = useContext(AuthServiceContext);
-  const userData = authService.getUserData();
-  const token = authService.getAuth();
+    const authService = useContext(AuthServiceContext);
+    const userData = authService.getUserData();
+    const token = authService.getAuth();
 
-  const role = userData?.role ? userData.role.toString().replace("ROLE_", "") : null;
+    const role = userData?.role ? userData.role.toString().replace("ROLE_", "") : null;
 
-  return (
-      <div>
-        <Routes>
-          <Route path="/" element={<PageLayout user={userData} />}>
-            <Route index element={<MainContainer user={userData} />} />
-            <Route path="about" element={<About />} />
-            <Route path="login" element={token ? <Navigate to="/" /> : <LoginForm />} />
-            <Route path="signup" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
-            <Route path="signup/etudiant" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
-            <Route path="signup/employeur" element={token ? <Navigate to="/" /> : <SignupEmployeurForm />} />
-            <Route path="signup/professeur" element={token ? <Navigate to="/" /> : <SignupProfesseurForm />} />
+    return (
+        <div>
+            <Routes>
+                <Route path="/" element={<PageLayout user={userData} />}>
+                    <Route index element={<MainContainer user={userData} />} />
+                    <Route path="about" element={<About />} />
+                    <Route path="login" element={token ? <Navigate to="/" /> : <LoginForm />} />
+                    <Route path="signup" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
+                    <Route path="signup/etudiant" element={token ? <Navigate to="/" /> : <SignupEtudiantForm />} />
+                    <Route path="signup/employeur" element={token ? <Navigate to="/" /> : <SignupEmployeurForm />} />
+                    <Route path="signup/professeur" element={token ? <Navigate to="/" /> : <SignupProfesseurForm />} />
 
-            <Route
-                path="etudiant"
-                element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "ETUDIANT" ? <EtudiantProfile /> :
-                              <Navigate to="/" />
-                }
-            />
-            <Route
-                path="etudiant/profile"
-                element={<Navigate to="/etudiant" replace />}
-            />
-            <Route
-                path="etudiant/offres"
-                element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "ETUDIANT" ? <OffreStagesEtudiant /> :
-                              <Navigate to="/" />
-                }
-            />
-            <Route
-                path="employeur"
-                element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "EMPLOYEUR" ? <EmployeurHome /> :
-                              <Navigate to="/" />
-                }
-            />
-            <Route
-                path="employeur/creer-offre"
-                element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "EMPLOYEUR" ? <CreateOffreForm /> :
-                              <Navigate to="/" />
-                }
-            />
-            <Route
-                path="professeur"
-                element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "PROFESSEUR" ? <PreposeHome /> :
-                              <Navigate to="/" />
-                }
-            />
-            <Route
-                path="gestionnaire"
-                element={
-                  !token ? <Navigate to="/login" /> :
-                      !userData ? null :
-                          role === "GESTIONNAIRE" ? <GestionnaireHome /> :
-                              <Navigate to="/" />
-                }
-            />
-
-              <Route
-                  path="gestionnaire/approbations/offres"
-                  element={
-                      !token ? <Navigate to="/login" /> :
-                          !userData ? null :
-                              role === "GESTIONNAIRE" ? <ApprobationOffres /> :
-                                  <Navigate to="/" />
-                  }
-              />
-
-              <Route
-                  path="gestionnaire/approbations/cvs"
-                  element={
-                      !token ? <Navigate to="/login" /> :
-                          !userData ? null :
-                              role === "GESTIONNAIRE" ? <ApprobationCvs /> :
-                                  <Navigate to="/" />
-                  }
-              />
-          </Route>
-        </Routes>
-      </div>
-  );
+                    <Route
+                        path="etudiant"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "ETUDIANT" ? <EtudiantProfile /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="etudiant/profile"
+                        element={<Navigate to="/etudiant" replace />}
+                    />
+                    <Route
+                        path="etudiant/offres"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "ETUDIANT" ? <OffreStagesEtudiant /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="employeur"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "EMPLOYEUR" ? <EmployeurHome /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="employeur/creer-offre"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "EMPLOYEUR" ? <CreateOffreForm /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="employeur/offres/:offreId/candidatures"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "EMPLOYEUR" ? <CandidaturesOffre /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="professeur"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "PROFESSEUR" ? <PreposeHome /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <GestionnaireHome /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/approbations/offres"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <ApprobationOffres /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/approbations/cvs"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <ApprobationCvs /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                </Route>
+            </Routes>
+        </div>
+    );
 }
-
 export default App;

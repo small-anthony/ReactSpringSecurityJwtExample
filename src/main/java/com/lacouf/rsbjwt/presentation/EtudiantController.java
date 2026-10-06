@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
@@ -105,6 +106,25 @@ public class EtudiantController {
         }
     }
 
+    @PostMapping("/offres/{offreId}")
+    public ResponseEntity<Object> postuler(@PathVariable Long offreId, Authentication authentication) {
+        try {
+            OffreStageDto offre = etudiantService.postuler(offreId, authentication.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(offre);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/candidatures")
+    public ResponseEntity<Object> getMesCandidatures(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(etudiantService.getMesCandidatures(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/cv/statut")
     public ResponseEntity<StatutCvDto> getStatutCv(Authentication authentication) {
         String email = authentication.getName();
@@ -122,4 +142,5 @@ public class EtudiantController {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
+
 }

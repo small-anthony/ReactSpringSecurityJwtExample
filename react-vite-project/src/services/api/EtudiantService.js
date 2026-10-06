@@ -18,6 +18,8 @@ export async function registerEtudiant(etudiantData) {
   return await response.json();
 }
 
+
+
 export async function verifierMatricule(matricule, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/matricule/${matricule}`, {
     method: "GET",

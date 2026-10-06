@@ -77,6 +77,19 @@ public class EtudiantService {
         OffreStage offre = offreStageRepository.findById(offreId)
                 .orElseThrow(() -> new Exception("Offre de stage introuvable"));
 
+        if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
+            throw new Exception("Cette offre n'est pas disponible");
+        }
+
+        if (!offre.getEtudiantsAutorises().isEmpty()
+                && !offre.getEtudiantsAutorises().contains(etudiant)) {
+            throw new Exception("Cette offre ne vous est pas accessible");
+        }
+
+        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
+            throw new Exception("Votre CV doit être accepté avant de pouvoir postuler");
+        }
+
         if (candidatureRepository.existsByEtudiantAndOffreStage(etudiant, offre)) {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
@@ -137,11 +150,12 @@ public class EtudiantService {
 
         List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
 
+
         return offresAcceptees.stream()
                 .filter(offre -> offre.getEtudiantsAutorises() == null
                         || offre.getEtudiantsAutorises().isEmpty()
                         || offre.getEtudiantsAutorises().stream().anyMatch(e -> e.getId().equals(etudiant.getId())))
-                .map(OffreStageDto::create)
+                .map(offre -> OffreStageDto.createFilteredByEtudiant(offre, etudiant))
                 .toList();
     }
 
@@ -171,6 +185,6 @@ public class EtudiantService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'avez pas accès à cette offre de stage.");
         }
 
-        return OffreStageDto.create(offre);
+        return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
 }

@@ -52,9 +52,36 @@ export async function getOffresStages(authHeader) {
     throw new Error(errorText || "Impossible de charger les offres");
   }
 
+  const json = await response.json();
+  return json;
+}
+
+
+export async function getCandidatures(offreId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}/candidatures`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger les candidatures");
+  }
+
   return response.json();
 }
 
+export async function getCvCandidat(candidatureId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/cv`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger le CV");
+  }
+
+  return response.blob();
+}
 export const fetchOffresEnAttente = async (authHeader) => {
   const response = await fetch(`${BASE_URL}/gestionnaire/offre/pending`, {
     method: "GET",

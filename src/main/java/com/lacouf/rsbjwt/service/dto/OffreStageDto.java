@@ -4,7 +4,6 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +20,24 @@ public record OffreStageDto(
         String exigences,
         List<CandidatureDto> candidatures
 ) implements DataTransferObject {
-
-    public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse) {
-        this(id, titre, description, nomEntreprise, status, messageReponse, null, null, null, null, new ArrayList<>());
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
+                         StatusAcceptation status, String messageReponse) {
+        this(id, titre, description, nomEntreprise, status, messageReponse,
+                null, null, null, null, List.of());
     }
 
-    public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse, List<CandidatureDto> candidatures) {
-        this(id, titre, description, nomEntreprise, status, messageReponse, null, null, null, null, candidatures);
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
+                         StatusAcceptation status, String messageReponse,
+                         List<CandidatureDto> candidatures) {
+        this(id, titre, description, nomEntreprise, status, messageReponse,
+                null, null, null, null, candidatures);
     }
 
-    public OffreStageDto(int id, String titre, String description, String nomEntreprise, StatusAcceptation status, String messageReponse, String discipline, String salaire, String duree, String exigences) {
-        this(id, titre, description, nomEntreprise, status, messageReponse, discipline, salaire, duree, exigences, new ArrayList<>());
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
+                         StatusAcceptation status, String messageReponse,
+                         String discipline, String salaire, String duree, String exigences) {
+        this(id, titre, description, nomEntreprise, status, messageReponse,
+                discipline, salaire, duree, exigences, List.of());
     }
 
     public static OffreStageDto create(OffreStage offreStage) {

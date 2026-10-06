@@ -91,6 +91,7 @@ public class GestionnaireControllerTest {
     }
 
     @Test
+
     void getCvPdf_shouldReturnOkPdfData() throws Exception {
 //        ARRANGE
         DecisionCvRequest request = new DecisionCvRequest(1L, null);
@@ -122,6 +123,7 @@ public class GestionnaireControllerTest {
     }
 
     @Test
+
     void accepterOffreStage_shouldReturnOk() throws Exception {
 //        ARRANGE
         AcceptationOffreDto request = new AcceptationOffreDto(1L, List.of(2L));

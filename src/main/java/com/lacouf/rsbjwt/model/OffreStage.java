@@ -103,6 +103,14 @@ public class OffreStage {
         return description;
     }
 
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
+
+    public void addCandidature(Candidature candidature) {
+        candidatures.add(candidature);
+    }
+
     public List<Etudiant> getEtudiantsAutorises() {
         return etudiantsAutorises;
     }

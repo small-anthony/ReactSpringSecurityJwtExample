@@ -273,7 +273,30 @@
       "EN_ATTENTE": "En attente",
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
+    },
+
+    "view_candidates": "Voir les candidatures",
+    "statuts": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
     }
+  },
+  "candidatures_offre": {
+    "back": "Retour à mes offres",
+    "title": "Candidatures reçues",
+    "subtitle": "Consultez les étudiants ayant postulé à cette offre",
+    "loading": "Chargement des candidatures...",
+    "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
+    "view_cv": "Voir le CV",
+    "no_cv": "Aucun CV disponible",
+    "statuts": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTEE": "Acceptée",
+      "REFUSEE": "Refusée",
+      "EN_ATTENTE_REPONSE": "En attente de réponse"
+    },
+    "no_offers": "Aucune offre de stage n'a encore été créée."
   },
   "sidepanel": {
     "title": "Tableau de bord",

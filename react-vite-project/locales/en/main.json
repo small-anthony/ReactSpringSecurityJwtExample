@@ -275,6 +275,28 @@
       "REFUSE": "Refused"
     }
   },
+  "candidatures_offre": {
+    "back": "Back to my offers",
+    "title": "Received Applications",
+    "subtitle": "Review students who applied to this offer",
+    "loading": "Loading applications...",
+    "no_candidates": "No applications received for this offer yet.",
+    "view_cv": "View CV",
+    "no_cv": "No CV available",
+    "statuts": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTEE": "Accepted",
+      "REFUSEE": "Rejected",
+      "EN_ATTENTE_REPONSE": "Awaiting response"
+    },
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "status": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
+      "REFUSE": "Refused"
+    }
+  },
   "sidepanel": {
     "title": "Manager Workspace",
     "cvs": "Resume Approvals",

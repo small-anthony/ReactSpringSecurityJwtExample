@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	List<OffreStage> findByEmployeur(Employeur employeur);
+	Optional<OffreStage> findByIdAndEmployeur(Long id, Employeur employeur);
 	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	@Query("""
 	SELECT DISTINCT offre
