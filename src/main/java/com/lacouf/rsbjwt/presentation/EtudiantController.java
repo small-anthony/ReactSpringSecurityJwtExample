@@ -96,32 +96,12 @@ public class EtudiantController {
         }
     }
 
-
     @GetMapping("/matricule/{matricule}")
     public ResponseEntity<?> getMatricule(@PathVariable("matricule") int matricule) {
         try {
             return ResponseEntity.ok(etudiantService.getEtudiantByMatricule(matricule));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/offres/{offreId}")
-    public ResponseEntity<Object> postuler(@PathVariable Long offreId, Authentication authentication) {
-        try {
-            OffreStageDto offre = etudiantService.postuler(offreId, authentication.getName());
-            return ResponseEntity.status(HttpStatus.CREATED).body(offre);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/candidatures")
-    public ResponseEntity<Object> getMesCandidatures(Authentication authentication) {
-        try {
-            return ResponseEntity.ok(etudiantService.getMesCandidatures(authentication.getName()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

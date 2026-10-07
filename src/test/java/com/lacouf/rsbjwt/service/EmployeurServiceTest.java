@@ -46,6 +46,10 @@ public class EmployeurServiceTest {
         String titre = "Stagiaire en informatique";
         String nomEntreprise = "CGI";
         String description = "Développement d'applications web avec Spring Boot et React";
+        String discipline = "info";
+        String salaire = "25$/h";
+        String duree = "16 semaines";
+        String exigences = "Connaissances en Java et React";
 
         UserApp userMock = mock(UserApp.class);
         when(userMock.getId()).thenReturn(1L);
@@ -56,13 +60,15 @@ public class EmployeurServiceTest {
         employeur.setId(1L);
         when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
-        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise);
+        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree,
+                exigences);
         offreEnregistree.setId(1L);
         offreEnregistree.setEmployeur(employeur);
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
 
         // ACT
-        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, email);
+        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree,
+                salaire, exigences, email);
 
         // ASSERT
         assertNotNull(resultat);
@@ -70,6 +76,7 @@ public class EmployeurServiceTest {
         assertEquals(titre, resultat.titre());
         assertEquals(nomEntreprise, resultat.nomEntreprise());
         assertEquals(description, resultat.description());
+        assertEquals(discipline, resultat.discipline());
     }
 
     @Test
@@ -164,16 +171,6 @@ public class EmployeurServiceTest {
         Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "Informatique");
         etudiant.setId(2L);
-        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree,
-                exigences);
-        offreEnregistree.setId(1L);
-        offreEnregistree.setEmployeur(employeur);
-        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
-
-        // ACT
-        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree,
-                salaire, exigences, email);
-
         Candidature candidature = new Candidature(etudiant, offre);
         ReflectionTestUtils.setField(candidature, "id", 100L);
         when(candidatureRepository.findByOffreStage(offre)).thenReturn(List.of(candidature));
@@ -201,11 +198,6 @@ public class EmployeurServiceTest {
         when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
         when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
-        OffreStage offre = new OffreStage("Titre", "Desc", "CGI");
-        offre.setId(1L);
-        offre.setEmployeur(employeur);
-
-        when(offreStageRepository.findWithCandidaturesByEmployeur(employeur)).thenReturn(List.of(offre));
 
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
@@ -274,6 +266,4 @@ public class EmployeurServiceTest {
         //ASSERT
         assertEquals("Aucun CV disponible pour ce candidat", exception.getMessage());
     }
-
-
 }
