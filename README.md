@@ -8,3 +8,8 @@
   - [ ] Respecté
   - [ ] Aidé
   - [ ] Préservé
+
+- Verifier les plans de démo au veille pour corriger les incoherences
+  - [ ] Respecté
+  - [ ] Aidé
+  - [ ] Préservé
