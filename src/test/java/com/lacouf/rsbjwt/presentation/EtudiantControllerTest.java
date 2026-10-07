@@ -250,7 +250,7 @@ public class EtudiantControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
 
-        com.lacouf.rsbjwt.service.dto.OffreStageDto offreDto = mock(com.lacouf.rsbjwt.service.dto.OffreStageDto.class);
+        OffreStageDto offreDto = mock(OffreStageDto.class);
         when(etudiantService.postuler(10L, "etudiant@test.com")).thenReturn(offreDto);
 //        ACT
         ResponseEntity<Object> response = etudiantController.postuler(10L, authentication);
@@ -279,7 +279,7 @@ public class EtudiantControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
 
-        java.util.List<com.lacouf.rsbjwt.service.dto.OffreStageDto> list = java.util.List.of();
+        List<OffreStageDto> list = List.of();
         when(etudiantService.getMesCandidatures("etudiant@test.com")).thenReturn(list);
 //        ACT
         ResponseEntity<Object> response = etudiantController.getMesCandidatures(authentication);
