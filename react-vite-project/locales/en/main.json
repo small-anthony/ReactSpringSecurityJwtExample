@@ -273,7 +273,8 @@
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
-    }
+    },
+    "view_candidates": "View candidates"
   },
   "candidatures_offre": {
     "back": "Back to my offers",
