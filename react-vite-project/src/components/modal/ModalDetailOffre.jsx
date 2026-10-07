@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { postuler } from "../../services/api/OffreStageService.js";
+import { DISCIPLINES } from "../../constants/disciplines";
 
 export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces }) {
     const { t } = useTranslation("main");
@@ -28,6 +29,16 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
     }, [onClose]);
 
     if (!offre) return null;
+
+    const traduireDiscipline = (valeur) => {
+        const disc = DISCIPLINES.find((d) => d.value === valeur);
+        return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
+    };
+
+    const traduireDuree = (valeur) => {
+        const nombre = parseInt(valeur, 10);
+        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
+    };
 
     const handlePostuler = async () => {
         try {
@@ -107,7 +118,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                                 <span>{t("offres_etudiant.modal.discipline")}</span>
                             </div>
                             <p className="text-sm font-bold text-gray-900 truncate">
-                                {offre.discipline || t("offres_etudiant.modal.not_specified")}
+                                {offre.discipline ? traduireDiscipline(offre.discipline) : t("offres_etudiant.modal.not_specified")}
                             </p>
                         </div>
 
@@ -117,7 +128,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                                 <span>{t("offres_etudiant.modal.duration")}</span>
                             </div>
                             <p className="text-sm font-bold text-gray-900">
-                                {offre.duree || t("offres_etudiant.modal.not_specified")}
+                                {offre.duree ? traduireDuree(offre.duree) : t("offres_etudiant.modal.not_specified")}
                             </p>
                         </div>
 
