@@ -444,6 +444,8 @@ public class EtudiantServiceTest {
                 assertEquals("Peter", etudiantResultat.firstName());
         }
 
+
+
         @Test
         void getStatutCv_sansCv_retourneHasCvFalse() {
                 // ARRANGE
@@ -581,4 +583,6 @@ public class EtudiantServiceTest {
 
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         }
+
+
 }

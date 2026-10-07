@@ -107,10 +107,6 @@ public class OffreStage {
         return candidatures;
     }
 
-    public void addCandidature(Candidature candidature) {
-        candidatures.add(candidature);
-    }
-
     public List<Etudiant> getEtudiantsAutorises() {
         return etudiantsAutorises;
     }
@@ -125,6 +121,10 @@ public class OffreStage {
 
     public String getMessageReponse() {
         return this.approbation.getMessageRefus();
+    }
+
+    public void addCandidature(Candidature candidature) {
+        candidatures.add(candidature);
     }
 
     public void setEmployeur(Employeur employeur) {
