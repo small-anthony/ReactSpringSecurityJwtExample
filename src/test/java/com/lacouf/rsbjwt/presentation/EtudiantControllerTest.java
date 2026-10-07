@@ -243,4 +243,63 @@ public class EtudiantControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(offreDto, response.getBody());
     }
+
+    @Test
+    void postuler_shouldReturnCreated() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("etudiant@test.com");
+
+        OffreStageDto offreDto = mock(OffreStageDto.class);
+        when(etudiantService.postuler(10L, "etudiant@test.com")).thenReturn(offreDto);
+//        ACT
+        ResponseEntity<Object> response = etudiantController.postuler(10L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
+    }
+
+    @Test
+    void postuler_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("etudiant@test.com");
+
+        when(etudiantService.postuler(10L, "etudiant@test.com")).thenThrow(new Exception("Déjà postulé"));
+//        ACT
+        ResponseEntity<Object> response = etudiantController.postuler(10L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Déjà postulé", response.getBody());
+    }
+
+    @Test
+    void getMesCandidatures_shouldReturnOk() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("etudiant@test.com");
+
+        List<OffreStageDto> list = List.of();
+        when(etudiantService.getMesCandidatures("etudiant@test.com")).thenReturn(list);
+//        ACT
+        ResponseEntity<Object> response = etudiantController.getMesCandidatures(authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(list, response.getBody());
+    }
+
+    @Test
+    void getMesCandidatures_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("etudiant@test.com");
+
+        when(etudiantService.getMesCandidatures("etudiant@test.com")).thenThrow(new Exception("Erreur"));
+//        ACT
+        ResponseEntity<Object> response = etudiantController.getMesCandidatures(authentication);
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur", response.getBody());
+    }
 }
+

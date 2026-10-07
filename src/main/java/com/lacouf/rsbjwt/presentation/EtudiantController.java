@@ -122,5 +122,4 @@ public class EtudiantController {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
-
 }
