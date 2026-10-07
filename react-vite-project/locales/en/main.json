@@ -172,6 +172,7 @@
     "salaire": "Compensation / Salary",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
+    "weeks": "{{count}} weeks",
     "placeholders": {
       "titre": "Ex: Junior Web Developer",
       "nomEntreprise": "Ex: TechCorp",
