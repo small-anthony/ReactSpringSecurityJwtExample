@@ -106,13 +106,7 @@ public class EmployeurControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-
-
-        //OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", StatusAcceptation.EN_ATTENTE, "");
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-
-
-
         when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", "employeur@entreprise.com"))
                 .thenReturn(offreDto);
 
@@ -180,5 +174,60 @@ public class EmployeurControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Utilisateur non trouvé", response.getBody());
+    }
+
+    @Test
+    void getCandidatures_shouldReturnOkAndList() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        java.util.List<com.lacouf.rsbjwt.service.dto.CandidatureDto> list = java.util.List.of();
+        when(employeurService.getCandidatures(1L, "employeur@entreprise.com")).thenReturn(list);
+//        ACT
+        ResponseEntity<Object> response = employeurController.getCandidatures(1L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(list, response.getBody());
+    }
+    @Test
+    void getCandidatures_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        when(employeurService.getCandidatures(1L, "employeur@entreprise.com")).thenThrow(new Exception("Erreur"));
+//        ACT
+        ResponseEntity<Object> response = employeurController.getCandidatures(1L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur", response.getBody());
+    }
+    @Test
+    void getCvCandidat_shouldReturnPdf() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        byte[] fakePdf = new byte[]{1, 2, 3};
+        when(employeurService.getCvCandidat(1L, "employeur@entreprise.com")).thenReturn(fakePdf);
+//        ACT
+        ResponseEntity<Object> response = employeurController.getCvCandidat(1L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(fakePdf, response.getBody());
+    }
+    @Test
+    void getCvCandidat_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        when(employeurService.getCvCandidat(1L, "employeur@entreprise.com")).thenThrow(new Exception("CV introuvable"));
+//        ACT
+        ResponseEntity<Object> response = employeurController.getCvCandidat(1L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("CV introuvable", response.getBody());
     }
 }
