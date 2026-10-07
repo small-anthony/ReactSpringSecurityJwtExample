@@ -243,8 +243,6 @@ public class UserAppServiceTest {
         assertEquals("Les mots de passe ne correspondent pas", exception.getMessage());
     }
 
-    // --- Tests Professeur ---
-
     @Test
     void registerProfesseur_avecDonneesValides_creeLeProfesseur() throws Exception {
         // Arrange
