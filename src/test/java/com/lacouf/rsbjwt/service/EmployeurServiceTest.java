@@ -164,15 +164,6 @@ public class EmployeurServiceTest {
         Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "Informatique");
         etudiant.setId(2L);
-        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree,
-                exigences);
-        offreEnregistree.setId(1L);
-        offreEnregistree.setEmployeur(employeur);
-        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
-
-        // ACT
-        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree,
-                salaire, exigences, email);
 
         Candidature candidature = new Candidature(etudiant, offre);
         ReflectionTestUtils.setField(candidature, "id", 100L);
@@ -274,6 +265,4 @@ public class EmployeurServiceTest {
         //ASSERT
         assertEquals("Aucun CV disponible pour ce candidat", exception.getMessage());
     }
-
-
 }

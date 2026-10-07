@@ -106,12 +106,7 @@ public class EmployeurControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-
-
-        //OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", StatusAcceptation.EN_ATTENTE, "");
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-
-
 
         when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", "employeur@entreprise.com"))
                 .thenReturn(offreDto);
@@ -126,7 +121,6 @@ public class EmployeurControllerTest {
 
     @Test
     void testCreerOffre_erreur_retourneBadRequest() throws Exception {
-
 //      ARRANGE
         Map<String, String> request = new HashMap<>();
         request.put("titre", "");
