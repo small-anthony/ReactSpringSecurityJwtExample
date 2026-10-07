@@ -63,13 +63,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         etudiantRepository.save(
                 new Etudiant("Hatim", "Fakhour",
                         new Credentials("hatim@test.com", defaultPass, Role.ETUDIANT),
-                        1234567, "Informatique")
+                        1234567, "info")
         );
 
         etudiantRepository.save(
                 new Etudiant("Daniil", "Dimov",
                         new Credentials("daniil@test.com", defaultPass, Role.ETUDIANT),
-                        1234578, "Informatique")
+                        1234578, "info")
         );
 
         Employeur employeur = new Employeur(
