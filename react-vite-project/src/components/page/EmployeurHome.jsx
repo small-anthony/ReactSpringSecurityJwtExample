@@ -4,6 +4,7 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getOffresStages } from "../../services/api/OffreStageService";
 import {useTranslation} from "react-i18next";
 import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
+import { DISCIPLINES } from "../../constants/disciplines";
 
 const STATUS_STYLES = {
   EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -37,6 +38,11 @@ export default function EmployeurHome() {
       offresChargees = false;
     };
   }, [authService]);
+
+    const traduireDiscipline = (valeur) => {
+        const disc = DISCIPLINES.find((d) => d.value === valeur);
+        return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
+    };
 
   return (
       <main className="max-w-5xl mx-auto my-10 px-4">
@@ -82,7 +88,7 @@ export default function EmployeurHome() {
                     </div>
                     <div>
                       <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                      <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
+                        <span className="text-gray-800 text-sm font-medium">{traduireDiscipline(offre.discipline)}</span>
                     </div>
                   </div>
 
