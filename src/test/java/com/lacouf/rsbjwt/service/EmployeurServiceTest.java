@@ -199,7 +199,6 @@ public class EmployeurServiceTest {
 
         when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
 
-
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
                 employeurService.getCandidatures(99L, email));
@@ -267,6 +266,4 @@ public class EmployeurServiceTest {
         //ASSERT
         assertEquals("Aucun CV disponible pour ce candidat", exception.getMessage());
     }
-
-
 }
