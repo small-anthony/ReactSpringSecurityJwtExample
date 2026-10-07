@@ -96,7 +96,6 @@ public class EtudiantController {
         }
     }
 
-
     @GetMapping("/matricule/{matricule}")
     public ResponseEntity<?> getMatricule(@PathVariable("matricule") int matricule) {
         try {
@@ -105,7 +104,6 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
 
     @GetMapping("/cv/statut")
     public ResponseEntity<StatutCvDto> getStatutCv(Authentication authentication) {

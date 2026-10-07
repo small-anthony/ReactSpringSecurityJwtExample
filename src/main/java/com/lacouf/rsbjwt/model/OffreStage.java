@@ -123,8 +123,6 @@ public class OffreStage {
         return this.approbation.getMessageRefus();
     }
 
-
-
     public void addCandidature(Candidature candidature) {
         candidatures.add(candidature);
     }
