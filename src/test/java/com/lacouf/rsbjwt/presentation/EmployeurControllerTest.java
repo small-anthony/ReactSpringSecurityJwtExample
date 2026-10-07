@@ -4,6 +4,7 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
@@ -182,7 +183,7 @@ public class EmployeurControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-        java.util.List<com.lacouf.rsbjwt.service.dto.CandidatureDto> list = java.util.List.of();
+        List<CandidatureDto> list = List.of();
         when(employeurService.getCandidatures(1L, "employeur@entreprise.com")).thenReturn(list);
 //        ACT
         ResponseEntity<Object> response = employeurController.getCandidatures(1L, authentication);
@@ -190,6 +191,7 @@ public class EmployeurControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(list, response.getBody());
     }
+
     @Test
     void getCandidatures_shouldReturnBadRequestOnException() throws Exception {
 //        ARRANGE
@@ -203,6 +205,7 @@ public class EmployeurControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Erreur", response.getBody());
     }
+
     @Test
     void getCvCandidat_shouldReturnPdf() throws Exception {
 //        ARRANGE
@@ -217,6 +220,7 @@ public class EmployeurControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(fakePdf, response.getBody());
     }
+
     @Test
     void getCvCandidat_shouldReturnBadRequestOnException() throws Exception {
 //        ARRANGE
