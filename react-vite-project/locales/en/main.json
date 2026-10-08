@@ -172,6 +172,7 @@
     "salaire": "Compensation / Salary",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
+    "weeks": "{{count}} weeks",
     "placeholders": {
       "titre": "Ex: Junior Web Developer",
       "nomEntreprise": "Ex: TechCorp",
@@ -273,7 +274,8 @@
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
-    }
+    },
+    "view_candidates": "View candidates"
   },
   "candidatures_offre": {
     "back": "Back to my offers",

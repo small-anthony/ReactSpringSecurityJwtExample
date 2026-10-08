@@ -172,6 +172,7 @@
     "salaire": "Rémunération / Salaire",
     "exigences": "Exigences particulières (compétences, technologies)",
     "description": "Description de l'offre",
+    "weeks": "{{count}} semaines",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
       "nomEntreprise": "Ex: TechCorp",

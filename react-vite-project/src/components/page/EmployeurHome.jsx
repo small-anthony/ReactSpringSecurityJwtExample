@@ -44,6 +44,11 @@ export default function EmployeurHome() {
         return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
     };
 
+    const traduireDuree = (valeur) => {
+        const nombre = parseInt(valeur, 10);
+        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
+    };
+
   return (
       <main className="max-w-5xl mx-auto my-10 px-4">
         <div className="flex items-center justify-between gap-4 mb-8">
@@ -108,7 +113,7 @@ export default function EmployeurHome() {
                     </div>
                     <div>
                       <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                      <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                        <span className="text-gray-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
                     </div>
                   </div>
                 </div>

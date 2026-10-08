@@ -135,6 +135,16 @@ export default function OffreStagesEtudiant() {
         setFiltreDuree("");
     };
 
+    const traduireDiscipline = (valeur) => {
+        const disc = DISCIPLINES.find((d) => d.value === valeur);
+        return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
+    };
+
+    const traduireDuree = (valeur) => {
+        const nombre = parseInt(valeur, 10);
+        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
+    };
+
     const hasCv = cvStatut?.hasCv;
     const status = cvStatut?.status;
     const motifRefus = cvStatut?.motifRefus;
@@ -250,18 +260,18 @@ export default function OffreStagesEtudiant() {
                                     <button
                                         onClick={() => setOngletActif("toutes")}
                                         className={`px-4 py-2 text-sm font-semibold rounded-xl transition cursor-pointer ${ongletActif === "toutes"
-                                                ? "bg-blue-600 text-white shadow-xs"
-                                                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                                            }`}
+                                            ? "bg-blue-600 text-white shadow-xs"
+                                            : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                                        }`}
                                     >
                                         {t("offres_etudiant.tab_all_offers")}
                                     </button>
                                     <button
                                         onClick={() => setOngletActif("mes_candidatures")}
                                         className={`px-4 py-2 text-sm font-semibold rounded-xl transition cursor-pointer ${ongletActif === "mes_candidatures"
-                                                ? "bg-blue-600 text-white shadow-xs"
-                                                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                                            }`}
+                                            ? "bg-blue-600 text-white shadow-xs"
+                                            : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                                        }`}
                                     >
                                         {t("offres_etudiant.tab_my_applications", { count: mesCandidaturesIds.length })}
                                     </button>
@@ -298,7 +308,7 @@ export default function OffreStagesEtudiant() {
                                         >
                                             <option value="">{t("offres_etudiant.all_disciplines")}</option>
                                             {disciplinesUniques.map((discipline) => (
-                                                <option key={discipline} value={discipline}>{discipline}</option>
+                                                <option key={discipline} value={discipline}>{traduireDiscipline(discipline)}</option>
                                             ))}
                                         </select>
 
@@ -309,7 +319,7 @@ export default function OffreStagesEtudiant() {
                                         >
                                             <option value="">{t("offres_etudiant.all_durations")}</option>
                                             {dureesUniques.map((duree) => (
-                                                <option key={duree} value={duree}>{duree}</option>
+                                                <option key={duree} value={duree}>{traduireDuree(duree)}</option>
                                             ))}
                                         </select>
                                     </div>
@@ -377,13 +387,13 @@ export default function OffreStagesEtudiant() {
                                                         {offre.discipline && (
                                                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">
                                                                 <GraduationCap className="w-3 h-3" />
-                                                                <span>{offre.discipline}</span>
+                                                                <span>{traduireDiscipline(offre.discipline)}</span>
                                                             </span>
                                                         )}
                                                         {offre.duree && (
                                                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
                                                                 <Clock className="w-3 h-3" />
-                                                                <span>{offre.duree}</span>
+                                                                <span>{traduireDuree(offre.duree)}</span>
                                                             </span>
                                                         )}
                                                     </div>

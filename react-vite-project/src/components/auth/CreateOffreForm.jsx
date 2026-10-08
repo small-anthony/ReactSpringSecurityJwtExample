@@ -111,6 +111,11 @@ export default function CreateOffreForm() {
     }
   };
 
+  const traduireDuree = (valeur) => {
+    const nombre = parseInt(valeur, 10);
+    return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
+  };
+
   return (
     <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
@@ -209,9 +214,9 @@ export default function CreateOffreForm() {
             >
               <option value="">{t("creer_offre.placeholders.duree")}</option>
               {DUREES.map((dur) => (
-                <option key={dur} value={dur}>
-                  {dur}
-                </option>
+                  <option key={dur} value={dur}>
+                    {traduireDuree(dur)}
+                  </option>
               ))}
             </select>
           </div>
