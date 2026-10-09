@@ -172,6 +172,7 @@
     "salaire": "Rémunération / Salaire",
     "exigences": "Exigences particulières (compétences, technologies)",
     "description": "Description de l'offre",
+    "weeks": "{{count}} semaines",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
       "nomEntreprise": "Ex: TechCorp",
@@ -231,10 +232,12 @@
     }
   },
   "cv_upload": {
-    "title": "Televerser votre CV",
+    "title": "Téléverser votre CV",
+    "choose_file": "Choisir un fichier PDF",
+    "no_file_chosen": "Aucun fichier choisi",
     "successMessage": "Votre CV a été televersé avec succès!",
     "loading": "Téléversement en cours...",
-    "submit": "Soumettre mon CV",
+    "submit": "Téléverser mon CV",
     "errors": {
       "notPdf": "Veuillez sélectionner un fichier PDF.",
       "default": "Une erreur est survenue lors du téléversement."
@@ -246,7 +249,7 @@
     "cv_uploaded": "Votre CV a été téléversé avec succès",
     "loading": "Chargement...",
     "pending_badge": "En attente de révision",
-    "pending_desc": "Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage. Vous recevrez l'accès aux offres dès sa validation.",
+    "pending_desc": "Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage.",
     "approved_badge": "CV Approuvé",
     "approved_title": "Votre CV a été validé !",
     "approved_desc": "Félicitations, vous pouvez désormais explorer toutes les offres de stage approuvées et y postuler.",
@@ -260,7 +263,11 @@
     "refused_no_motif": "Aucun motif spécifique fourni.",
     "refused_desc": "Veuillez apporter les corrections nécessaires à votre document puis déposez votre nouvelle version ci-dessous.",
     "upload_corrected_title": "Déposer votre CV corrigé",
-    "registered_desc": "Votre document est bien enregistré dans notre système."
+    "registered_desc": "Votre document est bien enregistré dans notre système.",
+    "no_cv_title": "Aucun CV téléversé",
+    "no_cv_desc": "Il est préférable de téléverser votre CV pour pouvoir postuler aux offres de stage.",
+    "upload": "Téléverser mon CV",
+    "update": "Mettre à jour mon CV"
   },
   "employeur_home": {
     "title": "Mes offres de stage",

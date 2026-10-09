@@ -5,7 +5,7 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStatutCv } from "../../services/api/EtudiantService.js";
 import { checkCvExists } from "../../services/api/CvEtudiantAPI.jsx";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Clock3, XCircle, ArrowRight, Briefcase, UploadCloud } from "lucide-react";
+import {CheckCircle2, Clock3, XCircle, ArrowRight, Briefcase, UploadCloud, FileText} from "lucide-react";
 
 export default function EtudiantProfile() {
     const { t } = useTranslation("main");
@@ -62,33 +62,83 @@ export default function EtudiantProfile() {
                 )}
 
                 {!cvExiste && (
-                    <div className="space-y-4">
-                        <CvUploadModal
-                            onUploadSuccess={() => {
-                                chargerStatut();
-                            }}
-                        />
+                    <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200 shadow-xs">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                    <FileText className="w-6 h-6" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h3 className="text-lg font-bold text-gray-900">
+                                        {t("etudiant_profile.no_cv_title")}
+                                    </h3>
+                                    <p className="text-sm text-amber-700 font-medium">
+                                        {t("etudiant_profile.no_cv_desc")}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setAfficherUploadModal(true)}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm rounded-xl shadow-xs transition shrink-0 cursor-pointer"
+                            >
+                                <UploadCloud className="w-4 h-4" />
+                                <span>{t("etudiant_profile.upload")}</span>
+                            </button>
+                        </div>
+
+                        {afficherUploadModal && (
+                            <div className="pt-4">
+                                <CvUploadModal
+                                    onClose={() => setAfficherUploadModal(false)}
+                                    onUploadSuccess={() => {
+                                        setAfficherUploadModal(false);
+                                        chargerStatut();
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {cvExiste && status === "EN_ATTENTE" && (
                     <div className="bg-white p-6 rounded-2xl border border-blue-200 shadow-xs space-y-4">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                <Clock3 className="w-6 h-6" />
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                    <Clock3 className="w-6 h-6" />
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                        {t("etudiant_profile.pending_badge")}
+                                    </span>
+                                    <h3 className="text-lg font-bold text-gray-900">
+                                        {t("etudiant_profile.cv_uploaded")}
+                                    </h3>
+                                    <p className="text-sm text-gray-600">
+                                        {t("etudiant_profile.pending_desc")}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="space-y-1">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                    {t("etudiant_profile.pending_badge")}
-                                </span>
-                                <h3 className="text-lg font-bold text-gray-900">
-                                    {t("etudiant_profile.cv_uploaded")}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                    {t("etudiant_profile.pending_desc")}
-                                </p>
-                            </div>
+                            <button
+                                onClick={() => setAfficherUploadModal(true)}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold text-sm rounded-xl transition shrink-0 cursor-pointer"
+                            >
+                                <UploadCloud className="w-4 h-4" />
+                                <span>{t("etudiant_profile.update")}</span>
+                            </button>
                         </div>
+
+                        {afficherUploadModal && (
+                            <div className="pt-4">
+                                <CvUploadModal
+                                    onClose={() => setAfficherUploadModal(false)}
+                                    onUploadSuccess={() => {
+                                        setAfficherUploadModal(false);
+                                        chargerStatut();
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -135,6 +185,7 @@ export default function EtudiantProfile() {
                         {afficherUploadModal && (
                             <div className="pt-2">
                                 <CvUploadModal
+                                    onClose={() => setAfficherUploadModal(false)}
                                     onUploadSuccess={() => {
                                         setAfficherUploadModal(false);
                                         chargerStatut();
@@ -183,6 +234,7 @@ export default function EtudiantProfile() {
 
                         {afficherUploadModal && (
                             <CvUploadModal
+                                onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
                                     chargerStatut();

@@ -54,7 +54,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Fakhour",
                 new Credentials("etudiant@test.com", defaultPass, Role.ETUDIANT),
                 1234567,
-                "Techniques de l'informatique"
+                "info"
         );
         etudiant.setCv(new byte[]{1, 2, 3});
         etudiant.getCv().accepterApprobation();

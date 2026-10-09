@@ -172,6 +172,7 @@
     "salaire": "Compensation / Salary",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
+    "weeks": "{{count}} weeks",
     "placeholders": {
       "titre": "Ex: Junior Web Developer",
       "nomEntreprise": "Ex: TechCorp",
@@ -231,10 +232,12 @@
     }
   },
   "cv_upload": {
-    "title": "Upload your CV",
-    "successMessage": "Your CV has been uploaded successfully!",
+    "title": "Upload your resume",
+    "choose_file": "Choose a PDF file",
+    "no_file_chosen": "No file chosen",
+    "successMessage": "Your resume has been uploaded successfully!",
     "loading": "Uploading...",
-    "submit": "Submit my CV",
+    "submit": "Upload my resume",
     "errors": {
       "notPdf": "Please select a PDF file.",
       "default": "An error occurred during the upload."
@@ -243,10 +246,10 @@
   "etudiant_profile": {
     "title": "Student Profile",
     "subtitle": "Manage your academic documents and internship file status.",
-    "cv_uploaded": "Your CV has been uploaded successfully",
+    "cv_uploaded": "Your resume has been uploaded successfully",
     "loading": "Loading...",
     "pending_badge": "Pending review",
-    "pending_desc": "Your resume was submitted and is currently being evaluated by an internship coordinator. You will gain access to offers upon approval.",
+    "pending_desc": "Your resume was submitted and is currently being evaluated by an internship coordinator.",
     "approved_badge": "Resume Approved",
     "approved_title": "Your resume has been validated!",
     "approved_desc": "Congratulations, you can now explore all approved internship offers and apply.",
@@ -260,7 +263,11 @@
     "refused_no_motif": "No specific reason provided.",
     "refused_desc": "Please make the necessary changes to your document and submit your new version below.",
     "upload_corrected_title": "Upload your revised resume",
-    "registered_desc": "Your document is securely stored in our system."
+    "registered_desc": "Your document is securely stored in our system.",
+    "no_cv_title": "No resume uploaded",
+    "no_cv_desc": "It is preferable to upload your resume so you can apply to internship offers.",
+    "upload": "Upload my resume",
+    "update": "Update my resume"
   },
   "employeur_home": {
     "title": "My internship offers",
@@ -273,7 +280,8 @@
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
-    }
+    },
+    "view_candidates": "View candidates"
   },
   "candidatures_offre": {
     "back": "Back to my offers",
@@ -281,8 +289,8 @@
     "subtitle": "Review students who applied to this offer",
     "loading": "Loading applications...",
     "no_candidates": "No applications received for this offer yet.",
-    "view_cv": "View CV",
-    "no_cv": "No CV available",
+    "view_cv": "View Resume",
+    "no_cv": "No resume available",
     "statuts": {
       "EN_ATTENTE": "Pending",
       "ACCEPTEE": "Accepted",
