@@ -24,6 +24,15 @@ public class Cv {
 
     public void mettreAJour(byte[] nouvelData) {
         this.data = nouvelData;
+        this.approbation = new Approbation();
+    }
+
+    public void accepterApprobation() {
+        this.approbation.accepter();
+    }
+
+    public void refuserApprobation(String message) {
+        this.approbation.refuser(message);
     }
 
     public void accepterApprobation() {

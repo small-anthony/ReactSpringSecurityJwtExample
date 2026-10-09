@@ -27,15 +27,19 @@ function request(path: RequestInfo, method: RequestMethods, headers: object, bod
     });
 }
 
-function toParams(params: object) {
+function toParams(params?: object) {
     const urlParams = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => urlParams.set(key, value));
-    return urlParams
+    if (params) {
+        Object.entries(params).forEach(([key, value]) => urlParams.set(key, String(value)));
+    }
+    return urlParams;
 }
 
 export default class {
-    static get = (path: RequestInfo, headers: object, params: object) =>
-        request(`${path}?${toParams(params)}`, "GET", headers, null);
-    static post = (path: RequestInfo, headers: object, body: object) =>
-        request(path, "POST", headers, body);
+    static get = (path: RequestInfo, headers: object = {}, params?: object) => {
+        const query = params && Object.keys(params).length > 0 ? `?${toParams(params)}` : "";
+        return request(`${path}${query}`, "GET", headers, null);
+    };
+    static post = (path: RequestInfo, headers: object = {}, body?: object) =>
+        request(path, "POST", headers, body || {});
 };

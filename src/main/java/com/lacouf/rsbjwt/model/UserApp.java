@@ -48,8 +48,6 @@ public abstract class UserApp  {
 
     public void setId(Long id) { this.id = id; }
 
-
-
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
     }

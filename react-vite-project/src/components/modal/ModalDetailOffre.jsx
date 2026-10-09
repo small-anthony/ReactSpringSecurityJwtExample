@@ -1,9 +1,23 @@
-import { X, Building2, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2 } from "lucide-react";
+import { X, Building2, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
+import { postuler } from "../../services/api/OffreStageService.js";
 
-export default function ModalDetailOffre({ offre, onClose }) {
+export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces }) {
     const { t } = useTranslation("main");
+    const authService = useContext(AuthServiceContext);
+
+    const [isApplying, setIsApplying] = useState(false);
+    const [hasApplied, setHasApplied] = useState(aPostule);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+
+    useEffect(() => {
+        setHasApplied(aPostule);
+        setErrorMessage("");
+        setSuccessMessage("");
+    }, [offre, aPostule]);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -14,6 +28,34 @@ export default function ModalDetailOffre({ offre, onClose }) {
     }, [onClose]);
 
     if (!offre) return null;
+
+    const handlePostuler = async () => {
+        try {
+            setIsApplying(true);
+            setErrorMessage("");
+            setSuccessMessage("");
+
+            const authHeader = authService.buildAuthHeader();
+            await postuler(authHeader, offre.id);
+
+            setHasApplied(true);
+            setSuccessMessage(t("offres_etudiant.modal.apply_success"));
+            if (onPostulerSucces) {
+                onPostulerSucces(offre.id);
+            }
+        } catch (err) {
+            const msg = err.message || t("offres_etudiant.modal.apply_error");
+            if (msg.toLowerCase().includes("déjà postulé") || msg.toLowerCase().includes("deja postule")) {
+                setHasApplied(true);
+                if (onPostulerSucces) {
+                    onPostulerSucces(offre.id);
+                }
+            }
+            setErrorMessage(msg);
+        } finally {
+            setIsApplying(false);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
@@ -43,6 +85,19 @@ export default function ModalDetailOffre({ offre, onClose }) {
                         <X className="w-5 h-5" />
                     </button>
                 </div>
+
+                {successMessage && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                        <span className="font-medium">{successMessage}</span>
+                    </div>
+                )}
+                {errorMessage && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2.5">
+                        <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                        <span className="font-medium">{errorMessage}</span>
+                    </div>
+                )}
 
                 <div className="p-6 overflow-y-auto space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -77,7 +132,6 @@ export default function ModalDetailOffre({ offre, onClose }) {
                         </div>
                     </div>
 
-                    {/* Exigences particulières */}
                     {offre.exigences && (
                         <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-4">
                             <h3 className="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1">
@@ -100,13 +154,41 @@ export default function ModalDetailOffre({ offre, onClose }) {
                     </div>
                 </div>
 
-                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between gap-3">
                     <button
                         onClick={onClose}
                         className="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition cursor-pointer"
                     >
                         {t("offres_etudiant.modal.close")}
                     </button>
+
+                    {hasApplied ? (
+                        <button
+                            disabled
+                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-not-allowed"
+                        >
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                            <span>{t("offres_etudiant.modal.btn_applied")}</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handlePostuler}
+                            disabled={isApplying}
+                            className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition shadow-sm hover:shadow cursor-pointer disabled:opacity-60"
+                        >
+                            {isApplying ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>{t("offres_etudiant.modal.applying")}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="w-4 h-4" />
+                                    <span>{t("offres_etudiant.modal.btn_apply")}</span>
+                                </>
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

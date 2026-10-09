@@ -4,8 +4,16 @@ import { useTranslation } from "react-i18next";
 import { registerEtudiant } from "../../services/api/EtudiantService";
 import SignupTabs from "./SignupTabs";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { DISCIPLINES } from "../../constants/disciplines";
 
+
+
+const DISCIPLINES = [
+  { value: "info", labelKey: "info" },
+  { value: "soins", labelKey: "soins" },
+  { value: "archi", labelKey: "archi" },
+  { value: "compta", labelKey: "compta" },
+  { value: "gcivil", labelKey: "gcivil" }
+];
 export default function SignupEtudiantForm() {
   const navigate = useNavigate();
   const { t } = useTranslation("main");

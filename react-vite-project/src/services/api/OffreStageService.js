@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../components/config/Config";
+import APIHelper from "../../utils/APIHelper.ts";
 
 export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, duree, salaire, exigences, authHeader) {
   let bodyData;
@@ -22,6 +23,7 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
     };
     headers = authHeader;
   }
+
 
   const response = await fetch(`${BASE_URL}/employeur/creerOffre`, {
     method: "POST",
@@ -50,9 +52,36 @@ export async function getOffresStages(authHeader) {
     throw new Error(errorText || "Impossible de charger les offres");
   }
 
+  const json = await response.json();
+  return json;
+}
+
+
+export async function getCandidatures(offreId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}/candidatures`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger les candidatures");
+  }
+
   return response.json();
 }
 
+export async function getCvCandidat(candidatureId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/cv`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de charger le CV");
+  }
+
+  return response.blob();
+}
 export const fetchOffresEnAttente = async (authHeader) => {
   const response = await fetch(`${BASE_URL}/gestionnaire/offre/pending`, {
     method: "GET",
@@ -96,3 +125,13 @@ export const refuserOffre = async (id, message, authHeader) => {
   }
   return response.json();
 };
+
+export async function postuler(authHeader, offreId) {
+  const response = await APIHelper.post(`/etudiant/offres/${offreId}`, authHeader);
+
+  if(!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return response.json();
+}

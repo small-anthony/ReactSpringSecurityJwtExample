@@ -2,7 +2,6 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +29,10 @@ public class OffreStage {
     @Embedded
     private Approbation approbation = new Approbation();
 
-    public OffreStage() {
-    }
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<Candidature> candidatures = new ArrayList<>();
+
+    public OffreStage() {}
 
     public OffreStage(String titre, String description, String nomEntreprise) {
         this.titre = titre;
@@ -61,6 +62,7 @@ public class OffreStage {
         this.salaire = salaire;
         this.duree = duree;
         this.exigences = exigences;
+        this.etudiantsAutorises = new ArrayList<>();
     }
 
     public void accepter() throws Exception {
@@ -101,6 +103,10 @@ public class OffreStage {
         return description;
     }
 
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
+
     public List<Etudiant> getEtudiantsAutorises() {
         return etudiantsAutorises;
     }
@@ -115,6 +121,10 @@ public class OffreStage {
 
     public String getMessageReponse() {
         return this.approbation.getMessageRefus();
+    }
+
+    public void addCandidature(Candidature candidature) {
+        candidatures.add(candidature);
     }
 
     public void setEmployeur(Employeur employeur) {

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -90,6 +91,7 @@ public class GestionnaireControllerTest {
     }
 
     @Test
+
     void getCvPdf_shouldReturnOkPdfData() throws Exception {
 //        ARRANGE
         DecisionCvRequest request = new DecisionCvRequest(1L, null);
@@ -117,10 +119,11 @@ public class GestionnaireControllerTest {
 
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals(null, response.getBody());
+        assertNull(response.getBody());
     }
 
     @Test
+
     void accepterOffreStage_shouldReturnOk() throws Exception {
 //        ARRANGE
         AcceptationOffreDto request = new AcceptationOffreDto(1L, List.of(2L));

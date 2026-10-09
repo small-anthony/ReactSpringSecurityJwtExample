@@ -18,12 +18,14 @@ export async function registerEtudiant(etudiantData) {
   return await response.json();
 }
 
+
+
 export async function verifierMatricule(matricule, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/matricule/${matricule}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader, // On passe l'objet de sécurité correctement !
+      ...authHeader,
     },
   });
   if (!response.ok) {
@@ -33,6 +35,19 @@ export async function verifierMatricule(matricule, authHeader) {
   return response.json();
 }
 
+export async function getMesCandidatures(authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/candidatures`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de récupérer les candidatures");
+  }
+
+  return response.json();
+}
 function getHeaders(authHeader) {
   if (authHeader) return authHeader;
   const token = getTokenCookie() || localStorage.getItem("token");
@@ -70,7 +85,6 @@ export async function getOffresDisponibles(authHeader) {
   return response.json();
 }
 
-
 export async function getOffreDetail(id, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/offres/${id}`, {
     method: "GET",
@@ -84,4 +98,3 @@ export async function getOffreDetail(id, authHeader) {
 
   return response.json();
 }
-

@@ -10,18 +10,24 @@ import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.lacouf.rsbjwt.model.Cv;
+import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.repository.CandidatureRepository;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 
 @Service
 public class EmployeurService {
-
     private final UserAppRepository userAppRepository;
     private final EmployeurRepository employeurRepository;
     private final OffreStageRepository offreStageRepository;
+    private final CandidatureRepository candidatureRepository;
 
-    public EmployeurService(UserAppRepository userAppRepository, EmployeurRepository employeurRepository, OffreStageRepository offreStageRepository) {
+    public EmployeurService(UserAppRepository userAppRepository, EmployeurRepository employeurRepository, OffreStageRepository offreStageRepository,
+                            CandidatureRepository candidatureRepository) {
         this.userAppRepository = userAppRepository;
         this.employeurRepository = employeurRepository;
         this.offreStageRepository = offreStageRepository;
+        this.candidatureRepository = candidatureRepository;
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
@@ -75,8 +81,39 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        return offreStageRepository.findByEmployeur(employeur).stream()
-                .map(OffreStageDto::create)
+        return OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur));
+    }
+
+    public List<CandidatureDto> getCandidatures(Long offreId, String emailEmployeur) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        OffreStage offre = offreStageRepository.findByIdAndEmployeur(offreId, employeur)
+                .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
+
+        return candidatureRepository.findByOffreStage(offre).stream()
+                .map(CandidatureDto::create)
                 .collect(Collectors.toList());
+    }
+
+    public byte[] getCvCandidat(Long candidatureId, String emailEmployeur) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        Candidature candidature = candidatureRepository.findByIdAndOffreStageEmployeur(candidatureId, employeur)
+                .orElseThrow(() -> new Exception("Candidature introuvable pour cet employeur"));
+
+        Cv cv = candidature.getEtudiant().getCv();
+        if (cv == null || cv.getData() == null) {
+            throw new Exception("Aucun CV disponible pour ce candidat");
+        }
+
+        return cv.getData();
     }
 }

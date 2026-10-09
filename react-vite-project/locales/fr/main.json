@@ -273,7 +273,30 @@
       "EN_ATTENTE": "En attente",
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
+    },
+
+    "view_candidates": "Voir les candidatures",
+    "statuts": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
     }
+  },
+  "candidatures_offre": {
+    "back": "Retour à mes offres",
+    "title": "Candidatures reçues",
+    "subtitle": "Consultez les étudiants ayant postulé à cette offre",
+    "loading": "Chargement des candidatures...",
+    "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
+    "view_cv": "Voir le CV",
+    "no_cv": "Aucun CV disponible",
+    "statuts": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTEE": "Acceptée",
+      "REFUSEE": "Refusée",
+      "EN_ATTENTE_REPONSE": "En attente de réponse"
+    },
+    "no_offers": "Aucune offre de stage n'a encore été créée."
   },
   "sidepanel": {
     "title": "Tableau de bord",
@@ -319,7 +342,7 @@
       "no_offres": "Aucune offre en attente d'approbation.",
       "approbation": {
         "title": "Approuver l'offre",
-        "quesiton": "Souhaitez-vous rendre \\\"{{titre}}\\\" visible pour tous les étudiants, ou la restreindre ?",
+        "question": "Souhaitez-vous rendre \"{{titre}}\" visible pour tous les étudiants, ou la restreindre ?",
         "target": "Étudiants ciblés (Optionnel)",
         "search": "Chercher par matricule (ex: 12345)",
         "cancel": "Annuler",
@@ -370,6 +393,10 @@
     "empty_none": "Il n'y a actuellement aucune offre de stage validée pour votre profil.",
     "salary_to_discuss": "À discuter",
     "btn_see_details": "Voir détails",
+    "tab_all_offers": "Toutes les offres",
+    "tab_my_applications": "Mes candidatures ({{count}})",
+    "applied_badge": "Candidature envoyée",
+    "empty_applied": "Vous n'avez pas encore postulé à une offre de stage.",
     "modal": {
       "validated_badge": "Offre validée",
       "discipline": "Discipline",
@@ -379,7 +406,12 @@
       "requirements": "Exigences particulières",
       "description": "Description du stage",
       "no_description": "Aucune description fournie.",
-      "close": "Fermer"
+      "close": "Fermer",
+      "btn_apply": "Postuler à cette offre",
+      "btn_applied": "Candidature déjà envoyée",
+      "applying": "Envoi de la candidature...",
+      "apply_success": "Félicitations ! Votre candidature a été transmise à l'employeur avec succès.",
+      "apply_error": "Erreur lors de l'envoi de la candidature."
     }
   }
 }
