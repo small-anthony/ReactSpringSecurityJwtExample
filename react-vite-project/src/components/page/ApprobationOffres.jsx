@@ -1,4 +1,4 @@
-﻿import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
 
 import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.js";
@@ -141,6 +141,14 @@ const ApprobationOffres = () => {
                                     onConfirm={(message) => handleRefuser(offre.id, message)}
                                 />
                             )}
+                            {offreToApprove && offreToApprove.id === offre.id && (
+                                <ModalApprobation
+                                    offre={offreToApprove}
+                                    onClose={() => setOffreToApprove(null)}
+                                    onConfirm={handleAccepter}
+                                    authHeader={authService.buildAuthHeader()}
+                                />
+                            )}
                         </article>
                     ))}
 
@@ -152,14 +160,6 @@ const ApprobationOffres = () => {
                 </div>
             </div>
 
-            {offreToApprove && (
-                <ModalApprobation
-                    offre={offreToApprove}
-                    onClose={() => setOffreToApprove(null)}
-                    onConfirm={handleAccepter}
-                    authHeader={authService.buildAuthHeader()}
-                />
-            )}
         </main>
     );
 }
