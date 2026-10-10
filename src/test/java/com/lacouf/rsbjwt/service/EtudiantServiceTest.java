@@ -368,37 +368,6 @@ public class EtudiantServiceTest {
                 assertEquals("Utilisateur non trouvé avec l'email : test@gmail.com", exception.getMessage());
         }
 
-        @Test
-        void getEtudiantByMatricule_succes() throws Exception {
-                // ARRANGE
-                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
-                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-
-                etudiant.setId(1L);
-
-                when(etudiantRepository.findByMatricule(12345)).thenReturn(Optional.of(etudiant));
-
-                // ACT
-                EtudiantDto resultat = etudiantService.getEtudiantByMatricule(12345);
-
-                // ASSERT
-                assertNotNull(resultat);
-                assertEquals(12345, resultat.matricule());
-                assertEquals("Peter", resultat.firstName());
-        }
-
-        @Test
-        void getEtudiantByMatricule_introuvable_lanceException() {
-                // ARRANGE
-                when(etudiantRepository.findByMatricule(99999)).thenReturn(Optional.empty());
-
-                // ACT
-                Exception exception = assertThrows(Exception.class,
-                                () -> etudiantService.getEtudiantByMatricule(99999));
-
-                // ASSERT
-                assertEquals("Aucun étudiant trouvé avec ce matricule", exception.getMessage());
-        }
 
         @Test
         void getMesCandidatures_shouldReturnOffresWithMyCandidature() throws Exception {
@@ -584,5 +553,23 @@ public class EtudiantServiceTest {
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         }
 
+        @Test
+        void rechercherEtudaints_returnsMappedEtudiants() {
+                //ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant1.setId(1L);
 
+                when(etudiantRepository.rechercherParMotCle("Pet")).thenReturn(List.of(etudiant));
+
+                //ACT
+                List<EtudiantDto> resultat = etudiantService.rechercherEtudiants("Pet");
+
+                //ASSERT
+                assertNotNull(resultat);
+                assertEquals(1, resultat.size());
+                assertEquals(12345, resultat.getFirst().matricule());
+                assertEquals("Peter", resultat.getFirst().firstName());
+
+        }
 }

@@ -161,35 +161,6 @@ public class EtudiantControllerTest {
     }
 
     @Test
-    void getMatricule_shouldReturnOk() throws Exception {
-        // ARRANGE
-        EtudiantDto etudiantDto = mock(EtudiantDto.class);
-
-        when(etudiantService.getEtudiantByMatricule(12345)).thenReturn(etudiantDto);
-
-        // ACT
-        ResponseEntity<?> response = etudiantController.getMatricule(12345);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(etudiantDto, response.getBody());
-    }
-
-    @Test
-    void getMatricule_shouldReturnNotFoundOnException() throws Exception {
-        // ARRANGE
-        when(etudiantService.getEtudiantByMatricule(99999))
-                .thenThrow(new Exception("Aucun étudiant trouvé avec ce matricule"));
-
-        // ACT
-        ResponseEntity<?> response = etudiantController.getMatricule(99999);
-
-        // ASSERT
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Aucun étudiant trouvé avec ce matricule", response.getBody());
-    }
-
-    @Test
     void getStatutCv_shouldReturnOk() {
         // ARRANGE
         String email = "etudiant@gmail.com";
@@ -300,6 +271,22 @@ public class EtudiantControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Erreur", response.getBody());
+    }
+
+    @Test
+    void rechercherEtudiants_shouldReturnOk() {
+        //ARRANGE
+        EtudiantDto etudiantDto = mock (EtudiantDto.class);
+        when(etudiantService.rechercherEtudiants("Peter")).thenReturn(List.of(etudiantDto));
+
+        //ACT
+        ResponseEntity<List<EtudiantDto>> response = etudiantController.rechercherEtudiants("Peter");
+
+        //ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals(etudiantDto, response.getBody().getFirst());
     }
 }
 

@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     boolean existsByMatricule(int matricule);
-    Optional<Etudiant> findByMatricule(int matricule);
 
     @Query("SELECT e FROM Etudiant e WHERE " +
             "LOWER(e.firstName) LIKE LOWER(CONCAT('%', :motCle, '%')) OR " +
