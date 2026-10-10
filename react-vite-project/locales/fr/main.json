@@ -353,7 +353,7 @@
         "target": "Étudiants ciblés (Optionnel)",
         "search": "Chercher par matricule (ex: 12345)",
         "cancel": "Annuler",
-        "confirm": "Confirmer"
+        "confirm": "Confirmer l'approbation"
       }
     },
     "modal_refus": {

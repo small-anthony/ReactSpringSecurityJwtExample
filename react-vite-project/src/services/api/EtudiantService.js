@@ -98,3 +98,17 @@ export async function getOffreDetail(id, authHeader) {
 
   return response.json();
 }
+
+export async function rechercherEtudiants(query, authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/recherche?motCle=${encodeURIComponent(query)}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Erreur lors de la recherche");
+  }
+  return response.json();
+}
