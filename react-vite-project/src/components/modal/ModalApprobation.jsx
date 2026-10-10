@@ -50,7 +50,7 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
             </div>
 
             <p className="text-sm text-gray-600 mb-6">
-                {t('approbation.offres.approbation.question', { titre: offre.titre })} <span className="font-semibold text-gray-900">"{offre.titre}"</span> visible pour tous les étudiants, ou la restreindre ?
+                {t('approbation.offres.approbation.question', { titre: offre.titre })}
             </p>
 
             <div className="mb-3">
@@ -61,7 +61,7 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
                         <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Taper un nom, courriel ou matricule..."
+                            placeholder={t('approbation.offres.approbation.search_placeholder')}
                             className="w-full text-sm border border-gray-300 rounded-lg pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
                             value={rechercheInput}
                             onChange={(e) => {

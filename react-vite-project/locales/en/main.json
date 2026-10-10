@@ -357,7 +357,8 @@
         "target": "Targeted students (Optional)",
         "search": "Search by student ID (ex: 12345)",
         "cancel": "Cancel",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "search_placeholder": "Type a name, email, or ID..."
       }
     },
     "modal_refus": {
@@ -374,7 +375,9 @@
       "label_motif": "Reason for rejection",
       "annuler": "Cancel",
       "confirmer": "Confirm rejection"
-    }
+    },
+    "btn_refuse": "Refuse",
+    "btn_accept": "Accept"
   },
   "offres_etudiant": {
     "badge": "Student Area",

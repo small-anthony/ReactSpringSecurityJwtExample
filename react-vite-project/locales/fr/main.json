@@ -281,7 +281,6 @@
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
     },
-
     "view_candidates": "Voir les candidatures",
     "statuts": {
       "EN_ATTENTE": "En attente",
@@ -353,7 +352,8 @@
         "target": "Étudiants ciblés (Optionnel)",
         "search": "Chercher par matricule (ex: 12345)",
         "cancel": "Annuler",
-        "confirm": "Confirmer l'approbation"
+        "confirm": "Confirmer l'approbation",
+        "search_placeholder": "Taper un nom, courriel ou matricule..."
       }
     },
     "modal_refus": {
@@ -370,7 +370,9 @@
       "label_motif": "Motif du refus",
       "annuler": "Annuler",
       "confirmer": "Confirmer le refus"
-    }
+    },
+    "btn_refuse": "Refuser",
+    "btn_accept": "Accepter"
   },
   "offres_etudiant": {
     "badge": "Espace Étudiant",

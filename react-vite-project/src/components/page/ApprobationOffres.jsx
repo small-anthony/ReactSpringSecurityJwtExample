@@ -8,6 +8,7 @@ import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
 import { Briefcase, Check, X, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
 import {useTranslation} from "react-i18next";
+import { DISCIPLINES } from "../../constants/disciplines.js";
 
 const ApprobationOffres = () => {
     const { t } = useTranslation("main");
@@ -16,6 +17,19 @@ const ApprobationOffres = () => {
     const [offreToApprove, setOffreToApprove] = useState(null);
     const [offreToRefuse, setOffreToRefuse] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const getDisciplineTraduction = (valeurDB) => {
+        const found = DISCIPLINES.find(d => d.value === valeurDB);
+
+        return found ? t(`signup_etudiant.disciplines.${found.labelKey}`) : valeurDB;
+    };
+
+    const getDureeTraduction = (valeurDB) => {
+        if (!valeurDB) return "";
+
+        const nombre = parseInt(valeurDB, 10);
+        return Number.isNaN(nombre) ? valeurDB : t("creer_offre.weeks", { count: nombre });
+    };
 
     useEffect(() => {
         fetchOffresEnAttente(authService.buildAuthHeader())
@@ -85,7 +99,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{getDisciplineTraduction(offre.discipline)}</span>
                                     </div>
                                 </div>
 
@@ -104,7 +118,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{getDureeTraduction(offre.duree)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -129,10 +143,10 @@ const ApprobationOffres = () => {
                             {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (
                                 <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
                                     <button onClick={() => setOffreToRefuse(offre)} className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm">
-                                        Refuser
+                                        {t('approbation.btn_refuse')}
                                     </button>
                                     <button onClick={() => setOffreToApprove(offre)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-                                        Accepter
+                                        {t('approbation.btn_accept')}
                                     </button>
                                 </div>
                             )}

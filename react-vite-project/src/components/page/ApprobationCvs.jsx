@@ -116,13 +116,13 @@ const ApprobationCvs = () => {
                                             onClick={() => setCvRefuser(cv)}
                                             className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
                                         >
-                                            Refuser
+                                            {t('approbation.btn_refuse')}
                                         </button>
                                         <button
                                             onClick={() => handleAccepter(cv.id)}
                                             className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
                                         >
-                                            Accepter
+                                            {t('approbation.btn_accept')}
                                         </button>
                                     </div>
                                 )}
