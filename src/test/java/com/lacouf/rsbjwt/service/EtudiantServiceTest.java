@@ -558,7 +558,7 @@ public class EtudiantServiceTest {
                 //ARRANGE
                 Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
                 Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-                etudiant1.setId(1L);
+                etudiant.setId(1L);
 
                 when(etudiantRepository.rechercherParMotCle("Pet")).thenReturn(List.of(etudiant));
 
