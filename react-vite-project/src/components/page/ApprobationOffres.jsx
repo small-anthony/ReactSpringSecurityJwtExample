@@ -72,16 +72,7 @@ const ApprobationOffres = () => {
                 <div className="grid gap-6">
                     {offres.map((offre) => (
                         <article key={offre.id} className="relative p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                            {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (
-                                <div className="absolute top-5 right-5 flex gap-2">
-                                    <button onClick={() => setOffreToRefuse(offre)} className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm">
-                                        Refuser
-                                    </button>
-                                    <button onClick={() => setOffreToApprove(offre)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-                                        Accepter
-                                    </button>
-                                </div>
-                            )}
+
                             <h3 className="text-xl font-bold text-gray-900 pr-20 mb-1">{offre.titre}</h3>
                             <p className="text-blue-600 font-medium mb-5 flex items-center gap-1.5 pb-4 border-b border-gray-100">
                                 <Briefcase className="w-4 h-4" strokeWidth={2} />
@@ -134,6 +125,19 @@ const ApprobationOffres = () => {
                                     <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
                                 </div>
                             </div>
+
+                            {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (
+                                <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
+                                    <button onClick={() => setOffreToRefuse(offre)} className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm">
+                                        Refuser
+                                    </button>
+                                    <button onClick={() => setOffreToApprove(offre)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                                        Accepter
+                                    </button>
+                                </div>
+                            )}
+
+
                             {offreToRefuse && offreToRefuse.id === offre.id && (
                                 <ModalRefus
                                     mode="offre"

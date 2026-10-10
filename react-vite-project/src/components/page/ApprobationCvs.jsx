@@ -94,22 +94,7 @@ const ApprobationCvs = () => {
                     <div className="grid gap-6">
                         {cvs.map(cv => (
                             <article key={cv.id} className="relative p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                                {!(cvRefuser && cvRefuser.id === cv.id) && (
-                                    <div className="absolute top-5 right-5 flex gap-2">
-                                        <button
-                                            onClick={() => setCvRefuser(cv)}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
-                                        >
-                                            Refuser
-                                        </button>
-                                        <button
-                                            onClick={() => handleAccepter(cv.id)}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-                                        >
-                                            Accepter
-                                        </button>
-                                    </div>
-                                )}
+
                                 <h3 className="text-xl font-bold text-gray-900 pr-20 mb-1">
                                     {cv.etudiantFirstName} {cv.etudiantLastName}
                                 </h3>
@@ -124,6 +109,25 @@ const ApprobationCvs = () => {
                                     <Eye className="w-4 h-4" strokeWidth={2} />
                                     {t('approbation.cvs.pdf')}
                                 </button>
+
+                                {!(cvRefuser && cvRefuser.id === cv.id) && (
+                                    <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
+                                        <button
+                                            onClick={() => setCvRefuser(cv)}
+                                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                                        >
+                                            Refuser
+                                        </button>
+                                        <button
+                                            onClick={() => handleAccepter(cv.id)}
+                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                                        >
+                                            Accepter
+                                        </button>
+                                    </div>
+                                )}
+
+
                                 {cvRefuser && cvRefuser.id === cv.id && (
                                     <ModalRefus
                                         mode="cv"
@@ -141,6 +145,7 @@ const ApprobationCvs = () => {
                     </div>
                 )}
             </div>
+
 
             {pdfUrlModal && (
                 <ModalCvPdf
