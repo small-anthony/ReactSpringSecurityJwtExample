@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EtudiantService {
@@ -185,5 +186,15 @@ public class EtudiantService {
         }
 
         return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
+    }
+
+
+    public List<EtudiantDto> rechercherEtudiants(String motCle) {
+        List<Etudiant> etudiants = etudiantRepository.rechercherParMotCle(motCle);
+
+        return etudiants.stream()
+                .limit(10)
+                .map(EtudiantDto::create)
+                .collect(Collectors.toList());
     }
 }

@@ -77,6 +77,7 @@ public class SecurityConfiguration {
                                 Role.EMPLOYEUR.name())
 
                         .requestMatchers(GET, "/etudiant/matricule/**").hasAuthority(Role.GESTIONNAIRE.name())
+                        .requestMatchers(GET, "/etudiant/recherche").hasAuthority(Role.GESTIONNAIRE.name())
 
                         .requestMatchers(ETUDIANT_PATH).hasAuthority(Role.ETUDIANT.name())
                         .requestMatchers(EMPLOYEUR_PATH).hasAuthority(Role.EMPLOYEUR.name())

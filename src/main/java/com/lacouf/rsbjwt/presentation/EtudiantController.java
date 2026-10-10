@@ -122,4 +122,10 @@ public class EtudiantController {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
+
+    @GetMapping("/recherche")
+    public ResponseEntity<List<EtudiantDto>> rechercherEtudiants(@RequestParam("motCle") String motCle) {
+        List<EtudiantDto> resultats = etudiantService.rechercherEtudiants(motCle);
+        return ResponseEntity.ok(resultats);
+    }
 }
