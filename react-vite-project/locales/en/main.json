@@ -178,7 +178,7 @@
       "nomEntreprise": "Ex: TechCorp",
       "discipline": "-- Select a discipline --",
       "duree": "-- Select a duration --",
-      "salaire": "Ex: $22.50/h or To be discussed",
+      "salaire": "Ex: $22.50/h",
       "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
     },

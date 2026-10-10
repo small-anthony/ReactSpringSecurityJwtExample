@@ -99,7 +99,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{getDisciplineTraduction(offre.discipline)}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
                                     </div>
                                 </div>
 
@@ -118,7 +118,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{getDureeTraduction(offre.duree)}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
                                     </div>
                                 </div>
                             </div>
@@ -143,10 +143,10 @@ const ApprobationOffres = () => {
                             {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (
                                 <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
                                     <button onClick={() => setOffreToRefuse(offre)} className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm">
-                                        {t('approbation.btn_refuse')}
+                                        Refuser
                                     </button>
                                     <button onClick={() => setOffreToApprove(offre)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-                                        {t('approbation.btn_accept')}
+                                        Accepter
                                     </button>
                                 </div>
                             )}

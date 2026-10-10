@@ -7,7 +7,7 @@ import LoginForm from "./components/auth/LoginForm.jsx";
 import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
 import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
-import CreateOffreForm from "./components/auth/CreateOffreForm.jsx";
+import CreateOffreForm from "./components/modal/CreateOffreForm.jsx";
 import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
