@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx"
-import { createOffreStage } from "../../services/api/OffreStageService";
-import { DISCIPLINES } from "../../constants/disciplines";
-import { DUREES } from "../../constants/durees";
+import { createOffreStage } from "../../services/api/OffreStageService.js";
+import { DISCIPLINES } from "../../constants/disciplines.js";
+import { DUREES } from "../../constants/durees.js";
 
 export default function CreateOffreForm() {
   const authService = useContext(AuthServiceContext);
@@ -80,6 +80,11 @@ export default function CreateOffreForm() {
 
     try {
       const authHeader = authService.buildAuthHeader();
+
+      let finalSalaire = formData.salaire.trim();
+      if (finalSalaire && !finalSalaire.toLowerCase().includes("h")) {
+        finalSalaire = finalSalaire.replace("$", "").trim() + "$/h";
+      }
 
       await createOffreStage(
         formData.titre.trim(),
@@ -182,8 +187,7 @@ export default function CreateOffreForm() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+        <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               {t("creer_offre.discipline")}
             </label>
@@ -200,17 +204,36 @@ export default function CreateOffreForm() {
                 </option>
               ))}
             </select>
-          </div>
+        </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.salaire")}
+            </label>
+            <div className="flex items-center">
+              <input
+                type="text"
+                name="salaire"
+                value={formData.salaire}
+                onChange={handleChange}
+                placeholder={t("creer_offre.placeholders.salaire")}
+                className="flex-1 p-2.5 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="bg-gray-100 border border-gray-300 border-l-0 text-gray-500 font-semibold p-2.5 rounded-r-lg">
+                $/h
+              </span>
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               {t("creer_offre.duree")}
             </label>
             <select
-              name="duree"
-              value={formData.duree}
-              onChange={handleChange}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                name="duree"
+                value={formData.duree}
+                onChange={handleChange}
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               <option value="">{t("creer_offre.placeholders.duree")}</option>
               {DUREES.map((dur) => (
@@ -220,20 +243,6 @@ export default function CreateOffreForm() {
               ))}
             </select>
           </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            {t("creer_offre.salaire")}
-          </label>
-          <input
-            type="text"
-            name="salaire"
-            value={formData.salaire}
-            onChange={handleChange}
-            placeholder={t("creer_offre.placeholders.salaire")}
-            className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
         </div>
 
         <div>

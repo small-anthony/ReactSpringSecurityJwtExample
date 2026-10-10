@@ -42,7 +42,6 @@ const ApprobationOffres = () => {
             });
     };
 
-
     const handleRefuser = (offreId, message) => {
         refuserOffre(offreId, message, authService.buildAuthHeader())
             .then(() => {
@@ -55,6 +54,11 @@ const ApprobationOffres = () => {
                 setErrorMessage(t("approbation.offres.errors.reject"));
                 setOffreToRefuse(null);
             });
+    };
+
+    const traduireDuree = (valeur) => {
+        const nombre = parseInt(valeur, 10);
+        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
     };
 
     return (
@@ -104,7 +108,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
                                     </div>
                                 </div>
                             </div>
