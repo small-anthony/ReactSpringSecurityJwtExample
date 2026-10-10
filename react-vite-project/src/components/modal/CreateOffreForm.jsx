@@ -213,7 +213,8 @@ export default function CreateOffreForm() {
             </label>
             <div className="flex items-center">
               <input
-                type="text"
+                type="number"
+                min="0"
                 name="salaire"
                 value={formData.salaire}
                 onChange={handleChange}
