@@ -6,7 +6,7 @@ import { createOffreStage } from "../../services/api/OffreStageService.js";
 import { DISCIPLINES } from "../../constants/disciplines.js";
 import { DUREES } from "../../constants/durees.js";
 
-export default function CreateOffreForm() {
+export default function CreerOffre() {
   const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation("main");
@@ -27,7 +27,7 @@ export default function CreateOffreForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (userData?.entreprise && !formData.nomEntreprise) {
+    if (userData?.entreprise) {
       setFormData((prev) => ({
         ...prev,
         nomEntreprise: userData.entreprise,
@@ -194,23 +194,17 @@ export default function CreateOffreForm() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {t("creer_offre.nomEntreprise")} <span className="text-red-500">*</span>
+              {t("creer_offre.nomEntreprise")}
             </label>
             <input
                 type="text"
                 name="nomEntreprise"
                 value={formData.nomEntreprise}
+                readOnly="true"
                 onChange={handleChange}
                 placeholder={t("creer_offre.placeholders.nomEntreprise")}
-                className={`w-full p-2.5 border rounded-lg ${
-                    errors.nomEntreprise ? "border-red-500 bg-red-50" : "border-gray-300"
-                }`}
+                className="w-full p-2.5 border rounded-lg"
             />
-            {errors.nomEntreprise && (
-                <p className="text-red-500 text-xs mt-1">
-                  {t(`creer_offre.errors.${errors.nomEntreprise}`)}
-                </p>
-            )}
           </div>
 
           <div>

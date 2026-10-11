@@ -174,7 +174,6 @@
     "weeks": "{{count}} semaines",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
-      "nomEntreprise": "Ex: TechCorp",
       "discipline": "-- Choisir une discipline --",
       "duree": "-- Choisir une durée --",
       "salaire": "22.50",
@@ -183,7 +182,6 @@
     },
     "errors": {
       "titre": "Le titre est obligatoire.",
-      "nomEntreprise": "Le nom de l'entreprise est obligatoire.",
       "discipline": "Veuillez choisir une discipline.",
       "salaire": {
         "required": "La rémunération est obligatoire.",
