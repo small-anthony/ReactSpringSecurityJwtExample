@@ -19,16 +19,16 @@ function MainContainer() {
 
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-md mx-auto">
                 <Link
-                    to="/signup"
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition duration-150 text-base text-center"
-                >
-                    {t("home.cta_signup")}
-                </Link>
-                <Link
                     to="/login"
                     className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-8 rounded-xl border border-gray-300 shadow-xs hover:border-gray-400 transition duration-150 text-base text-center"
                 >
                     {t("home.cta_login")}
+                </Link>
+                <Link
+                    to="/signup"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition duration-150 text-base text-center"
+                >
+                    {t("home.cta_signup")}
                 </Link>
             </div>
         </div>

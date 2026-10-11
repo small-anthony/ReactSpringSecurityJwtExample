@@ -115,7 +115,7 @@ function Header({ user }) {
               </div>
 
               {user ? (
-                  <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
+                  <div className="flex items-center gap-3 pl-2">
                     <div className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs shadow-xs">
                       <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
                         {initials || "U"}
