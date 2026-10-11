@@ -4,7 +4,7 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getOffresStages } from "../../services/api/OffreStageService";
 import {useTranslation} from "react-i18next";
 import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
-import { DISCIPLINES } from "../../constants/disciplines";
+import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 const STATUS_STYLES = {
   EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -12,15 +12,15 @@ const STATUS_STYLES = {
   REFUSE: "bg-red-100 text-red-800 border-red-200",
 };
 
-
 export default function EmployeurHome() {
-  const { t } = useTranslation("main");
-  const authService = useContext(AuthServiceContext);
-  const [offres, setOffres] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+    const { t } = useTranslation("main");
+    const authService = useContext(AuthServiceContext);
+    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
+    const [offres, setOffres] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
 
-  useEffect(() => {
+    useEffect(() => {
     let offresChargees = true;
 
     getOffresStages(authService.buildAuthHeader())
@@ -37,19 +37,9 @@ export default function EmployeurHome() {
     return () => {
       offresChargees = false;
     };
-  }, [authService]);
+    }, [authService]);
 
-    const traduireDiscipline = (valeur) => {
-        const disc = DISCIPLINES.find((d) => d.value === valeur);
-        return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
-    };
-
-    const traduireDuree = (valeur) => {
-        const nombre = parseInt(valeur, 10);
-        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
-    };
-
-  return (
+    return (
       <main className="max-w-5xl mx-auto my-10 px-4">
         <div className="flex items-center justify-between gap-4 mb-8">
           <div>
@@ -103,7 +93,7 @@ export default function EmployeurHome() {
                     </div>
                     <div>
                       <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
-                      <span className="text-gray-800 text-sm font-medium">{offre.salaire}</span>
+                      <span className="text-gray-800 text-sm font-medium">{formaterSalaire(offre.salaire)}</span>
                     </div>
                   </div>
 
@@ -152,5 +142,5 @@ export default function EmployeurHome() {
           ))}
         </div>
       </main>
-  );
+    );
 }

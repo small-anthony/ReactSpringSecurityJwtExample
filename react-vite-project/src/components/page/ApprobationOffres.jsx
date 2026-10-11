@@ -1,35 +1,21 @@
 import {useContext, useEffect, useState} from "react";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
-
 import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.js";
-
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
-import { Briefcase, Check, X, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
+import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
 import {useTranslation} from "react-i18next";
-import { DISCIPLINES } from "../../constants/disciplines.js";
+import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 const ApprobationOffres = () => {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
+    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
     const [offreToApprove, setOffreToApprove] = useState(null);
     const [offreToRefuse, setOffreToRefuse] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
-
-    const getDisciplineTraduction = (valeurDB) => {
-        const found = DISCIPLINES.find(d => d.value === valeurDB);
-
-        return found ? t(`signup_etudiant.disciplines.${found.labelKey}`) : valeurDB;
-    };
-
-    const getDureeTraduction = (valeurDB) => {
-        if (!valeurDB) return "";
-
-        const nombre = parseInt(valeurDB, 10);
-        return Number.isNaN(nombre) ? valeurDB : t("creer_offre.weeks", { count: nombre });
-    };
 
     const formatSalaire = (valeur) => {
         if (!valeur) return "";
@@ -109,7 +95,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{getDisciplineTraduction(offre.discipline)}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{traduireDiscipline(offre.discipline)}</span>
                                     </div>
                                 </div>
 
@@ -119,7 +105,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{formatSalaire(offre.salaire)}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{formaterSalaire(offre.salaire)}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
@@ -128,7 +114,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{getDureeTraduction(offre.duree)}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
                                     </div>
                                 </div>
                             </div>

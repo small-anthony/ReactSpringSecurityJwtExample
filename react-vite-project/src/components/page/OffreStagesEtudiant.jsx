@@ -5,31 +5,20 @@ import { getOffresDisponibles, getMesCandidatures } from "../../services/api/Etu
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import { DISCIPLINES } from "../../constants/disciplines";
 import { DUREES } from "../../constants/durees";
-import {
-    Briefcase,
-    Search,
-    Building2,
-    GraduationCap,
-    Clock,
-    DollarSign,
-    AlertTriangle,
-    FilterX,
-    FileText,
-    CheckCircle2
-} from "lucide-react";
+import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTriangle, FilterX, FileText, CheckCircle2 } from "lucide-react";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
+import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-
+    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [offres, setOffres] = useState([]);
     const [mesCandidaturesIds, setMesCandidaturesIds] = useState([]);
     const [ongletActif, setOngletActif] = useState("toutes");
     const [offreSelectionnee, setOffreSelectionnee] = useState(null);
-
     const [recherche, setRecherche] = useState("");
     const [filtreEntreprise, setFiltreEntreprise] = useState("");
     const [filtreDiscipline, setFiltreDiscipline] = useState("");
@@ -124,16 +113,6 @@ export default function OffreStagesEtudiant() {
         setFiltreEntreprise("");
         setFiltreDiscipline("");
         setFiltreDuree("");
-    };
-
-    const traduireDiscipline = (valeur) => {
-        const disc = DISCIPLINES.find((d) => d.value === valeur);
-        return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
-    };
-
-    const traduireDuree = (valeur) => {
-        const nombre = parseInt(valeur, 10);
-        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
     };
 
     return (
@@ -332,7 +311,7 @@ export default function OffreStagesEtudiant() {
                                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-1 text-xs font-bold text-gray-800">
                                                 <DollarSign className="w-3.5 h-3.5 text-amber-500" />
-                                                <span>{offre.salaire || t("offres_etudiant.salary_to_discuss")}</span>
+                                                <span>{formaterSalaire(offre.salaire)}</span>
                                             </div>
 
                                             <button

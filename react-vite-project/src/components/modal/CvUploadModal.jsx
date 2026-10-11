@@ -61,7 +61,7 @@ export default function CvUploadModal({ onUploadSuccess, onClose }) {
                                 <button
                                     onClick={onClose}
                                     type="button"
-                                    className="text-gray-400 hover:text-gray-800 transition-colors p-1.5 rounded-full hover:bg-gray-100 cursor-pointer"
+                                    className="text-gray-400 hover:text-gray-800 transition-colors p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
