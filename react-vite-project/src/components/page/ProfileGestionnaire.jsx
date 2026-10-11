@@ -2,9 +2,8 @@
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import {useTranslation} from "react-i18next";
 
-const GestionnaireHome = () => {
+const ProfileGestionnaire = () => {
     const { t } = useTranslation("main");
-
 
     return (
         <main className="flex flex-col md:flex-row w-full bg-gray-50/30 overflow-hidden">
@@ -26,4 +25,4 @@ const GestionnaireHome = () => {
     );
 }
 
-export default GestionnaireHome;
+export default ProfileGestionnaire;

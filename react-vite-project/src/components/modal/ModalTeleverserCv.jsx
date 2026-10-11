@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { uploadCv } from '../../services/api/CvEtudiantAPI.jsx';
+import { uploadCv } from '../../services/api/EtudiantCvService.js';
 import {useTranslation} from "react-i18next";
 import {X} from "lucide-react";
 
-export default function CvUploadModal({ onUploadSuccess, onClose }) {
+export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     const { t } = useTranslation("main");
     const [file, setFile] = useState(null);
     const [error, setError] = useState('');

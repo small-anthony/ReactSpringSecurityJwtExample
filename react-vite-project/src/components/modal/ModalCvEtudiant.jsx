@@ -1,8 +1,8 @@
-import CvUploadModal from "./CvUploadModal.jsx";
+import ModalTeleverserCv from "./ModalTeleverserCv.jsx";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStatutCv } from "../../services/api/EtudiantService.js";
-import { checkCvExists } from "../../services/api/CvEtudiantAPI.jsx";
+import { checkCvExists } from "../../services/api/EtudiantCvService.js";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Clock3, XCircle, UploadCloud, FileText } from "lucide-react";
 
@@ -78,7 +78,7 @@ export default function ModalCvEtudiant() {
                     </div>
                     {afficherUploadModal && (
                         <div className="pt-4">
-                            <CvUploadModal
+                            <ModalTeleverserCv
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -120,7 +120,7 @@ export default function ModalCvEtudiant() {
 
                     {afficherUploadModal && (
                         <div className="pt-4">
-                            <CvUploadModal
+                            <ModalTeleverserCv
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -162,7 +162,7 @@ export default function ModalCvEtudiant() {
 
                     {afficherUploadModal && (
                         <div className="pt-4">
-                            <CvUploadModal
+                            <ModalTeleverserCv
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -206,7 +206,7 @@ export default function ModalCvEtudiant() {
 
                     {afficherUploadModal && (
                         <div className="pt-4">
-                            <CvUploadModal
+                            <ModalTeleverserCv
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);

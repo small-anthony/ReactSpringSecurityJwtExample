@@ -12,7 +12,7 @@ const STATUS_STYLES = {
   REFUSE: "bg-red-100 text-red-800 border-red-200",
 };
 
-export default function EmployeurHome() {
+export default function ProfileEmployeur() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();

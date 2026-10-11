@@ -7,10 +7,9 @@ import LoginForm from "./components/auth/LoginForm.jsx";
 import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
 import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
-import CreateOffreForm from "./components/modal/CreateOffreForm.jsx";
-import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
-import EmployeurHome from "./components/page/EmployeurHome.jsx";
-import PreposeHome from "./components/page/PreposeHome.jsx";
+import CreerOffre from "./components/page/CreerOffre.jsx";
+import ProfileGestionnaire from "./components/page/ProfileGestionnaire.jsx";
+import ProfileEmployeur from "./components/page/ProfileEmployeur.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
@@ -81,12 +80,12 @@ function App() {
 
                     <Route
                         path="employeur"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EmployeurHome /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <ProfileEmployeur /> : <Navigate to="/" />))}
                     />
 
                     <Route
                         path="employeur/creer-offre"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <CreateOffreForm /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <CreerOffre /> : <Navigate to="/" />))}
                     />
 
                     <Route
@@ -101,7 +100,7 @@ function App() {
 
                     <Route
                         path="gestionnaire"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <GestionnaireHome /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ProfileGestionnaire /> : <Navigate to="/" />))}
                     />
 
                     <Route
