@@ -136,11 +136,6 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Accès refusé : votre CV doit être approuvé par un gestionnaire.");
-        }
-
         List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
 
 
@@ -153,15 +148,8 @@ public class EtudiantService {
     }
 
     public OffreStageDto getOffreDetail(Long id, String email) {
-        UserApp user = userAppRepository.findUserAppByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
-
-        Etudiant etudiant = etudiantRepository.findById(user.getId())
+        Etudiant etudiant = (Etudiant) userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
-
-        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accès refusé : votre CV doit être approuvé.");
-        }
 
         OffreStage offre = offreStageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offre de stage introuvable"));
