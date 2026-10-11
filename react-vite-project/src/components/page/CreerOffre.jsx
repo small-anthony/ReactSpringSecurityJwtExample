@@ -107,6 +107,8 @@ export default function CreerOffre() {
     try {
       const authHeader = authService.buildAuthHeader();
 
+      const finalEntreprise = userData?.entreprise;
+
       let finalSalaire = formData.salaire.trim();
       if (finalSalaire && !finalSalaire.toLowerCase().includes("h")) {
         finalSalaire = finalSalaire.replace("$", "").trim() + " $/h";
@@ -115,7 +117,7 @@ export default function CreerOffre() {
       await createOffreStage(
           formData.titre.trim(),
           formData.description.trim(),
-          formData.nomEntreprise.trim(),
+          finalEntreprise,
           formData.discipline.trim(),
           formData.duree.trim(),
           finalSalaire,
