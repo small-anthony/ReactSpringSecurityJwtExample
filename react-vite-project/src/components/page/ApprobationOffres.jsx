@@ -31,6 +31,18 @@ const ApprobationOffres = () => {
         return Number.isNaN(nombre) ? valeurDB : t("creer_offre.weeks", { count: nombre });
     };
 
+    const formatSalaire = (valeur) => {
+        if (!valeur) return "";
+
+        const trimSalaire = valeur.trim();
+
+        if (trimSalaire.includes("$") || trimSalaire.toLowerCase().includes("h")) {
+            return trimSalaire;
+        }
+
+        return `${trimSalaire} $/h`;
+    }
+
     useEffect(() => {
         fetchOffresEnAttente(authService.buildAuthHeader())
             .then((data) => {
@@ -55,7 +67,6 @@ const ApprobationOffres = () => {
                 setOffreToApprove(null);
             });
     };
-
 
     const handleRefuser = (offreId, message) => {
         refuserOffre(offreId, message, authService.buildAuthHeader())
@@ -86,7 +97,6 @@ const ApprobationOffres = () => {
                 <div className="grid gap-6">
                     {offres.map((offre) => (
                         <article key={offre.id} className="relative p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-
                             <h3 className="text-xl font-bold text-gray-900 pr-20 mb-1">{offre.titre}</h3>
                             <p className="text-blue-600 font-medium mb-5 flex items-center gap-1.5 pb-4 border-b border-gray-100">
                                 <Briefcase className="w-4 h-4" strokeWidth={2} />
@@ -99,7 +109,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{getDisciplineTraduction(offre.discipline)}</span>
                                     </div>
                                 </div>
 
@@ -109,7 +119,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.salaire}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{formatSalaire(offre.salaire)}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
@@ -118,7 +128,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{getDureeTraduction(offre.duree)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -143,10 +153,10 @@ const ApprobationOffres = () => {
                             {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (
                                 <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
                                     <button onClick={() => setOffreToRefuse(offre)} className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm">
-                                        Refuser
+                                        {t("approbation.btn_refuse")}
                                     </button>
                                     <button onClick={() => setOffreToApprove(offre)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-                                        Accepter
+                                        {t("approbation.btn_accept")}
                                     </button>
                                 </div>
                             )}
@@ -183,4 +193,3 @@ const ApprobationOffres = () => {
 }
 
 export default ApprobationOffres;
-

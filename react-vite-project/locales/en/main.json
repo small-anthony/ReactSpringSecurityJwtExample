@@ -8,6 +8,7 @@
     "signup_employeur": "Register as employer",
     "signup_etudiant": "Register as student",
     "signup_professeur": "Register as teacher",
+    "etudiant": "My profile",
     "offres_stages": "Internship offers",
     "voir_offres": "View offers",
     "logout": "Logout"
@@ -138,9 +139,9 @@
     "defaultError": "Error communicating with the server.",
     "emailExists": "An account with this email address already exists.",
     "placeholders": {
-      "firstName": "Ex: Sophie",
-      "lastName": "Ex: Martin",
-      "email": "Ex: contact@entreprise.com",
+      "firstName": "Ex: Sarah",
+      "lastName": "Ex: Smith",
+      "email": "Ex: contact@company.com",
       "entreprise": "Ex: Acme Inc.",
       "poste": "Ex: HR Director",
       "telephone": "Ex: 514-555-1234",
@@ -177,13 +178,20 @@
       "nomEntreprise": "Ex: TechCorp",
       "discipline": "-- Select a discipline --",
       "duree": "-- Select a duration --",
-      "salaire": "Ex: $22.50/h",
+      "salaire": "22.50",
       "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
     },
     "errors": {
       "titre": "Title is required.",
       "nomEntreprise": "Company name is required.",
+      "discipline": "Please select a discipline.",
+      "duree": "Please select a duration.",
+      "salaire": {
+        "required": "Salary is required.",
+        "format": "Invalid salary format."
+      },
+      "exigences": "Requirements are required.",
       "description": "Description is required.",
       "descriptionLength": "Description must be at least 20 characters."
     },
@@ -272,12 +280,7 @@
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
     },
-    "view_candidates": "View candidates",
-    "statuts": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
-    }
+    "view_candidates": "View candidates"
   },
   "candidatures_offre": {
     "back": "Back to my offers",
@@ -293,7 +296,13 @@
       "REFUSEE": "Rejected",
       "EN_ATTENTE_REPONSE": "Awaiting response"
     },
-    "no_offers": "No internship offer has been created yet."
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "status": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
+      "REFUSE": "Refused"
+    }
   },
   "sidepanel": {
     "title": "Manager Workspace",
@@ -318,6 +327,10 @@
       "matricule": "Student ID",
       "pdf": "View PDF document",
       "pdf_title": "Resume preview",
+      "reason": "Reason for rejection",
+      "explain": "Please explain why this resume is being rejected...",
+      "cancel": "Cancel",
+      "confirm": "Confirm rejection",
       "nocvs": "No resumes pending approval.",
       "close": "Close",
       "cvPdf": "PDF resume"
@@ -343,7 +356,7 @@
         "target": "Targeted students (Optional)",
         "search": "Search by student ID (ex: 12345)",
         "cancel": "Cancel",
-        "confirm": "Confirm",
+        "confirm": "Confirm approval",
         "search_placeholder": "Type a name, email, or ID..."
       }
     },
@@ -362,8 +375,8 @@
       "annuler": "Cancel",
       "confirmer": "Confirm rejection"
     },
-    "btn_refuse": "Refuse",
-    "btn_accept": "Accept"
+    "btn_refuse": "Reject",
+    "btn_accept": "Approve"
   },
   "offres_etudiant": {
     "badge": "Student Area",
@@ -371,6 +384,16 @@
     "subtitle": "Browse and apply for internship opportunities approved by your institution.",
     "loading": "Loading internship offers...",
     "error_fetch": "An error occurred while fetching data.",
+    "cv_manquant_title": "Missing Curriculum Vitae",
+    "cv_manquant_desc": "You must upload your resume to your profile and await approval from an internship coordinator to view offers.",
+    "btn_deposer_cv": "Upload my resume",
+    "cv_attente_title": "Resume under review",
+    "cv_attente_desc": "Your resume has been uploaded and is currently being reviewed by the internship team. Internship offers will be unlocked upon approval.",
+    "cv_refuse_title": "Resume rejected by coordinator",
+    "cv_refuse_motif": "Reason: {{motif}}",
+    "cv_refuse_no_motif": "No specific reason provided.",
+    "cv_refuse_desc": "Please revise your resume and submit a new version from your profile.",
+    "btn_maj_cv": "Update my resume",
     "search_placeholder": "Search by title, company or keyword...",
     "all_companies": "All companies",
     "all_disciplines": "All disciplines",
