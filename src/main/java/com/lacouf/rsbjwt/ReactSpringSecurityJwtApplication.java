@@ -85,7 +85,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Participer au développement d'applications web avec React et Spring Boot en méthodologie Agile.",
                 "CGI Inc.",
                 "Techniques de l'informatique",
-                "24$/h",
+                "24 $/h",
                 "15 semaines",
                 "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie."
         );
@@ -97,7 +97,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Mise en place de pipelines CI/CD, automatisation et surveillance d'infrastructures Docker.",
                 "CGI Inc.",
                 "Techniques de l'informatique",
-                "26$/h",
+                "26 $/h",
                 "15 semaines",
                 "Connaissance de Linux, Git et Docker. Notions de cloud computing un atout."
         );
