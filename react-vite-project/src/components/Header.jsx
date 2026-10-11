@@ -27,8 +27,17 @@ function Header({ user }) {
   };
 
   const isEtudiant = user?.role?.toString() === "ROLE_ETUDIANT";
-
   const isEmployeur = user?.role?.toString() === "ROLE_EMPLOYEUR";
+
+  const getHomeRoute = () => {
+    if (!user) return "/";
+    const role = user?.role?.toString().toUpperCase();
+    if (role.includes("ETUDIANT")) return "/etudiant";
+    if (role.includes("EMPLOYEUR")) return "/employeur";
+    if (role.includes("GESTIONNAIRE")) return "/gestionnaire";
+    if (role.includes("PROFESSEUR")) return "/professeur";
+    return "/";
+  };
 
   const currentLang = i18n.language || "fr";
 
@@ -55,7 +64,7 @@ function Header({ user }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link
-                to="/"
+                to={getHomeRoute()}
                 className="flex items-center gap-2.5 group select-none"
             >
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-sm shadow-blue-500/25 group-hover:scale-105 transition-transform duration-200">
@@ -67,23 +76,15 @@ function Header({ user }) {
             </Link>
 
             <nav className="hidden md:flex items-center gap-2">
-              <NavLink to="/" className={navLinkClasses}>
-                {t("pagename.home")}
-              </NavLink>
-              <NavLink to="/about" className={navLinkClasses}>
-                {t("pagename.about")}
-              </NavLink>
-              {isEtudiant && (
-                  <NavLink to="/etudiant" className={navLinkClasses}>
-                    {t("pagename.offres_stages")}
-                  </NavLink>
-              )}
-
-
-              {isEmployeur && (
-                  <NavLink to="/employeur" className={navLinkClasses}>
-                    {t("pagename.voir_offres")}
-                  </NavLink>
+              {!user && (
+                  <>
+                    <NavLink to="/" className={navLinkClasses}>
+                      {t("pagename.home")}
+                    </NavLink>
+                    <NavLink to="/about" className={navLinkClasses}>
+                      {t("pagename.about")}
+                    </NavLink>
+                  </>
               )}
             </nav>
 
@@ -122,7 +123,7 @@ function Header({ user }) {
                       <span className="font-semibold text-gray-800">
                     {user.firstName} {user.lastName}
                   </span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
                     {formatRole(user?.role?.toString())}
                   </span>
                     </div>
@@ -210,20 +211,24 @@ function Header({ user }) {
 
         {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-3 pb-5 space-y-2 shadow-lg">
-              <NavLink
-                  to="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={mobileNavLinkClasses}
-              >
-                {t("pagename.home")}
-              </NavLink>
-              <NavLink
-                  to="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={mobileNavLinkClasses}
-              >
-                {t("pagename.about")}
-              </NavLink>
+              {!user && (
+                  <>
+                    <NavLink
+                        to="/"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.home")}
+                    </NavLink>
+                    <NavLink
+                        to="/about"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.about")}
+                    </NavLink>
+                  </>
+              )}
               {isEtudiant && (
                   <NavLink
                       to="/etudiant"
