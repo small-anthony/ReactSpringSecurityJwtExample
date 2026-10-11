@@ -74,15 +74,12 @@ function Header({ user }) {
                 {t("pagename.about")}
               </NavLink>
               {isEtudiant && (
-                  <>
-                    <NavLink to="/etudiant" className={navLinkClasses}>
-                        {t("pagename.etudiant")}
-                    </NavLink>
-                    <NavLink to="/etudiant/offres" className={navLinkClasses}>
-                        {t("pagename.offres_stages")}
-                    </NavLink>
-                  </>
+                  <NavLink to="/etudiant" className={navLinkClasses}>
+                    {t("pagename.offres_stages")}
+                  </NavLink>
               )}
+
+
               {isEmployeur && (
                   <NavLink to="/employeur" className={navLinkClasses}>
                     {t("pagename.voir_offres")}
@@ -227,24 +224,15 @@ function Header({ user }) {
               >
                 {t("pagename.about")}
               </NavLink>
-                {isEtudiant && (
-                    <>
-                      <NavLink
-                          to="/etudiant"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={mobileNavLinkClasses}
-                      >
-                          {t("pagename.etudiant")}
-                      </NavLink>
-                      <NavLink
-                          to="/etudiant/offres"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={mobileNavLinkClasses}
-                      >
-                          {t("pagename.offres_stages")}
-                      </NavLink>
-                    </>
-                )}
+              {isEtudiant && (
+                  <NavLink
+                      to="/etudiant"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={mobileNavLinkClasses}
+                  >
+                    {t("pagename.offres_stages")}
+                  </NavLink>
+              )}
               {isEmployeur && (
                   <NavLink
                       to="/employeur"

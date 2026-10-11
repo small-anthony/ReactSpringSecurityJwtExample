@@ -21,6 +21,7 @@ import {
     FileText,
     CheckCircle2
 } from "lucide-react";
+import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
@@ -143,10 +144,6 @@ export default function OffreStagesEtudiant() {
         return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
     };
 
-    const hasCv = cvStatut?.hasCv;
-    const status = cvStatut?.status;
-    const motifRefus = cvStatut?.motifRefus;
-
     return (
         <div className="min-h-screen bg-slate-50/50 py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto space-y-8">
@@ -162,6 +159,8 @@ export default function OffreStagesEtudiant() {
                         {t("offres_etudiant.subtitle")}
                     </p>
                 </div>
+
+                <ModalCvEtudiant />
 
                 {loading && (
                     <div className="flex flex-col items-center justify-center py-20 space-y-4">
@@ -181,77 +180,6 @@ export default function OffreStagesEtudiant() {
 
                 {!loading && !erreur && (
                     <div className="space-y-6">
-                        {!hasCv && (
-                            <div className="bg-white p-8 rounded-2xl border border-amber-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                                        <AlertTriangle className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-gray-900">
-                                            {t("offres_etudiant.cv_manquant_title")}
-                                        </h3>
-                                        <p className="text-sm text-gray-600 mt-1 max-w-xl">
-                                            {t("offres_etudiant.cv_manquant_desc")}
-                                        </p>
-                                    </div>
-                                </div>
-                                <Link
-                                    to="/etudiant/profile"
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm rounded-xl transition shrink-0 cursor-pointer"
-                                >
-                                    <span>{t("offres_etudiant.btn_deposer_cv")}</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
-                        )}
-
-                        {hasCv && status === "EN_ATTENTE" && (
-                            <div className="bg-white p-8 rounded-2xl border border-blue-200 shadow-xs flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                    <Clock3 className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900">
-                                        {t("offres_etudiant.cv_attente_title")}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 mt-1 max-w-2xl">
-                                        {t("offres_etudiant.cv_attente_desc")}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        {hasCv && status === "REFUSE" && (
-                            <div className="bg-white p-8 rounded-2xl border border-red-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
-                                        <XCircle className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-red-900">
-                                            {t("offres_etudiant.cv_refuse_title")}
-                                        </h3>
-                                        <p className="text-sm font-semibold text-red-700 mt-1">
-                                            {motifRefus
-                                                ? t("offres_etudiant.cv_refuse_motif", { motif: motifRefus })
-                                                : t("offres_etudiant.cv_refuse_no_motif")}
-                                        </p>
-                                        <p className="text-xs text-gray-600 mt-2 max-w-xl">
-                                            {t("offres_etudiant.cv_refuse_desc")}
-                                        </p>
-                                    </div>
-                                </div>
-                                <Link
-                                    to="/etudiant/profile"
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl transition shrink-0 cursor-pointer"
-                                >
-                                    <span>{t("offres_etudiant.btn_maj_cv")}</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
-                        )}
-
                         <div className="space-y-6">
                             <div className="flex items-center gap-3 border-b border-gray-200 pb-3">
                                 <button

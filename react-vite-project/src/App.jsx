@@ -12,7 +12,7 @@ import GestionnaireHome from "./components/page/GestionnaireHome.jsx";
 import EmployeurHome from "./components/page/EmployeurHome.jsx";
 import PreposeHome from "./components/page/PreposeHome.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
-import EtudiantProfile from "./components/page/EtudiantProfile.jsx";
+import ModalCvEtudiant from "./components/modal/ModalCvEtudiant.jsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
@@ -43,23 +43,11 @@ function App() {
                         element={
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
-                                    role === "ETUDIANT" ? <EtudiantProfile /> :
-                                        <Navigate to="/" />
-                        }
-                    />
-                    <Route
-                        path="etudiant/profile"
-                        element={<Navigate to="/etudiant" replace />}
-                    />
-                    <Route
-                        path="etudiant/offres"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
                                     role === "ETUDIANT" ? <OffreStagesEtudiant /> :
                                         <Navigate to="/" />
                         }
                     />
+
                     <Route
                         path="employeur"
                         element={
