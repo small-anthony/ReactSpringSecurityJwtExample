@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -112,5 +113,31 @@ public class    EmployeurController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @PutMapping("/candidatures/{candidatureId}/accepter")
+    public ResponseEntity<Object> accepterCandidature(@PathVariable Long candidatureId, Authentication authentication) {
+        try {
+            return ResponseEntity.ok(employeurService.accepterCandidature(candidatureId, authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/candidatures/{candidatureId}/refuser")
+    public ResponseEntity<Object> refuserCandidature(@PathVariable Long candidatureId,
+                                                     @RequestBody(required = false) Map<String, String> request,
+                                                     Authentication authentication) {
+        try {
+            String message = request != null ? request.get("message") : null;
+            return ResponseEntity.ok(employeurService.refuserCandidature(candidatureId, message, authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/historique")
+    public ResponseEntity<Object> getHistorique(Authentication authentication) {
+        return ResponseEntity.ok(employeurService.getHistorique(authentication.getName()));
     }
 }

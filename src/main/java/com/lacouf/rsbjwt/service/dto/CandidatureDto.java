@@ -10,7 +10,9 @@ import java.util.List;
 public record CandidatureDto(int id,
                              StatutCandidature statut,
                              LocalDateTime dateCandidature,
-                             EtudiantDto etudiant) {
+                             EtudiantDto etudiant,
+                             String messageReponse,
+                             LocalDateTime dateDecision) {
 
     public static CandidatureDto create(Candidature candidature) {
         Etudiant etudiant = candidature.getEtudiant();
@@ -18,7 +20,9 @@ public record CandidatureDto(int id,
                 candidature.getId().intValue(),
                 candidature.getStatut(),
                 candidature.getDateCandidature(),
-                EtudiantDto.create(etudiant)
+                EtudiantDto.create(etudiant),
+                candidature.getMessageReponse(),
+                candidature.getDateDecision()
         );
     }
 

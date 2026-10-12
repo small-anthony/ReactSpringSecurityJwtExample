@@ -82,6 +82,55 @@ export async function getCvCandidat(candidatureId, authHeader) {
 
   return response.blob();
 }
+
+export async function accepterCandidature(candidatureId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/accepter`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "defaultError");
+  }
+
+  return response.json();
+}
+
+export async function refuserCandidature(candidatureId, message, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/refuser`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "defaultError");
+  }
+
+  return response.json();
+}
+
+export async function getHistoriqueDecisions(authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/historique`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "defaultError");
+  }
+
+  return response.json();
+}
+
 export const fetchOffresEnAttente = async (authHeader) => {
   const response = await fetch(`${BASE_URL}/gestionnaire/offre/pending`, {
     method: "GET",

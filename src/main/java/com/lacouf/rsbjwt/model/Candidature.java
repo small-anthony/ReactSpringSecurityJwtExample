@@ -26,6 +26,11 @@ public class Candidature {
     @Enumerated(EnumType.STRING)
     private StatutCandidature statut = StatutCandidature.EN_ATTENTE;
 
+    @Column(length = 1000)
+    private String messageReponse;
+
+    private LocalDateTime dateDecision;
+
     public Candidature() {}
 
     public Candidature(Etudiant etudiant, OffreStage offreStage) {
@@ -39,4 +44,10 @@ public class Candidature {
     public LocalDateTime getDateCandidature() { return dateCandidature; }
     public StatutCandidature getStatut() { return statut; }
     public void setStatut(StatutCandidature statut) { this.statut = statut; }
+
+    public String getMessageReponse() { return messageReponse; }
+    public void setMessageReponse(String messageReponse) { this.messageReponse = messageReponse; }
+
+    public LocalDateTime getDateDecision() { return dateDecision; }
+    public void setDateDecision(LocalDateTime dateDecision) { this.dateDecision = dateDecision; }
 }

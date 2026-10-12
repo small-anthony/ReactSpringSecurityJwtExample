@@ -8,12 +8,17 @@ import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.HistoriqueCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
+import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
 
 @Service
 public class EmployeurService {
@@ -21,13 +26,15 @@ public class EmployeurService {
     private final EmployeurRepository employeurRepository;
     private final OffreStageRepository offreStageRepository;
     private final CandidatureRepository candidatureRepository;
+    private final HistoriqueCandidatureRepository historiqueRepository;
 
     public EmployeurService(UserAppRepository userAppRepository, EmployeurRepository employeurRepository, OffreStageRepository offreStageRepository,
-                            CandidatureRepository candidatureRepository) {
+                            CandidatureRepository candidatureRepository, HistoriqueCandidatureRepository historiqueRepository) {
         this.userAppRepository = userAppRepository;
         this.employeurRepository = employeurRepository;
         this.offreStageRepository = offreStageRepository;
         this.candidatureRepository = candidatureRepository;
+        this.historiqueRepository = historiqueRepository;
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
@@ -115,5 +122,47 @@ public class EmployeurService {
         }
 
         return cv.getData();
+    }
+
+    public CandidatureDto accepterCandidature(Long candidatureId, String emailEmployeur) throws Exception {
+        return repondre(candidatureId, emailEmployeur, StatutCandidature.ACCEPTEE, null);
+    }
+
+    public CandidatureDto refuserCandidature(Long candidatureId, String message, String emailEmployeur) throws Exception {
+        String messageNettoye = (message == null || message.trim().isEmpty()) ? null : message.trim();
+        return repondre(candidatureId, emailEmployeur, StatutCandidature.REFUSEE, messageNettoye);
+    }
+
+    public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur) {
+        return historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream()
+                .map(HistoriqueCandidatureDto::create)
+                .collect(Collectors.toList());
+    }
+
+    private CandidatureDto repondre(Long candidatureId, String emailEmployeur,
+                                    StatutCandidature nouveauStatut, String message) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        Candidature candidature = candidatureRepository.findByIdAndOffreStageEmployeur(candidatureId, employeur)
+                .orElseThrow(() -> new Exception("Candidature introuvable pour cet employeur"));
+
+        if (candidature.getStatut() != StatutCandidature.EN_ATTENTE) {
+            throw new Exception("Cette candidature a déjà reçu une réponse");
+        }
+
+        StatutCandidature ancienStatut = candidature.getStatut();
+        candidature.setStatut(nouveauStatut);
+        candidature.setMessageReponse(message);
+        candidature.setDateDecision(LocalDateTime.now());
+        Candidature sauvegardee = candidatureRepository.save(candidature);
+
+        historiqueRepository.save(
+                new HistoriqueCandidature(sauvegardee, ancienStatut, nouveauStatut, message, emailEmployeur));
+
+        return CandidatureDto.create(sauvegardee);
     }
 }
