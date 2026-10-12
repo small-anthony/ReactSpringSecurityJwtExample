@@ -80,7 +80,6 @@ describe("CandidaturesOffre", () => {
 
         expect(container).not.toBeEmptyDOMElement();
         expect(screen.getByText("candidatures_offre.title")).toBeInTheDocument();
-        // On attend la fin du chargement pour que la page soit complètement stable
         await screen.findByText("candidatures_offre.no_candidates");
     });
 
