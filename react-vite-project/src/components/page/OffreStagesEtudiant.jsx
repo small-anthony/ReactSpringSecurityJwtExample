@@ -284,12 +284,14 @@ export default function OffreStagesEtudiant() {
                                     >
                                         <div className="space-y-3">
                                             <div className="flex flex-wrap items-center gap-2">
-                                                {mesCandidaturesIds.includes(offre.id) && (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                                        <span>{t("offres_etudiant.applied_badge")}</span>
-                                                    </span>
-                                                )}
+                                                {mesCandidaturesIds.includes(offre.id) &&
+                                                    (!candidaturesParOffre[offre.id] ||
+                                                        candidaturesParOffre[offre.id].statut === "EN_ATTENTE") && (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                                            <span>{t("offres_etudiant.applied_badge")}</span>
+                                                        </span>
+                                                    )}
                                                 {offre.discipline && (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">
                                                         <GraduationCap className="w-3 h-3" />
