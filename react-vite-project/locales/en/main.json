@@ -1,5 +1,11 @@
 {
   "sitename": "Stagify",
+  "common": {
+    "cancel": "Cancel",
+    "submitting": "Processing...",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
   "pagename": {
     "home": "Home",
     "about": "About us",
@@ -10,6 +16,7 @@
     "signup_professeur": "Register as teacher",
     "etudiant": "My profile",
     "offres_stages": "Internship offers",
+    "convocations": "Interview Invitations",
     "voir_offres": "View offers",
     "logout": "Logout"
   },
@@ -260,7 +267,16 @@
     "refused_no_motif": "No specific reason provided.",
     "refused_desc": "Please make the necessary changes to your document and submit your new version below.",
     "upload_corrected_title": "Upload your revised resume",
-    "registered_desc": "Your document is securely stored in our system."
+    "registered_desc": "Your document is securely stored in our system.",
+    "interviews_title": "My Internship Interviews",
+    "interviews_subtitle": "Confirmed interviews and pending invitations",
+    "btn_manage_convocations": "Manage my invitations",
+    "confirmed_badge": "Confirmed ✓",
+    "no_interviews": "No confirmed interviews yet. Go to the",
+    "no_interviews_link": "Interviews",
+    "no_interviews_end": "tab to respond to your invitations.",
+    "default_interview_title": "Internship interview",
+    "location_unspecified": "Location not specified"
   },
   "employeur_home": {
     "title": "My internship offers",
@@ -270,6 +286,12 @@
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",
     "status": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
+      "REFUSE": "Refused"
+    },
+    "view_candidates": "View applications",
+    "statuts": {
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
@@ -300,7 +322,80 @@
   "sidepanel": {
     "title": "Manager Workspace",
     "cvs": "Resume Approvals",
-    "offres": "Offer Approvals"
+    "offres": "Offer Approvals",
+    "convocations": "Interview Invitations"
+  },
+  "convocation": {
+    "title": "My Interview Invitations",
+    "subtitle": "Manage interview invitations sent by your prospective employers.",
+    "card_tag": "Interview invitation",
+    "default_position": "Internship interview",
+    "partner_company": "Partner company",
+    "datetime_label": "Interview Date & Time",
+    "virtual_interview": "Virtual interview",
+    "location_label": "Interview location",
+    "location_unspecified": "Location not specified",
+    "employer_instructions": "Employer instructions:",
+    "counter_proposal_label": "Your proposed reschedule:",
+    "justification_label": "Justification:",
+    "refusal_reason_label": "Refusal reason provided:",
+    "expired_notice": "The scheduled date for this interview has passed. Status is now awaiting response from employer.",
+    "btn_refresh": "Refresh",
+    "btn_accept": "Accept interview",
+    "btn_refuse": "Decline",
+    "btn_propose_date": "Suggest another date",
+    "processing": "Processing...",
+    "loading": "Loading your invitations...",
+    "empty_title": "No interview invitations",
+    "empty_desc_all": "You have not received any interview invitations for your applications yet.",
+    "empty_desc_filter": "No invitations match the selected filter.",
+    "filter_all": "All",
+    "filter_pending": "Pending",
+    "filter_confirmed": "Confirmed",
+    "filter_conflicts": "Schedule conflicts",
+    "filter_refused": "Declined",
+    "success_accepted": "Congratulations! The interview has been confirmed and added to your profile.",
+    "success_refused": "The invitation was declined. The employer has been notified.",
+    "success_conflict": "Your reschedule proposal has been sent to the employer!",
+    "status": {
+      "en_attente": "Awaiting your reply",
+      "acceptee": "Accepted",
+      "refusee": "Declined",
+      "conflit": "Schedule Conflict",
+      "en_attente_reponse": "Awaiting response"
+    },
+    "modal_refus": {
+      "title": "Decline interview invitation",
+      "warning": "Are you sure you want to decline this interview invitation? The employer will be notified immediately.",
+      "motif_label": "Reason for refusal (optional)",
+      "motif_placeholder": "Ex: Already accepted another offer, unavailable...",
+      "btn_confirm": "Confirm refusal"
+    },
+    "modal_conflit": {
+      "title": "Report schedule conflict",
+      "description": "Suggest another date and time to the employer if you are not available at the scheduled time.",
+      "initial_date": "Initially scheduled date:",
+      "new_date_label": "Proposed new date and time *",
+      "justification_label": "Justification / Note for employer",
+      "justification_placeholder": "Ex: I have a university exam or class at that time...",
+      "btn_submit": "Send proposal",
+      "error_date_required": "Please select a new date and time.",
+      "error_date_past": "The proposed date must be in the future."
+    }
+  },
+  "gestionnaire_convocations": {
+    "title": "Interview Invitations Tracking",
+    "subtitle": "Overview of all students invited to interviews by employers.",
+    "total": "Total: {{count}} invitation",
+    "total_plural": "Total: {{count}} invitations",
+    "loading": "Loading interview invitations...",
+    "empty": "No interview invitations recorded at this time.",
+    "th_student": "Student",
+    "th_position_company": "Position & Company",
+    "th_datetime": "Date & Time",
+    "th_location": "Location / Link",
+    "th_status": "Status",
+    "matricule": "Student ID:"
   },
   "gestionnaire_home": {
     "title": "Welcome to your Manager Workspace",

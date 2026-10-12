@@ -5,7 +5,8 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStatutCv } from "../../services/api/EtudiantService.js";
 import { checkCvExists } from "../../services/api/CvEtudiantAPI.jsx";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Clock3, XCircle, ArrowRight, Briefcase, UploadCloud } from "lucide-react";
+import { CheckCircle2, Clock3, XCircle, ArrowRight, Briefcase, UploadCloud, Calendar } from "lucide-react";
+import { getConvocationsAcceptees } from "../../services/api/ConvocationAPI.js";
 
 export default function EtudiantProfile() {
     const { t } = useTranslation("main");
@@ -14,6 +15,7 @@ export default function EtudiantProfile() {
     const [cvExiste, setCvExiste] = useState(null);
     const [erreur, setErreur] = useState(null);
     const [afficherUploadModal, setAfficherUploadModal] = useState(false);
+    const [entrevuesAcceptees, setEntrevuesAcceptees] = useState([]);
 
     const chargerStatut = async () => {
         try {
@@ -22,6 +24,13 @@ export default function EtudiantProfile() {
             const statut = await getStatutCv(authHeader);
             setCvStatut(statut);
             setCvExiste(Boolean(statut?.hasCv));
+
+            try {
+                const entrevues = await getConvocationsAcceptees(authHeader);
+                setEntrevuesAcceptees(entrevues);
+            } catch {
+                // Silencieux si aucune convocation
+            }
         } catch (error) {
             try {
                 const exists = await checkCvExists();
@@ -192,14 +201,69 @@ export default function EtudiantProfile() {
                     </div>
                 )}
 
-                {cvExiste && !status && (
-                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
-                        <h2 className="text-xl font-semibold mb-2">{t("etudiant_profile.cv_uploaded")}</h2>
-                        <p className="text-sm text-gray-600">
-                            {t("etudiant_profile.registered_desc")}
-                        </p>
+                {/* Section : Mes entrevues confirmées */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <Calendar className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">
+                                    {t("etudiant_profile.interviews_title", { defaultValue: "Mes entrevues de stage" })}
+                                </h3>
+                                <p className="text-xs text-gray-500">
+                                    {t("etudiant_profile.interviews_subtitle", { defaultValue: "Entrevues confirmées et convocations en attente" })}
+                                </p>
+                            </div>
+                        </div>
+
+                        <Link
+                            to="/etudiant/convocations"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                        >
+                            <span>{t("etudiant_profile.btn_manage_convocations", { defaultValue: "Gérer mes convocations" })}</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
                     </div>
-                )}
+
+                    {entrevuesAcceptees.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                            {entrevuesAcceptees.map((entrevue) => (
+                                <div
+                                    key={entrevue.id}
+                                    className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200 space-y-1.5"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-emerald-800 uppercase">
+                                            {t("etudiant_profile.confirmed_badge", { defaultValue: "Confirmée ✓" })}
+                                        </span>
+                                        <span className="text-[11px] text-gray-500">
+                                            {entrevue.nomEntreprise}
+                                        </span>
+                                    </div>
+                                    <p className="font-bold text-sm text-gray-900">
+                                        {entrevue.titrePoste || t("etudiant_profile.default_interview_title", { defaultValue: "Entrevue de stage" })}
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                        📅 {entrevue.dateHeure ? new Date(entrevue.dateHeure).toLocaleString(t("locale", { defaultValue: "fr-CA" })) : "N/D"}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate" title={entrevue.lieu}>
+                                        📍 {entrevue.lieu || t("etudiant_profile.location_unspecified", { defaultValue: "Lieu non précisé" })}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xs text-gray-500 italic pt-1">
+                            {t("etudiant_profile.no_interviews", { defaultValue: "Aucune entrevue confirmée pour l'instant. Rendez-vous dans l'onglet" })}{" "}
+                            <Link to="/etudiant/convocations" className="text-blue-600 font-semibold underline">
+                                {t("etudiant_profile.no_interviews_link", { defaultValue: "Convocations" })}
+                            </Link>{" "}
+                            {t("etudiant_profile.no_interviews_end", { defaultValue: "pour répondre à vos invitations." })}
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
     );

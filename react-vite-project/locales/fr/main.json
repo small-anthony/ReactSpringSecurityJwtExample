@@ -1,5 +1,11 @@
 {
   "sitename": "Stagify",
+  "common": {
+    "cancel": "Annuler",
+    "submitting": "Traitement...",
+    "close": "Fermer",
+    "confirm": "Confirmer"
+  },
   "pagename": {
     "home": "Accueil",
     "about": "À propos",
@@ -10,6 +16,7 @@
     "signup_professeur": "S'inscrire comme professeur",
     "etudiant": "Mon profil",
     "offres_stages": "Offres de stages",
+    "convocations": "Convocations",
     "voir_offres": "Voir offres",
     "logout": "Déconnexion"
   },
@@ -260,7 +267,16 @@
     "refused_no_motif": "Aucun motif spécifique fourni.",
     "refused_desc": "Veuillez apporter les corrections nécessaires à votre document puis déposez votre nouvelle version ci-dessous.",
     "upload_corrected_title": "Déposer votre CV corrigé",
-    "registered_desc": "Votre document est bien enregistré dans notre système."
+    "registered_desc": "Votre document est bien enregistré dans notre système.",
+    "interviews_title": "Mes entrevues de stage",
+    "interviews_subtitle": "Entrevues confirmées et convocations en attente",
+    "btn_manage_convocations": "Gérer mes convocations",
+    "confirmed_badge": "Confirmée ✓",
+    "no_interviews": "Aucune entrevue confirmée pour l'instant. Rendez-vous dans l'onglet",
+    "no_interviews_link": "Convocations",
+    "no_interviews_end": "pour répondre à vos invitations.",
+    "default_interview_title": "Entrevue de stage",
+    "location_unspecified": "Lieu non précisé"
   },
   "employeur_home": {
     "title": "Mes offres de stage",
@@ -296,12 +312,91 @@
       "REFUSEE": "Refusée",
       "EN_ATTENTE_REPONSE": "En attente de réponse"
     },
-    "no_offers": "Aucune offre de stage n'a encore été créée."
+    "no_offers": "Aucune offre de stage n'a encore été créée.",
+    "motif_refus": "Motif du refus :",
+    "status": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
+    }
   },
   "sidepanel": {
     "title": "Tableau de bord",
     "cvs": "Approbations des CVs",
-    "offres": "Approbations des offres"
+    "offres": "Approbations des offres",
+    "convocations": "Convocations d'entrevues"
+  },
+  "convocation": {
+    "title": "Mes Convocations d'Entrevue",
+    "subtitle": "Gérez les invitations d'entrevues envoyées par vos employeurs potentiels.",
+    "card_tag": "Convocation d'entrevue",
+    "default_position": "Entrevue de stage",
+    "partner_company": "Entreprise partenaire",
+    "datetime_label": "Date & Heure de l'entrevue",
+    "virtual_interview": "Entrevue virtuelle",
+    "location_label": "Lieu de l'entrevue",
+    "location_unspecified": "Lieu non précisé",
+    "employer_instructions": "Instructions de l'employeur :",
+    "counter_proposal_label": "Votre contre-proposition :",
+    "justification_label": "Justification :",
+    "refusal_reason_label": "Motif du refus transmis :",
+    "expired_notice": "La date de cette entrevue est maintenant échue. Le statut est passé en attente de la réponse de l'employeur.",
+    "btn_refresh": "Actualiser",
+    "btn_accept": "Accepter l'entrevue",
+    "btn_refuse": "Refuser",
+    "btn_propose_date": "Proposer une autre date",
+    "processing": "Traitement...",
+    "loading": "Chargement de vos convocations...",
+    "empty_title": "Aucune convocation",
+    "empty_desc_all": "Vous n'avez pas encore reçu de convocation d'entrevue pour vos candidatures.",
+    "empty_desc_filter": "Aucune convocation ne correspond au filtre sélectionné.",
+    "filter_all": "Toutes",
+    "filter_pending": "En attente",
+    "filter_confirmed": "Confirmées",
+    "filter_conflicts": "Conflits d'horaire",
+    "filter_refused": "Refusées",
+    "success_accepted": "Félicitations ! L'entrevue a été confirmée et ajoutée à votre profil.",
+    "success_refused": "La convocation a été refusée. L'employeur en a été notifié.",
+    "success_conflict": "Votre proposition de nouvelle date a été envoyée avec succès à l'employeur !",
+    "status": {
+      "en_attente": "En attente de votre réponse",
+      "acceptee": "Acceptée",
+      "refusee": "Refusée",
+      "conflit": "Conflit d'horaire",
+      "en_attente_reponse": "En attente de réponse"
+    },
+    "modal_refus": {
+      "title": "Refuser la convocation",
+      "warning": "Êtes-vous certain de vouloir refuser cette convocation d'entrevue ? L'employeur en sera immédiatement informé.",
+      "motif_label": "Motif du refus (optionnel)",
+      "motif_placeholder": "Ex: J'ai déjà accepté une autre offre, indisponibilité...",
+      "btn_confirm": "Confirmer le refus"
+    },
+    "modal_conflit": {
+      "title": "Signaler un conflit d'horaire",
+      "description": "Proposez une autre plage horaire à l'employeur si vous n'êtes pas disponible à la date prévue.",
+      "initial_date": "Date initiale prévue :",
+      "new_date_label": "Nouvelle date et heure suggérées *",
+      "justification_label": "Justification / Explication pour l'employeur",
+      "justification_placeholder": "Ex: J'ai un examen universitaire ou un cours à cette heure-là...",
+      "btn_submit": "Envoyer la proposition",
+      "error_date_required": "Veuillez sélectionner une nouvelle date et heure.",
+      "error_date_past": "La date proposée doit obligatoirement être dans le futur."
+    }
+  },
+  "gestionnaire_convocations": {
+    "title": "Suivi des Convocations en Entrevue",
+    "subtitle": "Vue d'ensemble de tous les étudiants convoqués en entrevue par les employeurs.",
+    "total": "Total : {{count}} convocation",
+    "total_plural": "Total : {{count}} convocations",
+    "loading": "Chargement des convocations...",
+    "empty": "Aucune convocation d'entrevue enregistrée pour le moment.",
+    "th_student": "Étudiant",
+    "th_position_company": "Poste & Entreprise",
+    "th_datetime": "Date & Heure",
+    "th_location": "Lieu / Lien",
+    "th_status": "Statut",
+    "matricule": "Matricule :"
   },
   "gestionnaire_home": {
     "title": "Bienvenue dans votre Espace Gestionnaire",
@@ -321,6 +416,10 @@
       "matricule": "Matricule",
       "pdf": "Consulter le document PDF",
       "pdf_title": "Visualisation du CV",
+      "reason": "Motif du refus",
+      "explain": "Veuillez expliquer pourquoi ce CV est refusé...",
+      "cancel": "Annuler",
+      "confirm": "Confirmer le refus",
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF"

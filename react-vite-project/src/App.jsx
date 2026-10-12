@@ -17,6 +17,8 @@ import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
+import EtudiantConvocations from "./components/page/EtudiantConvocations.jsx";
+import GestionnaireConvocations from "./components/page/GestionnaireConvocations.jsx";
 
 
 function App() {
@@ -57,6 +59,15 @@ function App() {
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "ETUDIANT" ? <OffreStagesEtudiant /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="etudiant/convocations"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "ETUDIANT" ? <EtudiantConvocations /> :
                                         <Navigate to="/" />
                         }
                     />
@@ -120,6 +131,15 @@ function App() {
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "GESTIONNAIRE" ? <ApprobationCvs /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/convocations"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <GestionnaireConvocations /> :
                                         <Navigate to="/" />
                         }
                     />

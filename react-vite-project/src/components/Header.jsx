@@ -81,6 +81,9 @@ function Header({ user }) {
                     <NavLink to="/etudiant/offres" className={navLinkClasses}>
                         {t("pagename.offres_stages")}
                     </NavLink>
+                    <NavLink to="/etudiant/convocations" className={navLinkClasses}>
+                        {t("pagename.convocations", { defaultValue: "Convocations" })}
+                    </NavLink>
                   </>
               )}
               {isEmployeur && (
@@ -242,6 +245,13 @@ function Header({ user }) {
                           className={mobileNavLinkClasses}
                       >
                           {t("pagename.offres_stages")}
+                      </NavLink>
+                      <NavLink
+                          to="/etudiant/convocations"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={mobileNavLinkClasses}
+                      >
+                          {t("pagename.convocations", { defaultValue: "Convocations" })}
                       </NavLink>
                     </>
                 )}
