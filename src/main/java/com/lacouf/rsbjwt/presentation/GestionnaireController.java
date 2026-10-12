@@ -3,10 +3,13 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
-import com.lacouf.rsbjwt.service.GestionnaireService;
-import com.lacouf.rsbjwt.service.dto.CvDto;
+import com.lacouf.rsbjwt.service.ConvocationService;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +17,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/gestionnaire"})
+@RequestMapping({ "/gestionnaire" })
 public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
+    private final ConvocationService convocationService;
+
+    @Autowired
+    public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
+        this.gestionnaireService = gestionnaireService;
+        this.convocationService = convocationService;
+    }
 
     public GestionnaireController(GestionnaireService gestionnaireService) {
-        this.gestionnaireService = gestionnaireService;
+        this(gestionnaireService, null);
     }
 
     @PutMapping("/cv/accepter")
@@ -88,5 +98,10 @@ public class GestionnaireController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/convocations")
+    public ResponseEntity<List<ConvocationDto>> getToutesConvocations() {
+        return ResponseEntity.ok(convocationService.getToutesConvocations());
     }
 }

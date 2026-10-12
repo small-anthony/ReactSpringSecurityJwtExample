@@ -15,18 +15,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.lacouf.rsbjwt.presentation.RequestDto.CreationConvocationRequest;
+import com.lacouf.rsbjwt.service.ConvocationService;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 import java.util.List;
 
 @RestController
 @RequestMapping("/employeur")
-public class    EmployeurController {
+public class EmployeurController {
     private final UserAppService userService;
     private final EmployeurService employeurService;
+    private final ConvocationService convocationService;
 
-    public EmployeurController(UserAppService userService, EmployeurService employeurService) {
+    @Autowired
+    public EmployeurController(UserAppService userService, EmployeurService employeurService, ConvocationService convocationService) {
         this.userService = userService;
         this.employeurService = employeurService;
+        this.convocationService = convocationService;
+    }
+
+    public EmployeurController(UserAppService userService, EmployeurService employeurService) {
+        this(userService, employeurService, null);
     }
 
     @PostMapping("/inscription")
@@ -112,5 +123,29 @@ public class    EmployeurController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/candidatures/{candidatureId}/convoquer")
+    public ResponseEntity<Object> convoquerCandidat(
+            @PathVariable Long candidatureId,
+            @RequestBody CreationConvocationRequest request,
+            Authentication authentication) {
+        try {
+            ConvocationDto convocationDto = convocationService.creerConvocation(
+                    candidatureId,
+                    request.getDateHeure(),
+                    request.getLieu(),
+                    request.getMessageEmployeur(),
+                    authentication.getName()
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(convocationDto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/convocations")
+    public ResponseEntity<List<ConvocationDto>> getConvocationsEmployeur(Authentication authentication) {
+        return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
     }
 }

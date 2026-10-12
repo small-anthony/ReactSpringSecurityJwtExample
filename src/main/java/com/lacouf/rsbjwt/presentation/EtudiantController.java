@@ -3,17 +3,20 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.StatutCvDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.ConflitHoraireRequest;
+import com.lacouf.rsbjwt.presentation.RequestDto.RefusConvocationRequest;
+import com.lacouf.rsbjwt.service.ConvocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.StatutCvDto;
 import java.util.List;
 import java.util.Map;
 
@@ -22,19 +25,30 @@ import java.util.Map;
 public class EtudiantController {
     private final UserAppService userService;
     private final EtudiantService etudiantService;
+    private final ConvocationService convocationService;
 
     @Autowired
-    public EtudiantController(UserAppService userService, EtudiantService etudiantService) {
+    public EtudiantController(UserAppService userService, EtudiantService etudiantService,
+            ConvocationService convocationService) {
         this.userService = userService;
         this.etudiantService = etudiantService;
+        this.convocationService = convocationService;
+    }
+
+    public EtudiantController(UserAppService userService, EtudiantService etudiantService) {
+        this(userService, etudiantService, null);
     }
 
     public EtudiantController(UserAppService userService) {
-        this(userService, null);
+        this(userService, null, null);
     }
 
     public EtudiantController(EtudiantService etudiantService) {
-        this(null, etudiantService);
+        this(null, etudiantService, null);
+    }
+
+    public EtudiantController(com.lacouf.rsbjwt.service.ConvocationService convocationService) {
+        this(null, null, convocationService);
     }
 
     @PostMapping("/inscription")
@@ -121,5 +135,46 @@ public class EtudiantController {
     public ResponseEntity<OffreStageDto> getOffreDetail(@PathVariable("id") Long id, Authentication authentication) {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
+    }
+
+    @GetMapping("/convocations")
+    public ResponseEntity<List<ConvocationDto>> getConvocations(Authentication authentication) {
+        return ResponseEntity.ok(convocationService.getConvocationsEtudiant(authentication.getName()));
+    }
+
+    @GetMapping("/convocations/acceptees")
+    public ResponseEntity<List<ConvocationDto>> getConvocationsAcceptees(Authentication authentication) {
+        return ResponseEntity.ok(convocationService.getConvocationsAccepteesEtudiant(authentication.getName()));
+    }
+
+    @PostMapping("/convocations/{id}/accepter")
+    public ResponseEntity<?> accepterConvocation(@PathVariable Long id, Authentication authentication) {
+        try {
+            return ResponseEntity.ok(convocationService.accepterConvocation(id, authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/convocations/{id}/refuser")
+    public ResponseEntity<?> refuserConvocation(@PathVariable Long id,
+            @RequestBody(required = false) RefusConvocationRequest request, Authentication authentication) {
+        try {
+            String motif = request != null ? request.getMotif() : null;
+            return ResponseEntity.ok(convocationService.refuserConvocation(id, authentication.getName(), motif));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/convocations/{id}/conflit")
+    public ResponseEntity<?> proposerAutreDate(@PathVariable Long id, @RequestBody ConflitHoraireRequest request,
+            Authentication authentication) {
+        try {
+            return ResponseEntity.ok(convocationService.proposerAutreDate(id, authentication.getName(),
+                    request.getNouvelleDate(), request.getMotif()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 }
