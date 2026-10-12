@@ -21,14 +21,11 @@ public class ConvocationService {
 
     private final ConvocationRepository convocationRepository;
     private final CandidatureRepository candidatureRepository;
-    private final NotificationService notificationService;
 
     public ConvocationService(ConvocationRepository convocationRepository,
-            CandidatureRepository candidatureRepository,
-            NotificationService notificationService) {
+            CandidatureRepository candidatureRepository) {
         this.convocationRepository = convocationRepository;
         this.candidatureRepository = candidatureRepository;
-        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -108,35 +105,6 @@ public class ConvocationService {
         convocation.accepter();
         convocationRepository.save(convocation);
 
-        Candidature candidature = convocation.getCandidature();
-        Etudiant etudiant = candidature != null ? candidature.getEtudiant() : null;
-        OffreStage offre = candidature != null ? candidature.getOffreStage() : null;
-        Employeur employeur = offre != null ? offre.getEmployeur() : null;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String dateFormatee = convocation.getDateHeure() != null ? convocation.getDateHeure().format(formatter) : "";
-
-        if (employeur != null && etudiant != null) {
-            notificationService.creerNotification(
-                    employeur,
-                    "Convocation acceptée",
-                    "L'étudiant " + etudiant.getFirstName() + " " + etudiant.getLastName() +
-                            " a accepté l'entrevue pour le poste '" + (offre != null ? offre.getTitre() : "")
-                            + "' prévue le " + dateFormatee + ".",
-                    "CONVOCATION_ACCEPTEE",
-                    convocation.getId());
-        }
-
-        if (etudiant != null) {
-            notificationService.creerNotification(
-                    etudiant,
-                    "Entrevue confirmée",
-                    "Votre entrevue pour le poste '" + (offre != null ? offre.getTitre() : "") +
-                            "' a été confirmée pour le " + dateFormatee + " et inscrite à votre profil.",
-                    "CONVOCATION_CONFIRMEE",
-                    convocation.getId());
-        }
-
         return ConvocationDto.fromEntity(convocation);
     }
 
@@ -150,23 +118,6 @@ public class ConvocationService {
             convocation.getCandidature().setStatut(StatutCandidature.REFUSEE);
         }
         convocationRepository.save(convocation);
-
-        Candidature candidature = convocation.getCandidature();
-        Etudiant etudiant = candidature != null ? candidature.getEtudiant() : null;
-        OffreStage offre = candidature != null ? candidature.getOffreStage() : null;
-        Employeur employeur = offre != null ? offre.getEmployeur() : null;
-
-        if (employeur != null && etudiant != null) {
-            String detailsMotif = (motif != null && !motif.trim().isEmpty()) ? " Motif : " + motif.trim() : "";
-            notificationService.creerNotification(
-                    employeur,
-                    "Convocation refusée",
-                    "L'étudiant " + etudiant.getFirstName() + " " + etudiant.getLastName() +
-                            " a refusé l'entrevue pour le poste '" + (offre != null ? offre.getTitre() : "") + "'."
-                            + detailsMotif,
-                    "CONVOCATION_REFUSEE",
-                    convocation.getId());
-        }
 
         return ConvocationDto.fromEntity(convocation);
     }
@@ -183,26 +134,6 @@ public class ConvocationService {
 
         convocation.proposerAutreDate(nouvelleDate, motif);
         convocationRepository.save(convocation);
-
-        Candidature candidature = convocation.getCandidature();
-        Etudiant etudiant = candidature != null ? candidature.getEtudiant() : null;
-        OffreStage offre = candidature != null ? candidature.getOffreStage() : null;
-        Employeur employeur = offre != null ? offre.getEmployeur() : null;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String dateFormatee = nouvelleDate.format(formatter);
-
-        if (employeur != null && etudiant != null) {
-            String detailsMotif = (motif != null && !motif.trim().isEmpty()) ? " Motif : " + motif.trim() : "";
-            notificationService.creerNotification(
-                    employeur,
-                    "Conflit d'horaire - Nouvelle date proposée",
-                    "L'étudiant " + etudiant.getFirstName() + " " + etudiant.getLastName() +
-                            " a un conflit d'horaire pour le poste '" + (offre != null ? offre.getTitre() : "") +
-                            "' et propose une nouvelle date le " + dateFormatee + "." + detailsMotif,
-                    "CONVOCATION_CONFLIT",
-                    convocation.getId());
-        }
 
         return ConvocationDto.fromEntity(convocation);
     }
@@ -229,24 +160,6 @@ public class ConvocationService {
 
         Convocation convocation = new Convocation(candidature, dateHeure, lieu, messageEmployeur);
         convocation = convocationRepository.save(convocation);
-
-        Etudiant etudiant = candidature.getEtudiant();
-        OffreStage offre = candidature.getOffreStage();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String dateFormatee = dateHeure.format(formatter);
-
-        if (etudiant != null) {
-            notificationService.creerNotification(
-                    etudiant,
-                    "Nouvelle convocation d'entrevue",
-                    "Vous avez reçu une convocation d'entrevue de "
-                            + (offre != null ? offre.getNomEntreprise() : "l'employeur") +
-                            " pour le poste '" + (offre != null ? offre.getTitre() : "") + "' le " + dateFormatee + " ("
-                            + lieu + ").",
-                    "CONVOCATION_NOUVELLE",
-                    convocation.getId());
-        }
 
         return ConvocationDto.fromEntity(convocation);
     }

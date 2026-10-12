@@ -21,7 +21,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         private final EmployeurRepository employeurRepository;
         private final CandidatureRepository candidatureRepository;
         private final ConvocationRepository convocationRepository;
-        private final NotificationRepository notificationRepository;
         private final PasswordEncoder passwordEncoder;
 
         public ReactSpringSecurityJwtApplication(
@@ -31,14 +30,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         EmployeurRepository employeurRepository,
                         CandidatureRepository candidatureRepository,
                         ConvocationRepository convocationRepository,
-                        NotificationRepository notificationRepository,
                         PasswordEncoder passwordEncoder) {
                 this.gestionnaireRepository = gestionnaireRepository;
                 this.etudiantRepository = etudiantRepository;
                 this.employeurRepository = employeurRepository;
                 this.candidatureRepository = candidatureRepository;
                 this.convocationRepository = convocationRepository;
-                this.notificationRepository = notificationRepository;
                 this.passwordEncoder = passwordEncoder;
         }
 
@@ -126,14 +123,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "En ligne - Microsoft Teams",
                                         "Entrevue technique de 45 minutes pour évaluer les compétences en React et Spring Boot.");
                         convocationRepository.save(conv1);
-
-                        notificationRepository.save(
-                                        new Notification(
-                                                        etudiant,
-                                                        "Nouvelle convocation d'entrevue",
-                                                        "Vous avez reçu une convocation d'entrevue de CGI Inc. pour le poste 'Développeur Full Stack Web'.",
-                                                        "CONVOCATION_NOUVELLE",
-                                                        conv1.getId()));
 
                         Convocation conv2 = new Convocation(
                                         cand2,

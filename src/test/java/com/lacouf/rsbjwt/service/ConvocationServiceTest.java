@@ -34,9 +34,6 @@ class ConvocationServiceTest {
     @Mock
     private CandidatureRepository candidatureRepository;
 
-    @Mock
-    private NotificationService notificationService;
-
     @InjectMocks
     private ConvocationService convocationService;
 
@@ -88,8 +85,6 @@ class ConvocationServiceTest {
         assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
 
         verify(convocationRepository).save(convocation);
-        verify(notificationService).creerNotification(eq(employeur), eq("Convocation acceptée"), anyString(), eq("CONVOCATION_ACCEPTEE"), eq(1L));
-        verify(notificationService).creerNotification(eq(etudiant), eq("Entrevue confirmée"), anyString(), eq("CONVOCATION_CONFIRMEE"), eq(1L));
     }
 
     @Test
@@ -122,7 +117,6 @@ class ConvocationServiceTest {
         assertEquals(StatutCandidature.REFUSEE, candidature.getStatut());
 
         verify(convocationRepository).save(convocation);
-        verify(notificationService).creerNotification(eq(employeur), eq("Convocation refusée"), contains("Pas disponible"), eq("CONVOCATION_REFUSEE"), eq(1L));
     }
 
     @Test
@@ -141,7 +135,6 @@ class ConvocationServiceTest {
         assertEquals("Examen ce jour-là", convocation.getMotifEtudiant());
 
         verify(convocationRepository).save(convocation);
-        verify(notificationService).creerNotification(eq(employeur), eq("Conflit d'horaire - Nouvelle date proposée"), contains("Examen ce jour-là"), eq("CONVOCATION_CONFLIT"), eq(1L));
     }
 
     @Test
@@ -170,8 +163,6 @@ class ConvocationServiceTest {
         assertEquals(99L, dto.getId());
         assertEquals("Virtuel", dto.getLieu());
         assertEquals(StatutConvocation.EN_ATTENTE, dto.getStatut());
-
-        verify(notificationService).creerNotification(eq(etudiant), eq("Nouvelle convocation d'entrevue"), anyString(), eq("CONVOCATION_NOUVELLE"), eq(99L));
     }
 
     @Test
