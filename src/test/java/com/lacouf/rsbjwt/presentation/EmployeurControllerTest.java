@@ -1,11 +1,12 @@
-
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
+import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,14 +51,14 @@ public class EmployeurControllerTest {
         EmployeurDto employeurDto = mock(EmployeurDto.class);
 
         when(userAppService.registerEmployeur(
-                        "Jimmy",
-                        "Donaldson",
-                        "test@gmail.com",
-                        "Entreprise",
-                        "514 111 1111",
-                        "password",
-                        "password"))
-                        .thenReturn(employeurDto);
+                "Jimmy",
+                "Donaldson",
+                "test@gmail.com",
+                "Entreprise",
+                "514 111 1111",
+                "password",
+                "password"))
+                .thenReturn(employeurDto);
 
 //        ACT
         ResponseEntity<Object> response = employeurController.signUpEmployeur(request);
@@ -149,7 +151,7 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         List<OffreStageDto> offres = List.of(
-                        new OffreStageDto(1, "Titre", "Desc", "Ent", StatusAcceptation.EN_ATTENTE, ""));
+                new OffreStageDto(1, "Titre", "Desc", "Ent", StatusAcceptation.EN_ATTENTE, ""));
         when(employeurService.getOffres("employeur@entreprise.com")).thenReturn(offres);
 
 //        ACT
@@ -167,7 +169,7 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         when(employeurService.getOffres("employeur@entreprise.com"))
-                        .thenThrow(new Exception("Utilisateur non trouvé"));
+                .thenThrow(new Exception("Utilisateur non trouvé"));
 
 //        ACT
         ResponseEntity<Object> response = employeurController.getOffres(authentication);
@@ -233,5 +235,100 @@ public class EmployeurControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("CV introuvable", response.getBody());
+    }
+
+    @Test
+    void accepterCandidature_shouldReturnOkAndDto() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.ACCEPTEE, LocalDateTime.now(), null, null, LocalDateTime.now());
+        when(employeurService.accepterCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
+//        ACT
+        ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void accepterCandidature_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        when(employeurService.accepterCandidature(1L, "employeur@entreprise.com"))
+                .thenThrow(new Exception("Cette candidature a déjà reçu une réponse"));
+//        ACT
+        ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Cette candidature a déjà reçu une réponse", response.getBody());
+    }
+
+    @Test
+    void refuserCandidature_avecMessage_shouldReturnOkAndDto() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        Map<String, String> request = new HashMap<>();
+        request.put("message", "Profil non retenu");
+
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, "Profil non retenu", LocalDateTime.now());
+        when(employeurService.refuserCandidature(1L, "Profil non retenu", "employeur@entreprise.com")).thenReturn(dto);
+//        ACT
+        ResponseEntity<Object> response = employeurController.refuserCandidature(1L, request, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void refuserCandidature_sansCorps_shouldAppelerLeServiceAvecMessageNul() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, null, LocalDateTime.now());
+        when(employeurService.refuserCandidature(1L, null, "employeur@entreprise.com")).thenReturn(dto);
+//        ACT
+        ResponseEntity<Object> response = employeurController.refuserCandidature(1L, null, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void refuserCandidature_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        when(employeurService.refuserCandidature(1L, null, "employeur@entreprise.com"))
+                .thenThrow(new Exception("Candidature introuvable pour cet employeur"));
+//        ACT
+        ResponseEntity<Object> response = employeurController.refuserCandidature(1L, null, authentication);
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Candidature introuvable pour cet employeur", response.getBody());
+    }
+
+    @Test
+    void getHistorique_shouldReturnOkAndList() {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        List<HistoriqueCandidatureDto> historique = List.of(
+                new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
+                        StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
+        when(employeurService.getHistorique("employeur@entreprise.com")).thenReturn(historique);
+//        ACT
+        ResponseEntity<Object> response = employeurController.getHistorique(authentication);
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(historique, response.getBody());
     }
 }
