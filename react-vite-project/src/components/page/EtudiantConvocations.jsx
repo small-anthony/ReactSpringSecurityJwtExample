@@ -30,7 +30,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
   const [messageSucces, setMessageSucces] = useState(null);
   const [filtre, setFiltre] = useState("TOUTES");
 
-  // État des modales
   const [modalRefusOpen, setModalRefusOpen] = useState(false);
   const [convocationRefusCible, setConvocationRefusCible] = useState(null);
 
@@ -62,7 +61,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     chargerConvocations();
   }, []);
 
-  // Afficher un message de succès temporaire
   const notifierSucces = (msg) => {
     setMessageSucces(msg);
     setTimeout(() => {
@@ -70,7 +68,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     }, 4500);
   };
 
-  // 1. Accepter une convocation
   const handleAccepter = async (id) => {
     try {
       setActionLoadingId(id);
@@ -93,7 +90,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     }
   };
 
-  // 2. Refuser une convocation
   const handleOuvrirRefus = (convocation) => {
     setConvocationRefusCible(convocation);
     setModalRefusOpen(true);
@@ -128,7 +124,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     }
   };
 
-  // 3. Proposer une autre date (Conflit d'horaire)
   const handleOuvrirConflit = (convocation) => {
     setConvocationConflitCible(convocation);
     setModalConflitOpen(true);
@@ -164,7 +159,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     }
   };
 
-  // Filtrage des convocations
   const convocationsFiltrees = convocations.filter((c) => {
     if (filtre === "TOUTES") return true;
     if (filtre === "EN_ATTENTE") return c.statut === "EN_ATTENTE";
@@ -180,7 +174,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
   const content = (
     <>
       <div className={embedMode ? "space-y-6" : "max-w-5xl mx-auto space-y-6"}>
-      {/* Titre et actions du haut */}
       {!embedMode ? (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -224,7 +217,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
         </div>
       )}
 
-        {/* Bannière de succès */}
         {messageSucces && (
           <div className="p-4 bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 rounded-xl shadow-xs flex items-center gap-3 animate-in fade-in duration-200">
             <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
@@ -232,7 +224,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
           </div>
         )}
 
-        {/* Bannière d'erreur */}
         {erreur && (
           <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center gap-3 animate-in fade-in duration-200">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
@@ -240,7 +231,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
           </div>
         )}
 
-        {/* Filtres et badges de statut */}
         <div className="flex flex-wrap items-center gap-2 pt-2">
           <button
             type="button"
@@ -309,7 +299,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
           </button>
         </div>
 
-        {/* Liste des cartes */}
         {loading && convocations.length === 0 ? (
           <div className="bg-white p-12 rounded-2xl border border-gray-200 text-center space-y-3">
             <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
@@ -349,7 +338,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
         )}
       </div>
 
-      {/* Modale Refus */}
       <ModalRefuserConvocation
         isOpen={modalRefusOpen}
         onClose={() => {
@@ -361,7 +349,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
         loading={modalSubmitting}
       />
 
-      {/* Modale Conflit d'horaire */}
       <ModalConflitConvocation
         isOpen={modalConflitOpen}
         onClose={() => {

@@ -98,7 +98,6 @@ export default function ConvocationCard({
   return (
     <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs hover:shadow-md transition duration-200 overflow-hidden">
       <div className="p-6 space-y-4">
-        {/* En-tête : Titre & Statut */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -115,7 +114,6 @@ export default function ConvocationCard({
           <div className="shrink-0">{getStatusBadge()}</div>
         </div>
 
-        {/* Détails date, heure et lieu */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-gray-100">
           <div className="flex items-center gap-3 p-3 bg-gray-50/80 rounded-xl border border-gray-100">
             <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
@@ -148,7 +146,6 @@ export default function ConvocationCard({
           </div>
         </div>
 
-        {/* Message de l'employeur */}
         {convocation.messageEmployeur && (
           <div className="p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-xs text-gray-700 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-blue-900">
@@ -159,7 +156,6 @@ export default function ConvocationCard({
           </div>
         )}
 
-        {/* Informations complémentaires si Conflit d'horaire ou Refus */}
         {convocation.statut === "CONFLIT_HORAIRE" && (
           <div className="p-3 bg-indigo-50/60 rounded-xl border border-indigo-100 text-xs text-indigo-900 space-y-1">
             <p className="font-bold">
@@ -183,7 +179,6 @@ export default function ConvocationCard({
           </div>
         )}
 
-        {/* Actions de l'étudiant */}
         {convocation.statut === "EN_ATTENTE" && !isDatePassee && (
           <div className="pt-3 border-t border-gray-100 flex flex-wrap items-center justify-end gap-2.5">
             <button
@@ -217,7 +212,6 @@ export default function ConvocationCard({
           </div>
         )}
 
-        {/* Message d'entrevue passée sans réponse */}
         {convocation.statut === "EN_ATTENTE_REPONSE" && (
           <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t border-gray-100">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />

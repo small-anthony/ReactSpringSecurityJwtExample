@@ -10,7 +10,6 @@ export default function ModalConflitConvocation({ isOpen, onClose, onConfirm, co
 
   if (!isOpen || !convocation) return null;
 
-  // Calculer la date minimale (maintenant + 1 heure) pour le datepicker
   const getMinDateTime = () => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
