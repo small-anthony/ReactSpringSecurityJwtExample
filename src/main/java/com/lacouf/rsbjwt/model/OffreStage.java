@@ -127,6 +127,10 @@ public class OffreStage {
         candidatures.add(candidature);
     }
 
+    public Employeur getEmployeur() {
+        return employeur;
+    }
+
     public void setEmployeur(Employeur employeur) {
         this.employeur = employeur;
     }
