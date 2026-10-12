@@ -88,14 +88,9 @@ function Header({ user }) {
                   </>
               )}
               {isEtudiant && (
-                  <>
-                    <NavLink to="/etudiant" className={navLinkClasses}>
-                      {t("pagename.offres_stages")}
-                    </NavLink>
-                    <NavLink to="/etudiant?tab=convocations" className={navLinkClasses}>
-                      {t("pagename.convocations", { defaultValue: "Convocations" })}
-                    </NavLink>
-                  </>
+                  <NavLink to="/etudiant" className={navLinkClasses}>
+                    {t("pagename.offres_stages")}
+                  </NavLink>
               )}
               {isEmployeur && (
                   <NavLink to="/employeur" className={navLinkClasses}>
@@ -259,22 +254,13 @@ function Header({ user }) {
                   </>
               )}
               {isEtudiant && (
-                  <>
-                    <NavLink
-                        to="/etudiant"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={mobileNavLinkClasses}
-                    >
-                      {t("pagename.offres_stages")}
-                    </NavLink>
-                    <NavLink
-                        to="/etudiant?tab=convocations"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={mobileNavLinkClasses}
-                    >
-                      {t("pagename.convocations", { defaultValue: "Convocations" })}
-                    </NavLink>
-                  </>
+                  <NavLink
+                      to="/etudiant"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={mobileNavLinkClasses}
+                  >
+                    {t("pagename.offres_stages")}
+                  </NavLink>
               )}
               {isGestionnaire && (
                   <>
