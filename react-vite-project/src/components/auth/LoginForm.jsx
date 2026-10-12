@@ -72,10 +72,12 @@ export default function LoginForm() {
 
       if (role.includes("ETUDIANT")) {
         navigate("/etudiant");
-      } else if (role.includes("PROFESSEUR")) {
-        navigate("/professeur");
+      } else if (role.includes("EMPLOYEUR")) {
+        navigate("/employeur");
       } else if (role.includes("GESTIONNAIRE")) {
         navigate("/gestionnaire");
+      } else if (role.includes("PROFESSEUR")) {
+        navigate("/professeur");
       } else {
         navigate("/");
       }
