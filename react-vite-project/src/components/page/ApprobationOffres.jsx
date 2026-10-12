@@ -1,21 +1,33 @@
-﻿import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
-
 import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.js";
-
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
-import { Briefcase, Check, X, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
+import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
 import {useTranslation} from "react-i18next";
+import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 const ApprobationOffres = () => {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
+    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
     const [offreToApprove, setOffreToApprove] = useState(null);
     const [offreToRefuse, setOffreToRefuse] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const formatSalaire = (valeur) => {
+        if (!valeur) return "";
+
+        const trimSalaire = valeur.trim();
+
+        if (trimSalaire.includes("$") || trimSalaire.toLowerCase().includes("h")) {
+            return trimSalaire;
+        }
+
+        return `${trimSalaire} $/h`;
+    }
 
     useEffect(() => {
         fetchOffresEnAttente(authService.buildAuthHeader())
@@ -41,7 +53,6 @@ const ApprobationOffres = () => {
                 setOffreToApprove(null);
             });
     };
-
 
     const handleRefuser = (offreId, message) => {
         refuserOffre(offreId, message, authService.buildAuthHeader())
@@ -72,14 +83,6 @@ const ApprobationOffres = () => {
                 <div className="grid gap-6">
                     {offres.map((offre) => (
                         <article key={offre.id} className="relative p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="absolute top-5 right-5 flex gap-2">
-                                <button onClick={() => setOffreToRefuse(offre)} className="group w-4 h-4 bg-red-500 border border-red-600 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
-                                    <X className="w-2.5 h-2.5 text-red-900 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
-                                </button>
-                                <button onClick={() => setOffreToApprove(offre)} className="group w-4 h-4 bg-green-500 border border-green-600 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors shadow-sm">
-                                    <Check className="w-2.5 h-2.5 text-green-900 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
-                                </button>
-                            </div>
                             <h3 className="text-xl font-bold text-gray-900 pr-20 mb-1">{offre.titre}</h3>
                             <p className="text-blue-600 font-medium mb-5 flex items-center gap-1.5 pb-4 border-b border-gray-100">
                                 <Briefcase className="w-4 h-4" strokeWidth={2} />
@@ -92,7 +95,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.discipline}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{traduireDiscipline(offre.discipline)}</span>
                                     </div>
                                 </div>
 
@@ -102,7 +105,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.salaire}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{formaterSalaire(offre.salaire)}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
@@ -111,7 +114,7 @@ const ApprobationOffres = () => {
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="text-gray-800 text-sm font-medium">{offre.duree}</span>
+                                        <span className="text-gray-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -132,11 +135,32 @@ const ApprobationOffres = () => {
                                     <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
                                 </div>
                             </div>
+
+                            {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (
+                                <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
+                                    <button onClick={() => setOffreToRefuse(offre)} className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm">
+                                        {t("approbation.btn_refuse")}
+                                    </button>
+                                    <button onClick={() => setOffreToApprove(offre)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                                        {t("approbation.btn_accept")}
+                                    </button>
+                                </div>
+                            )}
+
+
                             {offreToRefuse && offreToRefuse.id === offre.id && (
                                 <ModalRefus
                                     mode="offre"
                                     onClose={() => setOffreToRefuse(null)}
                                     onConfirm={(message) => handleRefuser(offre.id, message)}
+                                />
+                            )}
+                            {offreToApprove && offreToApprove.id === offre.id && (
+                                <ModalApprobation
+                                    offre={offreToApprove}
+                                    onClose={() => setOffreToApprove(null)}
+                                    onConfirm={handleAccepter}
+                                    authHeader={authService.buildAuthHeader()}
                                 />
                             )}
                         </article>
@@ -150,17 +174,8 @@ const ApprobationOffres = () => {
                 </div>
             </div>
 
-            {offreToApprove && (
-                <ModalApprobation
-                    offre={offreToApprove}
-                    onClose={() => setOffreToApprove(null)}
-                    onConfirm={handleAccepter}
-                    authHeader={authService.buildAuthHeader()}
-                />
-            )}
         </main>
     );
 }
 
 export default ApprobationOffres;
-

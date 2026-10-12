@@ -134,7 +134,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         employeurRepository.save(
                                         new Employeur("Valentin", "Dimitrov",
-                                                        new Credentials("valentin@test.com", defaultPass,
+                                                         new Credentials("valentin@test.com", defaultPass,
                                                                         Role.EMPLOYEUR),
                                                         "Google", "514 111 1111"));
                 } catch (Exception e) {

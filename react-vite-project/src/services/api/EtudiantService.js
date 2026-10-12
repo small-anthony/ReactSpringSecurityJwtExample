@@ -18,23 +18,6 @@ export async function registerEtudiant(etudiantData) {
   return await response.json();
 }
 
-
-
-export async function verifierMatricule(matricule, authHeader) {
-  const response = await fetch(`${BASE_URL}/etudiant/matricule/${matricule}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader,
-    },
-  });
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Étudiant non trouvé");
-  }
-  return response.json();
-}
-
 export async function getMesCandidatures(authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/candidatures`, {
     method: "GET",
@@ -96,5 +79,19 @@ export async function getOffreDetail(id, authHeader) {
     throw new Error(errorText || "Erreur lors de la récupération du détail de l'offre");
   }
 
+  return response.json();
+}
+
+export async function rechercherEtudiants(query, authHeader) {
+  const response = await fetch(`${BASE_URL}/etudiant/recherche?motCle=${encodeURIComponent(query)}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Erreur lors de la recherche");
+  }
   return response.json();
 }

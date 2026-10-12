@@ -27,8 +27,18 @@ function Header({ user }) {
   };
 
   const isEtudiant = user?.role?.toString() === "ROLE_ETUDIANT";
-
   const isEmployeur = user?.role?.toString() === "ROLE_EMPLOYEUR";
+  const isGestionnaire = user?.role?.toString() === "ROLE_GESTIONNAIRE";
+
+  const getHomeRoute = () => {
+    if (!user) return "/";
+    const role = user?.role?.toString().toUpperCase();
+    if (role.includes("ETUDIANT")) return "/etudiant";
+    if (role.includes("EMPLOYEUR")) return "/employeur";
+    if (role.includes("GESTIONNAIRE")) return "/gestionnaire";
+    if (role.includes("PROFESSEUR")) return "/professeur";
+    return "/";
+  };
 
   const currentLang = i18n.language || "fr";
 
@@ -52,10 +62,10 @@ function Header({ user }) {
 
   return (
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link
-                to="/"
+                to={getHomeRoute()}
                 className="flex items-center gap-2.5 group select-none"
             >
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-sm shadow-blue-500/25 group-hover:scale-105 transition-transform duration-200">
@@ -67,22 +77,23 @@ function Header({ user }) {
             </Link>
 
             <nav className="hidden md:flex items-center gap-2">
-              <NavLink to="/" className={navLinkClasses}>
-                {t("pagename.home")}
-              </NavLink>
-              <NavLink to="/about" className={navLinkClasses}>
-                {t("pagename.about")}
-              </NavLink>
+              {!user && (
+                  <>
+                    <NavLink to="/" className={navLinkClasses}>
+                      {t("pagename.home")}
+                    </NavLink>
+                    <NavLink to="/about" className={navLinkClasses}>
+                      {t("pagename.about")}
+                    </NavLink>
+                  </>
+              )}
               {isEtudiant && (
                   <>
                     <NavLink to="/etudiant" className={navLinkClasses}>
-                        {t("pagename.etudiant")}
-                    </NavLink>
-                    <NavLink to="/etudiant/offres" className={navLinkClasses}>
-                        {t("pagename.offres_stages")}
+                      {t("pagename.offres_stages")}
                     </NavLink>
                     <NavLink to="/etudiant/convocations" className={navLinkClasses}>
-                        {t("pagename.convocations", { defaultValue: "Convocations" })}
+                      {t("pagename.convocations", { defaultValue: "Convocations" })}
                     </NavLink>
                   </>
               )}
@@ -90,6 +101,19 @@ function Header({ user }) {
                   <NavLink to="/employeur" className={navLinkClasses}>
                     {t("pagename.voir_offres")}
                   </NavLink>
+              )}
+              {isGestionnaire && (
+                  <>
+                    <NavLink to="/gestionnaire" className={navLinkClasses}>
+                      {t("pagename.approbation_offres", { defaultValue: "Approbation Offres" })}
+                    </NavLink>
+                    <NavLink to="/gestionnaire/cvs" className={navLinkClasses}>
+                      {t("pagename.approbation_cvs", { defaultValue: "Approbation CVs" })}
+                    </NavLink>
+                    <NavLink to="/gestionnaire/convocations" className={navLinkClasses}>
+                      {t("pagename.gestionnaire_convocations", { defaultValue: "Convocations" })}
+                    </NavLink>
+                  </>
               )}
             </nav>
 
@@ -120,7 +144,7 @@ function Header({ user }) {
               </div>
 
               {user ? (
-                  <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
+                  <div className="flex items-center gap-3 pl-2">
                     <div className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs shadow-xs">
                       <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
                         {initials || "U"}
@@ -128,7 +152,7 @@ function Header({ user }) {
                       <span className="font-semibold text-gray-800">
                     {user.firstName} {user.lastName}
                   </span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
                     {formatRole(user?.role?.toString())}
                   </span>
                     </div>
@@ -216,45 +240,67 @@ function Header({ user }) {
 
         {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-3 pb-5 space-y-2 shadow-lg">
-              <NavLink
-                  to="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={mobileNavLinkClasses}
-              >
-                {t("pagename.home")}
-              </NavLink>
-              <NavLink
-                  to="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={mobileNavLinkClasses}
-              >
-                {t("pagename.about")}
-              </NavLink>
-                {isEtudiant && (
-                    <>
-                      <NavLink
-                          to="/etudiant"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={mobileNavLinkClasses}
-                      >
-                          {t("pagename.etudiant")}
-                      </NavLink>
-                      <NavLink
-                          to="/etudiant/offres"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={mobileNavLinkClasses}
-                      >
-                          {t("pagename.offres_stages")}
-                      </NavLink>
-                      <NavLink
-                          to="/etudiant/convocations"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={mobileNavLinkClasses}
-                      >
-                          {t("pagename.convocations", { defaultValue: "Convocations" })}
-                      </NavLink>
-                    </>
-                )}
+              {!user && (
+                  <>
+                    <NavLink
+                        to="/"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.home")}
+                    </NavLink>
+                    <NavLink
+                        to="/about"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.about")}
+                    </NavLink>
+                  </>
+              )}
+              {isEtudiant && (
+                  <>
+                    <NavLink
+                        to="/etudiant"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.offres_stages")}
+                    </NavLink>
+                    <NavLink
+                        to="/etudiant/convocations"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.convocations", { defaultValue: "Convocations" })}
+                    </NavLink>
+                  </>
+              )}
+              {isGestionnaire && (
+                  <>
+                    <NavLink
+                        to="/gestionnaire"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.approbation_offres", { defaultValue: "Approbation Offres" })}
+                    </NavLink>
+                    <NavLink
+                        to="/gestionnaire/cvs"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.approbation_cvs", { defaultValue: "Approbation CVs" })}
+                    </NavLink>
+                    <NavLink
+                        to="/gestionnaire/convocations"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.gestionnaire_convocations", { defaultValue: "Convocations" })}
+                    </NavLink>
+                  </>
+              )}
               {isEmployeur && (
                   <NavLink
                       to="/employeur"

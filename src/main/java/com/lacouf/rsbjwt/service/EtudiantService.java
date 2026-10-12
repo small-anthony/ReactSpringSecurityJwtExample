@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EtudiantService {
@@ -112,13 +113,6 @@ public class EtudiantService {
         return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
 
-    public EtudiantDto getEtudiantByMatricule(int matricule) throws Exception {
-        Etudiant etudiant = etudiantRepository.findByMatricule(matricule)
-                .orElseThrow(() -> new Exception("Aucun étudiant trouvé avec ce matricule"));
-
-        return EtudiantDto.create(etudiant);
-    }
-
     public StatutCvDto getStatutCv(String email) {
         UserApp user = userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
@@ -148,7 +142,6 @@ public class EtudiantService {
         }
 
         List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
-
 
         return offresAcceptees.stream()
                 .filter(offre -> offre.getEtudiantsAutorises() == null
@@ -185,5 +178,15 @@ public class EtudiantService {
         }
 
         return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
+    }
+
+
+    public List<EtudiantDto> rechercherEtudiants(String motCle) {
+        List<Etudiant> etudiants = etudiantRepository.rechercherParMotCle(motCle);
+
+        return etudiants.stream()
+                .limit(10)
+                .map(EtudiantDto::create)
+                .collect(Collectors.toList());
     }
 }

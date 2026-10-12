@@ -24,7 +24,7 @@ public class Cv {
 
     public void mettreAJour(byte[] nouvelData) {
         this.data = nouvelData;
-        this.approbation = new Approbation();
+        approbation.setStatus(StatusAcceptation.EN_ATTENTE);
     }
 
     public void accepterApprobation() {

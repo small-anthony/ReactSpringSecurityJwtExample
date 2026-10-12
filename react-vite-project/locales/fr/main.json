@@ -14,7 +14,6 @@
     "signup_employeur": "S'inscrire comme employeur",
     "signup_etudiant": "S'inscrire comme étudiant",
     "signup_professeur": "S'inscrire comme professeur",
-    "etudiant": "Mon profil",
     "offres_stages": "Offres de stages",
     "convocations": "Convocations",
     "voir_offres": "Voir offres",
@@ -179,18 +178,24 @@
     "salaire": "Rémunération / Salaire",
     "exigences": "Exigences particulières (compétences, technologies)",
     "description": "Description de l'offre",
+    "weeks": "{{count}} semaines",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
-      "nomEntreprise": "Ex: TechCorp",
       "discipline": "-- Choisir une discipline --",
       "duree": "-- Choisir une durée --",
-      "salaire": "Ex: 22.50 $/h ou À discuter",
+      "salaire": "22.50",
       "exigences": "Ex: Connaissances en React, Spring Boot, Git...",
       "description": "Décrivez les tâches et responsabilités..."
     },
     "errors": {
       "titre": "Le titre est obligatoire.",
-      "nomEntreprise": "Le nom de l'entreprise est obligatoire.",
+      "discipline": "Veuillez choisir une discipline.",
+      "salaire": {
+        "required": "La rémunération est obligatoire.",
+        "format": "Format de rémunération invalide."
+      },
+      "duree": "Veuillez choisir une durée.",
+      "exigences": "Les exigences sont obligatoires.",
       "description": "La description est obligatoire.",
       "descriptionLength": "La description doit contenir au moins 20 caractères."
     },
@@ -238,29 +243,29 @@
     }
   },
   "cv_upload": {
-    "title": "Televerser votre CV",
+    "title": "Téléverser votre CV",
+    "choose_file": "Choisir un fichier PDF",
+    "no_file_chosen": "Aucun fichier choisi",
     "successMessage": "Votre CV a été televersé avec succès!",
     "loading": "Téléversement en cours...",
-    "submit": "Soumettre mon CV",
+    "submit": "Téléverser mon CV",
     "errors": {
       "notPdf": "Veuillez sélectionner un fichier PDF.",
       "default": "Une erreur est survenue lors du téléversement."
     }
   },
-  "etudiant_profile": {
-    "title": "Profil Étudiant",
-    "subtitle": "Gérez vos documents académiques et le statut de votre dossier de stage.",
-    "cv_uploaded": "Votre CV a été téléversé avec succès",
+  "modal_cv": {
     "loading": "Chargement...",
+    "no_cv_title": "Aucun CV téléversé",
+    "no_cv_desc": "Il est préférable de téléverser votre CV pour pouvoir postuler aux offres de stage.",
+    "upload": "Téléverser mon CV",
+    "update": "Mettre à jour mon CV",
     "pending_badge": "En attente de révision",
-    "pending_desc": "Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage. Vous recevrez l'accès aux offres dès sa validation.",
+    "cv_uploaded": "Votre CV a été téléversé avec succès",
+    "pending_desc": "Votre CV a été soumis et est actuellement analysé par un gestionnaire de stage.",
     "approved_badge": "CV Approuvé",
     "approved_title": "Votre CV a été validé !",
     "approved_desc": "Félicitations, vous pouvez désormais explorer toutes les offres de stage approuvées et y postuler.",
-    "btn_view_offers": "Voir les offres",
-    "update_help": "Besoin de mettre à jour votre CV ?",
-    "btn_hide_upload": "Masquer le formulaire",
-    "btn_show_upload": "Téléverser un nouveau CV",
     "refused_badge": "CV Refusé",
     "refused_title": "Votre CV nécessite des modifications",
     "refused_motif": "Motif : {{motif}}",
@@ -290,7 +295,6 @@
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
     },
-
     "view_candidates": "Voir les candidatures",
     "statuts": {
       "EN_ATTENTE": "En attente",
@@ -445,7 +449,8 @@
         "target": "Étudiants ciblés (Optionnel)",
         "search": "Chercher par matricule (ex: 12345)",
         "cancel": "Annuler",
-        "confirm": "Confirmer"
+        "confirm": "Confirmer l'approbation",
+        "search_placeholder": "Taper un nom, courriel ou matricule..."
       }
     },
     "modal_refus": {
@@ -462,7 +467,9 @@
       "label_motif": "Motif du refus",
       "annuler": "Annuler",
       "confirmer": "Confirmer le refus"
-    }
+    },
+    "btn_refuse": "Refuser",
+    "btn_accept": "Approuver"
   },
   "offres_etudiant": {
     "badge": "Espace Étudiant",

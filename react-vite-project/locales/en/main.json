@@ -179,18 +179,26 @@
     "salaire": "Compensation / Salary",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
+    "weeks": "{{count}} weeks",
     "placeholders": {
       "titre": "Ex: Junior Web Developer",
       "nomEntreprise": "Ex: TechCorp",
       "discipline": "-- Select a discipline --",
       "duree": "-- Select a duration --",
-      "salaire": "Ex: $22.50/h or To be discussed",
+      "salaire": "22.50",
       "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
     },
     "errors": {
       "titre": "Title is required.",
       "nomEntreprise": "Company name is required.",
+      "discipline": "Please select a discipline.",
+      "duree": "Please select a duration.",
+      "salaire": {
+        "required": "Salary is required.",
+        "format": "Invalid salary format."
+      },
+      "exigences": "Requirements are required.",
       "description": "Description is required.",
       "descriptionLength": "Description must be at least 20 characters."
     },
@@ -238,29 +246,29 @@
     }
   },
   "cv_upload": {
-    "title": "Upload your CV",
-    "successMessage": "Your CV has been uploaded successfully!",
+    "title": "Upload your resume",
+    "choose_file": "Choose a PDF file",
+    "no_file_chosen": "No file chosen",
+    "successMessage": "Your resume has been uploaded successfully!",
     "loading": "Uploading...",
-    "submit": "Submit my CV",
+    "submit": "Upload my resume",
     "errors": {
       "notPdf": "Please select a PDF file.",
       "default": "An error occurred during the upload."
     }
   },
-  "etudiant_profile": {
-    "title": "Student Profile",
-    "subtitle": "Manage your academic documents and internship file status.",
-    "cv_uploaded": "Your CV has been uploaded successfully",
+  "modal_cv": {
     "loading": "Loading...",
+    "no_cv_title": "No resume uploaded",
+    "no_cv_desc": "It is preferable to upload your resume so you can apply to internship offers.",
+    "upload": "Upload my resume",
+    "update": "Update my resume",
     "pending_badge": "Pending review",
-    "pending_desc": "Your resume was submitted and is currently being evaluated by an internship coordinator. You will gain access to offers upon approval.",
+    "cv_uploaded": "Your resume has been uploaded successfully",
+    "pending_desc": "Your resume was submitted and is currently being evaluated by an internship coordinator.",
     "approved_badge": "Resume Approved",
     "approved_title": "Your resume has been validated!",
     "approved_desc": "Congratulations, you can now explore all approved internship offers and apply.",
-    "btn_view_offers": "View offers",
-    "update_help": "Need to update your resume?",
-    "btn_hide_upload": "Hide form",
-    "btn_show_upload": "Upload a new resume",
     "refused_badge": "Resume Rejected",
     "refused_title": "Your resume requires revisions",
     "refused_motif": "Reason: {{motif}}",
@@ -290,7 +298,7 @@
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
     },
-    "view_candidates": "View applications",
+    "view_candidates": "View candidates",
     "statuts": {
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
@@ -303,8 +311,8 @@
     "subtitle": "Review students who applied to this offer",
     "loading": "Loading applications...",
     "no_candidates": "No applications received for this offer yet.",
-    "view_cv": "View CV",
-    "no_cv": "No CV available",
+    "view_cv": "View Resume",
+    "no_cv": "No resume available",
     "statuts": {
       "EN_ATTENTE": "Pending",
       "ACCEPTEE": "Accepted",
@@ -444,7 +452,8 @@
         "target": "Targeted students (Optional)",
         "search": "Search by student ID (ex: 12345)",
         "cancel": "Cancel",
-        "confirm": "Confirm"
+        "confirm": "Confirm approval",
+        "search_placeholder": "Type a name, email, or ID..."
       }
     },
     "modal_refus": {
@@ -461,7 +470,9 @@
       "label_motif": "Reason for rejection",
       "annuler": "Cancel",
       "confirmer": "Confirm rejection"
-    }
+    },
+    "btn_refuse": "Reject",
+    "btn_accept": "Approve"
   },
   "offres_etudiant": {
     "badge": "Student Area",

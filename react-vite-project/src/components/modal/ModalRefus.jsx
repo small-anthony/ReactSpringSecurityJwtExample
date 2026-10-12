@@ -17,7 +17,7 @@ export default function ModalRefus({ mode, onClose, onConfirm }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t(`approbation.modal_refus.${mode}.placeholder`)}
-                className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-gray-50"
+                className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none bg-gray-50"
                 rows="3"
             />
             <div className="flex gap-3 mt-3 justify-end">

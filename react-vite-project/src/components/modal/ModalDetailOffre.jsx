@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { postuler } from "../../services/api/OffreStageService.js";
+import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-
+    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [isApplying, setIsApplying] = useState(false);
     const [hasApplied, setHasApplied] = useState(aPostule);
     const [errorMessage, setErrorMessage] = useState("");
@@ -107,7 +108,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                                 <span>{t("offres_etudiant.modal.discipline")}</span>
                             </div>
                             <p className="text-sm font-bold text-gray-900 truncate">
-                                {offre.discipline || t("offres_etudiant.modal.not_specified")}
+                                {offre.discipline ? traduireDiscipline(offre.discipline) : t("offres_etudiant.modal.not_specified")}
                             </p>
                         </div>
 
@@ -117,7 +118,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                                 <span>{t("offres_etudiant.modal.duration")}</span>
                             </div>
                             <p className="text-sm font-bold text-gray-900">
-                                {offre.duree || t("offres_etudiant.modal.not_specified")}
+                                {offre.duree ? traduireDuree(offre.duree) : t("offres_etudiant.modal.not_specified")}
                             </p>
                         </div>
 
@@ -127,7 +128,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                                 <span>{t("offres_etudiant.modal.salary")}</span>
                             </div>
                             <p className="text-sm font-bold text-gray-900">
-                                {offre.salaire || t("offres_etudiant.salary_to_discuss")}
+                                {formaterSalaire(offre.salaire)}
                             </p>
                         </div>
                     </div>

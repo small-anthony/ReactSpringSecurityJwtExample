@@ -1,0 +1,361 @@
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { AuthServiceContext } from "../../services/AuthService.tsx"
+import { createOffreStage } from "../../services/api/OffreStageService.js";
+import { DISCIPLINES } from "../../constants/disciplines.js";
+import { DUREES } from "../../constants/durees.js";
+
+export default function CreerOffre() {
+  const authService = useContext(AuthServiceContext);
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation("main");
+  const isEn = i18n.language?.startsWith("en");
+  const userData = authService?.getUserData ? authService.getUserData() : null;
+  const [formData, setFormData] = useState({
+    titre: "",
+    nomEntreprise: "",
+    discipline: "",
+    duree: "",
+    salaire: "",
+    exigences: "",
+    description: ""
+  });
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (userData?.entreprise) {
+      setFormData((prev) => ({
+        ...prev,
+        nomEntreprise: userData.entreprise,
+      }));
+    }
+  }, [userData]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
+  };
+
+  const handleSalaireBlur = () => {
+    const montant = parseFloat(formData.salaire);
+    if (!isNaN(montant) && montant >= 0) {
+      setFormData({ ...formData, salaire: montant.toFixed(2) });
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.titre.trim()) {
+      newErrors.titre = "titre";
+    }
+
+    if (!formData.nomEntreprise.trim()) {
+      newErrors.nomEntreprise = "nomEntreprise";
+    }
+
+    if (!formData.discipline.trim()) {
+      newErrors.discipline = "discipline";
+    }
+
+    if (!formData.salaire.trim()) {
+      newErrors.salaire = "required";
+    } else {
+      const montant = parseFloat(formData.salaire);
+      if (isNaN(montant) || montant < 0 || montant > 50) {
+        newErrors.salaire = "format";
+      }
+    }
+
+    if (!formData.duree.trim()) {
+      newErrors.duree = "duree";
+    }
+
+    if (!formData.exigences.trim()) {
+      newErrors.exigences = "exigences";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "description";
+    } else if (formData.description.trim().length < 20) {
+      newErrors.description = "descriptionLength";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setServerError("");
+    setSuccessMessage("");
+
+    if (!validate()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const authHeader = authService.buildAuthHeader();
+
+      const finalEntreprise = userData?.entreprise;
+
+      let finalSalaire = formData.salaire.trim();
+      if (finalSalaire && !finalSalaire.toLowerCase().includes("h")) {
+        finalSalaire = finalSalaire.replace("$", "").trim() + " $/h";
+      }
+
+      await createOffreStage(
+          formData.titre.trim(),
+          formData.description.trim(),
+          finalEntreprise,
+          formData.discipline.trim(),
+          formData.duree.trim(),
+          finalSalaire,
+          formData.exigences.trim(),
+          authHeader
+      );
+
+      setSuccessMessage("success");
+      setFormData({
+        titre: "",
+        nomEntreprise: "",
+        discipline: "",
+        duree: "",
+        salaire: "",
+        exigences: "",
+        description: ""
+      });
+      navigate("/employeur");
+
+    } catch (err) {
+      setServerError(err.message || "defaultError");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const traduireDuree = (valeur) => {
+    const nombre = parseInt(valeur, 10);
+    return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
+  };
+
+  return (
+      <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+          {t("creer_offre.title")}
+        </h2>
+        <p className="text-center text-gray-500 text-sm mb-6">
+          {t("creer_offre.subtitle")}
+        </p>
+
+        {serverError && (
+            <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
+              <strong>{t("creer_offre.errorPrefix")}</strong>
+              {serverError}
+            </div>
+        )}
+
+        {successMessage && (
+            <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-800 text-sm rounded">
+              <strong>{t("creer_offre.successPrefix")}</strong>
+              {t("creer_offre.success")}
+            </div>
+        )}
+
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.titre")} <span className="text-red-500">*</span>
+            </label>
+            <input
+                type="text"
+                name="titre"
+                value={formData.titre}
+                onChange={handleChange}
+                placeholder={t("creer_offre.placeholders.titre")}
+                className={`w-full p-2.5 border rounded-lg ${
+                    errors.titre ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
+            />
+            {errors.titre && (
+                <p className="text-red-500 text-xs mt-1">
+                  {t(`creer_offre.errors.${errors.titre}`)}
+                </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.nomEntreprise")}
+            </label>
+            <input
+                type="text"
+                name="nomEntreprise"
+                value={formData.nomEntreprise}
+                readOnly="true"
+                onChange={handleChange}
+                placeholder={t("creer_offre.placeholders.nomEntreprise")}
+                className="w-full p-2.5 border rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.discipline")} <span className="text-red-500">*</span>
+            </label>
+            <select
+                name="discipline"
+                value={formData.discipline}
+                onChange={handleChange}
+                className={`w-full p-2.5 border border-gray-300 rounded-lg ${
+                    errors.discipline ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
+            >
+              <option value="">{t("creer_offre.placeholders.discipline")}</option>
+              {DISCIPLINES.map((disc) => (
+                  <option key={disc.value} value={disc.value}>
+                    {t(`signup_etudiant.disciplines.${disc.labelKey}`)}
+                  </option>
+              ))}
+            </select>
+            {errors.discipline && (
+                <p className="text-red-500 text-xs mt-1">
+                  {t(`creer_offre.errors.${errors.discipline}`)}
+                </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                {t("creer_offre.salaire")} <span className="text-red-500">*</span>
+              </label>
+              <div className="flex items-center w-full flex-nowrap">
+                {isEn && (
+                    <span className={`bg-gray-100 border border-r-0 font-semibold p-2.5 rounded-l-lg ${
+                        errors.salaire ? "border-red-500 bg-red-50" : "border-gray-300 text-gray-500"
+                    }`}>
+                    $
+                  </span>
+                )}
+                <input
+                    type="number"
+                    name="salaire"
+                    value={formData.salaire}
+                    onChange={handleChange}
+                    onBlur={handleSalaireBlur}
+                    placeholder={t("creer_offre.placeholders.salaire")}
+                    className={`min-w-0 flex-1 p-2.5 border ${
+                        isEn ? "rounded-none" : "rounded-l-lg"
+                    } ${
+                        errors.salaire ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                    }`}
+                />
+                <span className={`bg-gray-100 border border-l-0 font-semibold p-2.5 rounded-r-lg whitespace-nowrap select-none ${
+                    errors.salaire ? "border-red-500 bg-red-50" : "border-gray-300 text-gray-500"
+                }`}>
+                {isEn ? "/h" : "$/h"}
+              </span>
+              </div>
+              {errors.salaire && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {t(`creer_offre.errors.salaire.${errors.salaire}`)}
+                  </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                {t("creer_offre.duree")} <span className="text-red-500">*</span>
+              </label>
+              <select
+                  name="duree"
+                  value={formData.duree}
+                  onChange={handleChange}
+                  className={`w-full p-2.5 border border-gray-300 rounded-lg ${
+                      errors.duree ? "border-red-500 bg-red-50" : "border-gray-300"
+                  }`}
+              >
+                <option value="">{t("creer_offre.placeholders.duree")}</option>
+                {DUREES.map((dur) => (
+                    <option key={dur} value={dur}>
+                      {traduireDuree(dur)}
+                    </option>
+                ))}
+              </select>
+              {errors.duree && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {t(`creer_offre.errors.${errors.duree}`)}
+                  </p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.exigences")} <span className="text-red-500">*</span>
+            </label>
+            <textarea
+                name="exigences"
+                rows={2}
+                value={formData.exigences}
+                onChange={handleChange}
+                placeholder={t("creer_offre.placeholders.exigences")}
+                className={`w-full p-2.5 border border-gray-300 rounded-lg ${
+                    errors.exigences ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
+            />
+            {errors.exigences && (
+                <p className="text-red-500 text-xs mt-1">
+                  {t(`creer_offre.errors.${errors.exigences}`)}
+                </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              {t("creer_offre.description")} <span className="text-red-500">*</span>
+            </label>
+            <textarea
+                name="description"
+                rows={5}
+                value={formData.description}
+                onChange={handleChange}
+                placeholder={t("creer_offre.placeholders.description")}
+                className={`w-full p-2.5 border rounded-lg ${
+                    errors.description ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
+            />
+            {errors.description && (
+                <p className="text-red-500 text-xs mt-1">
+                  {t(`creer_offre.errors.${errors.description}`)}
+                </p>
+            )}
+          </div>
+
+          <div className="pt-4">
+            <button
+                type="submit"
+                disabled={isLoading}
+                className={`w-full py-3 px-4 font-bold rounded-lg text-white transition ${
+                    isLoading
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 hover:bg-blue-700 cursor-pointer shadow"
+                }`}
+            >
+              {isLoading ? t("creer_offre.submitting") : t("creer_offre.submit")}
+            </button>
+          </div>
+        </form>
+      </div>
+  );
+}
