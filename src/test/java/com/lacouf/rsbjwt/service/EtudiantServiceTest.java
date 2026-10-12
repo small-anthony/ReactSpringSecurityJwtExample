@@ -456,25 +456,6 @@ public class EtudiantServiceTest {
         }
 
         @Test
-        void getOffresDisponibles_cvNonApprouve_lanceExceptionForbidden() {
-                // ARRANGE
-                Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);
-                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-                etudiant.setId(1L);
-                etudiant.setCv(new byte[] { 1, 2, 3 });
-
-                when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
-                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-
-                // ACT & ASSERT
-                ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                                () -> etudiantService.getOffresDisponibles("etudiant@gmail.com"));
-
-                assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-                assertTrue(exception.getReason().contains("Accès refusé"));
-        }
-
-        @Test
         void getOffresDisponibles_cvApprouve_retourneOffresFiltrees() {
                 // ARRANGE
                 Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);

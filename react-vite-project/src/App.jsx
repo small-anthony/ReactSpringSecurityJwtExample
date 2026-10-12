@@ -85,7 +85,7 @@ function App() {
                         element={
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
-                                    role === "ETUDIANT" ? <EtudiantConvocations /> :
+                                    role === "ETUDIANT" ? <Navigate to="/etudiant?tab=convocations" replace /> :
                                         <Navigate to="/" />
                         }
                     />

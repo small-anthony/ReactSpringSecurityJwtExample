@@ -92,7 +92,7 @@ function Header({ user }) {
                     <NavLink to="/etudiant" className={navLinkClasses}>
                       {t("pagename.offres_stages")}
                     </NavLink>
-                    <NavLink to="/etudiant/convocations" className={navLinkClasses}>
+                    <NavLink to="/etudiant?tab=convocations" className={navLinkClasses}>
                       {t("pagename.convocations", { defaultValue: "Convocations" })}
                     </NavLink>
                   </>
@@ -268,7 +268,7 @@ function Header({ user }) {
                       {t("pagename.offres_stages")}
                     </NavLink>
                     <NavLink
-                        to="/etudiant/convocations"
+                        to="/etudiant?tab=convocations"
                         onClick={() => setMobileMenuOpen(false)}
                         className={mobileNavLinkClasses}
                     >

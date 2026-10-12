@@ -1,23 +1,31 @@
 import { useEffect, useState, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getOffresDisponibles, getMesCandidatures } from "../../services/api/EtudiantService.js";
+import { getConvocationsEtudiant } from "../../services/api/ConvocationAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import { DISCIPLINES } from "../../constants/disciplines";
 import { DUREES } from "../../constants/durees";
-import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTriangle, FilterX, FileText, CheckCircle2 } from "lucide-react";
+import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTriangle, FilterX, FileText, CheckCircle2, Calendar } from "lucide-react";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
+import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const tabFromUrl = searchParams.get("tab");
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [offres, setOffres] = useState([]);
     const [mesCandidaturesIds, setMesCandidaturesIds] = useState([]);
-    const [ongletActif, setOngletActif] = useState("toutes");
+    const [ongletActif, setOngletActif] = useState(
+        tabFromUrl === "convocations" ? "convocations" : (tabFromUrl === "candidatures" ? "mes_candidatures" : "toutes")
+    );
+    const [countPendingConvocations, setCountPendingConvocations] = useState(0);
     const [offreSelectionnee, setOffreSelectionnee] = useState(null);
     const [recherche, setRecherche] = useState("");
     const [filtreEntreprise, setFiltreEntreprise] = useState("");
@@ -40,6 +48,14 @@ export default function OffreStagesEtudiant() {
             } catch {
                 setMesCandidaturesIds([]);
             }
+
+            try {
+                const convocations = await getConvocationsEtudiant(authHeader);
+                const pending = (convocations || []).filter((c) => c.statut === "EN_ATTENTE").length;
+                setCountPendingConvocations(pending);
+            } catch {
+                setCountPendingConvocations(0);
+            }
         } catch (err) {
             console.error("Erreur chargement offres:", err);
             setErreur(t("offres_etudiant.error_fetch"));
@@ -51,6 +67,27 @@ export default function OffreStagesEtudiant() {
     useEffect(() => {
         void chargerDonnees();
     }, [authService]);
+
+    useEffect(() => {
+        if (tabFromUrl === "convocations") {
+            setOngletActif("convocations");
+        } else if (tabFromUrl === "candidatures") {
+            setOngletActif("mes_candidatures");
+        } else if (tabFromUrl === "toutes") {
+            setOngletActif("toutes");
+        }
+    }, [tabFromUrl]);
+
+    const changerOnglet = (nouvelOnglet) => {
+        setOngletActif(nouvelOnglet);
+        if (nouvelOnglet === "convocations") {
+            setSearchParams({ tab: "convocations" });
+        } else if (nouvelOnglet === "mes_candidatures") {
+            setSearchParams({ tab: "candidatures" });
+        } else {
+            setSearchParams({});
+        }
+    };
 
     const handlePostulerSucces = (offreId) => {
         setMesCandidaturesIds((prev) => (prev.includes(offreId) ? prev : [...prev, offreId]));
@@ -151,9 +188,9 @@ export default function OffreStagesEtudiant() {
 
                 {!loading && !erreur && (
                     <div className="space-y-6">
-                        <div className="flex items-center gap-3 border-b border-gray-200 pb-3">
+                        <div className="flex flex-wrap items-center gap-3 border-b border-gray-200 pb-3">
                             <button
-                                onClick={() => setOngletActif("toutes")}
+                                onClick={() => changerOnglet("toutes")}
                                 className={`px-4 py-2 text-sm font-semibold rounded-xl transition cursor-pointer ${ongletActif === "toutes"
                                     ? "bg-blue-600 text-white shadow-xs"
                                     : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
@@ -162,15 +199,43 @@ export default function OffreStagesEtudiant() {
                                 {t("offres_etudiant.tab_all_offers")}
                             </button>
                             <button
-                                onClick={() => setOngletActif("mes_candidatures")}
-                                className={`px-4 py-2 text-sm font-semibold rounded-xl transition cursor-pointer ${ongletActif === "mes_candidatures"
+                                onClick={() => changerOnglet("mes_candidatures")}
+                                className={`px-4 py-2 text-sm font-semibold rounded-xl transition cursor-pointer flex items-center gap-2 ${ongletActif === "mes_candidatures"
                                     ? "bg-blue-600 text-white shadow-xs"
                                     : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                                 }`}
                             >
-                                {t("offres_etudiant.tab_my_applications", { count: mesCandidaturesIds.length })}
+                                <span>{t("offres_etudiant.tab_my_applications", { count: mesCandidaturesIds.length })}</span>
+                                {mesCandidaturesIds.length > 0 && (
+                                    <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${ongletActif === "mes_candidatures" ? "bg-white text-blue-600" : "bg-gray-100 text-gray-700"}`}>
+                                        {mesCandidaturesIds.length}
+                                    </span>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => changerOnglet("convocations")}
+                                className={`px-4 py-2 text-sm font-semibold rounded-xl transition cursor-pointer flex items-center gap-2 ${ongletActif === "convocations"
+                                    ? "bg-blue-600 text-white shadow-xs"
+                                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                                }`}
+                            >
+                                <Calendar className="w-4 h-4" />
+                                <span>{t("pagename.convocations", { defaultValue: "Mes convocations" })}</span>
+                                {countPendingConvocations > 0 && (
+                                    <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${ongletActif === "convocations" ? "bg-white text-blue-600" : "bg-amber-100 text-amber-700 animate-pulse"}`}>
+                                        {countPendingConvocations}
+                                    </span>
+                                )}
                             </button>
                         </div>
+
+                        {ongletActif === "convocations" ? (
+                            <EtudiantConvocations
+                                embedMode={true}
+                                onPendingCountChange={setCountPendingConvocations}
+                            />
+                        ) : (
+                            <>
 
                         <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
                             <div className="relative">
@@ -325,6 +390,8 @@ export default function OffreStagesEtudiant() {
                                 ))}
                             </div>
                         )}
+                        </>
+                    )}
                     </div>
                 )}
             </div>

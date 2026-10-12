@@ -20,7 +20,7 @@ import ConvocationCard from "../convocation/ConvocationCard.jsx";
 import ModalRefuserConvocation from "../modal/ModalRefuserConvocation.jsx";
 import ModalConflitConvocation from "../modal/ModalConflitConvocation.jsx";
 
-export default function EtudiantConvocations() {
+export default function EtudiantConvocations({ embedMode = false, onPendingCountChange }) {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
 
@@ -46,7 +46,11 @@ export default function EtudiantConvocations() {
       setErreur(null);
       const authHeader = authService.buildAuthHeader();
       const data = await getConvocationsEtudiant(authHeader);
-      setConvocations(data);
+      setConvocations(data || []);
+      if (onPendingCountChange) {
+        const pending = (data || []).filter((c) => c.statut === "EN_ATTENTE").length;
+        onPendingCountChange(pending);
+      }
     } catch (e) {
       setErreur(e.message || "Erreur lors du chargement des convocations");
     } finally {
@@ -173,10 +177,11 @@ export default function EtudiantConvocations() {
   const countEnAttente = convocations.filter((c) => c.statut === "EN_ATTENTE").length;
   const countAcceptees = convocations.filter((c) => c.statut === "ACCEPTEE").length;
 
-  return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-6">
-        {/* Titre et actions du haut */}
+  const content = (
+    <>
+      <div className={embedMode ? "space-y-6" : "max-w-5xl mx-auto space-y-6"}>
+      {/* Titre et actions du haut */}
+      {!embedMode ? (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
@@ -200,6 +205,24 @@ export default function EtudiantConvocations() {
             <span>{t("convocation.btn_refresh", { defaultValue: "Actualiser" })}</span>
           </button>
         </div>
+      ) : (
+        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+          <p className="text-sm text-gray-500">
+            {t("convocation.subtitle", {
+              defaultValue: "Gérez vos invitations d'entrevues envoyées par vos employeurs.",
+            })}
+          </p>
+          <button
+            type="button"
+            onClick={chargerConvocations}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-xs transition cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
+            <span>{t("convocation.btn_refresh", { defaultValue: "Actualiser" })}</span>
+          </button>
+        </div>
+      )}
 
         {/* Bannière de succès */}
         {messageSucces && (
@@ -349,6 +372,16 @@ export default function EtudiantConvocations() {
         convocation={convocationConflitCible}
         loading={modalSubmitting}
       />
+    </>
+  );
+
+  if (embedMode) {
+    return content;
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+      {content}
     </div>
   );
 }
