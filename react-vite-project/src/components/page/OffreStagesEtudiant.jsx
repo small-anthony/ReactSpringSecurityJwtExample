@@ -8,6 +8,7 @@ import { DUREES } from "../../constants/durees";
 import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTriangle, FilterX, FileText, CheckCircle2 } from "lucide-react";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
+import CandidatureStatut from "./CandidatureStatut.jsx";
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
@@ -17,6 +18,7 @@ export default function OffreStagesEtudiant() {
     const [erreur, setErreur] = useState(null);
     const [offres, setOffres] = useState([]);
     const [mesCandidaturesIds, setMesCandidaturesIds] = useState([]);
+    const [candidaturesParOffre, setCandidaturesParOffre] = useState({});
     const [ongletActif, setOngletActif] = useState("toutes");
     const [offreSelectionnee, setOffreSelectionnee] = useState(null);
     const [recherche, setRecherche] = useState("");
@@ -34,11 +36,19 @@ export default function OffreStagesEtudiant() {
             setOffres(listeOffres || []);
 
             try {
-                const mesCandidatures = await getMesCandidatures(authHeader);
-                const ids = (mesCandidatures || []).map((c) => c.id);
-                setMesCandidaturesIds(ids);
+                const mesOffres = await getMesCandidatures(authHeader);
+                setMesCandidaturesIds((mesOffres || []).map((o) => o.id));
+
+                const parOffre = {};
+                (mesOffres || []).forEach((o) => {
+                    if (o.candidatures && o.candidatures.length > 0) {
+                        parOffre[o.id] = o.candidatures[0];
+                    }
+                });
+                setCandidaturesParOffre(parOffre);
             } catch {
                 setMesCandidaturesIds([]);
+                setCandidaturesParOffre({});
             }
         } catch (err) {
             console.error("Erreur chargement offres:", err);
@@ -54,6 +64,7 @@ export default function OffreStagesEtudiant() {
 
     const handlePostulerSucces = (offreId) => {
         setMesCandidaturesIds((prev) => (prev.includes(offreId) ? prev : [...prev, offreId]));
+        setCandidaturesParOffre((prev) => ({ ...prev, [offreId]: { statut: "EN_ATTENTE" } }));
     };
 
     const entreprisesUniques = useMemo(() => {
@@ -306,6 +317,10 @@ export default function OffreStagesEtudiant() {
                                             <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
                                                 {offre.description}
                                             </p>
+
+                                            {candidaturesParOffre[offre.id] && (
+                                                <CandidatureStatut candidature={candidaturesParOffre[offre.id]} />
+                                            )}
                                         </div>
 
                                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
