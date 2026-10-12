@@ -2,8 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
@@ -129,12 +128,12 @@ public class EtudiantController {
     }
 
 @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDto>> getConvocations(Authentication authentication) {
+    public ResponseEntity<List<ConvocationDtoOld>> getConvocations(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsEtudiant(authentication.getName()));
     }
 
     @GetMapping("/convocations/acceptees")
-    public ResponseEntity<List<ConvocationDto>> getConvocationsAcceptees(Authentication authentication) {
+    public ResponseEntity<List<ConvocationDtoOld>> getConvocationsAcceptees(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsAccepteesEtudiant(authentication.getName()));
     }
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationConvocationRequest;
 import com.lacouf.rsbjwt.service.ConvocationService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 import java.util.List;
@@ -131,7 +131,7 @@ public class EmployeurController {
             @RequestBody CreationConvocationRequest request,
             Authentication authentication) {
         try {
-            ConvocationDto convocationDto = convocationService.creerConvocation(
+            ConvocationDtoOld convocationDto = convocationService.creerConvocation(
                     candidatureId,
                     request.getDateHeure(),
                     request.getLieu(),
@@ -145,7 +145,7 @@ public class EmployeurController {
     }
 
     @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDto>> getConvocationsEmployeur(Authentication authentication) {
+    public ResponseEntity<List<ConvocationDtoOld>> getConvocationsEmployeur(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
     }
 }

@@ -5,13 +5,12 @@ import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
-import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,43 +52,43 @@ public class ConvocationService {
     }
 
     @Transactional
-    public List<ConvocationDto> getConvocationsEtudiant(String etudiantEmail) {
+    public List<ConvocationDtoOld> getConvocationsEtudiant(String etudiantEmail) {
         verifierEtMettreAJourStatutsPasses();
         return convocationRepository.findByEtudiantEmail(etudiantEmail)
                 .stream()
-                .map(ConvocationDto::fromEntity)
+                .map(ConvocationDtoOld::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ConvocationDto> getConvocationsAccepteesEtudiant(String etudiantEmail) {
+    public List<ConvocationDtoOld> getConvocationsAccepteesEtudiant(String etudiantEmail) {
         return convocationRepository.findByEtudiantEmail(etudiantEmail)
                 .stream()
                 .filter(c -> c.getStatut() == StatutConvocation.ACCEPTEE)
-                .map(ConvocationDto::fromEntity)
+                .map(ConvocationDtoOld::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {
+    public List<ConvocationDtoOld> getConvocationsEmployeur(String employeurEmail) {
         verifierEtMettreAJourStatutsPasses();
         return convocationRepository.findByEmployeurEmail(employeurEmail)
                 .stream()
-                .map(ConvocationDto::fromEntity)
+                .map(ConvocationDtoOld::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public List<ConvocationDto> getToutesConvocations() {
+    public List<ConvocationDtoOld> getToutesConvocations() {
         verifierEtMettreAJourStatutsPasses();
         return convocationRepository.findAllOrderByDateHeureAsc()
                 .stream()
-                .map(ConvocationDto::fromEntity)
+                .map(ConvocationDtoOld::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ConvocationDto accepterConvocation(Long convocationId, String etudiantEmail) {
+    public ConvocationDtoOld accepterConvocation(Long convocationId, String etudiantEmail) {
         Convocation convocation = convocationRepository.findByIdAndEtudiantEmail(convocationId, etudiantEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée ou accès non autorisé"));
 
@@ -105,11 +104,11 @@ public class ConvocationService {
         convocation.accepter();
         convocationRepository.save(convocation);
 
-        return ConvocationDto.fromEntity(convocation);
+        return ConvocationDtoOld.fromEntity(convocation);
     }
 
     @Transactional
-    public ConvocationDto refuserConvocation(Long convocationId, String etudiantEmail, String motif) {
+    public ConvocationDtoOld refuserConvocation(Long convocationId, String etudiantEmail, String motif) {
         Convocation convocation = convocationRepository.findByIdAndEtudiantEmail(convocationId, etudiantEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée ou accès non autorisé"));
 
@@ -119,12 +118,12 @@ public class ConvocationService {
         }
         convocationRepository.save(convocation);
 
-        return ConvocationDto.fromEntity(convocation);
+        return ConvocationDtoOld.fromEntity(convocation);
     }
 
     @Transactional
-    public ConvocationDto proposerAutreDate(Long convocationId, String etudiantEmail, LocalDateTime nouvelleDate,
-            String motif) {
+    public ConvocationDtoOld proposerAutreDate(Long convocationId, String etudiantEmail, LocalDateTime nouvelleDate,
+											   String motif) {
         if (nouvelleDate == null || nouvelleDate.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("La date proposée doit être ultérieure à la date actuelle");
         }
@@ -135,12 +134,12 @@ public class ConvocationService {
         convocation.proposerAutreDate(nouvelleDate, motif);
         convocationRepository.save(convocation);
 
-        return ConvocationDto.fromEntity(convocation);
+        return ConvocationDtoOld.fromEntity(convocation);
     }
 
     @Transactional
-    public ConvocationDto creerConvocation(Long candidatureId, LocalDateTime dateHeure, String lieu,
-            String messageEmployeur, String employeurEmail) {
+    public ConvocationDtoOld creerConvocation(Long candidatureId, LocalDateTime dateHeure, String lieu,
+											  String messageEmployeur, String employeurEmail) {
         if (dateHeure == null) {
             throw new IllegalArgumentException("La date et heure de l'entrevue sont obligatoires");
         }
@@ -161,6 +160,6 @@ public class ConvocationService {
         Convocation convocation = new Convocation(candidature, dateHeure, lieu, messageEmployeur);
         convocation = convocationRepository.save(convocation);
 
-        return ConvocationDto.fromEntity(convocation);
+        return ConvocationDtoOld.fromEntity(convocation);
     }
 }

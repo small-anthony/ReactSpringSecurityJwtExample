@@ -1,141 +1,139 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.Period;
+import java.util.List;
 
 @Entity
 public class Convocation {
+    public Convocation() {}
+
+    private static final Period MINIMUM_REPONSE_LIMIT = Period.ofDays(3);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "candidature_id")
-    private Candidature candidature;
-
-    private LocalDateTime dateHeure;
-
-    private String lieu;
-
     @Column(length = 1000)
-    private String messageEmployeur;
+    private String messageEmployeur = null;
 
     @Enumerated(EnumType.STRING)
     private StatutConvocation statut = StatutConvocation.EN_ATTENTE;
 
-    private LocalDateTime dateProposeeEtudiant;
+    /// Date limite avant que la convocation n'ait plus valide
+    private Instant dateLimite = Instant.now().plus(MINIMUM_REPONSE_LIMIT); // TODO implement @Scheduled
 
+    @ElementCollection
+    @CollectionTable(
+            name = "rendez_vous_possibles",
+            joinColumns = @JoinColumn(name = "rendez_vous_id")
+    )
+    private List<RendezVous> rendezVousPossibles;
+
+    @Embedded
+    private RendezVous rendezVousSelection = null;
+
+    /// Si ça s'applique, la réponse donnée par l'étudiant
     @Column(length = 1000)
-    private String motifEtudiant;
+    private String reponseEtudiant = null;
 
-    private LocalDateTime dateCreation = LocalDateTime.now();
+    public Convocation(List<RendezVous> rendezVousPossibles) {
+        if(rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
+            throw new IllegalArgumentException("rendezvous must have at least one entry");
+        }
+        this.rendezVousPossibles = rendezVousPossibles;
+    }
 
-    public Convocation() {}
-
-    public Convocation(Candidature candidature, LocalDateTime dateHeure, String lieu, String messageEmployeur) {
-        this.candidature = candidature;
-        this.dateHeure = dateHeure;
-        this.lieu = lieu;
+    public Convocation(List<RendezVous> rendezVousPossibles, String messageEmployeur) {
+        this(rendezVousPossibles);
         this.messageEmployeur = messageEmployeur;
-        this.statut = StatutConvocation.EN_ATTENTE;
-        this.dateCreation = LocalDateTime.now();
     }
 
     public boolean estPassee() {
-        return dateHeure != null && dateHeure.isBefore(LocalDateTime.now());
+        return dateLimite.isAfter(Instant.now());
     }
 
-    public void accepter() {
+    public boolean estResolu() {
+        return statut != StatutConvocation.EN_ATTENTE;
+    }
+
+    /**
+     * Accepter un rendez-vous
+     * @param rendezVous Le rendez-vous
+     * @param message La réponse de l'étudiant, optionnellement
+     */
+    public void accepter(RendezVous rendezVous, String message) {
+        if(estResolu()) {
+            throw new IllegalStateException("convocation already resolved");
+        }
+        if(!rendezVousPossibles.contains(rendezVous)) {
+            throw new IllegalArgumentException("tried to select rendezvous we don't have");
+        }
+
         this.statut = StatutConvocation.ACCEPTEE;
+        this.rendezVousSelection = rendezVous;
+        this.reponseEtudiant = message;
     }
 
+    /**
+     * Refuser un rendez-vous
+     * @param motif La raison donnée par l'étudiant, nullable
+     */
     public void refuser(String motif) {
+        if(estResolu()) {
+            throw new IllegalStateException("convocation already resolved");
+        }
         this.statut = StatutConvocation.REFUSEE;
-        this.motifEtudiant = motif;
+        this.reponseEtudiant = motif;
     }
 
-    public void proposerAutreDate(LocalDateTime nouvelleDate, String motif) {
-        this.statut = StatutConvocation.CONFLIT_HORAIRE;
-        this.dateProposeeEtudiant = nouvelleDate;
-        this.motifEtudiant = motif;
+    public void annuler() {
+        if(estResolu()) {
+            throw new IllegalStateException("convocation already resolved");
+        }
+        this.statut = StatutConvocation.ANNULEE;
     }
 
-    public void marquerEnAttenteReponse() {
-        this.statut = StatutConvocation.EN_ATTENTE_REPONSE;
+    public void updateDetails(List<RendezVous> rendezVousPossibles, String messageEmployeur)  {
+        if(estResolu()) {
+            throw new IllegalStateException("convocation already resolved");
+        }
+        if(rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
+            throw new IllegalArgumentException("rendezvous must have at least one entry");
+        }
+        this.rendezVousPossibles = rendezVousPossibles;
+        this.messageEmployeur = messageEmployeur;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public StatutConvocation getStatut() {
+        return statut;
     }
 
-    public Candidature getCandidature() {
-        return candidature;
-    }
-
-    public void setCandidature(Candidature candidature) {
-        this.candidature = candidature;
-    }
-
-    public LocalDateTime getDateHeure() {
-        return dateHeure;
-    }
-
-    public void setDateHeure(LocalDateTime dateHeure) {
-        this.dateHeure = dateHeure;
-    }
-
-    public String getLieu() {
-        return lieu;
-    }
-
-    public void setLieu(String lieu) {
-        this.lieu = lieu;
+    public Instant getDateLimite() {
+        return dateLimite;
     }
 
     public String getMessageEmployeur() {
         return messageEmployeur;
     }
 
-    public void setMessageEmployeur(String messageEmployeur) {
-        this.messageEmployeur = messageEmployeur;
+    public List<RendezVous> getRendezVousPossibles() {
+        return rendezVousPossibles;
     }
 
-    public StatutConvocation getStatut() {
-        return statut;
+    public RendezVous getRendezVousSelection() {
+        return rendezVousSelection;
     }
 
-    public void setStatut(StatutConvocation statut) {
-        this.statut = statut;
-    }
-
-    public LocalDateTime getDateProposeeEtudiant() {
-        return dateProposeeEtudiant;
-    }
-
-    public void setDateProposeeEtudiant(LocalDateTime dateProposeeEtudiant) {
-        this.dateProposeeEtudiant = dateProposeeEtudiant;
-    }
-
-    public String getMotifEtudiant() {
-        return motifEtudiant;
-    }
-
-    public void setMotifEtudiant(String motifEtudiant) {
-        this.motifEtudiant = motifEtudiant;
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
+    public String getReponseEtudiant() {
+        return reponseEtudiant;
     }
 }
