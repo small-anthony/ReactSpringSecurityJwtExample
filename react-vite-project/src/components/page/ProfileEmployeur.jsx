@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getOffresStages } from "../../services/api/OffreStageService";
 import {useTranslation} from "react-i18next";
@@ -14,6 +14,7 @@ const STATUS_STYLES = {
 
 export default function ProfileEmployeur() {
     const { t } = useTranslation("main");
+    const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
@@ -140,12 +141,13 @@ export default function ProfileEmployeur() {
                             </div>
                         )}
 
-                        <Link
-                            to={`/employeur/offres/${offre.id}/candidatures`}
-                            className="inline-block mt-5 text-sm font-semibold text-blue-600 hover:text-blue-700"
+                        <button
+                            type="button"
+                            onClick={() => navigate(`/employeur/offres/${offre.id}/candidatures`)}
+                            className="mt-5 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
                         >
                             {t("employeur_home.view_candidates")}
-                        </Link>
+                        </button>
                     </article>
                 ))}
             </div>
