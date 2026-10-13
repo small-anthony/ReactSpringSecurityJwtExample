@@ -25,7 +25,7 @@ public record ConvocationDto (
 				convocation.getStatut(),
 				convocation.getDateLimite(),
 				RendezVousDto.create(convocation.getRendezVousPossibles()),
-				rendezVousSelection == null ? null : RendezVousDto.create(convocation.getRendezVousSelection()),
+				rendezVousSelection == null ? null : RendezVousDto.create(rendezVousSelection),
 				convocation.getReponseEtudiant()
 		);
 	}
