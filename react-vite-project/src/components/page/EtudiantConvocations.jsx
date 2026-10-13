@@ -6,7 +6,6 @@ import {
   AlertCircle,
   RefreshCw,
   Inbox,
-  Filter,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -14,11 +13,9 @@ import {
   getConvocationsEtudiant,
   accepterConvocation,
   refuserConvocation,
-  proposerAutreDate,
 } from "../../services/api/ConvocationAPI.js";
 import ConvocationCard from "../convocation/ConvocationCard.jsx";
 import ModalRefuserConvocation from "../modal/ModalRefuserConvocation.jsx";
-import ModalConflitConvocation from "../modal/ModalConflitConvocation.jsx";
 
 export default function EtudiantConvocations({ embedMode = false, onPendingCountChange }) {
   const { t } = useTranslation("main");
@@ -32,9 +29,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
 
   const [modalRefusOpen, setModalRefusOpen] = useState(false);
   const [convocationRefusCible, setConvocationRefusCible] = useState(null);
-
-  const [modalConflitOpen, setModalConflitOpen] = useState(false);
-  const [convocationConflitCible, setConvocationConflitCible] = useState(null);
 
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [modalSubmitting, setModalSubmitting] = useState(false);
@@ -68,12 +62,12 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     }, 4500);
   };
 
-  const handleAccepter = async (id) => {
+  const handleAccepter = async (id, selectedSlot) => {
     try {
       setActionLoadingId(id);
       setErreur(null);
       const authHeader = authService.buildAuthHeader();
-      const updated = await accepterConvocation(id, authHeader);
+      const updated = await accepterConvocation(id, selectedSlot, authHeader);
 
       setConvocations((prev) =>
         prev.map((c) => (c.id === id ? updated : c))
@@ -124,52 +118,18 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     }
   };
 
-  const handleOuvrirConflit = (convocation) => {
-    setConvocationConflitCible(convocation);
-    setModalConflitOpen(true);
-  };
-
-  const handleConfirmerConflit = async ({ nouvelleDate, motif }) => {
-    if (!convocationConflitCible) return;
-    try {
-      setModalSubmitting(true);
-      setErreur(null);
-      const authHeader = authService.buildAuthHeader();
-      const updated = await proposerAutreDate(
-        convocationConflitCible.id,
-        nouvelleDate,
-        motif,
-        authHeader
-      );
-
-      setConvocations((prev) =>
-        prev.map((c) => (c.id === convocationConflitCible.id ? updated : c))
-      );
-      setModalConflitOpen(false);
-      setConvocationConflitCible(null);
-      notifierSucces(
-        t("convocation.success_conflict", {
-          defaultValue: "Votre proposition de nouvelle date a été envoyée avec succès à l'employeur !",
-        })
-      );
-    } catch (e) {
-      setErreur(e.message || "Erreur lors de la proposition de nouvelle date");
-    } finally {
-      setModalSubmitting(false);
-    }
-  };
-
   const convocationsFiltrees = convocations.filter((c) => {
     if (filtre === "TOUTES") return true;
     if (filtre === "EN_ATTENTE") return c.statut === "EN_ATTENTE";
     if (filtre === "ACCEPTEE") return c.statut === "ACCEPTEE";
     if (filtre === "REFUSEE") return c.statut === "REFUSEE";
-    if (filtre === "CONFLIT_HORAIRE") return c.statut === "CONFLIT_HORAIRE";
+    if (filtre === "EXPIREE") return c.statut === "EXPIREE";
     return true;
   });
 
   const countEnAttente = convocations.filter((c) => c.statut === "EN_ATTENTE").length;
   const countAcceptees = convocations.filter((c) => c.statut === "ACCEPTEE").length;
+  const countExpirees = convocations.filter((c) => c.statut === "EXPIREE").length;
 
   const content = (
     <>
@@ -274,17 +234,19 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
             </span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setFiltre("CONFLIT_HORAIRE")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              filtre === "CONFLIT_HORAIRE"
-                ? "bg-indigo-600 text-white shadow-xs"
-                : "bg-white text-indigo-700 hover:bg-indigo-50 border border-indigo-200"
-            }`}
-          >
-            {t("convocation.filter_conflicts", { defaultValue: "Conflits d'horaire" })}
-          </button>
+          {countExpirees > 0 && (
+            <button
+              type="button"
+              onClick={() => setFiltre("EXPIREE")}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                filtre === "EXPIREE"
+                  ? "bg-gray-700 text-white shadow-xs"
+                  : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
+              }`}
+            >
+              {t("convocation.status.expiree", { defaultValue: "Expirées" })} ({countExpirees})
+            </button>
+          )}
 
           <button
             type="button"
@@ -330,7 +292,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
                 convocation={convocation}
                 onAccepter={handleAccepter}
                 onRefuser={handleOuvrirRefus}
-                onConflit={handleOuvrirConflit}
                 actionLoadingId={actionLoadingId}
               />
             ))}
@@ -346,17 +307,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
         }}
         onConfirm={handleConfirmerRefus}
         convocation={convocationRefusCible}
-        loading={modalSubmitting}
-      />
-
-      <ModalConflitConvocation
-        isOpen={modalConflitOpen}
-        onClose={() => {
-          setModalConflitOpen(false);
-          setConvocationConflitCible(null);
-        }}
-        onConfirm={handleConfirmerConflit}
-        convocation={convocationConflitCible}
         loading={modalSubmitting}
       />
     </>

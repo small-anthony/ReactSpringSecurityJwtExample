@@ -56,16 +56,16 @@ export default function GestionnaireConvocations() {
             {t("convocation.status.refusee", { defaultValue: "Refusée" })}
           </span>
         );
-      case "CONFLIT_HORAIRE":
+      case "EXPIREE":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-            {t("convocation.status.conflit", { defaultValue: "Conflit d'horaire" })}
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700 border border-gray-300">
+            {t("convocation.status.expiree", { defaultValue: "Expirée" })}
           </span>
         );
-      case "EN_ATTENTE_REPONSE":
+      case "ANNULEE":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
-            {t("convocation.status.en_attente_reponse", { defaultValue: "En attente de réponse" })}
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-300">
+            {t("convocation.status.annulee", { defaultValue: "Annulée" })}
           </span>
         );
       case "EN_ATTENTE":
@@ -148,24 +148,24 @@ export default function GestionnaireConvocations() {
                     <tr key={c.id} className="hover:bg-gray-50/60 transition">
                       <td className="px-6 py-4">
                         <div className="font-bold text-gray-900">
-                          {c.nomCompletEtudiant || "Étudiant"}
+                          {c.etudiant ? `${c.etudiant.firstName} ${c.etudiant.lastName}` : (c.nomCompletEtudiant || "Étudiant")}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {c.matriculeEtudiant ? `${t("gestionnaire_convocations.matricule", { defaultValue: "Matricule :" })} ${c.matriculeEtudiant}` : c.etudiantEmail}
+                          {c.etudiant?.matricule ? `${t("gestionnaire_convocations.matricule", { defaultValue: "Matricule :" })} ${c.etudiant.matricule}` : (c.matriculeEtudiant ? `${t("gestionnaire_convocations.matricule", { defaultValue: "Matricule :" })} ${c.matriculeEtudiant}` : (c.etudiant?.email || c.etudiantEmail))}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-gray-800">{c.titrePoste || "Stage"}</div>
+                        <div className="font-semibold text-gray-800">{c.offreStage?.titre || c.titrePoste || "Stage"}</div>
                         <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
                           <Building className="w-3 h-3 text-gray-400" />
-                          <span>{c.nomEntreprise || "N/D"}</span>
+                          <span>{c.offreStage?.nomEntreprise || c.nomEntreprise || "N/D"}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-700">
-                        {formatDate(c.dateHeure)}
+                        {formatDate(c.rendezVousSelection?.date || c.rendezVousPossibles?.[0]?.date || c.dateHeure)}
                       </td>
-                      <td className="px-6 py-4 max-w-xs truncate text-xs text-gray-600" title={c.lieu}>
-                        {c.lieu || "N/D"}
+                      <td className="px-6 py-4 max-w-xs truncate text-xs text-gray-600" title={c.rendezVousSelection?.lieu || c.rendezVousPossibles?.[0]?.lieu || c.lieu}>
+                        {c.rendezVousSelection?.lieu || c.rendezVousPossibles?.[0]?.lieu || c.lieu || "N/D"}
                       </td>
                       <td className="px-6 py-4">{getStatusBadge(c.statut)}</td>
                     </tr>

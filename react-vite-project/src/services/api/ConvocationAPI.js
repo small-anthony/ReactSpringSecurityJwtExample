@@ -38,10 +38,11 @@ export async function getConvocationsAcceptees(authHeader) {
   return response.json();
 }
 
-export async function accepterConvocation(id, authHeader) {
+export async function accepterConvocation(id, rendezVousDto, authHeader) {
   const response = await fetch(`${BASE_URL}/etudiant/convocations/${id}/accepter`, {
     method: "POST",
     headers: getHeaders(authHeader),
+    body: JSON.stringify(rendezVousDto),
   });
 
   if (!response.ok) {
