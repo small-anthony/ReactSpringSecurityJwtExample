@@ -9,6 +9,8 @@ import {
     refuserCandidature,
 } from "../../services/api/OffreStageService";
 
+const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
+
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ export default function CandidaturesOffre() {
 
         getCandidatures(offreId, authService.buildAuthHeader())
             .then((data) => {
-                if (candidaturesChargees) setCandidatures(data);
+                if (candidaturesChargees) setCandidatures(data.filter(estAffichee));
             })
             .catch((err) => {
                 if (candidaturesChargees) setError(err.message);
@@ -70,6 +72,10 @@ export default function CandidaturesOffre() {
         setCandidatures((liste) => liste.map((c) => (c.id === misAJour.id ? misAJour : c)));
     };
 
+    const retirerCandidature = (candidatureId) => {
+        setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
+    };
+
     const handleAccepter = async (candidatureId) => {
         setError("");
         setEnCours(true);
@@ -87,12 +93,8 @@ export default function CandidaturesOffre() {
         setError("");
         setEnCours(true);
         try {
-            const misAJour = await refuserCandidature(
-                candidatureId,
-                messageRefus,
-                authService.buildAuthHeader()
-            );
-            remplacerCandidature(misAJour);
+            await refuserCandidature(candidatureId, messageRefus, authService.buildAuthHeader());
+            retirerCandidature(candidatureId);
             setRefusId(null);
             setMessageRefus("");
         } catch (err) {

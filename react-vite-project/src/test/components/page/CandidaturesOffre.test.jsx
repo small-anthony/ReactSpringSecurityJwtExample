@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import CandidaturesOffre from "../../../components/page/CandidaturesOffre.jsx";
@@ -133,9 +133,9 @@ describe("CandidaturesOffre", () => {
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
     });
 
-    it("refuse une candidature avec un message : le statut et le message s'affichent", async () => {
+    it("refuse une candidature avec un message : la carte disparaît et l'autre reste", async () => {
         const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([candidatureEnAttente]);
+        getCandidatures.mockResolvedValue([candidatureEnAttente, deuxiemeCandidature]);
         refuserCandidature.mockResolvedValue({
             ...candidatureEnAttente,
             statut: "REFUSEE",
@@ -143,17 +143,19 @@ describe("CandidaturesOffre", () => {
         });
 
         afficherPage();
-        await user.click(await screen.findByText("candidatures_offre.refuse"));
+        const boutonsRefuser = await screen.findAllByText("candidatures_offre.refuse");
+        await user.click(boutonsRefuser[0]);
         await user.type(
             screen.getByPlaceholderText("candidatures_offre.refuse_message_placeholder"),
             "Profil non retenu"
         );
         await user.click(screen.getByText("candidatures_offre.confirm_refuse"));
 
-        expect(await screen.findByText("candidatures_offre.statuts.REFUSEE")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
+        });
         expect(refuserCandidature).toHaveBeenCalledWith(1, "Profil non retenu", {});
-        expect(screen.getByText("Profil non retenu")).toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
+        expect(screen.getByText("Marc Dubois")).toBeInTheDocument();
     });
 
     it("annule le refus : le champ de message se ferme et les boutons reviennent", async () => {
@@ -171,15 +173,25 @@ describe("CandidaturesOffre", () => {
         expect(refuserCandidature).not.toHaveBeenCalled();
     });
 
-    it("n'affiche pas les boutons quand la candidature a déjà reçu une réponse", async () => {
+    it("n'affiche pas les candidatures déjà refusées", async () => {
         getCandidatures.mockResolvedValue([
             { ...candidatureEnAttente, statut: "REFUSEE", messageReponse: "Profil non retenu" },
         ]);
 
         afficherPage();
 
-        expect(await screen.findByText("candidatures_offre.statuts.REFUSEE")).toBeInTheDocument();
-        expect(screen.getByText("Profil non retenu")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
+        expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.statuts.REFUSEE")).not.toBeInTheDocument();
+    });
+
+    it("affiche une candidature déjà acceptée, sans les boutons Accepter / Refuser", async () => {
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
+
+        afficherPage();
+
+        expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.statuts.ACCEPTEE")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
     });
