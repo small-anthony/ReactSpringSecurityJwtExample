@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {
@@ -11,6 +11,7 @@ import {
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
+    const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
     const { t } = useTranslation("main");
 
@@ -109,10 +110,14 @@ export default function CandidaturesOffre() {
     return (
         <main className="max-w-7xl mx-auto my-10 px-4">
             <div className="mb-8">
-                <Link to="/employeur" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
+                <button
+                    type="button"
+                    onClick={() => navigate("/employeur")}
+                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
+                >
                     {t("candidatures_offre.back")}
-                </Link>
-                <h1 className="text-3xl font-bold text-gray-800 mt-2">{t("candidatures_offre.title")}</h1>
+                </button>
+                <h1 className="text-3xl font-bold text-gray-800 mt-4">{t("candidatures_offre.title")}</h1>
                 <p className="text-gray-500 mt-1">{t("candidatures_offre.subtitle")}</p>
             </div>
 
@@ -154,7 +159,7 @@ export default function CandidaturesOffre() {
                                 <button
                                     type="button"
                                     onClick={() => handleVoirCv(candidat.id)}
-                                    className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+                                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
                                 >
                                     {t("candidatures_offre.view_cv")}
                                 </button>

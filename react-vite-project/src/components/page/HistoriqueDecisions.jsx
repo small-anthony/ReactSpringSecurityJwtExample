@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getHistoriqueDecisions } from "../../services/api/OffreStageService";
 
 export default function HistoriqueDecisions() {
     const authService = useContext(AuthServiceContext);
+    const navigate = useNavigate();
     const { t, i18n } = useTranslation("main");
     const [decisions, setDecisions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -38,10 +39,14 @@ export default function HistoriqueDecisions() {
     return (
         <main className="max-w-7xl mx-auto my-10 px-4">
             <div className="mb-8">
-                <Link to="/employeur" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
+                <button
+                    type="button"
+                    onClick={() => navigate("/employeur")}
+                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
+                >
                     {t("historique.back")}
-                </Link>
-                <h1 className="text-3xl font-bold text-gray-800 mt-2">{t("historique.title")}</h1>
+                </button>
+                <h1 className="text-3xl font-bold text-gray-800 mt-4">{t("historique.title")}</h1>
                 <p className="text-gray-500 mt-1">{t("historique.subtitle")}</p>
             </div>
 
