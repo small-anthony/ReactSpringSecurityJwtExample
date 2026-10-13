@@ -87,16 +87,6 @@ function Header({ user }) {
                     </NavLink>
                   </>
               )}
-              {isEtudiant && (
-                  <NavLink to="/etudiant" className={navLinkClasses}>
-                    {t("pagename.offres_stages")}
-                  </NavLink>
-              )}
-              {isEmployeur && (
-                  <NavLink to="/employeur" className={navLinkClasses}>
-                    {t("pagename.voir_offres")}
-                  </NavLink>
-              )}
               {isGestionnaire && (
                   <>
                     <NavLink to="/gestionnaire" className={navLinkClasses}>

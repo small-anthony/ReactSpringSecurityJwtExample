@@ -205,7 +205,7 @@ export default function OffreStagesEtudiant() {
                                     : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                                 }`}
                             >
-                                <span>{t("offres_etudiant.tab_my_applications", { count: mesCandidaturesIds.length })}</span>
+                                <span>{t("offres_etudiant.tab_my_applications")}</span>
                                 {mesCandidaturesIds.length > 0 && (
                                     <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${ongletActif === "mes_candidatures" ? "bg-white text-blue-600" : "bg-gray-100 text-gray-700"}`}>
                                         {mesCandidaturesIds.length}
@@ -309,7 +309,7 @@ export default function OffreStagesEtudiant() {
                                 </div>
                                 <h3 className="text-base font-bold text-gray-900">
                                     {ongletActif === "mes_candidatures"
-                                        ? t("offres_etudiant.tab_my_applications", { count: 0 })
+                                        ? t("offres_etudiant.tab_my_applications")
                                         : t("offres_etudiant.empty_title")}
                                 </h3>
                                 <p className="text-sm text-gray-500 max-w-md mx-auto">
