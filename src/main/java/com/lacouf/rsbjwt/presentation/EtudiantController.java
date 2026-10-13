@@ -135,7 +135,7 @@ public class EtudiantController {
     }
 
     @PostMapping("/convocations/{id}/accepter")
-    public ResponseEntity<?> accepterConvocation(@PathVariable Long id, RendezVousDto rendezVousDto, Authentication authentication) {
+    public ResponseEntity<?> accepterConvocation(@PathVariable Long id, @RequestBody(required = false) RendezVousDto rendezVousDto, Authentication authentication) {
         try {
             return ResponseEntity.ok(convocationService.accepterConvocation(authentication.getName(), id, rendezVousDto));
         } catch (Exception e) {

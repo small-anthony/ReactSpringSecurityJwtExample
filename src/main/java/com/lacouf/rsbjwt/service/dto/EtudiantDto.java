@@ -10,7 +10,7 @@ public record EtudiantDto(int id, String firstName, String lastName, String emai
         implements UserDto {
 
     public static EtudiantDto create(Etudiant etudiant) {
-        return new EtudiantDto(etudiant.getId().intValue(),
+        return new EtudiantDto(etudiant.getId() != null ? etudiant.getId().intValue() : 0,
                 etudiant.getFirstName(),
                 etudiant.getLastName(),
                 etudiant.getEmail(),

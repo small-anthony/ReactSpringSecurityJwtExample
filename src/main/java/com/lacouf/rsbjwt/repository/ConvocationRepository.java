@@ -27,6 +27,7 @@ public interface ConvocationRepository extends JpaRepository<Convocation, Long> 
     SELECT DISTINCT convocation FROM Convocation convocation
         LEFT JOIN FETCH convocation.candidature candidature
         LEFT JOIN FETCH candidature.etudiant etudiant
+        LEFT JOIN FETCH candidature.offreStage offreStage
     WHERE lower(etudiant.credentials.email) = lower(:email)
     ORDER BY convocation.id ASC
     """)

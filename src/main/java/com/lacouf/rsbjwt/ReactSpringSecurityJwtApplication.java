@@ -73,10 +73,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         etudiant.getCv().accepterApprobation();
                         etudiantRepository.save(etudiant);
 
-                        etudiantRepository.save(
-                                        new Etudiant("Hatim", "Fakhour",
-                                                        new Credentials("hatim@test.com", defaultPass, Role.ETUDIANT),
-                                                        1234567, "info"));
+                        Etudiant hatim = new Etudiant("Hatim", "Fakhour",
+                                        new Credentials("hatim@test.com", defaultPass, Role.ETUDIANT),
+                                        1234567, "Techniques de l'informatique");
+                        hatim.setCv(new byte[] { 1, 2, 3 });
+                        hatim.getCv().accepterApprobation();
+                        hatim = etudiantRepository.save(hatim);
 
                         etudiantRepository.save(
                                         new Etudiant("Daniil", "Dimov",
@@ -114,16 +116,41 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         employeurRepository.save(employeur);
 
+                        Employeur employeurGoogle = new Employeur(
+                                        "Larry",
+                                        "Page",
+                                        new Credentials("valentin@test.com", defaultPass, Role.EMPLOYEUR),
+                                        "Google",
+                                        "514-111-1111");
+
+                        OffreStage offre3 = new OffreStage(
+                                        "Développeur Frontend React",
+                                        "Conception d'interfaces modernes et performantes en méthodologie Agile.",
+                                        "Google",
+                                        "Techniques de l'informatique",
+                                        "28$/h",
+                                        "16 semaines",
+                                        "Maîtrise de React, JavaScript moderne et Git.");
+                        offre3.accepter();
+                        employeurGoogle.ajouterOffre(offre3);
+                        employeurRepository.save(employeurGoogle);
+
+                        // Convocation 1 : multi-créneaux dans le futur (EN_ATTENTE)
                         Candidature cand1 = new Candidature(etudiant, offre1);
                         List<RendezVous> rv1 = new ArrayList<>();
-                        rv1.add(RendezVous.read("En ligne - Microsoft Teams",
+                        rv1.add(RendezVous.read("En ligne - Microsoft Teams (Option 1)",
                                 LocalDateTime.now().plusDays(2).withHour(14).withMinute(0).withSecond(0)
                                         .withNano(0).toInstant(ZoneOffset.UTC)));
+                        rv1.add(RendezVous.read("En ligne - Microsoft Teams (Option 2)",
+                                LocalDateTime.now().plusDays(3).withHour(10).withMinute(30).withSecond(0)
+                                        .withNano(0).toInstant(ZoneOffset.UTC)));
                         Convocation conv1 = new Convocation(rv1,
-                                "Entrevue technique de 45 minutes pour évaluer les compétences en React et Spring Boot.");
+                                "Entrevue technique de 45 minutes pour évaluer les compétences en React et Spring Boot. Choisissez le créneau qui vous convient.");
                         cand1.addConvocation(conv1);
                         candidatureRepository.save(cand1);
+                        convocationRepository.save(conv1);
 
+                        // Convocation 2 : créneau passé
                         Candidature cand2 = new Candidature(etudiant, offre2);
                         List<RendezVous> rv2 = new ArrayList<>();
                         rv2.add(RendezVous.read("Bureau CGI Inc., 1000 rue de la Gauchetière, Montréal",
@@ -131,13 +158,38 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         .withNano(0).toInstant(ZoneOffset.UTC)));
                         Convocation conv2 = new Convocation(rv2,
                                 "Entrevue DevOps & Cloud.");
+                        cand2.addConvocation(conv2);
                         candidatureRepository.save(cand2);
+                        convocationRepository.save(conv2);
 
-                        employeurRepository.save(
-                                        new Employeur("Valentin", "Dimitrov",
-                                                         new Credentials("valentin@test.com", defaultPass,
-                                                                        Role.EMPLOYEUR),
-                                                        "Google", "514 111 1111"));
-                } catch (Exception e) {}
+                        // Convocation 3 : Google (EN_ATTENTE avec 2 options)
+                        Candidature cand3 = new Candidature(etudiant, offre3);
+                        List<RendezVous> rv3 = new ArrayList<>();
+                        rv3.add(RendezVous.read("Google Montréal - Salle 402",
+                                LocalDateTime.now().plusDays(4).withHour(13).withMinute(0).withSecond(0)
+                                        .withNano(0).toInstant(ZoneOffset.UTC)));
+                        rv3.add(RendezVous.read("Google Meet (Visioconférence)",
+                                LocalDateTime.now().plusDays(5).withHour(15).withMinute(0).withSecond(0)
+                                        .withNano(0).toInstant(ZoneOffset.UTC)));
+                        Convocation conv3 = new Convocation(rv3,
+                                "Entrevue pour le stage Développeur Frontend chez Google. Merci de confirmer votre disponibilité.");
+                        cand3.addConvocation(conv3);
+                        candidatureRepository.save(cand3);
+                        convocationRepository.save(conv3);
+
+                        // Données pour hatim@test.com
+                        Candidature candHatim = new Candidature(hatim, offre1);
+                        List<RendezVous> rvHatim = new ArrayList<>();
+                        rvHatim.add(RendezVous.read("En ligne - Microsoft Teams",
+                                LocalDateTime.now().plusDays(2).withHour(14).withMinute(0).withSecond(0)
+                                        .withNano(0).toInstant(ZoneOffset.UTC)));
+                        Convocation convHatim = new Convocation(rvHatim,
+                                "Convocation d'entrevue technique CGI Inc.");
+                        candHatim.addConvocation(convHatim);
+                        candidatureRepository.save(candHatim);
+                        convocationRepository.save(convHatim);
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
         }
 }
