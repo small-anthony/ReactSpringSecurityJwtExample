@@ -107,7 +107,7 @@ export default function CandidaturesOffre() {
     };
 
     return (
-        <main className="max-w-5xl mx-auto my-10 px-4">
+        <main className="max-w-7xl mx-auto my-10 px-4">
             <div className="mb-8">
                 <Link to="/employeur" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
                     {t("candidatures_offre.back")}
@@ -124,15 +124,18 @@ export default function CandidaturesOffre() {
                 </p>
             )}
 
-            <div className="grid gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {candidatures.map((candidat) => (
-                    <article key={candidat.id} className="p-5 rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-800">
+                    <article
+                        key={candidat.id}
+                        className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
+                    >
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                                <h2 className="text-lg font-semibold text-gray-800 break-words">
                                     {candidat.etudiant.firstName} {candidat.etudiant.lastName}
                                 </h2>
-                                <p className="text-sm text-gray-500">{candidat.etudiant.email}</p>
+                                <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
                                 <p className="text-sm text-blue-600">
                                     {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
                                         defaultValue: candidat.etudiant.discipline,
@@ -161,14 +164,14 @@ export default function CandidaturesOffre() {
                         </div>
 
                         {candidat.messageReponse && (
-                            <p className="mt-3 text-sm text-gray-700">
+                            <p className="mt-3 text-sm text-gray-700 break-words">
                                 <span className="font-semibold">{t("candidatures_offre.response_message")} : </span>
                                 {candidat.messageReponse}
                             </p>
                         )}
 
                         {candidat.statut === "EN_ATTENTE" && refusId !== candidat.id && (
-                            <div className="mt-4 flex gap-3">
+                            <div className="mt-auto pt-4 flex flex-wrap gap-3">
                                 <button
                                     type="button"
                                     disabled={enCours}
@@ -189,7 +192,7 @@ export default function CandidaturesOffre() {
                         )}
 
                         {refusId === candidat.id && (
-                            <div className="mt-4">
+                            <div className="mt-auto pt-4">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     {t("candidatures_offre.refuse_message_label")}
                                 </label>
@@ -201,7 +204,7 @@ export default function CandidaturesOffre() {
                                     placeholder={t("candidatures_offre.refuse_message_placeholder")}
                                     className="w-full p-2 border border-gray-300 rounded-lg text-sm"
                                 />
-                                <div className="mt-2 flex gap-3">
+                                <div className="mt-2 flex flex-wrap gap-3">
                                     <button
                                         type="button"
                                         disabled={enCours}

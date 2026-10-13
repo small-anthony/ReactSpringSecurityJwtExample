@@ -36,7 +36,7 @@ export default function HistoriqueDecisions() {
             : "bg-red-100 text-red-800 border-red-200";
 
     return (
-        <main className="max-w-5xl mx-auto my-10 px-4">
+        <main className="max-w-7xl mx-auto my-10 px-4">
             <div className="mb-8">
                 <Link to="/employeur" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
                     {t("historique.back")}
@@ -53,16 +53,16 @@ export default function HistoriqueDecisions() {
                 </p>
             )}
 
-            <div className="grid gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {decisions.map((decision, index) => (
                     <article
                         key={`${decision.candidatureId}-${index}`}
-                        className="p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
+                        className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
                     >
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-800">{decision.etudiantNom}</h2>
-                                <p className="text-sm text-gray-500">{decision.titreOffre}</p>
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                                <h2 className="text-lg font-semibold text-gray-800 break-words">{decision.etudiantNom}</h2>
+                                <p className="text-sm text-gray-500 break-words">{decision.titreOffre}</p>
                             </div>
                             <span
                                 className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(decision.nouveauStatut)}`}
@@ -79,7 +79,7 @@ export default function HistoriqueDecisions() {
                         </p>
 
                         {decision.message && (
-                            <p className="mt-1 text-sm text-gray-700">
+                            <p className="mt-1 text-sm text-gray-700 break-words">
                                 <span className="font-semibold">{t("historique.message")} : </span>
                                 {decision.message}
                             </p>
