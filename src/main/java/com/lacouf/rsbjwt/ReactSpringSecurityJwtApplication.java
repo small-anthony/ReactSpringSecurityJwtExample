@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +13,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 @EnableScheduling
@@ -111,33 +115,29 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         employeurRepository.save(employeur);
 
                         Candidature cand1 = new Candidature(etudiant, offre1);
+                        List<RendezVous> rv1 = new ArrayList<>();
+                        rv1.add(RendezVous.read("En ligne - Microsoft Teams",
+                                LocalDateTime.now().plusDays(2).withHour(14).withMinute(0).withSecond(0)
+                                        .withNano(0).toInstant(ZoneOffset.UTC)));
+                        Convocation conv1 = new Convocation(rv1,
+                                "Entrevue technique de 45 minutes pour évaluer les compétences en React et Spring Boot.");
+                        cand1.addConvocation(conv1);
                         candidatureRepository.save(cand1);
 
                         Candidature cand2 = new Candidature(etudiant, offre2);
+                        List<RendezVous> rv2 = new ArrayList<>();
+                        rv2.add(RendezVous.read("Bureau CGI Inc., 1000 rue de la Gauchetière, Montréal",
+                                LocalDateTime.now().minusDays(1).withHour(10).withMinute(30).withSecond(0)
+                                        .withNano(0).toInstant(ZoneOffset.UTC)));
+                        Convocation conv2 = new Convocation(rv2,
+                                "Entrevue DevOps & Cloud.");
                         candidatureRepository.save(cand2);
-
-                        Convocation conv1 = new Convocation(
-                                        cand1,
-                                        LocalDateTime.now().plusDays(2).withHour(14).withMinute(0).withSecond(0)
-                                                        .withNano(0),
-                                        "En ligne - Microsoft Teams",
-                                        "Entrevue technique de 45 minutes pour évaluer les compétences en React et Spring Boot.");
-                        convocationRepository.save(conv1);
-
-                        Convocation conv2 = new Convocation(
-                                        cand2,
-                                        LocalDateTime.now().minusDays(1).withHour(10).withMinute(30).withSecond(0)
-                                                        .withNano(0),
-                                        "Bureau CGI Inc., 1000 rue de la Gauchetière, Montréal",
-                                        "Entrevue DevOps & Cloud.");
-                        convocationRepository.save(conv2);
 
                         employeurRepository.save(
                                         new Employeur("Valentin", "Dimitrov",
                                                          new Credentials("valentin@test.com", defaultPass,
                                                                         Role.EMPLOYEUR),
                                                         "Google", "514 111 1111"));
-                } catch (Exception e) {
-                }
+                } catch (Exception e) {}
         }
 }

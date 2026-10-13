@@ -7,6 +7,8 @@ public enum StatutConvocation {
     ACCEPTEE,
     /// L'étudiant n'a pas pu choisir une date d'entrevue
     REFUSEE,
+    /// L'étudiant n'a simplement pas répondu
+    EXPIREE,
     /// La convocation a été annulée par l'employeur
     ANNULEE,
 }

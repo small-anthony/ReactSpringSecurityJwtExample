@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.EmployeurDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationConvocationRequest;
 import com.lacouf.rsbjwt.service.ConvocationService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 import java.util.List;
@@ -131,12 +131,11 @@ public class EmployeurController {
             @RequestBody CreationConvocationRequest request,
             Authentication authentication) {
         try {
-            ConvocationDtoOld convocationDto = convocationService.creerConvocation(
+            ConvocationDto convocationDto = convocationService.creerConvocation(
+                    authentication.getName(),
                     candidatureId,
-                    request.getDateHeure(),
-                    request.getLieu(),
-                    request.getMessageEmployeur(),
-                    authentication.getName()
+                    request.rendezVousPossibles(),
+                    request.messageEmployeur()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(convocationDto);
         } catch (Exception e) {
@@ -145,7 +144,7 @@ public class EmployeurController {
     }
 
     @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDtoOld>> getConvocationsEmployeur(Authentication authentication) {
+    public ResponseEntity<List<ConvocationDto>> getConvocationsEmployeur(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
     }
 }

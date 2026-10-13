@@ -4,7 +4,7 @@ import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -101,7 +101,7 @@ public class GestionnaireController {
     }
 
     @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDtoOld>> getToutesConvocations() {
+    public ResponseEntity<List<ConvocationDto>> getToutesConvocations() {
         return ResponseEntity.ok(convocationService.getToutesConvocations());
     }
 }

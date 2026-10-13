@@ -1,19 +1,17 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
+import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
-import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ConvocationService {
@@ -27,139 +25,88 @@ public class ConvocationService {
         this.candidatureRepository = candidatureRepository;
     }
 
-    @Transactional
+    @Transactional()
     public void verifierEtMettreAJourStatutsPasses() {
-        LocalDateTime maintenant = LocalDateTime.now();
-        List<StatutConvocation> statutsAVerifier = Arrays.asList(
-                StatutConvocation.EN_ATTENTE,
-                StatutConvocation.ACCEPTEE,
-                StatutConvocation.CONFLIT_HORAIRE);
-
-        List<Convocation> convocationPassees = convocationRepository.findByStatutInAndDateHeureBefore(statutsAVerifier,
-                maintenant);
-        for (Convocation c : convocationPassees) {
-            c.marquerEnAttenteReponse();
-            if (c.getCandidature() != null) {
-                c.getCandidature().setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
-            }
-            convocationRepository.save(c);
-        }
-    }
-
-    @Scheduled(cron = "0 */5 * * * *")
-    public void schedulerVerifierStatutsPasses() {
-        verifierEtMettreAJourStatutsPasses();
-    }
-
-    @Transactional
-    public List<ConvocationDtoOld> getConvocationsEtudiant(String etudiantEmail) {
-        verifierEtMettreAJourStatutsPasses();
-        return convocationRepository.findByEtudiantEmail(etudiantEmail)
-                .stream()
-                .map(ConvocationDtoOld::fromEntity)
-                .collect(Collectors.toList());
+        convocationRepository.expireConvocations(
+                Instant.now(),
+                StatutConvocation.ANNULEE,
+                StatutConvocation.EN_ATTENTE
+        );
     }
 
     @Transactional(readOnly = true)
-    public List<ConvocationDtoOld> getConvocationsAccepteesEtudiant(String etudiantEmail) {
-        return convocationRepository.findByEtudiantEmail(etudiantEmail)
-                .stream()
-                .filter(c -> c.getStatut() == StatutConvocation.ACCEPTEE)
-                .map(ConvocationDtoOld::fromEntity)
-                .collect(Collectors.toList());
+    public List<ConvocationDto> getConvocationsEtudiant(String etudiantEmail) {
+        return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConvocationDto> getConvocationsAccepteesEtudiant(String etudiantEmail) {
+        return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {
+        return ConvocationDto.create(convocationRepository.findByEmployeurEmail(employeurEmail));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConvocationDto> getToutesConvocations() {
+        return ConvocationDto.create(convocationRepository.findAll());
     }
 
     @Transactional
-    public List<ConvocationDtoOld> getConvocationsEmployeur(String employeurEmail) {
-        verifierEtMettreAJourStatutsPasses();
-        return convocationRepository.findByEmployeurEmail(employeurEmail)
-                .stream()
-                .map(ConvocationDtoOld::fromEntity)
-                .collect(Collectors.toList());
-    }
+    public ConvocationDto creerConvocation(String actorEmail, Long candidatureId,
+                                           List<RendezVousDto> rendezVousPossibles,
+                                           String messageEmployeur) {
 
-    @Transactional
-    public List<ConvocationDtoOld> getToutesConvocations() {
-        verifierEtMettreAJourStatutsPasses();
-        return convocationRepository.findAllOrderByDateHeureAsc()
-                .stream()
-                .map(ConvocationDtoOld::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public ConvocationDtoOld accepterConvocation(Long convocationId, String etudiantEmail) {
-        Convocation convocation = convocationRepository.findByIdAndEtudiantEmail(convocationId, etudiantEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée ou accès non autorisé"));
-
-        if (convocation.estPassee()) {
-            convocation.marquerEnAttenteReponse();
-            if (convocation.getCandidature() != null) {
-                convocation.getCandidature().setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
-            }
-            convocationRepository.save(convocation);
-            throw new IllegalStateException("La date de l'entrevue est déjà passée. Le statut a été mis à jour.");
-        }
-
-        convocation.accepter();
-        convocationRepository.save(convocation);
-
-        return ConvocationDtoOld.fromEntity(convocation);
-    }
-
-    @Transactional
-    public ConvocationDtoOld refuserConvocation(Long convocationId, String etudiantEmail, String motif) {
-        Convocation convocation = convocationRepository.findByIdAndEtudiantEmail(convocationId, etudiantEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée ou accès non autorisé"));
-
-        convocation.refuser(motif);
-        if (convocation.getCandidature() != null) {
-            convocation.getCandidature().setStatut(StatutCandidature.REFUSEE);
-        }
-        convocationRepository.save(convocation);
-
-        return ConvocationDtoOld.fromEntity(convocation);
-    }
-
-    @Transactional
-    public ConvocationDtoOld proposerAutreDate(Long convocationId, String etudiantEmail, LocalDateTime nouvelleDate,
-											   String motif) {
-        if (nouvelleDate == null || nouvelleDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("La date proposée doit être ultérieure à la date actuelle");
-        }
-
-        Convocation convocation = convocationRepository.findByIdAndEtudiantEmail(convocationId, etudiantEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée ou accès non autorisé"));
-
-        convocation.proposerAutreDate(nouvelleDate, motif);
-        convocationRepository.save(convocation);
-
-        return ConvocationDtoOld.fromEntity(convocation);
-    }
-
-    @Transactional
-    public ConvocationDtoOld creerConvocation(Long candidatureId, LocalDateTime dateHeure, String lieu,
-											  String messageEmployeur, String employeurEmail) {
-        if (dateHeure == null) {
-            throw new IllegalArgumentException("La date et heure de l'entrevue sont obligatoires");
-        }
-        if (lieu == null || lieu.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le lieu de l'entrevue est obligatoire");
-        }
 
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée"));
 
-        if (employeurEmail != null && candidature.getOffreStage() != null
+        if (actorEmail != null && candidature.getOffreStage() != null
                 && candidature.getOffreStage().getEmployeur() != null) {
-            if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(employeurEmail)) {
+            if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
                 throw new SecurityException("Vous n'êtes pas autorisé à convoquer ce candidat");
             }
         }
 
-        Convocation convocation = new Convocation(candidature, dateHeure, lieu, messageEmployeur);
+        // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
+
+        Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         convocation = convocationRepository.save(convocation);
 
-        return ConvocationDtoOld.fromEntity(convocation);
+        return ConvocationDto.create(convocation);
+    }
+
+    @Transactional
+    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) {
+        Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
+                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
+        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+            throw new RuntimeException("No auth"); // TODO exception
+        }
+
+        RendezVous rendezVous = RendezVous.read(rendezVousSelection);
+        convocation.accepter(rendezVous, null);
+        convocationRepository.save(convocation);
+
+        return ConvocationDto.create(convocation);
+    }
+
+    @Transactional
+    public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) {
+        Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
+                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
+        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+            throw new RuntimeException("No auth"); // TODO exception
+        }
+        if(convocation.estResolu()) {
+            throw new IllegalArgumentException("Convocation est immuable");
+        }
+
+        convocation.refuser(motif);
+        convocationRepository.save(convocation);
+
+        return ConvocationDto.create(convocation);
     }
 }

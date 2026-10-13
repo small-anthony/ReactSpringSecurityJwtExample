@@ -1,51 +1,12 @@
 package com.lacouf.rsbjwt.presentation.RequestDto;
 
-import java.time.LocalDateTime;
+import com.lacouf.rsbjwt.service.dto.RendezVousDto;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 
-public class CreationConvocationRequest {
-    private Long candidatureId;
-    private LocalDateTime dateHeure;
-    private String lieu;
-    private String messageEmployeur;
+import java.util.List;
 
-    public CreationConvocationRequest() {}
-
-    public CreationConvocationRequest(Long candidatureId, LocalDateTime dateHeure, String lieu, String messageEmployeur) {
-        this.candidatureId = candidatureId;
-        this.dateHeure = dateHeure;
-        this.lieu = lieu;
-        this.messageEmployeur = messageEmployeur;
-    }
-
-    public Long getCandidatureId() {
-        return candidatureId;
-    }
-
-    public void setCandidatureId(Long candidatureId) {
-        this.candidatureId = candidatureId;
-    }
-
-    public LocalDateTime getDateHeure() {
-        return dateHeure;
-    }
-
-    public void setDateHeure(LocalDateTime dateHeure) {
-        this.dateHeure = dateHeure;
-    }
-
-    public String getLieu() {
-        return lieu;
-    }
-
-    public void setLieu(String lieu) {
-        this.lieu = lieu;
-    }
-
-    public String getMessageEmployeur() {
-        return messageEmployeur;
-    }
-
-    public void setMessageEmployeur(String messageEmployeur) {
-        this.messageEmployeur = messageEmployeur;
-    }
-}
+public record CreationConvocationRequest (
+        Long candidatureId,
+        String messageEmployeur,
+        List<RendezVousDto> rendezVousPossibles
+) implements DataTransferObject { }

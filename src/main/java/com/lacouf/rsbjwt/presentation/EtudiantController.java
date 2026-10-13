@@ -2,11 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
-import com.lacouf.rsbjwt.service.dto.CvDto;
-import com.lacouf.rsbjwt.service.dto.EtudiantDto;
-import com.lacouf.rsbjwt.service.dto.OffreStageDto;
-import com.lacouf.rsbjwt.service.dto.StatutCvDto;
+import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.presentation.RequestDto.ConflitHoraireRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.RefusConvocationRequest;
 import com.lacouf.rsbjwt.service.ConvocationService;
@@ -127,20 +123,21 @@ public class EtudiantController {
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
 
-@GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDtoOld>> getConvocations(Authentication authentication) {
+    @GetMapping("/convocations")
+    public ResponseEntity<List<ConvocationDto>> getConvocations(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsEtudiant(authentication.getName()));
     }
 
+    // TODO convocations?statut=accepted
     @GetMapping("/convocations/acceptees")
-    public ResponseEntity<List<ConvocationDtoOld>> getConvocationsAcceptees(Authentication authentication) {
+    public ResponseEntity<List<ConvocationDto>> getConvocationsAcceptees(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsAccepteesEtudiant(authentication.getName()));
     }
 
     @PostMapping("/convocations/{id}/accepter")
-    public ResponseEntity<?> accepterConvocation(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> accepterConvocation(@PathVariable Long id, RendezVousDto rendezVousDto, Authentication authentication) {
         try {
-            return ResponseEntity.ok(convocationService.accepterConvocation(id, authentication.getName()));
+            return ResponseEntity.ok(convocationService.accepterConvocation(authentication.getName(), id, rendezVousDto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
@@ -151,18 +148,7 @@ public class EtudiantController {
             @RequestBody(required = false) RefusConvocationRequest request, Authentication authentication) {
         try {
             String motif = request != null ? request.getMotif() : null;
-            return ResponseEntity.ok(convocationService.refuserConvocation(id, authentication.getName(), motif));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/convocations/{id}/conflit")
-    public ResponseEntity<?> proposerAutreDate(@PathVariable Long id, @RequestBody ConflitHoraireRequest request,
-            Authentication authentication) {
-        try {
-            return ResponseEntity.ok(convocationService.proposerAutreDate(id, authentication.getName(),
-                    request.getNouvelleDate(), request.getMotif()));
+            return ResponseEntity.ok(convocationService.refuserConvocation(authentication.getName(), id, motif));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

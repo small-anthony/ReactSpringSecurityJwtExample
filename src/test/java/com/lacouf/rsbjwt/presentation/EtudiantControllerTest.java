@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.*;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -279,7 +282,7 @@ void getConvocations_shouldReturnOk() {
         when(authentication.getName()).thenReturn("etudiant@test.com");
         when(convocationService.getConvocationsEtudiant("etudiant@test.com")).thenReturn(List.of());
 
-        ResponseEntity<List<ConvocationDtoOld>> response = etudiantController.getConvocations(authentication);
+        ResponseEntity<List<ConvocationDto>> response = etudiantController.getConvocations(authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -289,10 +292,20 @@ void getConvocations_shouldReturnOk() {
     void accepterConvocation_shouldReturnOk() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
-        ConvocationDtoOld dto = new ConvocationDtoOld();
-        when(convocationService.accepterConvocation(1L, "etudiant@test.com")).thenReturn(dto);
+        List<RendezVousDto> rendezVousDtos = new ArrayList<>();
+        rendezVousDtos.add(new RendezVousDto(Instant.MAX, "ici"));
+        ConvocationDto dto = new ConvocationDto(
+                1L,
+                null,
+                StatutConvocation.EN_ATTENTE,
+                Instant.MAX,
+                rendezVousDtos,
+                null,
+                null
+        );
+        when(convocationService.accepterConvocation("etudiant@test.com", 1L, rendezVousDtos.getFirst())).thenReturn(dto);
 
-        ResponseEntity<?> response = etudiantController.accepterConvocation(1L, authentication);
+        ResponseEntity<?> response = etudiantController.accepterConvocation(1L, rendezVousDtos.getFirst(), authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(dto, response.getBody());
@@ -302,26 +315,21 @@ void getConvocations_shouldReturnOk() {
     void refuserConvocation_shouldReturnOk() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
-        ConvocationDtoOld dto = new ConvocationDtoOld();
+        List<RendezVousDto> rendezVousDtos = new ArrayList<>();
+        rendezVousDtos.add(new RendezVousDto(Instant.MAX, "ici"));
+        ConvocationDto dto = new ConvocationDto(
+                1L,
+                null,
+                StatutConvocation.EN_ATTENTE,
+                Instant.MAX,
+                rendezVousDtos,
+                null,
+                null
+        );
         com.lacouf.rsbjwt.presentation.RequestDto.RefusConvocationRequest req = new com.lacouf.rsbjwt.presentation.RequestDto.RefusConvocationRequest("Non merci");
-        when(convocationService.refuserConvocation(1L, "etudiant@test.com", "Non merci")).thenReturn(dto);
+        when(convocationService.refuserConvocation("etudiant@test.com", 1L, "Non merci")).thenReturn(dto);
 
         ResponseEntity<?> response = etudiantController.refuserConvocation(1L, req, authentication);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void proposerAutreDate_shouldReturnOk() {
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("etudiant@test.com");
-        java.time.LocalDateTime date = java.time.LocalDateTime.now().plusDays(2);
-        com.lacouf.rsbjwt.presentation.RequestDto.ConflitHoraireRequest req = new com.lacouf.rsbjwt.presentation.RequestDto.ConflitHoraireRequest(date, "Conflit");
-        ConvocationDtoOld dto = new ConvocationDtoOld();
-        when(convocationService.proposerAutreDate(1L, "etudiant@test.com", date, "Conflit")).thenReturn(dto);
-
-        ResponseEntity<?> response = etudiantController.proposerAutreDate(1L, req, authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(dto, response.getBody());

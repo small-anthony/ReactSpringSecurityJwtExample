@@ -11,5 +11,7 @@ public record RendezVousDto(Instant date, String lieu) implements DataTransferOb
 		return new RendezVousDto(rendezVous.getDate(), rendezVous.getLieu());
 	}
 
-	public static List<RendezVousDto> create(List<RendezVous> rendezVous) {}
+	public static List<RendezVousDto> create(List<RendezVous> rendezVous) {
+		return rendezVous.stream().map(RendezVousDto::create).toList();
+	}
 }

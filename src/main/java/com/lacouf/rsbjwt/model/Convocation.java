@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import jakarta.persistence.*;
@@ -25,7 +26,7 @@ public class Convocation {
     private StatutConvocation statut = StatutConvocation.EN_ATTENTE;
 
     /// Date limite avant que la convocation n'ait plus valide
-    private Instant dateLimite = Instant.now().plus(MINIMUM_REPONSE_LIMIT); // TODO implement @Scheduled
+    private Instant dateLimite = Instant.now().plus(MINIMUM_REPONSE_LIMIT);
 
     @ElementCollection
     @CollectionTable(
@@ -41,6 +42,9 @@ public class Convocation {
     @Column(length = 1000)
     private String reponseEtudiant = null;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Candidature candidature;
+
     public Convocation(List<RendezVous> rendezVousPossibles) {
         if(rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
             throw new IllegalArgumentException("rendezvous must have at least one entry");
@@ -54,11 +58,11 @@ public class Convocation {
     }
 
     public boolean estPassee() {
-        return dateLimite.isAfter(Instant.now());
+        return !dateLimite.isAfter(Instant.now()); // isAfter() et isBefore() has edgecase if instant == Instant.now()
     }
 
     public boolean estResolu() {
-        return statut != StatutConvocation.EN_ATTENTE;
+        return getStatut() != StatutConvocation.EN_ATTENTE;
     }
 
     /**
@@ -75,6 +79,7 @@ public class Convocation {
         }
 
         this.statut = StatutConvocation.ACCEPTEE;
+        this.candidature.setStatut(StatutCandidature.ACCEPTEE);
         this.rendezVousSelection = rendezVous;
         this.reponseEtudiant = message;
     }
@@ -88,6 +93,7 @@ public class Convocation {
             throw new IllegalStateException("convocation already resolved");
         }
         this.statut = StatutConvocation.REFUSEE;
+        this.candidature.setStatut(StatutCandidature.REFUSEE);
         this.reponseEtudiant = motif;
     }
 
@@ -114,6 +120,9 @@ public class Convocation {
     }
 
     public StatutConvocation getStatut() {
+        if(statut == StatutConvocation.EN_ATTENTE && estPassee()) {
+            return StatutConvocation.EXPIREE;
+        }
         return statut;
     }
 
@@ -135,5 +144,21 @@ public class Convocation {
 
     public String getReponseEtudiant() {
         return reponseEtudiant;
+    }
+
+    public Candidature getCandidature() {
+        return candidature;
+    }
+
+    public void setCandidature(Candidature candidature) {
+        this.candidature = candidature;
+    }
+
+    public Etudiant getEtudiant() {
+        return candidature.getEtudiant();
+    }
+
+    public Employeur getEmployeur() {
+        return candidature.getOffreStage().getEmployeur();
     }
 }

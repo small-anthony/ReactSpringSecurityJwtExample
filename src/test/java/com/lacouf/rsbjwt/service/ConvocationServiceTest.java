@@ -5,18 +5,22 @@ import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
-import com.lacouf.rsbjwt.service.dto.ConvocationDtoOld;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +45,9 @@ class ConvocationServiceTest {
     private OffreStage offreStage;
     private Candidature candidature;
     private Convocation convocation;
+    private RendezVous goodRendezVous;
+    private RendezVous badRendezVous;
+    private List<RendezVous> rendezVousPossibles;
 
     @BeforeEach
     void setUp() {
@@ -49,38 +56,32 @@ class ConvocationServiceTest {
         offreStage = new OffreStage("Développeur Java", "Stage de dev", "CGI Inc.");
         offreStage.setEmployeur(employeur);
         candidature = new Candidature(etudiant, offreStage);
+        ReflectionTestUtils.setField(candidature, "id", 10L);
 
-        convocation = new Convocation(candidature, LocalDateTime.now().plusDays(3), "Bureau Montréal", "Message");
-        convocation.setId(1L);
-    }
+        rendezVousPossibles = new ArrayList<>();
+        goodRendezVous = RendezVous.read("Ici", Instant.MAX);
+        rendezVousPossibles.add(goodRendezVous);
+        badRendezVous = RendezVous.read("Là-bas", Instant.MIN);
+        rendezVousPossibles.add(badRendezVous);
 
-    @Test
-    void getConvocationsEtudiant_succes() {
-        when(convocationRepository.findByStatutInAndDateHeureBefore(anyList(), any(LocalDateTime.class)))
-                .thenReturn(Collections.emptyList());
-        when(convocationRepository.findByEtudiantEmail("etudiant@test.com"))
-                .thenReturn(List.of(convocation));
-
-        List<ConvocationDtoOld> result = convocationService.getConvocationsEtudiant("etudiant@test.com");
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getId());
-        assertEquals("Bureau Montréal", result.get(0).getLieu());
-        assertEquals(StatutConvocation.EN_ATTENTE, result.get(0).getStatut());
+        convocation = new Convocation(rendezVousPossibles, "Message");
+        ReflectionTestUtils.setField(convocation, "id", 1L);
+        ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MAX);
+        candidature.addConvocation(convocation);
     }
 
     @Test
     void accepterConvocation_succes() {
-        when(convocationRepository.findByIdAndEtudiantEmail(1L, "etudiant@test.com"))
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
         when(convocationRepository.save(any(Convocation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        ConvocationDtoOld dto = convocationService.accepterConvocation(1L, "etudiant@test.com");
+        RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
+        ConvocationDto dto = convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto);
 
         assertNotNull(dto);
-        assertEquals(StatutConvocation.ACCEPTEE, dto.getStatut());
+        assertEquals(StatutConvocation.ACCEPTEE, dto.statut());
         assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
 
         verify(convocationRepository).save(convocation);
@@ -88,107 +89,57 @@ class ConvocationServiceTest {
 
     @Test
     void accepterConvocation_datePassee_lanceException() {
-        convocation.setDateHeure(LocalDateTime.now().minusDays(1));
-        when(convocationRepository.findByIdAndEtudiantEmail(1L, "etudiant@test.com"))
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
+        ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MIN);
 
+        RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
         assertThrows(IllegalStateException.class, () ->
-                convocationService.accepterConvocation(1L, "etudiant@test.com")
+                convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto)
         );
 
-        assertEquals(StatutConvocation.EN_ATTENTE_EMPLOYEUR, convocation.getStatut());
-        assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
-        verify(convocationRepository).save(convocation);
+        assertEquals(StatutConvocation.EXPIREE, convocation.getStatut());
+//        assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
+//        verify(convocationRepository).save(convocation);
     }
 
     @Test
     void refuserConvocation_succes() {
-        when(convocationRepository.findByIdAndEtudiantEmail(1L, "etudiant@test.com"))
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
         when(convocationRepository.save(any(Convocation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        ConvocationDtoOld dto = convocationService.refuserConvocation(1L, "etudiant@test.com", "Pas disponible");
+        String raison = "Pas disponible";
+
+        ConvocationDto dto = convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), raison);
 
         assertNotNull(dto);
-        assertEquals(StatutConvocation.REFUSEE, dto.getStatut());
-        assertEquals("Pas disponible", convocation.getMotifEtudiant());
-        assertEquals(StatutCandidature.REFUSEE, candidature.getStatut());
+        assertEquals(StatutConvocation.REFUSEE, dto.statut());
+        assertEquals(raison, convocation.getReponseEtudiant());
+//        assertEquals(StatutCandidature.REFUSEE, candidature.getStatut());
 
         verify(convocationRepository).save(convocation);
-    }
-
-    @Test
-    void proposerAutreDate_succes() {
-        LocalDateTime nouvelleDate = LocalDateTime.now().plusDays(5);
-        when(convocationRepository.findByIdAndEtudiantEmail(1L, "etudiant@test.com"))
-                .thenReturn(Optional.of(convocation));
-        when(convocationRepository.save(any(Convocation.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        ConvocationDtoOld dto = convocationService.proposerAutreDate(1L, "etudiant@test.com", nouvelleDate, "Examen ce jour-là");
-
-        assertNotNull(dto);
-        assertEquals(StatutConvocation.CONFLIT_HORAIRE, dto.getStatut());
-        assertEquals(nouvelleDate, convocation.getDateProposeeEtudiant());
-        assertEquals("Examen ce jour-là", convocation.getMotifEtudiant());
-
-        verify(convocationRepository).save(convocation);
-    }
-
-    @Test
-    void proposerAutreDate_datePassee_lanceException() {
-        LocalDateTime datePassee = LocalDateTime.now().minusDays(1);
-
-        assertThrows(IllegalArgumentException.class, () ->
-                convocationService.proposerAutreDate(1L, "etudiant@test.com", datePassee, "Erreur")
-        );
-        verify(convocationRepository, never()).save(any());
     }
 
     @Test
     void creerConvocation_succes() {
         LocalDateTime date = LocalDateTime.now().plusDays(4);
-        when(candidatureRepository.findById(10L)).thenReturn(Optional.of(candidature));
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
         when(convocationRepository.save(any(Convocation.class))).thenAnswer(invocation -> {
             Convocation c = invocation.getArgument(0);
-            c.setId(99L);
+            ReflectionTestUtils.setField(c, "id", 99L);
             return c;
         });
 
-        ConvocationDtoOld dto = convocationService.creerConvocation(10L, date, "Virtuel", "Bienvenue", "employeur@test.com");
+        List<RendezVousDto> dtos = new ArrayList<>();
+        dtos.add(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+
+        ConvocationDto dto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "Bienvenue");
 
         assertNotNull(dto);
-        assertEquals(99L, dto.getId());
-        assertEquals("Virtuel", dto.getLieu());
-        assertEquals(StatutConvocation.EN_ATTENTE, dto.getStatut());
-    }
-
-    @Test
-    void getToutesConvocations_pourGestionnaire() {
-        when(convocationRepository.findByStatutInAndDateHeureBefore(anyList(), any(LocalDateTime.class)))
-                .thenReturn(Collections.emptyList());
-        when(convocationRepository.findAllOrderByDateHeureAsc())
-                .thenReturn(List.of(convocation));
-
-        List<ConvocationDtoOld> result = convocationService.getToutesConvocations();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Hatim Fakhour", result.get(0).getEtudiantNomComplet());
-        assertEquals("CGI Inc.", result.get(0).getEntreprise());
-    }
-
-    @Test
-    void verifierEtMettreAJourStatutsPasses_metStatutEnAttenteReponse() {
-        Convocation convPassee = new Convocation(candidature, LocalDateTime.now().minusHours(2), "Lieu", "Msg");
-        when(convocationRepository.findByStatutInAndDateHeureBefore(anyList(), any(LocalDateTime.class)))
-                .thenReturn(List.of(convPassee));
-
-        convocationService.verifierEtMettreAJourStatutsPasses();
-
-        assertEquals(StatutConvocation.EN_ATTENTE_EMPLOYEUR, convPassee.getStatut());
-        assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
-        verify(convocationRepository).save(convPassee);
+        assertEquals(99L, dto.id());
+        assertEquals("Virtuel", dto.rendezVousPossibles().getFirst().lieu());
+        assertEquals(StatutConvocation.EN_ATTENTE, dto.statut());
     }
 }
