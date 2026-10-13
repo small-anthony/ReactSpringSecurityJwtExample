@@ -12,6 +12,10 @@ const STATUS_STYLES = {
     REFUSE: "bg-red-100 text-red-800 border-red-200",
 };
 
+// Candidatures encore visibles pour l'employeur : tout sauf les refusées.
+const compterCandidatures = (offre) =>
+    (offre.candidatures ?? []).filter((c) => c.statut !== "REFUSEE").length;
+
 export default function ProfileEmployeur() {
     const { t } = useTranslation("main");
     const navigate = useNavigate();
@@ -144,9 +148,9 @@ export default function ProfileEmployeur() {
                         <button
                             type="button"
                             onClick={() => navigate(`/employeur/offres/${offre.id}/candidatures`)}
-                            className="mt-5 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
+                            className="mt-5 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 cursor-pointer"
                         >
-                            {t("employeur_home.view_candidates")}
+                            {t("employeur_home.view_candidates")} ({compterCandidatures(offre)})
                         </button>
                     </article>
                 ))}
