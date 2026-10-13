@@ -87,10 +87,6 @@ public class EtudiantService {
             throw new Exception("Cette offre ne vous est pas accessible");
         }
 
-        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
-            throw new Exception("Votre CV doit être accepté avant de pouvoir postuler");
-        }
-
         if (candidatureRepository.existsByEtudiantAndOffreStage(etudiant, offre)) {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
