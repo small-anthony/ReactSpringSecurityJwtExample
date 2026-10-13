@@ -12,7 +12,6 @@ const STATUS_STYLES = {
     REFUSE: "bg-red-100 text-red-800 border-red-200",
 };
 
-// Candidatures encore visibles pour l'employeur : tout sauf les refusées.
 const compterCandidatures = (offre) =>
     (offre.candidatures ?? []).filter((c) => c.statut !== "REFUSEE").length;
 
