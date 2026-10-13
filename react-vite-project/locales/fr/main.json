@@ -4,7 +4,9 @@
     "cancel": "Annuler",
     "submitting": "Traitement...",
     "close": "Fermer",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "not_available": "N/D",
+    "at": "à"
   },
   "pagename": {
     "home": "Accueil",
@@ -14,8 +16,12 @@
     "signup_employeur": "S'inscrire comme employeur",
     "signup_etudiant": "S'inscrire comme étudiant",
     "signup_professeur": "S'inscrire comme professeur",
+    "etudiant": "Mon profil",
     "offres_stages": "Offres de stages",
     "convocations": "Convocations",
+    "approbation_offres": "Approbation Offres",
+    "approbation_cvs": "Approbation CVs",
+    "gestionnaire_convocations": "Convocations",
     "voir_offres": "Voir offres",
     "logout": "Déconnexion"
   },
@@ -181,6 +187,7 @@
     "weeks": "{{count}} semaines",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
+      "nomEntreprise": "Ex: CGI Inc.",
       "discipline": "-- Choisir une discipline --",
       "duree": "-- Choisir une durée --",
       "salaire": "22.50",
@@ -189,6 +196,7 @@
     },
     "errors": {
       "titre": "Le titre est obligatoire.",
+      "nomEntreprise": "Le nom de l'entreprise est obligatoire.",
       "discipline": "Veuillez choisir une discipline.",
       "salaire": {
         "required": "La rémunération est obligatoire.",
@@ -340,11 +348,11 @@
     "virtual_interview": "Entrevue virtuelle",
     "location_label": "Lieu de l'entrevue",
     "location_unspecified": "Lieu non précisé",
+    "location_to_confirm": "Lieu à confirmer",
     "employer_instructions": "Instructions de l'employeur :",
     "counter_proposal_label": "Votre contre-proposition :",
     "justification_label": "Justification :",
     "refusal_reason_label": "Motif du refus transmis :",
-    "expired_notice": "La date de cette entrevue est maintenant échue. Le statut est passé en attente de la réponse de l'employeur.",
     "btn_refresh": "Actualiser",
     "btn_accept": "Accepter l'entrevue",
     "btn_refuse": "Refuser",
@@ -366,9 +374,16 @@
       "en_attente": "En attente de votre réponse",
       "acceptee": "Acceptée",
       "refusee": "Refusée",
+      "expiree": "Expirée",
+      "annulee": "Annulée",
       "conflit": "Conflit d'horaire",
       "en_attente_reponse": "En attente de réponse"
     },
+    "deadline_notice": "Répondre avant le",
+    "confirmed_interview": "Rendez-vous confirmé",
+    "choose_slot": "Choisissez votre créneau préféré parmi les propositions de l'employeur :",
+    "proposed_slot": "Plage horaire proposée par l'employeur :",
+    "expired_notice": "La date limite pour répondre à cette convocation est maintenant échue.",
     "modal_refus": {
       "title": "Refuser la convocation",
       "warning": "Êtes-vous certain de vouloir refuser cette convocation d'entrevue ? L'employeur en sera immédiatement informé.",
@@ -411,6 +426,7 @@
       "errors": {
         "fetch": "Erreur lors de la récupération des CVs.",
         "approve": "Erreur lors de l'approbation du CV.",
+        "accept": "Erreur lors de l'approbation du CV.",
         "reject": "Erreur lors du rejet du CV."
       },
       "title": "CVs en attente d'approbation",
@@ -500,7 +516,7 @@
     "salary_to_discuss": "À discuter",
     "btn_see_details": "Voir détails",
     "tab_all_offers": "Toutes les offres",
-    "tab_my_applications": "Mes candidatures ({{count}})",
+    "tab_my_applications": "Mes candidatures",
     "applied_badge": "Candidature envoyée",
     "empty_applied": "Vous n'avez pas encore postulé à une offre de stage.",
     "modal": {

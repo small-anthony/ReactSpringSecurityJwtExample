@@ -4,7 +4,9 @@
     "cancel": "Cancel",
     "submitting": "Processing...",
     "close": "Close",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "not_available": "N/A",
+    "at": "at"
   },
   "pagename": {
     "home": "Home",
@@ -17,6 +19,9 @@
     "etudiant": "My profile",
     "offres_stages": "Internship offers",
     "convocations": "Interview Invitations",
+    "approbation_offres": "Offer Approvals",
+    "approbation_cvs": "Resume Approvals",
+    "gestionnaire_convocations": "Convocations",
     "voir_offres": "View offers",
     "logout": "Logout"
   },
@@ -343,11 +348,11 @@
     "virtual_interview": "Virtual interview",
     "location_label": "Interview location",
     "location_unspecified": "Location not specified",
+    "location_to_confirm": "Location to be confirmed",
     "employer_instructions": "Employer instructions:",
     "counter_proposal_label": "Your proposed reschedule:",
     "justification_label": "Justification:",
     "refusal_reason_label": "Refusal reason provided:",
-    "expired_notice": "The scheduled date for this interview has passed. Status is now awaiting response from employer.",
     "btn_refresh": "Refresh",
     "btn_accept": "Accept interview",
     "btn_refuse": "Decline",
@@ -369,9 +374,16 @@
       "en_attente": "Awaiting your reply",
       "acceptee": "Accepted",
       "refusee": "Declined",
+      "expiree": "Expired",
+      "annulee": "Cancelled",
       "conflit": "Schedule Conflict",
       "en_attente_reponse": "Awaiting response"
     },
+    "deadline_notice": "Reply before",
+    "confirmed_interview": "Confirmed interview",
+    "choose_slot": "Choose your preferred time slot from the employer's proposals:",
+    "proposed_slot": "Time slot proposed by the employer:",
+    "expired_notice": "The deadline to respond to this invitation has expired.",
     "modal_refus": {
       "title": "Decline interview invitation",
       "warning": "Are you sure you want to decline this interview invitation? The employer will be notified immediately.",
@@ -414,6 +426,7 @@
       "errors": {
         "fetch": "Error fetching resumes.",
         "approve": "Error approving the resume.",
+        "accept": "Error approving the resume.",
         "reject": "Error rejecting the resume."
       },
       "title": "Resumes pending approval",
@@ -503,7 +516,7 @@
     "salary_to_discuss": "To be discussed",
     "btn_see_details": "View details",
     "tab_all_offers": "All Offers",
-    "tab_my_applications": "My Applications ({{count}})",
+    "tab_my_applications": "My Applications",
     "applied_badge": "Application sent",
     "empty_applied": "You have not applied to any internship offers yet.",
     "modal": {
