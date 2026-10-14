@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
@@ -23,8 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeurServiceTest {
@@ -265,5 +265,163 @@ public class EmployeurServiceTest {
 
         //ASSERT
         assertEquals("Aucun CV disponible pour ce candidat", exception.getMessage());
+    }
+
+    @Test
+    void deleteOffre_avecOffreValide_supprimeLOffre() {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
+
+        OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
+        offre.setId(10L);
+
+        when(offreStageRepository.findByIdAndEmployeur(10L, employeur)).thenReturn(Optional.of(offre));
+
+        //ACT & ASSERT
+        assertDoesNotThrow(() -> employeurService.deleteOffre(10L, email));
+    }
+
+    @Test
+    void deleteOffre_avecOffreDunAutreEmployeur_lanceException() {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
+        when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
+
+        //ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                employeurService.deleteOffre(99L, email));
+
+        // ASSERT
+        assertEquals("Offre introuvable pour cet employeur", exception.getMessage());
+    }
+    @Test
+    void deleteOffre_employeurIntrouvable_lanceException() {
+        //ARRANGE
+        String emailInexistant = "inconnu@entreprise.com";
+
+        when(userAppRepository.findUserAppByEmail(emailInexistant)).thenReturn(Optional.empty());
+
+        //ACT
+        Exception exception = assertThrows(Exception.class, () ->
+                employeurService.deleteOffre(10L, emailInexistant));
+
+        //ASSERT
+        assertEquals("Employeur non trouvé", exception.getMessage());
+    }
+
+    @Test
+    void updateOffreStage_avecOffreValide_retourneOffreModifiee() throws Exception {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
+
+        OffreStage offre = new OffreStage("Ancien titre", "Ancienne description", "CGI");
+        offre.setId(10L);
+        offre.accepter();
+
+        when(offreStageRepository.findByIdAndEmployeur(10L, employeur)).thenReturn(Optional.of(offre));
+        when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        //ACT
+        OffreStageDto resultat = employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI",
+                "Développement d'applications web avec Spring Boot et React", "info", "16 semaines",
+                "25$/h", "Connaissances en Java et React", email);
+
+        //ASSERT
+        assertNotNull(resultat);
+        assertEquals(10, resultat.id());
+        assertEquals("Stagiaire en informatique", resultat.titre());
+        assertEquals("Développement d'applications web avec Spring Boot et React", resultat.description());
+        assertEquals("info", resultat.discipline());
+        assertEquals("16 semaines", resultat.duree());
+        assertEquals("25$/h", resultat.salaire());
+        assertEquals("Connaissances en Java et React", resultat.exigences());
+        assertEquals(StatusAcceptation.EN_ATTENTE, resultat.status());
+    }
+
+    @Test
+    void updateOffreStage_titreVide_lanceException() {
+        //ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .updateOffreStage(10L, "", "CGI", "Description valide", "info", "16 semaines",
+                        "25$/h", "Java", "employeur@entreprise.com"));
+
+        //ASSERT
+        assertEquals("Le titre est obligatoire", exception.getMessage());
+    }
+    @Test
+    void updateOffreStage_nomEntrepriseVide_lanceException() {
+        //ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .updateOffreStage(10L, "Stagiaire en informatique", "", "Description valide", "info",
+                        "16 semaines", "25$/h", "Java", "employeur@entreprise.com"));
+
+        //ASSERT
+        assertEquals("Le nom de l'entreprise est obligatoire", exception.getMessage());
+    }
+
+    @Test
+    void updateOffreStage_descriptionVide_lanceException() {
+        //ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .updateOffreStage(10L, "Stagiaire en informatique", "CGI", "", "info",
+                        "16 semaines", "25$/h", "Java", "employeur@entreprise.com"));
+
+        //ASSERT
+        assertEquals("La description est obligatoire", exception.getMessage());
+    }
+
+    @Test
+    void updateOffreStage_employeurIntrouvable_lanceException() {
+        //ARRANGE
+        String emailInexistant = "inconnu@entreprise.com";
+
+        when(userAppRepository.findUserAppByEmail(emailInexistant)).thenReturn(Optional.empty());
+
+        //ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info",
+                        "16 semaines", "25$/h", "Java", emailInexistant));
+
+        //ASSERT
+        assertEquals("Employeur non trouvé", exception.getMessage());
+    }
+
+    @Test
+    void updateOffreStage_avecOffreDunAutreEmployeur_lanceException() {
+        //ARRANGE
+        String email = "employeur@entreprise.com";
+        Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
+
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
+        employeur.setId(1L);
+
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
+        when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
+
+        //ACT
+        Exception exception = assertThrows(Exception.class, () -> employeurService
+                .updateOffreStage(99L, "Stagiaire en informatique", "CGI", "Description valide", "info",
+                        "16 semaines", "25$/h", "Java", email));
+
+        //ASSERT
+        assertEquals("Offre introuvable pour cet employeur", exception.getMessage());
     }
 }
