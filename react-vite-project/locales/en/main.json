@@ -44,6 +44,7 @@
   },
   "login_page": {
     "title": "Sign In",
+    "quickLogin": "Quick login",
     "subtitle": "Access your Stagify workspace.",
     "email": "Email address",
     "password": "Password",

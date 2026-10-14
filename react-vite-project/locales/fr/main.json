@@ -43,6 +43,7 @@
   },
   "login_page": {
     "title": "Connexion",
+    "quickLogin": "Connexion rapide",
     "subtitle": "Accédez à votre espace Stagify.",
     "email": "Adresse courriel",
     "password": "Mot de passe",
