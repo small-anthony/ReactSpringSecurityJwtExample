@@ -135,3 +135,31 @@ export async function postuler(authHeader, offreId) {
 
   return response.json();
 }
+
+export async function deleteOffreStage(offreId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}`, {
+    method: "DELETE",
+    headers: authHeader,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la suppression de l'offre");
+  }
+  return true;
+}
+
+export async function updateOffreStage(offreData, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/modifierOffre`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+    body: JSON.stringify(offreData),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la modification de l'offre");
+  }
+  return response.json();
+}
