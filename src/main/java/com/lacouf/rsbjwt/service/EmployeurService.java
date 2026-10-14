@@ -116,4 +116,49 @@ public class EmployeurService {
 
         return cv.getData();
     }
+
+    public void deleteOffre(Long offreId, String emailEmployeur) throws Exception {
+        Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Employeur non trouvé"));
+
+        OffreStage offre = offreStageRepository.findByIdAndEmployeur( offreId, employeur)
+                .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
+
+        offreStageRepository.delete(offre);
+    }
+
+    public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
+                                          String discipline, String duree, String salaire, String exigences,
+                                          String emailEmployeur) throws Exception {
+
+        if (titre == null || titre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre est obligatoire");
+        }
+
+        if (nomEntreprise == null || nomEntreprise.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom de l'entreprise est obligatoire");
+        }
+
+        if (description == null || description.trim().isEmpty()) {
+            throw new IllegalArgumentException("La description est obligatoire");
+        }
+
+        Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Employeur non trouvé"));
+
+        OffreStage offre = offreStageRepository.findByIdAndEmployeur(offreId, employeur)
+                .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
+
+        offre.setTitre(titre.trim());
+        offre.setNomEntreprise(nomEntreprise.trim());
+        offre.setDescription(description.trim());
+        offre.setDiscipline(discipline != null && !discipline.trim().isEmpty() ? discipline.trim() : null);
+        offre.setDuree(duree != null && !duree.trim().isEmpty() ? duree.trim() : null);
+        offre.setSalaire(salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null);
+        offre.setExigences(exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null);
+
+        offre.reinitialiserApprobation();
+
+        return OffreStageDto.create(offreStageRepository.save(offre));
+    }
 }

@@ -37,4 +37,8 @@ public class Approbation {
     public String getMessageRefus() {
         return messageReponse;
     }
+
+    public void setMessageRefus(String messageRefus) {
+        this.messageReponse = messageRefus;
+    }
 }
