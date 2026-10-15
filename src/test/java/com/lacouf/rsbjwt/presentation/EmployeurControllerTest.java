@@ -2,6 +2,12 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.Employeur;
+import com.lacouf.rsbjwt.model.auth.Credentials;
+import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.presentation.RequestDto.ModifierOffreRequest;
+import com.lacouf.rsbjwt.repository.OffreStageRepository;
+import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
@@ -15,13 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeurControllerTest {
@@ -30,6 +35,12 @@ public class EmployeurControllerTest {
 
     @Mock
     private EmployeurService employeurService;
+
+    @Mock
+    private UserAppRepository userAppRepository;
+
+    @Mock
+    private OffreStageRepository offreStageRepository;
 
     @InjectMocks
     private EmployeurController employeurController;
@@ -233,5 +244,83 @@ public class EmployeurControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("CV introuvable", response.getBody());
+    }
+
+    @Test
+    void deleteOffre_shouldReturnNoContent() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        doNothing().when(employeurService).deleteOffre(1L, "employeur@entreprise.com");
+
+//        ACT
+        ResponseEntity<Object> response = employeurController.deleteOffre(1L, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+    @Test
+    void deleteOffre_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        doThrow(new Exception("Offre introuvable pour cet employeur"))
+                .when(employeurService).deleteOffre(1L, "employeur@entreprise.com");
+
+//        ACT
+        ResponseEntity<Object> response = employeurController.deleteOffre(1L, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Offre introuvable pour cet employeur", response.getBody());
+    }
+
+    @Test
+    void updateOffre_shouldReturnOk() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        ModifierOffreRequest request = new ModifierOffreRequest(1L, "Stagiaire en informatique", "CGI",
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React");
+
+        OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot",
+                "CGI", StatusAcceptation.EN_ATTENTE, null, "info", "25$/h", "15 semaines", "Java et React");
+
+        when(employeurService.updateOffreStage(1L, "Stagiaire en informatique", "CGI",
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React",
+                "employeur@entreprise.com"))
+                .thenReturn(offreDto);
+
+//        ACT
+        ResponseEntity<Object> response = employeurController.updateOffre(request, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
+    }
+    @Test
+    void updateOffre_shouldReturnBadRequestOnException() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        ModifierOffreRequest request = new ModifierOffreRequest(1L, "", "CGI",
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React");
+
+        when(employeurService.updateOffreStage(1L, "", "CGI",
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React",
+                "employeur@entreprise.com"))
+                .thenThrow(new Exception("Le titre est obligatoire"));
+//        ACT
+        ResponseEntity<Object> response = employeurController.updateOffre(request, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Le titre est obligatoire", response.getBody());
     }
 }

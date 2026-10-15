@@ -235,31 +235,6 @@ public class EtudiantServiceTest {
         }
 
         @Test
-        void postuler_shouldRejectIfCvNotAccepted() throws Exception {
-                // ARRANGE
-                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
-                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
-                etudiant.setId(1L);
-
-                OffreStage offre = new OffreStage("Développeur Web Junior", "Stage de quatre mois.", "TechCorp");
-                offre.setId(10L);
-                offre.accepter();
-
-                when(userAppRepository.findUserAppByEmail("test@gmail.com"))
-                        .thenReturn(Optional.of(etudiant));
-                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
-
-                // ACT
-                Exception exception = assertThrows(Exception.class,
-                        () -> etudiantService.postuler(10L, "test@gmail.com"));
-
-                // ASSERT
-                assertEquals("Votre CV doit être accepté avant de pouvoir postuler", exception.getMessage());
-                verify(offreStageRepository, never()).save(any());
-        }
-
-        @Test
         void postuler_shouldRejectIfOffreNotFound() {
                 // ARRANGE
                 Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
@@ -456,6 +431,33 @@ public class EtudiantServiceTest {
         }
 
         @Test
+        void getOffresDisponibles_sansCv_retourneOffresFiltrees() {
+                // ARRANGE
+                Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+
+                when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
+                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+
+                OffreStage offrePublique = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h",
+                                "15 semaines", "Java");
+                offrePublique.setId(10L);
+                offrePublique.getEtudiantsAutorises().clear();
+
+                when(offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE))
+                                .thenReturn(List.of(offrePublique));
+
+                // ACT
+                List<OffreStageDto> resultat = etudiantService.getOffresDisponibles("etudiant@gmail.com");
+
+                // ASSERT
+                assertNotNull(resultat);
+                assertEquals(1, resultat.size());
+                assertEquals("Stage Dev", resultat.get(0).titre());
+        }
+
+        @Test
         void getOffresDisponibles_cvApprouve_retourneOffresFiltrees() {
                 // ARRANGE
                 Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);
@@ -494,7 +496,6 @@ public class EtudiantServiceTest {
                 etudiant.getCv().accepterApprobation();
 
                 when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
-                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
 
                 OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h", "15 semaines",
                                 "Java");
@@ -523,7 +524,6 @@ public class EtudiantServiceTest {
                 etudiant.getCv().accepterApprobation();
 
                 when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
-                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
 
                 when(offreStageRepository.findById(999L)).thenReturn(Optional.empty());
 

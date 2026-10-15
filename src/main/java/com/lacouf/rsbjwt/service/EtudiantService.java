@@ -87,10 +87,6 @@ public class EtudiantService {
             throw new Exception("Cette offre ne vous est pas accessible");
         }
 
-        if (etudiant.getCv() == null || etudiant.getCv().getStatusAcceptation() != StatusAcceptation.ACCEPTE) {
-            throw new Exception("Votre CV doit être accepté avant de pouvoir postuler");
-        }
-
         if (candidatureRepository.existsByEtudiantAndOffreStage(etudiant, offre)) {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
@@ -147,10 +143,7 @@ public class EtudiantService {
     }
 
     public OffreStageDto getOffreDetail(Long id, String email) {
-        UserApp user = userAppRepository.findUserAppByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
-
-        Etudiant etudiant = etudiantRepository.findById(user.getId())
+        Etudiant etudiant = (Etudiant) userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
         OffreStage offre = offreStageRepository.findById(id)
