@@ -28,7 +28,6 @@ function Header({ user }) {
 
   const isEtudiant = user?.role?.toString() === "ROLE_ETUDIANT";
   const isEmployeur = user?.role?.toString() === "ROLE_EMPLOYEUR";
-  const isGestionnaire = user?.role?.toString() === "ROLE_GESTIONNAIRE";
 
   const getHomeRoute = () => {
     if (!user) return "/";
@@ -84,19 +83,6 @@ function Header({ user }) {
                     </NavLink>
                     <NavLink to="/about" className={navLinkClasses}>
                       {t("pagename.about")}
-                    </NavLink>
-                  </>
-              )}
-              {isGestionnaire && (
-                  <>
-                    <NavLink to="/gestionnaire" className={navLinkClasses}>
-                      {t("pagename.approbation_offres", { defaultValue: "Approbation Offres" })}
-                    </NavLink>
-                    <NavLink to="/gestionnaire/cvs" className={navLinkClasses}>
-                      {t("pagename.approbation_cvs", { defaultValue: "Approbation CVs" })}
-                    </NavLink>
-                    <NavLink to="/gestionnaire/convocations" className={navLinkClasses}>
-                      {t("pagename.gestionnaire_convocations", { defaultValue: "Convocations" })}
                     </NavLink>
                   </>
               )}
@@ -252,31 +238,7 @@ function Header({ user }) {
                     {t("pagename.offres_stages")}
                   </NavLink>
               )}
-              {isGestionnaire && (
-                  <>
-                    <NavLink
-                        to="/gestionnaire"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={mobileNavLinkClasses}
-                    >
-                      {t("pagename.approbation_offres", { defaultValue: "Approbation Offres" })}
-                    </NavLink>
-                    <NavLink
-                        to="/gestionnaire/cvs"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={mobileNavLinkClasses}
-                    >
-                      {t("pagename.approbation_cvs", { defaultValue: "Approbation CVs" })}
-                    </NavLink>
-                    <NavLink
-                        to="/gestionnaire/convocations"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={mobileNavLinkClasses}
-                    >
-                      {t("pagename.gestionnaire_convocations", { defaultValue: "Convocations" })}
-                    </NavLink>
-                  </>
-              )}
+
               {isEmployeur && (
                   <NavLink
                       to="/employeur"
