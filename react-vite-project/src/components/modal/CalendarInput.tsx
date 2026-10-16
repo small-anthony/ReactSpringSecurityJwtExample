@@ -5,7 +5,6 @@ import {
   ChevronRight,
   ChevronDown,
   X,
-  RotateCcw,
 } from "lucide-react";
 import i18n from "i18next";
 
@@ -32,7 +31,7 @@ export interface CalendarInputProps {
   id?: string;
   /** Custom CSS classes for the outer wrapper container. */
   className?: string;
-  /** BCP 47 language tag for date formatting (e.g. 'fr-CA', 'en-US'). Defaults to 'fr-CA'. */
+  /** BCP 47 language tag for date formatting (e.g. 'fr-CA', 'en-US'). Defaults to en-US. */
   locale?: string;
   /** Whether selecting a date automatically closes the dropdown. Defaults to true. */
   closeOnSelect?: boolean;
@@ -116,7 +115,7 @@ export default function CalendarInput({
   placeholder = "...",
   disabled = false,
   required = false,
-  locale,
+  locale = "en-US",
   closeOnSelect = true,
   allowClear = true,
   formatDate,
@@ -126,10 +125,6 @@ export default function CalendarInput({
 
   const effectiveMin = useMemo(() => normalizeDate(min), [min]);
   const effectiveMax = useMemo(() => normalizeDate(max), [max]);
-
-  if(locale == null) {
-    locale = i18n.language;
-  }
 
   // Initial date priority: value -> defaultValue -> null
   const initialDate = useMemo(() => {
