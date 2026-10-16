@@ -28,6 +28,11 @@ public class Candidature {
     @Enumerated(EnumType.STRING)
     private StatutCandidature statut = StatutCandidature.EN_ATTENTE;
 
+    @Column(length = 1000)
+    private String messageReponse;
+
+    private LocalDateTime dateDecision;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Convocation> convocations = new ArrayList<>();
 
@@ -44,6 +49,12 @@ public class Candidature {
     public LocalDateTime getDateCandidature() { return dateCandidature; }
     public StatutCandidature getStatut() { return statut; }
     public void setStatut(StatutCandidature statut) { this.statut = statut; }
+
+    public String getMessageReponse() { return messageReponse; }
+    public void setMessageReponse(String messageReponse) { this.messageReponse = messageReponse; }
+
+    public LocalDateTime getDateDecision() { return dateDecision; }
+    public void setDateDecision(LocalDateTime dateDecision) { this.dateDecision = dateDecision; }
 
     public List<Convocation> getConvocations() {
         return convocations;

@@ -338,7 +338,33 @@
       "EN_ATTENTE": "En attente",
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
-    }
+    },
+    "accept": "Accepter la candidature",
+    "refuse": "Refuser",
+    "refuse_message_label": "Message explicatif (facultatif)",
+    "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
+    "confirm_refuse": "Confirmer le refus",
+    "cancel": "Annuler",
+    "response_message": "Message de refus"
+  },
+  "candidature_etudiant": {
+    "statuts": {
+      "EN_ATTENTE": "En attente de réponse de l'employeur",
+      "ACCEPTEE": "Convoqué(e) à une entrevue",
+      "REFUSEE": "Candidature refusée",
+      "EN_ATTENTE_REPONSE": "En attente de réponse"
+    },
+    "refuse_reason": "Message de l'employeur"
+  },
+  "historique": {
+    "back": "Retour à mes offres",
+    "title": "Historique des décisions",
+    "subtitle": "Toutes vos réponses aux candidatures, de la plus récente à la plus ancienne",
+    "loading": "Chargement de l'historique...",
+    "empty": "Vous n'avez encore pris aucune décision.",
+    "date": "Date de la décision",
+    "message": "Message",
+    "button": "Historique des décisions"
   },
   "sidepanel": {
     "title": "Tableau de bord",
