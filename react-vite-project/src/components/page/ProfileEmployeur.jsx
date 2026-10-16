@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {deleteOffreStage, getOffresStages} from "../../services/api/OffreStageService";
 import {useTranslation} from "react-i18next";
@@ -8,13 +8,17 @@ import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 
 const STATUS_STYLES = {
-  EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  ACCEPTE: "bg-green-100 text-green-800 border-green-200",
-  REFUSE: "bg-red-100 text-red-800 border-red-200",
+    EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    ACCEPTE: "bg-green-100 text-green-800 border-green-200",
+    REFUSE: "bg-red-100 text-red-800 border-red-200",
 };
+
+const compterCandidatures = (offre) =>
+    (offre.candidatures ?? []).filter((c) => c.statut !== "REFUSEE").length;
 
 export default function ProfileEmployeur() {
     const { t } = useTranslation("main");
+    const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
@@ -23,22 +27,22 @@ export default function ProfileEmployeur() {
     const [offreAEditer, setOffreAEditer] = useState(null);
 
     useEffect(() => {
-    let offresChargees = true;
+        let offresChargees = true;
 
-    getOffresStages(authService.buildAuthHeader())
-        .then((data) => {
-          if (offresChargees) setOffres(data);
-        })
-        .catch((err) => {
-          if (offresChargees) setError(err.message);
-        })
-        .finally(() => {
-          if (offresChargees) setIsLoading(false);
-        });
+        getOffresStages(authService.buildAuthHeader())
+            .then((data) => {
+                if (offresChargees) setOffres(data);
+            })
+            .catch((err) => {
+                if (offresChargees) setError(err.message);
+            })
+            .finally(() => {
+                if (offresChargees) setIsLoading(false);
+            });
 
-    return () => {
-      offresChargees = false;
-    };
+        return () => {
+            offresChargees = false;
+        };
     }, [authService]);
 
     const handleSupprimer = async (offreId) => {
@@ -58,15 +62,22 @@ export default function ProfileEmployeur() {
                     <h1 className="text-3xl font-bold text-gray-800">{t("employeur_home.title")}</h1>
                     <p className="text-gray-500 mt-1">{t("employeur_home.subtitle")}</p>
                 </div>
-                <Link
-                    to="/employeur/creer-offre"
-                    className="shrink-0 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-                >
-                    {t("employeur_home.create_offer")}
-                </Link>
+                <div className="flex items-center gap-3 shrink-0">
+                    <Link
+                        to="/employeur/historique"
+                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50"
+                    >
+                        {t("historique.button")}
+                    </Link>
+                    <Link
+                        to="/employeur/creer-offre"
+                        className="shrink-0 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                    >
+                        {t("employeur_home.create_offer")}
+                    </Link>
+                </div>
             </div>
             {isLoading && <p className="text-gray-500">{t("employeur_home.loading")}</p>}
-
             {error && <p className="p-4 rounded-lg bg-red-50 text-red-700 mb-4">{error}</p>}
             {!isLoading && !error && offres.length === 0 && (
                 <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
@@ -138,6 +149,13 @@ export default function ProfileEmployeur() {
                                 <strong className="text-red-900">{t("employeur_home.motif_refus")} </strong>{offre.messageReponse}
                             </div>
                         )}
+                        <button
+                            type="button"
+                            onClick={() => navigate(`/employeur/offres/${offre.id}/candidatures`)}
+                            className="mt-5 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 cursor-pointer"
+                        >
+                            {t("employeur_home.view_candidates")} ({compterCandidatures(offre)})
+                        </button>
 
                         <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
                             <Link

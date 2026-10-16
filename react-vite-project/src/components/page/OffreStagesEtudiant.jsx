@@ -11,6 +11,7 @@ import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTr
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
+import CandidatureStatut from "./CandidatureStatut.jsx";
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
@@ -22,6 +23,7 @@ export default function OffreStagesEtudiant() {
     const [erreur, setErreur] = useState(null);
     const [offres, setOffres] = useState([]);
     const [mesCandidaturesIds, setMesCandidaturesIds] = useState([]);
+    const [candidaturesParOffre, setCandidaturesParOffre] = useState({});
     const [ongletActif, setOngletActif] = useState(
         tabFromUrl === "convocations" ? "convocations" : (tabFromUrl === "candidatures" ? "mes_candidatures" : "toutes")
     );
@@ -42,11 +44,19 @@ export default function OffreStagesEtudiant() {
             setOffres(listeOffres || []);
 
             try {
-                const mesCandidatures = await getMesCandidatures(authHeader);
-                const ids = (mesCandidatures || []).map((c) => c.id);
-                setMesCandidaturesIds(ids);
+                const mesOffres = await getMesCandidatures(authHeader);
+                setMesCandidaturesIds((mesOffres || []).map((o) => o.id));
+
+                const parOffre = {};
+                (mesOffres || []).forEach((o) => {
+                    if (o.candidatures && o.candidatures.length > 0) {
+                        parOffre[o.id] = o.candidatures[0];
+                    }
+                });
+                setCandidaturesParOffre(parOffre);
             } catch {
                 setMesCandidaturesIds([]);
+                setCandidaturesParOffre({});
             }
 
             try {
@@ -91,6 +101,7 @@ export default function OffreStagesEtudiant() {
 
     const handlePostulerSucces = (offreId) => {
         setMesCandidaturesIds((prev) => (prev.includes(offreId) ? prev : [...prev, offreId]));
+        setCandidaturesParOffre((prev) => ({ ...prev, [offreId]: { statut: "EN_ATTENTE" } }));
     };
 
     const entreprisesUniques = useMemo(() => {
@@ -338,12 +349,14 @@ export default function OffreStagesEtudiant() {
                                     >
                                         <div className="space-y-3">
                                             <div className="flex flex-wrap items-center gap-2">
-                                                {mesCandidaturesIds.includes(offre.id) && (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                                        <span>{t("offres_etudiant.applied_badge")}</span>
-                                                    </span>
-                                                )}
+                                                {mesCandidaturesIds.includes(offre.id) &&
+                                                    (!candidaturesParOffre[offre.id] ||
+                                                        candidaturesParOffre[offre.id].statut === "EN_ATTENTE") && (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                                            <span>{t("offres_etudiant.applied_badge")}</span>
+                                                        </span>
+                                                    )}
                                                 {offre.discipline && (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">
                                                         <GraduationCap className="w-3 h-3" />
@@ -371,6 +384,10 @@ export default function OffreStagesEtudiant() {
                                             <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
                                                 {offre.description}
                                             </p>
+
+                                            {candidaturesParOffre[offre.id] && (
+                                                <CandidatureStatut candidature={candidaturesParOffre[offre.id]} />
+                                            )}
                                         </div>
 
                                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
