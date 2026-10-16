@@ -22,28 +22,10 @@ public class EtudiantController {
     private final EtudiantService etudiantService;
     private final ConvocationService convocationService;
 
-    @Autowired
-    public EtudiantController(UserAppService userService, EtudiantService etudiantService,
-            ConvocationService convocationService) {
+    public EtudiantController(UserAppService userService, EtudiantService etudiantService, ConvocationService convocationService) {
         this.userService = userService;
         this.etudiantService = etudiantService;
         this.convocationService = convocationService;
-    }
-
-    public EtudiantController(UserAppService userService, EtudiantService etudiantService) {
-        this(userService, etudiantService, null);
-    }
-
-    public EtudiantController(UserAppService userService) {
-        this(userService, null, null);
-    }
-
-    public EtudiantController(EtudiantService etudiantService) {
-        this(null, etudiantService, null);
-    }
-
-    public EtudiantController(com.lacouf.rsbjwt.service.ConvocationService convocationService) {
-        this(null, null, convocationService);
     }
 
     @PostMapping("/inscription")

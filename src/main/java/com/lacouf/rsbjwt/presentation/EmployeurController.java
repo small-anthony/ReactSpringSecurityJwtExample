@@ -25,15 +25,10 @@ public class EmployeurController {
     private final EmployeurService employeurService;
     private final ConvocationService convocationService;
 
-    @Autowired
     public EmployeurController(UserAppService userService, EmployeurService employeurService, ConvocationService convocationService) {
         this.userService = userService;
         this.employeurService = employeurService;
         this.convocationService = convocationService;
-    }
-
-    public EmployeurController(UserAppService userService, EmployeurService employeurService) {
-        this(userService, employeurService, null);
     }
 
     @PostMapping("/inscription")

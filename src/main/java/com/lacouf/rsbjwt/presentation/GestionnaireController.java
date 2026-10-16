@@ -22,14 +22,9 @@ public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
     private final ConvocationService convocationService;
 
-    @Autowired
     public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
         this.gestionnaireService = gestionnaireService;
         this.convocationService = convocationService;
-    }
-
-    public GestionnaireController(GestionnaireService gestionnaireService) {
-        this(gestionnaireService, null);
     }
 
     @PutMapping("/cv/accepter")
