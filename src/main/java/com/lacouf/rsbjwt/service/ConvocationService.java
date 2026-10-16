@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
@@ -73,6 +74,8 @@ public class ConvocationService {
         // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
 
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
+        candidature.addConvocation(convocation);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
         convocation = convocationRepository.save(convocation);
 
         return ConvocationDto.create(convocation);

@@ -156,6 +156,7 @@ public class EmployeurController {
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(convocationDto);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }

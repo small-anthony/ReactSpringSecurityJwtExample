@@ -8,8 +8,11 @@ import {
     accepterCandidature,
     refuserCandidature,
 } from "../../services/api/OffreStageService";
+import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
+import {proposeConvocation} from "../../services/api/ConvocationAPI.js";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
+const peutActionner = (candidature) => candidature.statut === "EN_ATTENTE";
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
@@ -18,6 +21,7 @@ export default function CandidaturesOffre() {
     const { t } = useTranslation("main");
 
     const [candidatures, setCandidatures] = useState([]);
+    const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [refusId, setRefusId] = useState(null);
@@ -75,6 +79,26 @@ export default function CandidaturesOffre() {
     const retirerCandidature = (candidatureId) => {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
     };
+
+    async function onCreateConvocation(rendezVous) {
+        rendezVous.forEach(entry => {
+            if(!entry.lieu.trim()) {
+                throw new Error("lieu vide");
+            }
+            console.log(entry.date)
+            console.log(Date.now())
+            if(entry.date.getTime() <= Date.now()) {
+                throw new Error("date vide");
+            }
+        })
+        const result = await proposeConvocation(candidatureAConvoquer.id, "Test message", rendezVous, authService.buildAuthHeader());
+        remplacerCandidature(result);
+        setCandidatureAConvoquer(null);
+    }
+
+    function onCancelConvocation() {
+        setCandidatureAConvoquer(null);
+    }
 
     const handleAccepter = async (candidatureId) => {
         setError("");
@@ -177,12 +201,12 @@ export default function CandidaturesOffre() {
                             </p>
                         )}
 
-                        {candidat.statut === "EN_ATTENTE" && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap gap-3">
+                        {peutActionner(candidat) && refusId !== candidat.id && (
+                            <div className="mt-auto pt-4 flex flex-wrap justify-between">
                                 <button
                                     type="button"
                                     disabled={enCours}
-                                    onClick={() => handleAccepter(candidat.id)}
+                                    onClick={() => setCandidatureAConvoquer(candidat)}
                                     className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                                 >
                                     {t("candidatures_offre.accept")}
@@ -234,6 +258,12 @@ export default function CandidaturesOffre() {
                     </article>
                 ))}
             </div>
+            {candidatureAConvoquer &&
+                <ModalCreerConvocation
+                    rendezVousPossibles={[]}
+                    onConfirm={onCreateConvocation}
+                    onCancel={onCancelConvocation}
+                />}
         </main>
     );
 }

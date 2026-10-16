@@ -339,7 +339,8 @@
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
     },
-    "accept": "Accept application",
+    "accept": "Summon",
+    "accepted": "Summoned",
     "refuse": "Reject",
     "refuse_message_label": "Explanatory message (optional)",
     "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",

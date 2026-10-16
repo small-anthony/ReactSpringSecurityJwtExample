@@ -339,7 +339,8 @@
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
     },
-    "accept": "Accepter la candidature",
+    "accept": "Convoquer",
+    "accepted": "Convoqué",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
