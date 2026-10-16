@@ -56,8 +56,8 @@ describe("ApprobationOffres", () => {
         const titreElement = await screen.findByText("Stage Développeur Web");
         const entrepriseElement = screen.getByText("Google");
 
-        expect(titreElement).toBeInTheDocument();
-        expect(entrepriseElement).toBeInTheDocument();
+        expect(titreElement).toBeTruthy();
+        expect(entrepriseElement).toBeTruthy();
     });
 
     it("should accept an offer for all students", async () => {
