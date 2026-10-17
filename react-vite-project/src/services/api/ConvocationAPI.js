@@ -2,11 +2,13 @@ import { BASE_URL } from "../../components/config/Config";
 import { getTokenCookie } from "../AuthService.tsx";
 
 function getHeaders(authHeader) {
-  if (authHeader && authHeader.Authorization) return authHeader;
   const token = getTokenCookie() || localStorage.getItem("token");
+  const auth = (authHeader && authHeader.Authorization)
+    ? authHeader.Authorization
+    : (token ? `Bearer ${token}` : "");
   return {
     "Content-Type": "application/json",
-    Authorization: token ? `Bearer ${token}` : "",
+    Authorization: auth,
   };
 }
 
