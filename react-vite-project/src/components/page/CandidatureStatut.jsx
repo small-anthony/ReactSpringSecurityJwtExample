@@ -10,6 +10,10 @@ const COULEURS = {
 export default function CandidatureStatut({ candidature }) {
     const { t } = useTranslation("main");
 
+    if (!candidature || candidature.statut === "EN_ATTENTE") {
+        return null;
+    }
+
     return (
         <div className="space-y-2 text-xs">
             <span
