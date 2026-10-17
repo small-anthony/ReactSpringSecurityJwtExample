@@ -338,7 +338,33 @@
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
-    }
+    },
+    "accept": "Accept application",
+    "refuse": "Reject",
+    "refuse_message_label": "Explanatory message (optional)",
+    "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",
+    "confirm_refuse": "Confirm rejection",
+    "cancel": "Cancel",
+    "response_message": "Rejection message"
+  },
+  "candidature_etudiant": {
+    "statuts": {
+      "EN_ATTENTE": "Awaiting employer's decision",
+      "ACCEPTEE": "Invited to an interview",
+      "REFUSEE": "Application declined",
+      "EN_ATTENTE_REPONSE": "Awaiting response"
+    },
+    "refuse_reason": "Employer's message"
+  },
+  "historique": {
+    "back": "Back to my offers",
+    "title": "Decision history",
+    "subtitle": "All your responses to applications, most recent first",
+    "loading": "Loading history...",
+    "empty": "You have not made any decision yet.",
+    "date": "Decision date",
+    "message": "Message",
+    "button": "Decision history"
   },
   "sidepanel": {
     "title": "Manager Workspace",
