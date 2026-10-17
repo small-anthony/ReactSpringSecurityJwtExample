@@ -14,4 +14,8 @@ export default defineConfig({
             "/user": "http://localhost:8080" // TODO change path to API
         }
     },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+    },
 });
