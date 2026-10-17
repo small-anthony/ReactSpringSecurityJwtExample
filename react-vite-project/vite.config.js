@@ -8,10 +8,6 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],
-    test: {
-        globals: true,
-        environment: 'jsdom',
-    },
     server: {
         port: 3000, // Specify the development server port
         proxy: {

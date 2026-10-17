@@ -2,8 +2,8 @@ import React, { act } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import CvUploadModal from "../../components/modal/CvUploadModal.jsx";
-import * as CvEtudiantAPI from "../../services/api/CvEtudiantAPI.jsx";
+import ModalTeleverserCv from "../../components/modal/ModalTeleverserCv.jsx";
+import * as EtudiantCvService from "../../services/api/EtudiantCvService.js";
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -24,12 +24,12 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-vi.mock('../../services/api/CvEtudiantAPI.jsx', () => ({
+vi.mock('../../services/api/EtudiantCvService.js', () => ({
     uploadCv: vi.fn(),
     checkCvExists: vi.fn(),
 }));
 
-describe('CvUploadModal', () => {
+describe('ModalTeleverserCv', () => {
     const mockOnUploadSuccess = vi.fn();
 
     beforeEach(() => {
@@ -41,7 +41,7 @@ describe('CvUploadModal', () => {
     });
 
     const renderModal = () => {
-        const { container } = render(<CvUploadModal onUploadSuccess={mockOnUploadSuccess} />);
+        const { container } = render(<ModalTeleverserCv onUploadSuccess={mockOnUploadSuccess} />);
         return {
             input: container.querySelector('input[type="file"]'),
             televerserButton: screen.getByRole('button', { name: /téléverser mon cv/i }),
@@ -87,7 +87,7 @@ describe('CvUploadModal', () => {
         // Arrange
         vi.useFakeTimers();
         const mockResponse = { message: 'Votre CV a été televersé avec succès!' };
-        CvEtudiantAPI.uploadCv.mockResolvedValue(mockResponse);
+        EtudiantCvService.uploadCv.mockResolvedValue(mockResponse);
         const { input, form } = renderModal();
         const validFile = new File(['pdf-content'], 'cv.pdf', { type: 'application/pdf' });
 
@@ -98,7 +98,7 @@ describe('CvUploadModal', () => {
         });
 
         // Assert
-        expect(CvEtudiantAPI.uploadCv).toHaveBeenCalledWith(validFile);
+        expect(EtudiantCvService.uploadCv).toHaveBeenCalledWith(validFile);
         expect(screen.getByText('Votre CV a été televersé avec succès!')).toBeInTheDocument();
 
         // Act
@@ -113,7 +113,7 @@ describe('CvUploadModal', () => {
     it('doit afficher une erreur de serveur si le uploadCv echoue', async () => {
         // Arrange
         const errorMessage = 'Fichier trop lourd';
-        CvEtudiantAPI.uploadCv.mockRejectedValue(new Error(errorMessage));
+        EtudiantCvService.uploadCv.mockRejectedValue(new Error(errorMessage));
         const { input, form } = renderModal();
         const validFile = new File(['pdf-content'], 'cv.pdf', { type: 'application/pdf' });
 
