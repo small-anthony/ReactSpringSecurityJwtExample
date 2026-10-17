@@ -70,7 +70,7 @@ describe("ApprobationOffres", () => {
         // Act
         render(<MockApprobation />);
 
-        const boutonAccepter = await screen.findByRole("button", { name: /accepter/i });
+        const boutonAccepter = await screen.findByRole("button", { name: /approuver|accepter/i });
         fireEvent.click(boutonAccepter);
 
         const boutonConfirmer = screen.getByRole("button", { name: /confirmer l'approbation/i });
@@ -95,7 +95,7 @@ describe("ApprobationOffres", () => {
         // Act
         render(<MockApprobation />);
 
-        const boutonAccepter = await screen.findByRole("button", { name: /accepter/i });
+        const boutonAccepter = await screen.findByRole("button", { name: /approuver|accepter/i });
         fireEvent.click(boutonAccepter);
 
 
