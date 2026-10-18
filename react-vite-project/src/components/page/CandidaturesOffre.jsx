@@ -80,7 +80,7 @@ export default function CandidaturesOffre() {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
     };
 
-    async function onCreateConvocation(rendezVous) {
+    async function onCreateConvocation(rendezVous, message) {
         rendezVous.forEach(entry => {
             if(!entry.lieu.trim()) {
                 throw new Error("lieu vide");
@@ -91,7 +91,10 @@ export default function CandidaturesOffre() {
                 throw new Error("date vide");
             }
         })
-        const result = await proposeConvocation(candidatureAConvoquer.id, "Test message", rendezVous, authService.buildAuthHeader());
+        if(message !== null && !message.trim()) {
+            message = null;
+        }
+        const result = await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
         remplacerCandidature(result);
         setCandidatureAConvoquer(null);
     }

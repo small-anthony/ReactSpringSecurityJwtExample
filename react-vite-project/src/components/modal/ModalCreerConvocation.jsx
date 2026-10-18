@@ -10,6 +10,8 @@ function RendezVousCard({
     onChange,
     onRemove,
 }) {
+    const { t } = useTranslation(["main"])
+
     const dateValue = useRef(date);
     const tempsRef = useRef(null);
     const lieuRef = useRef(null);
@@ -36,22 +38,22 @@ function RendezVousCard({
     }
 
     return (
-        <form onChange={(e) => {e.preventDefault(); onFormChange();}} className="relative">
+        <form onChange={(e) => {e.preventDefault(); onFormChange();}} className="relative drop-shadow">
             <div className="absolute inset-0">
                 <button onClick={(e) => {e.preventDefault(); onRemove(index);}} className="absolute inset-y-4 inset-x-0 -right-2 hover:-right-6 bg-red-500 border-black border flex items-center justify-end rounded hover:text-white text-transparent">
                     <Trash className=""/>
                 </button>
             </div>
-            <div className="flex flex-col gap-1 bg-white relative rounded p-1 border border-gray-400">
+            <div className="flex flex-col gap-2 bg-white relative rounded p-2">
                 <div className={"flex flex-row gap-2 z-auto"}>
                     <CalendarInput min={minDate} onChange={onDateChange} defaultValue={date} required allowClear={false}/>
                     <div className="flex items-center rounded-xl p-1 px-3 border border-gray-300">
                         <input ref={tempsRef} className="text-sm font-medium" type="time" defaultValue={theActualTime} required/>
                     </div>
                 </div>
-                <div className="flex flex-row items-center border border-gray-300 rounded-xl px-3.5 gap-2.5 h-10">
-                    <Building className="w-4 h-4 align-middle inline-block text-blue-500"/>
-                    <input ref={lieuRef} className="w-full h-8 text-sm font-medium focus:outline-0 placeholder:text-gray-400" type="text" defaultValue={lieu} placeholder="..." required/>
+                <div className="flex flex-row items-center border border-gray-300 rounded-xl gap-2.5 h-10">
+                    <Building className="absolute pointer-events-none w-10.5 h-4 align-middle inline-block text-blue-500"/>
+                    <input ref={lieuRef} className="ps-10.5 w-full h-8 text-sm font-medium focus:outline-0 placeholder:text-gray-400" type="text" defaultValue={lieu} placeholder={t('placeholder.lieu')} required/>
                 </div>
             </div>
         </form>
@@ -65,6 +67,8 @@ export default function ModalCreerConvocation({
 }) {
     const { t } = useTranslation(["main"]);
     const [finalRendezVous, setFinalRendezVous] = useState(rendezVousPossibles);
+
+    const messageRef = useRef(null);
 
     function updateRendezVous(index, data) {
         setFinalRendezVous(finalRendezVous.map((dat, i) => i === index ? data : dat));
@@ -122,13 +126,16 @@ export default function ModalCreerConvocation({
                 <h2 className="text-xl font-bold mb-4">
                     {t("candidature_offre.modal_convoquer_title")}
                 </h2>
-                <div className="bg-gray-200 rounded-2xl p-4 flex flex-col gap-2">
+                <div className="bg-gray-100 rounded-2xl p-4 flex flex-col gap-2 max-h-100 overflow-y-auto overflow-x-hidden">
                     {RenderCards()}
+                </div>
+                <div className="bg-gray-100 rounded-2xl mt-2 p-2 flex items-center justify-center">
+                    <textarea ref={messageRef} className="w-full resize-none" placeholder={t('placeholder.message')} />
                 </div>
                 <div className="mt-auto pt-4 flex flex-wrap justify-between">
                     <button
                         type="button"
-                        onClick={() => onConfirm(finalRendezVous)}
+                        onClick={() => onConfirm(finalRendezVous, messageRef.current.value)}
                         className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                     >
                         {t("common.confirm")}
