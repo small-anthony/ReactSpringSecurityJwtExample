@@ -346,7 +346,9 @@
     "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",
     "confirm_refuse": "Confirm rejection",
     "cancel": "Cancel",
-    "response_message": "Rejection message"
+    "response_message": "Rejection message",
+    "modal_convoquer_title": "Schedule an interview:",
+    "create_rendezvous": "Create a new time slot with the button below."
   },
   "candidature_etudiant": {
     "statuts": {
@@ -570,5 +572,11 @@
       "apply_success": "Congratulations! Your application has been sent to the employer.",
       "apply_error": "Error submitting your application."
     }
+  },
+  "placeholder": {
+    "rendezvous": "Create an interview",
+    "lieu": "Enter a location...",
+    "message": "Enter a message...",
+    "message_optionnel": "Optional message..."
   }
 }

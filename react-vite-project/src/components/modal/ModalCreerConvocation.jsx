@@ -1,7 +1,7 @@
 import React, {useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import CalendarInput from "./CalendarInput.tsx";
-import {Building, Clock, Plus, Trash} from "lucide-react";
+import {Building, Clock, Mail, Plus, Trash} from "lucide-react";
 
 function RendezVousCard({
     index,
@@ -38,7 +38,7 @@ function RendezVousCard({
     }
 
     return (
-        <form onChange={(e) => {e.preventDefault(); onFormChange();}} className="relative drop-shadow">
+        <form onChange={(e) => {e.preventDefault(); onFormChange();}} className="relative shadow">
             <div className="absolute inset-0">
                 <button onClick={(e) => {e.preventDefault(); onRemove(index);}} className="absolute inset-y-4 inset-x-0 -right-2 hover:-right-6 bg-red-500 border-black border flex items-center justify-end rounded hover:text-white text-transparent">
                     <Trash className=""/>
@@ -103,8 +103,9 @@ export default function ModalCreerConvocation({
     function RenderCards() {
         if(finalRendezVous.length <= 0) {
             return (
-                <div className="flex justify-center items-center text-gray-400">
+                <div className="flex flex-col justify-center items-center text-gray-400">
                     <Clock/>
+                    {t('candidatures_offre.create_rendezvous')}
                 </div>
             );
         } else {
@@ -124,13 +125,14 @@ export default function ModalCreerConvocation({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl">
                 <h2 className="text-xl font-bold mb-4">
-                    {t("candidature_offre.modal_convoquer_title")}
+                    {t("candidatures_offre.modal_convoquer_title")}
                 </h2>
-                <div className="bg-gray-100 rounded-2xl p-4 flex flex-col gap-2 max-h-100 overflow-y-auto overflow-x-hidden">
+                <div className="bg-gray-100 rounded-2xl p-4 flex flex-col gap-2 max-h-100" style={{scrollbarWidth: "none"}}>
                     {RenderCards()}
                 </div>
-                <div className="bg-gray-100 rounded-2xl mt-2 p-2 flex items-center justify-center">
-                    <textarea ref={messageRef} className="w-full resize-none" placeholder={t('placeholder.message')} />
+                <div className="bg-gray-100 rounded-2xl mt-2 p-2 flex items-center">
+                    <textarea ref={messageRef} className="ps-8 w-full h-full focus:outline-0 resize-none field-sizing-content max-h-18" placeholder={t('placeholder.message')} />
+                    <Mail className={`absolute pointer-events-none`}/>
                 </div>
                 <div className="mt-auto pt-4 flex flex-wrap justify-between">
                     <button
