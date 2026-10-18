@@ -5,6 +5,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import CandidaturesOffre from "../../../components/page/CandidaturesOffre.jsx";
 import {
     getCandidatures,
+    getCvCandidat,
     accepterCandidature,
     refuserCandidature,
 } from "../../../services/api/OffreStageService.js";
@@ -206,5 +207,32 @@ describe("CandidaturesOffre", () => {
 
         expect(await screen.findByText("Cette candidature a déjà reçu une réponse")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();
+    });
+
+    it("ouvre le modal CV au clic sur le bouton voir le CV puis le referme", async () => {
+        const user = userEvent.setup();
+        const createObjectURLMock = vi.fn(() => "blob:http://localhost/mock-cv");
+        const revokeObjectURLMock = vi.fn();
+        globalThis.URL.createObjectURL = createObjectURLMock;
+        globalThis.URL.revokeObjectURL = revokeObjectURLMock;
+
+        getCandidatures.mockResolvedValue([candidatureEnAttente]);
+        getCvCandidat.mockResolvedValue(new Blob(["mock pdf content"], { type: "application/pdf" }));
+
+        afficherPage();
+
+        const btnVoirCv = await screen.findByText("candidatures_offre.view_cv");
+        await user.click(btnVoirCv);
+
+        expect(getCvCandidat).toHaveBeenCalledWith(1, {});
+        expect(await screen.findByText("Sophie Martin - CV")).toBeInTheDocument();
+
+        const btnFermer = screen.getByTitle("approbation.cvs.close");
+        await user.click(btnFermer);
+
+        await waitFor(() => {
+            expect(screen.queryByText("Sophie Martin - CV")).not.toBeInTheDocument();
+        });
+        expect(revokeObjectURLMock).toHaveBeenCalled();
     });
 });
