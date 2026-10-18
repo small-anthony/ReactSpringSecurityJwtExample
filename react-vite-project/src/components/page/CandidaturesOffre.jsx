@@ -8,6 +8,7 @@ import {
     accepterCandidature,
     refuserCandidature,
 } from "../../services/api/OffreStageService";
+import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
 
@@ -23,6 +24,7 @@ export default function CandidaturesOffre() {
     const [refusId, setRefusId] = useState(null);
     const [messageRefus, setMessageRefus] = useState("");
     const [enCours, setEnCours] = useState(false);
+    const [cvPdfModal, setCvPdfModal] = useState(null);
 
     useEffect(() => {
         let candidaturesChargees = true;
@@ -43,6 +45,14 @@ export default function CandidaturesOffre() {
         };
     }, [offreId, authService]);
 
+    useEffect(() => {
+        return () => {
+            if (cvPdfModal?.url) {
+                URL.revokeObjectURL(cvPdfModal.url);
+            }
+        };
+    }, [cvPdfModal]);
+
     const formatStatut = (statut) => t(`candidatures_offre.statuts.${statut}`, { defaultValue: statut });
 
     const statutClasses = (statut) => {
@@ -58,14 +68,28 @@ export default function CandidaturesOffre() {
         }
     };
 
-    const handleVoirCv = async (candidatureId) => {
+    const handleVoirCv = async (candidat) => {
         try {
-            const blob = await getCvCandidat(candidatureId, authService.buildAuthHeader());
-            const url = URL.createObjectURL(blob);
-            window.open(url, "_blank");
+            const blob = await getCvCandidat(candidat.id, authService.buildAuthHeader());
+            const pdfBlob = new Blob([blob], { type: "application/pdf" });
+            const url = URL.createObjectURL(pdfBlob);
+            if (cvPdfModal?.url) {
+                URL.revokeObjectURL(cvPdfModal.url);
+            }
+            const titre = candidat?.etudiant
+                ? `${candidat.etudiant.firstName} ${candidat.etudiant.lastName} - CV`
+                : t("approbation.cvs.pdf_title", { defaultValue: "Visualisation du CV" });
+            setCvPdfModal({ url, titre });
         } catch (err) {
             setError(err.message);
         }
+    };
+
+    const handleFermerCvModal = () => {
+        if (cvPdfModal?.url) {
+            URL.revokeObjectURL(cvPdfModal.url);
+        }
+        setCvPdfModal(null);
     };
 
     const remplacerCandidature = (misAJour) => {
@@ -160,7 +184,7 @@ export default function CandidaturesOffre() {
                             {candidat.etudiant.hasCv ? (
                                 <button
                                     type="button"
-                                    onClick={() => handleVoirCv(candidat.id)}
+                                    onClick={() => handleVoirCv(candidat)}
                                     className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
                                 >
                                     {t("candidatures_offre.view_cv")}
@@ -234,6 +258,14 @@ export default function CandidaturesOffre() {
                     </article>
                 ))}
             </div>
+
+            {cvPdfModal && (
+                <ModalCvPdf
+                    pdfUrl={cvPdfModal.url}
+                    onClose={handleFermerCvModal}
+                    titre={cvPdfModal.titre}
+                />
+            )}
         </main>
     );
 }
