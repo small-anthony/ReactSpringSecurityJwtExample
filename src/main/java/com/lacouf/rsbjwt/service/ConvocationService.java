@@ -86,7 +86,7 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth"); // TODO exception
+            throw new SecurityException("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -101,7 +101,7 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth"); // TODO exception
+            throw new SecurityException("No auth");
         }
 
         convocation.refuser(motif);
