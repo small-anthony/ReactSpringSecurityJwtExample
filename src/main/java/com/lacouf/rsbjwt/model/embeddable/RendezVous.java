@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-/// Representation d'un rendez-vous en n'importe quel contexte
 @Embeddable
 public class RendezVous {
 	protected RendezVous() {}
