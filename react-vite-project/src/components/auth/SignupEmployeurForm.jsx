@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { registerEmployeur } from "../../services/api/EmployeurService";
+import { registerEmployeur } from "../../services/api/EmployeurService.jsx";
 import SignupTabs from "./SignupTabs";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 

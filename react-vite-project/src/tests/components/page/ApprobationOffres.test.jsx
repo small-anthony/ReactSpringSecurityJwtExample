@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { BrowserRouter } from "react-router-dom";
-import ApprobationOffres from "../components/page/ApprobationOffres";
-import { AuthServiceContext } from "../services/AuthService";
-import * as OffreStageService from "../services/api/OffreStageService";
-import * as EtudiantService from "../services/api/EtudiantService";
-import i18n from "../../i18n.config";
+import ApprobationOffres from "../../../components/page/ApprobationOffres.jsx";
+import { AuthServiceContext } from "../../../services/AuthService.tsx";
+import * as OffreStageService from "../../../services/api/OffreStageService.jsx";
+import * as EtudiantService from "../../../services/api/EtudiantService.jsx";
+import i18n from "../../../../i18n.config.js";
 
 vi.mock("../services/api/OffreStageService");
 vi.mock("../services/api/EtudiantService");

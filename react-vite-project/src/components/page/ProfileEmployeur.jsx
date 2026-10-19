@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import {deleteOffreStage, getOffresStages} from "../../services/api/OffreStageService";
+import {deleteOffreStage, getOffresStages} from "../../services/api/OffreStageService.jsx";
 import {useTranslation} from "react-i18next";
 import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";

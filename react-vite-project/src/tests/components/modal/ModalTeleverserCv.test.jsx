@@ -2,8 +2,8 @@ import React, { act } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import ModalTeleverserCv from "../../components/modal/ModalTeleverserCv.jsx";
-import * as EtudiantCvService from "../../services/api/EtudiantCvService.js";
+import ModalTeleverserCv from "../../../components/modal/ModalTeleverserCv.jsx";
+import * as EtudiantCvService from "../../../services/api/EtudiantCvService.jsx";
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -24,7 +24,7 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-vi.mock('../../services/api/EtudiantCvService.js', () => ({
+vi.mock('../../services/api/EtudiantCvService.jsx', () => ({
     uploadCv: vi.fn(),
     checkCvExists: vi.fn(),
 }));
