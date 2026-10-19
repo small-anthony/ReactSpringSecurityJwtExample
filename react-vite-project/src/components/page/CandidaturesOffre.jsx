@@ -5,12 +5,11 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {
     getCandidatures,
     getCvCandidat,
-    accepterCandidature,
     refuserCandidature,
 } from "../../services/api/OffreStageService.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
-import {proposeConvocation} from "../../services/api/ConvocationAPI.js";
+import { proposeConvocation } from "../../services/api/ConvocationAPI.jsx";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
 const peutActionner = (candidature) => candidature.statut === "EN_ATTENTE";
@@ -31,22 +30,7 @@ export default function CandidaturesOffre() {
     const [cvPdfModal, setCvPdfModal] = useState(null);
 
     useEffect(() => {
-        let candidaturesChargees = true;
-
-        getCandidatures(offreId, authService.buildAuthHeader())
-            .then((data) => {
-                if (candidaturesChargees) setCandidatures(data.filter(estAffichee));
-            })
-            .catch((err) => {
-                if (candidaturesChargees) setError(err.message);
-            })
-            .finally(() => {
-                if (candidaturesChargees) setIsLoading(false);
-            });
-
-        return () => {
-            candidaturesChargees = false;
-        };
+        return refreshCandidatures();
     }, [offreId, authService]);
 
     useEffect(() => {
@@ -71,6 +55,25 @@ export default function CandidaturesOffre() {
                 return "bg-gray-100 text-gray-800 border-gray-200";
         }
     };
+
+    function refreshCandidatures() {
+        let candidaturesChargees = true;
+
+        getCandidatures(offreId, authService.buildAuthHeader())
+            .then((data) => {
+                if (candidaturesChargees) setCandidatures(data.filter(estAffichee));
+            })
+            .catch((err) => {
+                if (candidaturesChargees) setError(err.message);
+            })
+            .finally(() => {
+                if (candidaturesChargees) setIsLoading(false);
+            });
+
+        return () => {
+            candidaturesChargees = false;
+        };
+    }
 
     const handleVoirCv = async (candidat) => {
         try {
@@ -119,26 +122,16 @@ export default function CandidaturesOffre() {
             message = null;
         }
         const result = await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
-        remplacerCandidature(result);
-        setCandidatureAConvoquer(null);
+        if(result.statut === "EN_ATTENTE") {
+            setIsLoading(true);
+            setCandidatureAConvoquer(null);
+            refreshCandidatures();
+        }
     }
 
     function onCancelConvocation() {
         setCandidatureAConvoquer(null);
     }
-
-    const handleAccepter = async (candidatureId) => {
-        setError("");
-        setEnCours(true);
-        try {
-            const misAJour = await accepterCandidature(candidatureId, authService.buildAuthHeader());
-            remplacerCandidature(misAJour);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setEnCours(false);
-        }
-    };
 
     const handleConfirmerRefus = async (candidatureId) => {
         setError("");

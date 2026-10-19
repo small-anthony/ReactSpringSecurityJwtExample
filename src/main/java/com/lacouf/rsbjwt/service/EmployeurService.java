@@ -124,10 +124,6 @@ public class EmployeurService {
         return cv.getData();
     }
 
-    public CandidatureDto accepterCandidature(Long candidatureId, String emailEmployeur) throws Exception {
-        return repondre(candidatureId, emailEmployeur, StatutCandidature.ACCEPTEE, null);
-    }
-
     public CandidatureDto refuserCandidature(Long candidatureId, String message, String emailEmployeur) throws Exception {
         String messageNettoye = (message == null || message.trim().isEmpty()) ? null : message.trim();
         return repondre(candidatureId, emailEmployeur, StatutCandidature.REFUSEE, messageNettoye);

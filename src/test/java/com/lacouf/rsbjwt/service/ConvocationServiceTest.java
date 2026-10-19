@@ -90,6 +90,7 @@ class ConvocationServiceTest {
         assertNotNull(dto);
         assertEquals(StatutConvocation.ACCEPTEE, dto.statut());
         assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
+        assertEquals(StatutCandidature.ACCEPTEE, convocation.getCandidature().getStatut());
 
         verify(convocationRepository).save(convocation);
     }
