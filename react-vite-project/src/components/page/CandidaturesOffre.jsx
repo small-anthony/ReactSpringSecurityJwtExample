@@ -7,7 +7,7 @@ import {
     getCvCandidat,
     accepterCandidature,
     refuserCandidature,
-} from "../../services/api/OffreStageService";
+} from "../../services/api/OffreStageService.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
 import {proposeConvocation} from "../../services/api/ConvocationAPI.js";

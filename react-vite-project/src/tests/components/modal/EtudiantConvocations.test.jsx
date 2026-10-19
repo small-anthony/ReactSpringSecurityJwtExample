@@ -2,10 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { BrowserRouter } from "react-router-dom";
-import EtudiantConvocations from "../components/page/EtudiantConvocations";
-import { AuthServiceContext } from "../services/AuthService";
-import * as ConvocationAPI from "../services/api/ConvocationAPI";
-import i18n from "../../i18n.config";
+import EtudiantConvocations from "../../../components/page/EtudiantConvocations.jsx";
+import { AuthServiceContext } from "../../../services/AuthService.tsx";
+import * as ConvocationAPI from "../../../services/api/ConvocationAPI.jsx";
+import i18n from "../../../../i18n.config.js";
 
 vi.mock("../services/api/ConvocationAPI");
 
