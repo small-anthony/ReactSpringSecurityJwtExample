@@ -27,9 +27,9 @@ public class ConvocationService {
     }
 
     @Transactional()
-    public void verifierEtMettreAJourStatutsPasses() {
+    public void verifierEtMettreAJourStatutsPasses(Instant timestamp) {
         convocationRepository.expireConvocations(
-                Instant.now(),
+                timestamp,
                 StatutConvocation.ANNULEE,
                 StatutConvocation.EN_ATTENTE
         );
@@ -102,9 +102,6 @@ public class ConvocationService {
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
             throw new RuntimeException("No auth"); // TODO exception
-        }
-        if(convocation.estResolu()) {
-            throw new IllegalArgumentException("Convocation est immuable");
         }
 
         convocation.refuser(motif);

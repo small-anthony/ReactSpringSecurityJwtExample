@@ -10,12 +10,16 @@ import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
+import com.lacouf.rsbjwt.service.schedulers.ConvocationScheduler;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -72,14 +76,17 @@ class ConvocationServiceTest {
 
     @Test
     void accepterConvocation_succes() {
+//        ARRANGE
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
         when(convocationRepository.save(any(Convocation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
+//        ACT
         RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
         ConvocationDto dto = convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto);
 
+//        ASSERT
         assertNotNull(dto);
         assertEquals(StatutConvocation.ACCEPTEE, dto.statut());
         assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
@@ -89,42 +96,61 @@ class ConvocationServiceTest {
 
     @Test
     void accepterConvocation_datePassee_lanceException() {
+//        ARRANGE
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
         ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MIN);
 
+//        ACT
         RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
         assertThrows(IllegalStateException.class, () ->
                 convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto)
         );
 
+//        ASSERT
         assertEquals(StatutConvocation.EXPIREE, convocation.getStatut());
-//        assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
-//        verify(convocationRepository).save(convocation);
     }
 
     @Test
     void refuserConvocation_succes() {
+//        ARRANGE
+        String raison = "Pas disponible";
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
         when(convocationRepository.save(any(Convocation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        String raison = "Pas disponible";
-
+//        ACT
         ConvocationDto dto = convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), raison);
 
+//        ASSERT
         assertNotNull(dto);
         assertEquals(StatutConvocation.REFUSEE, dto.statut());
         assertEquals(raison, convocation.getReponseEtudiant());
-//        assertEquals(StatutCandidature.REFUSEE, candidature.getStatut());
 
         verify(convocationRepository).save(convocation);
     }
 
     @Test
+    void refuserConvocation_datePassee_lanceException() {
+//        ARRANGE
+        String raison = "Pas disponible";
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                .thenReturn(Optional.of(convocation));
+        ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MIN);
+
+//        ACT
+        assertThrows(IllegalStateException.class, () ->
+                convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), raison)
+        );
+
+//        ASSERT
+        assertEquals(StatutConvocation.EXPIREE, convocation.getStatut());
+    }
+
+    @Test
     void creerConvocation_succes() {
-        LocalDateTime date = LocalDateTime.now().plusDays(4);
+//        ARRANGE
         when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
         when(convocationRepository.save(any(Convocation.class))).thenAnswer(invocation -> {
             Convocation c = invocation.getArgument(0);
@@ -135,11 +161,41 @@ class ConvocationServiceTest {
         List<RendezVousDto> dtos = new ArrayList<>();
         dtos.add(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
 
+//        ACT
         ConvocationDto dto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "Bienvenue");
 
+//        ASSERT
         assertNotNull(dto);
         assertEquals(99L, dto.id());
         assertEquals("Virtuel", dto.rendezVousPossibles().getFirst().lieu());
         assertEquals(StatutConvocation.EN_ATTENTE, dto.statut());
+    }
+
+    @Test
+    void creerConvocation_quonPossedePas_lanceException() {
+//        ARRANGE
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+
+        List<RendezVousDto> dtos = new ArrayList<>();
+        dtos.add(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+
+//        ASSERT
+        assertThrows(SecurityException.class, () ->
+                convocationService.creerConvocation("fakeEmail@test.com", candidature.getId(), dtos, "Bienvenue")
+        );
+    }
+
+    @Test
+    void verifierEtMettreAJourStatutsPasses_shouldExpireConvocations() {
+//        ARRANGE
+        Instant timestamp = Instant.now();
+        when(convocationRepository.expireConvocations(Instant.now(), StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
+                .thenReturn(0);
+
+//        ACT
+        convocationService.verifierEtMettreAJourStatutsPasses(timestamp);
+
+//        ASSERT
+        verify(convocationRepository).expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE);
     }
 }
