@@ -9,16 +9,53 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
+    const validateSetFile = (selectedFile) => {
+        if (!selectedFile) return;
 
-        if (selectedFile && selectedFile.type !== 'application/pdf') {
+        const isPdf = selectedFile.type === 'application/pdf' || selectedFile.name?.toLowerCase().endsWith('.pdf');
+
+        if (!isPdf) {
             setError(t('cv_upload.errors.notPdf'));
             setFile(null);
         } else {
             setError('');
             setFile(selectedFile);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files?.[0];
+        validateSetFile(selectedFile);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'copy';
+    };
+
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            setIsDragging(false);
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const droppedFile = e.dataTransfer.files[0];
+            validateSetFile(droppedFile);
         }
     };
 
@@ -45,7 +82,9 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div onDragOver={(e) => e.preventDefault()}
+             onDrop={(e) => e.preventDefault()}
+             className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
             <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl relative">
                 {isSuccess ? (
                     <div className="p-4 bg-green-50 text-green-700 text-center rounded-md">
@@ -67,16 +106,23 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
                                 </button>
                             )}
                         </div>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} noValidate className="space-y-4">
                             <div>
                                 <input type="file" id="cv-upload-input"
                                        accept="application/pdf" onChange={handleFileChange}
                                        className="hidden"
-                                       required
                                 />
                                 <label
                                     htmlFor="cv-upload-input"
-                                    className="cursor-pointer flex items-center w-full px-3 py-2 border border-gray-300 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors bg-gray-50"
+                                    onDragOver={handleDragOver}
+                                    onDragEnter={handleDragEnter}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    className={`cursor-pointer flex items-center w-full px-3 py-2 border border-gray-300 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors bg-gray-50 ${
+                                        isDragging
+                                            ? "border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-300"
+                                            : "border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors bg-gray-50"
+                                    }`}
                                 >
                                     <span className="text-sm text-gray-700 font-medium whitespace-nowrap px-3 py-1 bg-white border border-gray-200 rounded-md shadow-sm">
                                         {t("cv_upload.choose_file")}
