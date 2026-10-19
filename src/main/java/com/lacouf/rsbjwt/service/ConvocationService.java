@@ -6,6 +6,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class ConvocationService {
         if (actorEmail != null && candidature.getOffreStage() != null
                 && candidature.getOffreStage().getEmployeur() != null) {
             if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
-                throw new SecurityException("Vous n'êtes pas autorisé à convoquer ce candidat");
+                throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
             }
         }
 
@@ -86,7 +87,7 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new SecurityException("No auth");
+            throw new AuthenticationException("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -101,7 +102,7 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new SecurityException("No auth");
+            throw new AuthenticationException("No auth");
         }
 
         convocation.refuser(motif);

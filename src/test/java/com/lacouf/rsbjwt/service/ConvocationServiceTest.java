@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import com.lacouf.rsbjwt.service.schedulers.ConvocationScheduler;
@@ -181,7 +182,7 @@ class ConvocationServiceTest {
         dtos.add(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
 
 //        ASSERT
-        assertThrows(SecurityException.class, () ->
+        assertThrows(AuthenticationException.class, () ->
                 convocationService.creerConvocation("fakeEmail@test.com", candidature.getId(), dtos, "Bienvenue")
         );
     }
