@@ -72,7 +72,7 @@ export default function HistoriqueDecisions() {
                             <span
                                 className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(decision.nouveauStatut)}`}
                             >
-                                {t(`candidatures_offre.statuts.${decision.nouveauStatut}`, {
+                                {t(`candidatures_offre.status.${decision.nouveauStatut}`, {
                                     defaultValue: decision.nouveauStatut,
                                 })}
                             </span>

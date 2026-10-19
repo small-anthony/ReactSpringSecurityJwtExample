@@ -305,7 +305,7 @@
       "REFUSE": "Refused"
     },
     "view_candidates": "View candidates",
-    "statuts": {
+    "status": {
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
       "REFUSE": "Refused"
@@ -326,7 +326,7 @@
     "no_candidates": "No applications received for this offer yet.",
     "view_cv": "View Resume",
     "no_cv": "No resume available",
-    "statuts": {
+    "status": {
       "EN_ATTENTE": "Pending",
       "ACCEPTEE": "Accepted",
       "REFUSEE": "Rejected",
@@ -351,10 +351,10 @@
     "create_rendezvous": "Create a new time slot with the button below."
   },
   "candidature_etudiant": {
-    "statuts": {
+    "status": {
       "EN_ATTENTE": "Awaiting employer's decision",
       "ACCEPTEE": "Invited to an interview",
-      "REFUSEE": "Application declined",
+      "REFUSEE": "Application rejected. Click \"View details\" for more information.",
       "EN_ATTENTE_REPONSE": "Awaiting response"
     },
     "refuse_reason": "Employer's message"
@@ -390,7 +390,6 @@
     "counter_proposal_label": "Your proposed reschedule:",
     "justification_label": "Justification:",
     "refusal_reason_label": "Refusal reason provided:",
-    "btn_refresh": "Refresh",
     "btn_accept": "Accept interview",
     "btn_refuse": "Decline",
     "btn_propose_date": "Suggest another date",

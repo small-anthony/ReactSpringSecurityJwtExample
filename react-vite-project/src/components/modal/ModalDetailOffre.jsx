@@ -106,11 +106,8 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                     </div>
                 )}
 
-                {/* Contenu */}
                 <div className="p-6 overflow-y-auto space-y-6">
-                    {/* Grille de métadonnées (3 colonnes 1.4fr 1fr 1fr) */}
                     <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr_1fr] gap-3">
-                        {/* Colonne 1 : Discipline affichée en entier sans troncature */}
                         <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
                                 <GraduationCap className="w-4 h-4 text-[#6366F1]" strokeWidth={1.5} />
@@ -121,7 +118,6 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                             </p>
                         </div>
 
-                        {/* Colonne 2 : Durée avec icône calendrier */}
                         <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
                                 <Calendar className="w-4 h-4 text-[#059669]" strokeWidth={1.5} />
@@ -132,7 +128,6 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                             </p>
                         </div>
 
-                        {/* Colonne 3 : Rémunération (exclusif à la modale, avec une seule icône monétaire) */}
                         <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
                                 <DollarSign className="w-4 h-4 text-[#D97706]" strokeWidth={1.5} />
@@ -144,7 +139,6 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         </div>
                     </div>
 
-                    {/* Encadré « EXIGENCES PARTICULIÈRES » (fond #EFF6FF, bordure gauche 3px solid #2563EB) */}
                     {offre.exigences && (
                         <div className="bg-[#EFF6FF] border-l-[3px] border-l-[#2563EB] rounded-r-xl p-4">
                             <h3 className="text-xs font-bold text-[#1E40AF] uppercase tracking-wider mb-1">
@@ -156,7 +150,6 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         </div>
                     )}
 
-                    {/* Section « Description du stage » épurée */}
                     <div>
                         <h3 className="text-sm font-semibold text-[#111827] mb-2 flex items-center gap-2">
                             <FileText className="w-4 h-4 text-[#2563EB]" strokeWidth={1.5} />
@@ -168,7 +161,6 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                     </div>
                 </div>
 
-                {/* Pied de modale */}
                 <div className="px-6 py-4 border-t border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between gap-3">
                     <button
                         type="button"
@@ -178,14 +170,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         {t("offres_etudiant.modal.close", { defaultValue: "Fermer" })}
                     </button>
 
-                    {hasApplied ? (
-                        <div
-                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] select-none cursor-default"
-                        >
-                            <CheckCircle2 className="w-4 h-4 text-[#059669]" strokeWidth={1.5} />
-                            <span>{t("offres_etudiant.modal.btn_applied", { defaultValue: "Candidature déjà envoyée" })}</span>
-                        </div>
-                    ) : (
+                    {!hasApplied && (
                         <button
                             type="button"
                             onClick={handlePostuler}

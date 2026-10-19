@@ -305,7 +305,7 @@
       "REFUSE": "Refusée"
     },
     "view_candidates": "Voir les candidatures",
-    "statuts": {
+    "status": {
       "EN_ATTENTE": "En attente",
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
@@ -326,7 +326,7 @@
     "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
     "view_cv": "Voir le CV",
     "no_cv": "Aucun CV disponible",
-    "statuts": {
+    "status": {
       "EN_ATTENTE": "En attente",
       "ACCEPTEE": "Acceptée",
       "REFUSEE": "Refusée",
@@ -351,10 +351,10 @@
     "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas."
   },
   "candidature_etudiant": {
-    "statuts": {
+    "status": {
       "EN_ATTENTE": "En attente de réponse de l'employeur",
       "ACCEPTEE": "Convoqué(e) à une entrevue",
-      "REFUSEE": "Candidature refusée",
+      "REFUSEE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
       "EN_ATTENTE_REPONSE": "En attente de réponse"
     },
     "refuse_reason": "Message de l'employeur"
@@ -390,7 +390,6 @@
     "counter_proposal_label": "Votre contre-proposition :",
     "justification_label": "Justification :",
     "refusal_reason_label": "Motif du refus transmis :",
-    "btn_refresh": "Actualiser",
     "btn_accept": "Accepter l'entrevue",
     "btn_refuse": "Refuser",
     "btn_propose_date": "Proposer une autre date",

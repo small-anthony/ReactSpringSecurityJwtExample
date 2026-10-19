@@ -147,16 +147,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
               })}
             </p>
           </div>
-
-          <button
-            type="button"
-            onClick={chargerConvocations}
-            disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-xs transition cursor-pointer self-start sm:self-auto"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
-            <span>{t("convocation.btn_refresh", { defaultValue: "Actualiser" })}</span>
-          </button>
         </div>
       ) : (
         <div className="flex items-center justify-between pb-2 border-b border-gray-100">
@@ -165,15 +155,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
               defaultValue: "Gérez vos invitations d'entrevues envoyées par vos employeurs.",
             })}
           </p>
-          <button
-            type="button"
-            onClick={chargerConvocations}
-            disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-xs transition cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
-            <span>{t("convocation.btn_refresh", { defaultValue: "Actualiser" })}</span>
-          </button>
         </div>
       )}
 

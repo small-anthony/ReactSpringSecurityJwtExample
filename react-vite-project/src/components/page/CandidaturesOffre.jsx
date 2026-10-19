@@ -41,7 +41,7 @@ export default function CandidaturesOffre() {
         };
     }, [cvPdfModal]);
 
-    const formatStatut = (statut) => t(`candidatures_offre.statuts.${statut}`, { defaultValue: statut });
+    const formatStatut = (statut) => t(`candidatures_offre.status.${statut}`, { defaultValue: statut });
 
     const statutClasses = (statut) => {
         switch (statut) {

@@ -98,7 +98,7 @@ describe("CandidaturesOffre", () => {
         expect(screen.getByText("Marc Dubois")).toBeInTheDocument();
 
 
-        expect(screen.queryAllByText("candidatures_offre.statuts.ACCEPTEE")).toHaveLength(0);
+        expect(screen.queryAllByText("candidatures_offre.status.ACCEPTEE")).toHaveLength(0);
     });
 
     it("affiche le candidat et les boutons Accepter / Refuser quand la candidature est en attente", async () => {
@@ -168,7 +168,7 @@ describe("CandidaturesOffre", () => {
 
         expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
         expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.statuts.REFUSEE")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.status.REFUSEE")).not.toBeInTheDocument();
     });
 
     it("affiche une candidature déjà acceptée, sans les boutons Accepter / Refuser", async () => {
@@ -177,7 +177,7 @@ describe("CandidaturesOffre", () => {
         afficherPage();
 
         expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
-        expect(screen.getByText("candidatures_offre.statuts.ACCEPTEE")).toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
     });
