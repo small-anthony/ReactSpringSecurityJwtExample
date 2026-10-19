@@ -11,7 +11,6 @@ import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTr
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
-import CandidatureStatut from "./CandidatureStatut.jsx";
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
@@ -127,12 +126,10 @@ export default function OffreStagesEtudiant() {
         return offres.filter((offre) => {
             const aPostule = mesCandidaturesIds.includes(offre.id);
 
-            // Onglet actif « Toutes les offres » : affiche uniquement les offres non postulées
             if (ongletActif === "toutes" && aPostule) {
                 return false;
             }
 
-            // Onglet secondaire « Mes candidatures » : affiche uniquement les offres postulées
             if (ongletActif === "mes_candidatures" && !aPostule) {
                 return false;
             }
@@ -207,7 +204,6 @@ export default function OffreStagesEtudiant() {
 
                 {!loading && !erreur && (
                     <div className="space-y-6">
-                        {/* Barre d'onglets segmentée style Linear / Stripe */}
                         <div className="bg-[#F1F5F9] p-1 rounded-xl inline-flex flex-wrap items-center gap-1 border border-[#E2E8F0] shadow-xs">
                             <button
                                 type="button"
@@ -361,29 +357,7 @@ export default function OffreStagesEtudiant() {
                                                 className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-xs hover:shadow-md hover:border-[#CBD5E1] transition-all duration-200 flex flex-col justify-between"
                                             >
                                                 <div>
-                                                    {/* En-tête : Badges de métadonnées avec icônes vectorielles */}
                                                     <div className="space-y-2 mb-4">
-                                                        {ongletActif === "mes_candidatures" && candidaturesParOffre[offre.id]?.statut === "ACCEPTEE" && (
-                                                            <div>
-                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0]/60">
-                                                                    <CheckCircle2 className="w-3.5 h-3.5 text-[#059669]" strokeWidth={1.5} />
-                                                                    <span>
-                                                                        {t("candidature_etudiant.statuts.ACCEPTEE", { defaultValue: "Convoqué(e) à une entrevue" })}
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                        {ongletActif === "mes_candidatures" && candidaturesParOffre[offre.id]?.statut === "REFUSEE" && (
-                                                            <div>
-                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#FFF1F2] text-[#BE123C] border border-[#FECDD3]/60">
-                                                                    <XCircle className="w-3.5 h-3.5 text-[#E11D48]" strokeWidth={1.5} />
-                                                                    <span>
-                                                                        {t("candidature_etudiant.statuts.REFUSEE", { defaultValue: "Candidature refusée" })}
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        )}
-
                                                         <div className="flex items-center gap-2">
                                                             {offre.discipline && (
                                                                 <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]/60 min-w-0">
@@ -398,7 +372,6 @@ export default function OffreStagesEtudiant() {
                                                         </div>
                                                     </div>
 
-                                                    {/* Corps : Titre du poste, nom entreprise, description sur 2 lignes */}
                                                     <div className="space-y-1.5 mb-4">
                                                         <h3 className="text-[18px] font-semibold text-[#111827] tracking-tight line-clamp-1 leading-snug">
                                                             {offre.titre}
@@ -410,17 +383,22 @@ export default function OffreStagesEtudiant() {
                                                         <p className="text-[14px] font-normal text-[#6B7280] line-clamp-2 leading-relaxed mt-2.5">
                                                             {offre.description}
                                                         </p>
-
-                                                        {ongletActif === "mes_candidatures" && candidaturesParOffre[offre.id]?.statut === "REFUSEE" && candidaturesParOffre[offre.id].messageReponse && (
-                                                            <div className="mt-3 text-xs text-rose-700 bg-rose-50 border border-rose-200/60 rounded-lg p-2.5">
-                                                                <span className="font-semibold">{t("candidature_etudiant.refuse_reason")} : </span>
-                                                                {candidaturesParOffre[offre.id].messageReponse}
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>
 
-                                                {/* Pied de carte : SANS affichage de tarif horaire, bouton « Voir détails » */}
+                                                {(ongletActif === "mes_candidatures" || mesCandidaturesIds.includes(offre.id)) && (
+                                                    <div className="pt-3 pb-3 border-t border-[#E2E8F0]">
+                                                        {candidaturesParOffre[offre.id]?.statut === "REFUSEE" && (
+                                                            <p className="text-xs text-rose-600 flex items-center gap-1.5 font-medium">
+                                                                <XCircle className="w-4 h-4 shrink-0 text-rose-500" strokeWidth={1.5} />
+                                                                <span>
+                                                                    {t("candidature_etudiant.status.REFUSEE")}
+                                                                </span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+
                                                 <div className="pt-4 border-t border-[#E2E8F0] flex items-center justify-end">
                                                     <button
                                                         type="button"

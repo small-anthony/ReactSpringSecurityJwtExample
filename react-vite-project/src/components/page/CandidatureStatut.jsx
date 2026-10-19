@@ -19,7 +19,7 @@ export default function CandidatureStatut({ candidature }) {
             <span
                 className={`inline-block px-2.5 py-1 rounded-full font-semibold ${COULEURS[candidature.statut] || COULEURS.EN_ATTENTE}`}
             >
-                {t(`candidature_etudiant.statuts.${candidature.statut}`, {
+                {t(`candidature_etudiant.status.${candidature.statut}`, {
                     defaultValue: candidature.statut,
                 })}
             </span>
