@@ -51,6 +51,7 @@
   "role": {
     "gestionnaire": "Coordinator",
     "etudiant": "Student",
+    "etudiant_nocv": "Student (No Resume)",
     "employeur": "Employer",
     "professeur": "Teacher"
   },
@@ -266,7 +267,7 @@
   "modal_cv": {
     "loading": "Loading...",
     "no_cv_title": "No resume uploaded",
-    "no_cv_desc": "It is preferable to upload your resume so you can apply to internship offers.",
+    "no_cv_desc": "It is preferable to upload your resume.",
     "upload": "Upload my resume",
     "update": "Update my resume",
     "pending_badge": "Pending review",

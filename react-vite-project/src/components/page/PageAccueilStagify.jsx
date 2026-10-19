@@ -1,11 +1,11 @@
 import React, {useContext, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {AuthServiceContext} from "../services/AuthService.tsx";
+import {AuthServiceContext} from "../../services/AuthService.tsx";
 import {Briefcase, GraduationCap, ShieldCheck} from "lucide-react";
-import { BASE_URL } from "./config/Config.jsx";
+import { BASE_URL } from "../config/Config.jsx";
 
-function MainContainer() {
+function PageAccueilStagify() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const navigate = useNavigate();
@@ -90,6 +90,20 @@ function MainContainer() {
                     <button
                         type="button"
                         disabled={isLoading}
+                        onClick={() => handleQuickLogin("daniil@test.com", "password", "etudiant")}
+                        className="flex flex-col items-center justify-center p-4 bg-white hover:bg-blue-50/50 border border-gray-200 hover:border-blue-300 rounded-2xl shadow-xs hover:shadow-md transition duration-150 cursor-pointer disabled:opacity-50 group"
+                    >
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <GraduationCap className="w-5 h-5" />
+                        </div>
+                        <span className="font-bold text-sm text-gray-800 group-hover:text-blue-600">
+                            {t("role.etudiant_nocv")}
+                        </span>
+                        <span className="text-[11px] text-gray-400 mt-0.5">daniil@test.com</span>
+                    </button>
+                    <button
+                        type="button"
+                        disabled={isLoading}
                         onClick={() => handleQuickLogin("etudiant@test.com", "password", "etudiant")}
                         className="flex flex-col items-center justify-center p-4 bg-white hover:bg-blue-50/50 border border-gray-200 hover:border-blue-300 rounded-2xl shadow-xs hover:shadow-md transition duration-150 cursor-pointer disabled:opacity-50 group"
                     >
@@ -135,4 +149,4 @@ function MainContainer() {
     );
 }
 
-export default MainContainer;
+export default PageAccueilStagify;
