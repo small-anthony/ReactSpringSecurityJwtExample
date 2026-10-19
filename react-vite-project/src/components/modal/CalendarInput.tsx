@@ -9,35 +9,20 @@ import {
 import i18n from "i18next";
 
 export interface CalendarInputProps {
-  /** The currently selected date (controlled). */
   value?: Date | string | null;
-  /** Initial selected date (uncontrolled). */
   defaultValue?: Date | string | null;
-  /** Callback fired when the selected date changes. */
   onChange?: (date: Date | null, dateString: string) => void;
-  /** Minimum selectable date (inclusive). Dates before this are disabled. */
   min?: Date | string | null;
-  /** Maximum selectable date (inclusive). Dates after this are disabled. */
   max?: Date | string | null;
-  /** Placeholder text shown when no date is selected. */
   placeholder?: string;
-  /** Disables the input and dropdown. */
   disabled?: boolean;
-  /** Marks the field as required. */
   required?: boolean;
-  /** Field name for form submissions. */
   name?: string;
-  /** HTML id for the component. */
   id?: string;
-  /** Custom CSS classes for the outer wrapper container. */
   className?: string;
-  /** BCP 47 language tag for date formatting (e.g. 'fr-CA', 'en-US'). Defaults to en-US. */
   locale?: string;
-  /** Whether selecting a date automatically closes the dropdown. Defaults to true. */
   closeOnSelect?: boolean;
-  /** Whether to show a clear button when a date is selected. Defaults to true. */
   allowClear?: boolean;
-  /** Custom formatting function for the displayed input value. */
   formatDate?: (date: Date) => string;
 }
 
@@ -57,7 +42,7 @@ function normalizeDate(val: Date | string | null | undefined): Date | null {
     const trimmed = val.trim();
     if (!trimmed) return null;
 
-    // Handle "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm:ss"
+    // Handles "YYYY-MM-DD" and "YYYY-MM-DDTHH:mm:ss"
     const datePartMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})/);
     if (datePartMatch) {
       const year = parseInt(datePartMatch[1], 10);
@@ -75,7 +60,6 @@ function normalizeDate(val: Date | string | null | undefined): Date | null {
   return null;
 }
 
-/** Formats a date as YYYY-MM-DD */
 function toIsoDateString(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -83,7 +67,6 @@ function toIsoDateString(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-/** Checks whether two dates represent the exact same calendar day */
 function isSameDay(d1: Date | null, d2: Date | null): boolean {
   if (!d1 || !d2) return false;
   return (
@@ -93,12 +76,10 @@ function isSameDay(d1: Date | null, d2: Date | null): boolean {
   );
 }
 
-/** Compares if d1 is strictly before d2 */
 function isBeforeDay(d1: Date, d2: Date): boolean {
   return d1.getTime() < d2.getTime();
 }
 
-/** Compares if d1 is strictly after d2 */
 function isAfterDay(d1: Date, d2: Date): boolean {
   return d1.getTime() > d2.getTime();
 }
@@ -126,7 +107,6 @@ export default function CalendarInput({
   const effectiveMin = useMemo(() => normalizeDate(min), [min]);
   const effectiveMax = useMemo(() => normalizeDate(max), [max]);
 
-  // Initial date priority: value -> defaultValue -> null
   const initialDate = useMemo(() => {
     return normalizeDate(value !== undefined ? value : defaultValue);
   }, []);
@@ -134,7 +114,6 @@ export default function CalendarInput({
   const [internalDate, setInternalDate] = useState<Date | null>(initialDate);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // Sync internal state when controlled 'value' changes
   useEffect(() => {
     if (value !== undefined) {
       setInternalDate(normalizeDate(value));
@@ -143,7 +122,6 @@ export default function CalendarInput({
 
   const selectedDate = value !== undefined ? normalizeDate(value) : internalDate;
 
-  // Track currently viewed month and year in the calendar
   const [viewDate, setViewDate] = useState<Date>(() => {
     if (selectedDate) return new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     if (effectiveMin && isBeforeDay(new Date(), effectiveMin)) {
@@ -159,7 +137,6 @@ export default function CalendarInput({
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close calendar when clicking outside or pressing Escape
   useEffect(() => {
     if (!isOpen) return;
 
@@ -186,7 +163,6 @@ export default function CalendarInput({
     };
   }, [isOpen]);
 
-  // When opening, reset the view to the selected date's month if available
   const handleToggleOpen = () => {
     if (disabled) return;
     if (!isOpen) {
@@ -244,7 +220,6 @@ export default function CalendarInput({
     setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  // Determine if prev/next month buttons should be disabled
   const isPrevMonthDisabled = useMemo(() => {
     if (!effectiveMin) return false;
     const lastDayOfPrevMonth = new Date(viewDate.getFullYear(), viewDate.getMonth(), 0);
@@ -271,16 +246,13 @@ export default function CalendarInput({
     }
   }, [viewDate, locale]);
 
-  // Weekday column headers (Monday to Sunday)
   const weekDays = useMemo(() => {
     const days: string[] = [];
-    // Start with a known Monday: 2026-01-05
     const monday = new Date(2026, 0, 5);
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
       try {
         const name = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(d);
-        // Clean up punctuation (e.g. "lun." -> "Lun")
         const cleanName = name.replace(".", "");
         days.push(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
       } catch {
@@ -290,7 +262,6 @@ export default function CalendarInput({
     return days;
   }, [locale]);
 
-  // Calendar day cells for the current view
   const calendarCells = useMemo(() => {
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
@@ -298,13 +269,11 @@ export default function CalendarInput({
     const firstDayOfMonth = new Date(year, month, 1);
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Monday-based index: Monday = 0, ..., Sunday = 6
+    // Monday = 0, ..., Sunday = 6
     const startDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
     const cells: { date: Date; isCurrentMonth: boolean }[] = [];
-
-    // Leading days from previous month
     for (let i = startDayIndex - 1; i >= 0; i--) {
       cells.push({
         date: new Date(year, month - 1, daysInPrevMonth - i),
@@ -312,7 +281,6 @@ export default function CalendarInput({
       });
     }
 
-    // Days in current month
     for (let day = 1; day <= daysInMonth; day++) {
       cells.push({
         date: new Date(year, month, day),
@@ -320,7 +288,6 @@ export default function CalendarInput({
       });
     }
 
-    // Trailing days to fill standard 6-week (42 cells) grid for stable height
     const remaining = 42 - cells.length;
     for (let day = 1; day <= remaining; day++) {
       cells.push({
@@ -332,7 +299,6 @@ export default function CalendarInput({
     return cells;
   }, [viewDate]);
 
-  // Display text in the collapsed input trigger
   const displayValue = useMemo(() => {
     if (!selectedDate) return "";
     if (formatDate) return formatDate(selectedDate);
@@ -351,7 +317,6 @@ export default function CalendarInput({
 
   return (
     <div ref={containerRef} className={`relative w-full text-left ${className}`}>
-      {/* Hidden input for native form compatibility */}
       {name && (
         <input
           type="hidden"
@@ -361,7 +326,6 @@ export default function CalendarInput({
         />
       )}
 
-      {/* Collapsed Input Trigger */}
       <button
         id={inputId}
         type="button"
@@ -423,7 +387,6 @@ export default function CalendarInput({
         </div>
       </button>
 
-      {/* Expanded Calendar Dropdown */}
       {isOpen && !disabled && (
         <div
           ref={dropdownRef}
@@ -431,7 +394,6 @@ export default function CalendarInput({
           aria-label="Calendrier"
           className="absolute left-0 mt-2 z-50 w-full min-w-[290px] sm:min-w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 animate-in fade-in zoom-in-95 duration-150"
         >
-          {/* Header: Month/Year title and Prev/Next navigation */}
           <div className="flex items-center justify-between pb-3 mb-2 border-b border-gray-100">
             <span className="text-sm font-bold text-gray-800 tracking-wide select-none">
               {formattedMonthYear}
@@ -460,7 +422,6 @@ export default function CalendarInput({
             </div>
           </div>
 
-          {/* Days of the week headers */}
           <div className="grid grid-cols-7 gap-1 text-center mb-1.5">
             {weekDays.map((dayName, idx) => (
               <div
@@ -472,7 +433,6 @@ export default function CalendarInput({
             ))}
           </div>
 
-          {/* Days grid */}
           <div className="grid grid-cols-7 gap-1">
             {calendarCells.map(({ date, isCurrentMonth }, idx) => {
               const disabledDay = isDateDisabled(date);

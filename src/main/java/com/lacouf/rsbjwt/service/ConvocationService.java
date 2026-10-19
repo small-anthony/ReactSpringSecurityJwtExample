@@ -65,15 +65,12 @@ public class ConvocationService {
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée"));
 
-        if (actorEmail != null && candidature.getOffreStage() != null
-                && candidature.getOffreStage().getEmployeur() != null) {
-            if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
-                throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
-            }
+
+        if(!candidature.getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
+            throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
         // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
-
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         candidature.addConvocation(convocation);
         candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
@@ -86,7 +83,7 @@ public class ConvocationService {
     public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
-        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+        if(!convocation.getEtudiant().getEmail().equalsIgnoreCase(actorEmail)) {
             throw new AuthenticationException("No auth");
         }
 
