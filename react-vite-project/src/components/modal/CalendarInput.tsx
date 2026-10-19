@@ -26,10 +26,6 @@ export interface CalendarInputProps {
   formatDate?: (date: Date) => string;
 }
 
-/**
- * Normalizes a date or date string into a Date instance at local midnight (00:00:00.000).
- * Prevents UTC timezone shift issues when parsing "YYYY-MM-DD" strings.
- */
 function normalizeDate(val: Date | string | null | undefined): Date | null {
   if (!val) return null;
 
@@ -42,7 +38,6 @@ function normalizeDate(val: Date | string | null | undefined): Date | null {
     const trimmed = val.trim();
     if (!trimmed) return null;
 
-    // Handles "YYYY-MM-DD" and "YYYY-MM-DDTHH:mm:ss"
     const datePartMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})/);
     if (datePartMatch) {
       const year = parseInt(datePartMatch[1], 10);
@@ -232,7 +227,6 @@ export default function CalendarInput({
     return isAfterDay(firstDayOfNextMonth, effectiveMax);
   }, [viewDate, effectiveMax]);
 
-  // Formatted header string (e.g. "Octobre 2026")
   const formattedMonthYear = useMemo(() => {
     try {
       const formatter = new Intl.DateTimeFormat(locale, {
@@ -269,7 +263,6 @@ export default function CalendarInput({
     const firstDayOfMonth = new Date(year, month, 1);
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Monday = 0, ..., Sunday = 6
     const startDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
