@@ -7,7 +7,7 @@ import {
     getCvCandidat,
     accepterCandidature,
     refuserCandidature,
-} from "../../services/api/OffreStageService.jsx";
+} from "../../services/api/OffreStageService.js";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";

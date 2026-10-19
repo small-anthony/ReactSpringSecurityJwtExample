@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { rechercherEtudiants } from "../../services/api/EtudiantService.jsx";
+import { rechercherEtudiants } from "../../services/api/EtudiantService.js";
 import { Check, X, Search } from "lucide-react";
 
 export default function ModalApprobation({ offre, onClose, onConfirm, authHeader }) {

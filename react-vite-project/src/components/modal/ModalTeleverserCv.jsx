@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { uploadCv } from '../../services/api/EtudiantCvService.jsx';
+import { uploadCv } from '../../services/api/EtudiantCvService.js';
 import {useTranslation} from "react-i18next";
 import {X} from "lucide-react";
 

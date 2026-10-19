@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Calendar, Users, Building, RefreshCw, Clock, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { getConvocationsGestionnaire } from "../../services/api/ConvocationAPI.jsx";
+import { getConvocationsGestionnaire } from "../../services/api/ConvocationAPI.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 
 export default function GestionnaireConvocations() {

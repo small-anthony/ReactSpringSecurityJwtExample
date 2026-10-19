@@ -1,8 +1,8 @@
 import ModalTeleverserCv from "./ModalTeleverserCv.jsx";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { getStatutCv } from "../../services/api/EtudiantService.jsx";
-import { checkCvExists } from "../../services/api/EtudiantCvService.jsx";
+import { getStatutCv } from "../../services/api/EtudiantService.js";
+import { checkCvExists } from "../../services/api/EtudiantCvService.js";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Clock3, XCircle, UploadCloud, FileText } from "lucide-react";
 

@@ -2,7 +2,7 @@ import { X, XCircle, Building2, DollarSign, Calendar, GraduationCap, FileText, C
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { postuler } from "../../services/api/OffreStageService.jsx";
+import { postuler } from "../../services/api/OffreStageService.js";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 
 export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces, candidature }) {
