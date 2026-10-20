@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export default function SidePanelGestionnaire({ activeTab = "none" }) {
     const { t } = useTranslation("main");
     const tabs = [
         { key: "approbationsOffres", label: t('sidepanel.offres'), to: "/gestionnaire/approbations/offres" },
         { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
+        { key: "convocations", label: t('sidepanel.convocations', { defaultValue: "Convocations d'entrevues" }), to: "/gestionnaire/convocations" },
     ];
 
     return (
