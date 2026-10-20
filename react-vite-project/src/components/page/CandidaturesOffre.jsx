@@ -9,7 +9,7 @@ import {
 } from "../../services/api/OffreStageService.js";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
-import { proposeConvocation } from "../../services/api/ConvocationAPI.jsx";
+import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
 const peutActionner = (candidature) => candidature.statut === "EN_ATTENTE";

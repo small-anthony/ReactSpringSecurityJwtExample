@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useId } from "react";
+import {createPortal} from "react-dom";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -308,6 +309,14 @@ export default function CalendarInput({
 
   const today = useMemo(() => normalizeDate(new Date())!, []);
 
+  function getGlobalButtonPosition(): {x: number; y: number} {
+    const rect = containerRef.current.getBoundingClientRect();
+    return {x: rect.left, y: rect.top + rect.height};
+  }
+
+  const getGlobalButtonPositionX = () => getGlobalButtonPosition()["x"];
+  const getGlobalButtonPositionY = () => getGlobalButtonPosition()["y"];
+
   return (
     <div ref={containerRef} className={`relative w-full text-left ${className}`}>
       {name && (
@@ -380,12 +389,16 @@ export default function CalendarInput({
         </div>
       </button>
 
-      {isOpen && !disabled && (
+      {isOpen && !disabled && createPortal(
         <div
           ref={dropdownRef}
           role="dialog"
           aria-label="Calendrier"
-          className="absolute left-0 mt-2 z-50 w-full min-w-[290px] sm:min-w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 animate-in fade-in zoom-in-95 duration-150"
+          className="fixed mt-2 z-50 w-10 min-w-[290px] sm:min-w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 animate-in fade-in zoom-in-95 duration-150"
+          style={{
+            top: getGlobalButtonPositionY(),
+            left: getGlobalButtonPositionX(),
+          }}
         >
           <div className="flex items-center justify-between pb-3 mb-2 border-b border-gray-100">
             <span className="text-sm font-bold text-gray-800 tracking-wide select-none">
@@ -467,8 +480,7 @@ export default function CalendarInput({
               );
             })}
           </div>
-        </div>
-      )}
+        </div>, document.body)}
     </div>
   );
 }

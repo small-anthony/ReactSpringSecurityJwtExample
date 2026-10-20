@@ -1,7 +1,7 @@
 import React, {useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import CalendarInput from "./CalendarInput.tsx";
-import {Building, Clock, Mail, Plus, Trash} from "lucide-react";
+import { Building, Clock, Mail, Plus, Trash } from "lucide-react";
 
 function RendezVousCard({
     index,
@@ -33,12 +33,11 @@ function RendezVousCard({
 
     function onDateChange(newDate) {
         dateValue.current = newDate;
-        console.log(dateValue.current);
         onFormChange();
     }
 
     return (
-        <form onChange={(e) => {e.preventDefault(); onFormChange();}} className="relative shadow">
+        <form onChange={(e) => {e.preventDefault(); onFormChange();}} className="relative shadow w-100">
             <div className="absolute inset-0">
                 <button onClick={(e) => {e.preventDefault(); onRemove(index);}} className="absolute inset-y-4 inset-x-0 -right-2 hover:-right-6 bg-red-500 border-black border flex items-center justify-end rounded hover:text-white text-transparent">
                     <Trash className=""/>
@@ -127,7 +126,7 @@ export default function ModalCreerConvocation({
                 <h2 className="text-xl font-bold mb-4">
                     {t("candidatures_offre.modal_convoquer_title")}
                 </h2>
-                <div className="bg-gray-100 rounded-2xl p-4 flex flex-col gap-2 max-h-100" style={{scrollbarWidth: "none"}}>
+                <div className="bg-gray-100 rounded-2xl p-4 flex flex-col items-start gap-2 max-h-100 overflow-x-visible overflow-y-auto">
                     {RenderCards()}
                 </div>
                 <div className="bg-gray-100 rounded-2xl mt-2 p-2 flex items-center">
