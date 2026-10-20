@@ -65,9 +65,9 @@ function toIsoDateString(date: Date): string {
 function isSameDay(d1: Date | null, d2: Date | null): boolean {
   if (!d1 || !d2) return false;
   return (
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate()
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
   );
 }
 
@@ -80,22 +80,22 @@ function isAfterDay(d1: Date, d2: Date): boolean {
 }
 
 export default function CalendarInput({
-  className = "",
-  id: customId,
-  name,
-  value,
-  defaultValue,
-  onChange,
-  min,
-  max,
-  placeholder = "...",
-  disabled = false,
-  required = false,
-  locale = "en-US",
-  closeOnSelect = true,
-  allowClear = true,
-  formatDate,
-}: CalendarInputProps) {
+                                        className = "",
+                                        id: customId,
+                                        name,
+                                        value,
+                                        defaultValue,
+                                        onChange,
+                                        min,
+                                        max,
+                                        placeholder = "...",
+                                        disabled = false,
+                                        required = false,
+                                        locale = "en-US",
+                                        closeOnSelect = true,
+                                        allowClear = true,
+                                        formatDate,
+                                      }: CalendarInputProps) {
   const generatedId = useId();
   const inputId = customId || `calendar-input-${generatedId}`;
 
@@ -129,33 +129,17 @@ export default function CalendarInput({
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    if (isOpen) {
+      dropdownRef.current?.focus();
+    } else if (wasOpen.current) {
+      buttonRef.current?.focus();
+    }
+    wasOpen.current = isOpen;
   }, [isOpen]);
 
   const handleToggleOpen = () => {
@@ -309,167 +293,183 @@ export default function CalendarInput({
   const today = useMemo(() => normalizeDate(new Date())!, []);
 
   return (
-    <div ref={containerRef} className={`relative w-full text-left ${className}`}>
-      {name && (
-        <input
-          type="hidden"
-          name={name}
-          value={selectedDate ? toIsoDateString(selectedDate) : ""}
-          required={required}
-        />
-      )}
-
-      <button
-        id={inputId}
-        type="button"
-        disabled={disabled}
-        onClick={handleToggleOpen}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-        className={`w-full flex items-center justify-between px-3.5 py-2.5 bg-white border rounded-xl text-sm transition outline-none select-none ${
-          disabled
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-            : isOpen
-            ? "border-blue-500 ring-2 ring-blue-500/20 cursor-pointer"
-            : "border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
-        }`}
+      <div
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setIsOpen(false);
+            }
+          }}
+          className={`relative w-full text-left ${className}`}
       >
-        <div className="flex items-center gap-2.5 truncate">
-          <CalendarIcon
-            className={`w-4 h-4 shrink-0 transition-colors ${
-              disabled
-                ? "text-gray-300"
-                : isOpen || selectedDate
-                ? "text-blue-600"
-                : "text-gray-400"
+        {name && (
+            <input
+                type="hidden"
+                name={name}
+                value={selectedDate ? toIsoDateString(selectedDate) : ""}
+                required={required}
+            />
+        )}
+
+        <button
+            ref={buttonRef}
+            id={inputId}
+            type="button"
+            disabled={disabled}
+            onClick={handleToggleOpen}
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 bg-white border rounded-xl text-sm transition outline-none select-none ${
+                disabled
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
+                    : isOpen
+                        ? "border-blue-500 ring-2 ring-blue-500/20 cursor-pointer"
+                        : "border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
             }`}
-          />
-          <span
-            className={`truncate text-sm ${
-              selectedDate ? "text-gray-900 font-medium" : "text-gray-400 font-normal"
-            }`}
-          >
+        >
+          <div className="flex items-center gap-2.5 truncate">
+            <CalendarIcon
+                className={`w-4 h-4 shrink-0 transition-colors ${
+                    disabled
+                        ? "text-gray-300"
+                        : isOpen || selectedDate
+                            ? "text-blue-600"
+                            : "text-gray-400"
+                }`}
+            />
+            <span
+                className={`truncate text-sm ${
+                    selectedDate ? "text-gray-900 font-medium" : "text-gray-400 font-normal"
+                }`}
+            >
             {selectedDate ? displayValue : placeholder}
           </span>
-        </div>
+          </div>
 
-        <div className="flex items-center gap-1.5 ml-2 shrink-0">
-          {allowClear && selectedDate && !disabled && (
-            <span
-              role="button"
-              tabIndex={0}
-              aria-label="Effacer la date"
-              onClick={handleClear}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleClear(e as unknown as React.MouseEvent);
-                }
-              }}
-              className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
-            >
+          <div className="flex items-center gap-1.5 ml-2 shrink-0">
+            {allowClear && selectedDate && !disabled && (
+                <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Effacer la date"
+                    onClick={handleClear}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleClear(e as unknown as React.MouseEvent);
+                      }
+                    }}
+                    className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+                >
               <X className="w-3.5 h-3.5" />
             </span>
-          )}
+            )}
 
-          <ChevronDown
-            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-              isOpen ? "rotate-180 text-blue-600" : ""
-            }`}
-          />
-        </div>
-      </button>
-
-      {isOpen && !disabled && (
-        <div
-          ref={dropdownRef}
-          role="dialog"
-          aria-label="Calendrier"
-          className="absolute left-0 mt-2 z-50 w-full min-w-[290px] sm:min-w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 animate-in fade-in zoom-in-95 duration-150"
-        >
-          <div className="flex items-center justify-between pb-3 mb-2 border-b border-gray-100">
-            <span className="text-sm font-bold text-gray-800 tracking-wide select-none">
-              {formattedMonthYear}
-            </span>
-
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={handlePrevMonth}
-                disabled={isPrevMonthDisabled}
-                aria-label="Mois précédent"
-                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={handleNextMonth}
-                disabled={isNextMonthDisabled}
-                aria-label="Mois suivant"
-                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            <ChevronDown
+                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                    isOpen ? "rotate-180 text-blue-600" : ""
+                }`}
+            />
           </div>
+        </button>
 
-          <div className="grid grid-cols-7 gap-1 text-center mb-1.5">
-            {weekDays.map((dayName, idx) => (
+        {isOpen && !disabled && (
+            <>
               <div
-                key={idx}
-                className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider py-1 select-none"
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsOpen(false)}
+                  aria-hidden="true"
+              />
+              <div
+                  ref={dropdownRef}
+                  tabIndex={-1}
+                  role="dialog"
+                  aria-label="Calendrier"
+                  className="absolute left-0 mt-2 z-50 w-full min-w-[290px] sm:min-w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 animate-in fade-in zoom-in-95 duration-150 outline-none"
               >
-                {dayName}
+                <div className="flex items-center justify-between pb-3 mb-2 border-b border-gray-100">
+              <span className="text-sm font-bold text-gray-800 tracking-wide select-none">
+                {formattedMonthYear}
+              </span>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                        type="button"
+                        onClick={handlePrevMonth}
+                        disabled={isPrevMonthDisabled}
+                        aria-label="Mois précédent"
+                        className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleNextMonth}
+                        disabled={isNextMonthDisabled}
+                        aria-label="Mois suivant"
+                        className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1 text-center mb-1.5">
+                  {weekDays.map((dayName, idx) => (
+                      <div
+                          key={idx}
+                          className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider py-1 select-none"
+                      >
+                        {dayName}
+                      </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-7 gap-1">
+                  {calendarCells.map(({ date, isCurrentMonth }, idx) => {
+                    const disabledDay = isDateDisabled(date);
+                    const isSelected = isSameDay(date, selectedDate);
+                    const isCurrentDay = isSameDay(date, today);
+
+                    let buttonClasses =
+                        "h-8 sm:h-9 w-full flex items-center justify-center text-xs sm:text-sm rounded-xl transition duration-150 select-none relative ";
+
+                    if (disabledDay) {
+                      buttonClasses +=
+                          "text-gray-300 opacity-40 cursor-not-allowed pointer-events-none";
+                    } else if (isSelected) {
+                      buttonClasses +=
+                          "bg-blue-600 text-white font-semibold shadow-xs hover:bg-blue-700 cursor-pointer";
+                    } else if (isCurrentDay) {
+                      buttonClasses +=
+                          "border border-blue-500 text-blue-600 font-semibold hover:bg-blue-50 cursor-pointer";
+                    } else if (!isCurrentMonth) {
+                      buttonClasses +=
+                          "text-gray-400 hover:bg-gray-100 hover:text-gray-700 cursor-pointer";
+                    } else {
+                      buttonClasses +=
+                          "text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 cursor-pointer";
+                    }
+
+                    return (
+                        <button
+                            key={idx}
+                            type="button"
+                            disabled={disabledDay}
+                            onClick={() => handleSelectDate(date)}
+                            aria-pressed={isSelected}
+                            aria-disabled={disabledDay}
+                            className={buttonClasses}
+                        >
+                          {date.getDate()}
+                        </button>
+                    );
+                  })}
+                </div>
               </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 gap-1">
-            {calendarCells.map(({ date, isCurrentMonth }, idx) => {
-              const disabledDay = isDateDisabled(date);
-              const isSelected = isSameDay(date, selectedDate);
-              const isCurrentDay = isSameDay(date, today);
-
-              let buttonClasses =
-                "h-8 sm:h-9 w-full flex items-center justify-center text-xs sm:text-sm rounded-xl transition duration-150 select-none relative ";
-
-              if (disabledDay) {
-                buttonClasses +=
-                  "text-gray-300 opacity-40 cursor-not-allowed pointer-events-none";
-              } else if (isSelected) {
-                buttonClasses +=
-                  "bg-blue-600 text-white font-semibold shadow-xs hover:bg-blue-700 cursor-pointer";
-              } else if (isCurrentDay) {
-                buttonClasses +=
-                  "border border-blue-500 text-blue-600 font-semibold hover:bg-blue-50 cursor-pointer";
-              } else if (!isCurrentMonth) {
-                buttonClasses +=
-                  "text-gray-400 hover:bg-gray-100 hover:text-gray-700 cursor-pointer";
-              } else {
-                buttonClasses +=
-                  "text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 cursor-pointer";
-              }
-
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  disabled={disabledDay}
-                  onClick={() => handleSelectDate(date)}
-                  aria-pressed={isSelected}
-                  aria-disabled={disabledDay}
-                  className={buttonClasses}
-                >
-                  {date.getDate()}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
+            </>
+        )}
+      </div>
   );
 }
 

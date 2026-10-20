@@ -25,7 +25,7 @@ public class Convocation {
     @Enumerated(EnumType.STRING)
     private StatutConvocation statut = StatutConvocation.EN_ATTENTE;
 
-    /// Date limite avant que la convocation n'ait plus valide
+
     private Instant dateLimite = Instant.now().plus(MINIMUM_REPONSE_LIMIT);
 
     @ElementCollection
@@ -38,7 +38,6 @@ public class Convocation {
     @Embedded
     private RendezVous rendezVousSelection = null;
 
-    /// Si ça s'applique, la réponse donnée par l'étudiant
     @Column(length = 1000)
     private String reponseEtudiant = null;
 
@@ -65,11 +64,7 @@ public class Convocation {
         return getStatut() != StatutConvocation.EN_ATTENTE;
     }
 
-    /**
-     * Accepter un rendez-vous
-     * @param rendezVous Le rendez-vous
-     * @param message La réponse de l'étudiant, optionnellement
-     */
+
     public void accepter(RendezVous rendezVous, String message) {
         if(estResolu()) {
             throw new IllegalStateException("convocation already resolved");
@@ -84,10 +79,7 @@ public class Convocation {
         this.reponseEtudiant = message;
     }
 
-    /**
-     * Refuser un rendez-vous
-     * @param motif La raison donnée par l'étudiant, nullable
-     */
+
     public void refuser(String motif) {
         if(estResolu()) {
             throw new IllegalStateException("convocation already resolved");

@@ -22,7 +22,7 @@ const ENTREVUE_PAR_DEFAUT = {
     ANNULEE: "Entrevue annulée",
 };
 
-// Une candidature encore EN_ATTENTE n'a jamais de convocation affichée.
+
 function derniereConvocation(convocations, candidature) {
     if (!candidature || candidature.id == null || candidature.statut === "EN_ATTENTE") return undefined;
     return convocations
@@ -35,7 +35,7 @@ const estAffichee = (candidature, convocation) =>
 
 const peutDecider = (candidature) => candidature.statut === "EN_ATTENTE";
 
-// Filet de sécurité : candidature acceptée mais sans convocation en cours
+
 const peutConvoquer = (candidature, convocation) =>
     (candidature.statut === "ACCEPTEE" || candidature.statut === "EN_ATTENTE_REPONSE") &&
     (!convocation || CONVOCATIONS_TERMINEES.includes(convocation.statut));
