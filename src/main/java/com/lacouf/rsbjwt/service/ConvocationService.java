@@ -22,7 +22,7 @@ public class ConvocationService {
     private final CandidatureRepository candidatureRepository;
 
     public ConvocationService(ConvocationRepository convocationRepository,
-            CandidatureRepository candidatureRepository) {
+                              CandidatureRepository candidatureRepository) {
         this.convocationRepository = convocationRepository;
         this.candidatureRepository = candidatureRepository;
     }
@@ -70,7 +70,19 @@ public class ConvocationService {
             throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
-        // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
+        if (candidature.getStatut() != StatutCandidature.ACCEPTEE
+                && candidature.getStatut() != StatutCandidature.EN_ATTENTE_REPONSE) {
+            throw new IllegalStateException("La candidature doit être acceptée avant de convoquer le candidat");
+        }
+
+        boolean convocationEnCours = candidature.getConvocations().stream()
+                .anyMatch(c -> c.getStatut() == StatutConvocation.EN_ATTENTE
+                        || c.getStatut() == StatutConvocation.ACCEPTEE);
+        if (convocationEnCours) {
+            throw new IllegalStateException("Une convocation est déjà en cours pour cette candidature");
+        }
+
+
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         candidature.addConvocation(convocation);
         candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);

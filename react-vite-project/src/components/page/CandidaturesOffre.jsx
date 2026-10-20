@@ -5,22 +5,49 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {
     getCandidatures,
     getCvCandidat,
+    accepterCandidature,
     refuserCandidature,
 } from "../../services/api/OffreStageService.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
-import { proposeConvocation } from "../../services/api/ConvocationAPI.jsx";
+import { proposeConvocation, getConvocationsEmployeur } from "../../services/api/ConvocationAPI.jsx";
 
-const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
-const peutActionner = (candidature) => candidature.statut === "EN_ATTENTE";
+const CONVOCATIONS_TERMINEES = ["EXPIREE", "ANNULEE"];
+
+const ENTREVUE_PAR_DEFAUT = {
+    EN_ATTENTE: "Entrevue proposée, en attente de la réponse",
+    ACCEPTEE: "Entrevue confirmée",
+    REFUSEE: "Entrevue refusée",
+    EXPIREE: "Entrevue expirée",
+    ANNULEE: "Entrevue annulée",
+};
+
+
+function derniereConvocation(convocations, candidatureId) {
+    if (candidatureId == null) return undefined;
+    return convocations
+        .filter((c) => c.candidatureId != null && c.candidatureId === candidatureId)
+        .sort((a, b) => b.id - a.id)[0];
+}
+
+
+const estAffichee = (candidature, convocation) =>
+    candidature.statut !== "REFUSEE" || convocation?.statut === "REFUSEE";
+
+const peutDecider = (candidature) => candidature.statut === "EN_ATTENTE";
+
+const peutConvoquer = (candidature, convocation) =>
+    (candidature.statut === "ACCEPTEE" || candidature.statut === "EN_ATTENTE_REPONSE") &&
+    (!convocation || CONVOCATIONS_TERMINEES.includes(convocation.statut));
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
     const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
-    const { t } = useTranslation("main");
+    const { t, i18n } = useTranslation("main");
 
     const [candidatures, setCandidatures] = useState([]);
+    const [convocations, setConvocations] = useState([]);
     const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
@@ -29,8 +56,29 @@ export default function CandidaturesOffre() {
     const [enCours, setEnCours] = useState(false);
     const [cvPdfModal, setCvPdfModal] = useState(null);
 
+    async function chargerDonnees(estActif = () => true) {
+        try {
+            const [listeCandidatures, listeConvocations] = await Promise.all([
+                getCandidatures(offreId, authService.buildAuthHeader()),
+                getConvocationsEmployeur(authService.buildAuthHeader()),
+            ]);
+            if (estActif()) {
+                setCandidatures(listeCandidatures);
+                setConvocations(listeConvocations);
+            }
+        } catch (err) {
+            if (estActif()) setError(err.message);
+        } finally {
+            if (estActif()) setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
-        return refreshCandidatures();
+        let actif = true;
+        chargerDonnees(() => actif);
+        return () => {
+            actif = false;
+        };
     }, [offreId, authService]);
 
     useEffect(() => {
@@ -41,7 +89,10 @@ export default function CandidaturesOffre() {
         };
     }, [cvPdfModal]);
 
-    const formatStatut = (statut) => t(`candidatures_offre.status.${statut}`, { defaultValue: statut });
+    const formatStatut = (statut) =>
+        t(`candidatures_offre.statuts.${statut}`, {
+            defaultValue: t(`candidatures_offre.status.${statut}`, { defaultValue: statut }),
+        });
 
     const statutClasses = (statut) => {
         switch (statut) {
@@ -56,24 +107,23 @@ export default function CandidaturesOffre() {
         }
     };
 
-    function refreshCandidatures() {
-        let candidaturesChargees = true;
+    const convocationClasses = (statut) => {
+        switch (statut) {
+            case "ACCEPTEE":
+                return "bg-green-50 text-green-800 border-green-200";
+            case "REFUSEE":
+                return "bg-red-50 text-red-800 border-red-200";
+            case "EN_ATTENTE":
+                return "bg-blue-50 text-blue-800 border-blue-200";
+            default:
+                return "bg-gray-50 text-gray-700 border-gray-200";
+        }
+    };
 
-        getCandidatures(offreId, authService.buildAuthHeader())
-            .then((data) => {
-                if (candidaturesChargees) setCandidatures(data.filter(estAffichee));
-            })
-            .catch((err) => {
-                if (candidaturesChargees) setError(err.message);
-            })
-            .finally(() => {
-                if (candidaturesChargees) setIsLoading(false);
-            });
+    const labelEntrevue = (statut) =>
+        t(`candidatures_offre.entrevue.${statut}`, { defaultValue: ENTREVUE_PAR_DEFAUT[statut] || statut });
 
-        return () => {
-            candidaturesChargees = false;
-        };
-    }
+    const formaterDate = (valeur) => (valeur ? new Date(valeur).toLocaleString(i18n.language) : "");
 
     const handleVoirCv = async (candidat) => {
         try {
@@ -107,31 +157,18 @@ export default function CandidaturesOffre() {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
     };
 
-    async function onCreateConvocation(rendezVous, message) {
-        rendezVous.forEach(entry => {
-            if(!entry.lieu.trim()) {
-                throw new Error("lieu vide");
-            }
-            console.log(entry.date)
-            console.log(Date.now())
-            if(entry.date.getTime() <= Date.now()) {
-                throw new Error("date vide");
-            }
-        })
-        if(message !== null && !message.trim()) {
-            message = null;
+    const handleAccepter = async (candidatureId) => {
+        setError("");
+        setEnCours(true);
+        try {
+            const misAJour = await accepterCandidature(candidatureId, authService.buildAuthHeader());
+            remplacerCandidature(misAJour);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setEnCours(false);
         }
-        const result = await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
-        if(result.statut === "EN_ATTENTE") {
-            setIsLoading(true);
-            setCandidatureAConvoquer(null);
-            refreshCandidatures();
-        }
-    }
-
-    function onCancelConvocation() {
-        setCandidatureAConvoquer(null);
-    }
+    };
 
     const handleConfirmerRefus = async (candidatureId) => {
         setError("");
@@ -153,6 +190,31 @@ export default function CandidaturesOffre() {
         setMessageRefus("");
     };
 
+    async function onCreateConvocation(rendezVous, message) {
+        rendezVous.forEach((entry) => {
+            if (!entry.lieu.trim()) {
+                throw new Error("lieu vide");
+            }
+            if (entry.date.getTime() <= Date.now()) {
+                throw new Error("date vide");
+            }
+        });
+        if (message !== null && !message.trim()) {
+            message = null;
+        }
+        await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
+        setCandidatureAConvoquer(null);
+        await chargerDonnees();
+    }
+
+    function onCancelConvocation() {
+        setCandidatureAConvoquer(null);
+    }
+
+    const candidaturesVisibles = candidatures.filter((c) =>
+        estAffichee(c, derniereConvocation(convocations, c.id))
+    );
+
     return (
         <main className="max-w-7xl mx-auto my-10 px-4">
             <div className="mb-8">
@@ -169,115 +231,165 @@ export default function CandidaturesOffre() {
 
             {isLoading && <p className="text-gray-500">{t("candidatures_offre.loading")}</p>}
             {error && <p className="p-4 mb-4 rounded-lg bg-red-50 text-red-700">{error}</p>}
-            {!isLoading && !error && candidatures.length === 0 && (
+            {!isLoading && !error && candidaturesVisibles.length === 0 && (
                 <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
                     {t("candidatures_offre.no_candidates")}
                 </p>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {candidatures.map((candidat) => (
-                    <article
-                        key={candidat.id}
-                        className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
-                    >
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                                <h2 className="text-lg font-semibold text-gray-800 break-words">
-                                    {candidat.etudiant.firstName} {candidat.etudiant.lastName}
-                                </h2>
-                                <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
-                                <p className="text-sm text-blue-600">
-                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                        defaultValue: candidat.etudiant.discipline,
-                                    })}
+                {candidaturesVisibles.map((candidat) => {
+                    const convocation = derniereConvocation(convocations, candidat.id);
+                    return (
+                        <article
+                            key={candidat.id}
+                            className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
+                        >
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <h2 className="text-lg font-semibold text-gray-800 break-words">
+                                        {candidat.etudiant.firstName} {candidat.etudiant.lastName}
+                                    </h2>
+                                    <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
+                                    <p className="text-sm text-blue-600">
+                                        {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
+                                            defaultValue: candidat.etudiant.discipline,
+                                        })}
+                                    </p>
+                                </div>
+                                <span
+                                    className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
+                                >
+                                    {formatStatut(candidat.statut)}
+                                </span>
+                            </div>
+
+                            <div className="mt-4 flex items-center gap-3">
+                                {candidat.etudiant.hasCv ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleVoirCv(candidat)}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
+                                    >
+                                        {t("candidatures_offre.view_cv")}
+                                    </button>
+                                ) : (
+                                    <span className="text-sm text-gray-400">{t("candidatures_offre.no_cv")}</span>
+                                )}
+                            </div>
+
+                            {candidat.messageReponse && (
+                                <p className="mt-3 text-sm text-gray-700 break-words">
+                                    <span className="font-semibold">{t("candidatures_offre.response_message")} : </span>
+                                    {candidat.messageReponse}
                                 </p>
-                            </div>
-                            <span
-                                className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
-                            >
-                                {formatStatut(candidat.statut)}
-                            </span>
-                        </div>
-
-                        <div className="mt-4 flex items-center gap-3">
-                            {candidat.etudiant.hasCv ? (
-                                <button
-                                    type="button"
-                                    onClick={() => handleVoirCv(candidat)}
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
-                                >
-                                    {t("candidatures_offre.view_cv")}
-                                </button>
-                            ) : (
-                                <span className="text-sm text-gray-400">{t("candidatures_offre.no_cv")}</span>
                             )}
-                        </div>
 
-                        {candidat.messageReponse && (
-                            <p className="mt-3 text-sm text-gray-700 break-words">
-                                <span className="font-semibold">{t("candidatures_offre.response_message")} : </span>
-                                {candidat.messageReponse}
-                            </p>
-                        )}
+                            {convocation && (
+                                <div className={`mt-3 p-3 rounded-lg border text-sm ${convocationClasses(convocation.statut)}`}>
+                                    <p className="font-semibold">{labelEntrevue(convocation.statut)}</p>
+                                    {convocation.statut === "EN_ATTENTE" && (
+                                        <p>
+                                            {t("candidatures_offre.entrevue.date_limite", {
+                                                defaultValue: "Réponse attendue avant le",
+                                            })}{" "}
+                                            : {formaterDate(convocation.dateLimite)}
+                                        </p>
+                                    )}
+                                    {convocation.rendezVousSelection && (
+                                        <p className="break-words">
+                                            {t("candidatures_offre.entrevue.date_retenue", {
+                                                defaultValue: "Rendez-vous retenu",
+                                            })}{" "}
+                                            : {formaterDate(convocation.rendezVousSelection.date)}
+                                            {convocation.rendezVousSelection.lieu
+                                                ? ` — ${convocation.rendezVousSelection.lieu}`
+                                                : ""}
+                                        </p>
+                                    )}
+                                    {convocation.reponseEtudiant && (
+                                        <p className="break-words">
+                                            {t("candidatures_offre.entrevue.reponse_etudiant", {
+                                                defaultValue: "Réponse de l'étudiant",
+                                            })}{" "}
+                                            : {convocation.reponseEtudiant}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
 
-                        {peutActionner(candidat) && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap justify-between">
-                                <button
-                                    type="button"
-                                    disabled={enCours}
-                                    onClick={() => setCandidatureAConvoquer(candidat)}
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
-                                >
-                                    {t("candidatures_offre.accept")}
-                                </button>
-                                <button
-                                    type="button"
-                                    disabled={enCours}
-                                    onClick={() => setRefusId(candidat.id)}
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
-                                >
-                                    {t("candidatures_offre.refuse")}
-                                </button>
-                            </div>
-                        )}
-
-                        {refusId === candidat.id && (
-                            <div className="mt-auto pt-4">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                    {t("candidatures_offre.refuse_message_label")}
-                                </label>
-                                <textarea
-                                    value={messageRefus}
-                                    onChange={(e) => setMessageRefus(e.target.value)}
-                                    maxLength={1000}
-                                    rows={3}
-                                    placeholder={t("candidatures_offre.refuse_message_placeholder")}
-                                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                                />
-                                <div className="mt-2 flex flex-wrap gap-3">
+                            {peutDecider(candidat) && refusId !== candidat.id && (
+                                <div className="mt-auto pt-4 flex flex-wrap gap-3">
                                     <button
                                         type="button"
                                         disabled={enCours}
-                                        onClick={() => handleConfirmerRefus(candidat.id)}
+                                        onClick={() => handleAccepter(candidat.id)}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {t("candidatures_offre.accept")}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={enCours}
+                                        onClick={() => setRefusId(candidat.id)}
                                         className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
                                     >
-                                        {t("candidatures_offre.confirm_refuse")}
+                                        {t("candidatures_offre.refuse")}
                                     </button>
+                                </div>
+                            )}
+
+                            {peutConvoquer(candidat, convocation) && (
+                                <div className="mt-auto pt-4">
                                     <button
                                         type="button"
                                         disabled={enCours}
-                                        onClick={annulerRefus}
-                                        className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer"
+                                        onClick={() => setCandidatureAConvoquer(candidat)}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                                     >
-                                        {t("candidatures_offre.cancel")}
+                                        {t("candidatures_offre.convoquer", { defaultValue: "Convoquer" })}
                                     </button>
                                 </div>
-                            </div>
-                        )}
-                    </article>
-                ))}
+                            )}
+
+                            {refusId === candidat.id && (
+                                <div className="mt-auto pt-4">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        {t("candidatures_offre.refuse_message_label")}
+                                    </label>
+                                    <textarea
+                                        value={messageRefus}
+                                        onChange={(e) => setMessageRefus(e.target.value)}
+                                        maxLength={1000}
+                                        rows={3}
+                                        placeholder={t("candidatures_offre.refuse_message_placeholder")}
+                                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                    />
+                                    <div className="mt-2 flex flex-wrap gap-3">
+                                        <button
+                                            type="button"
+                                            disabled={enCours}
+                                            onClick={() => handleConfirmerRefus(candidat.id)}
+                                            className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
+                                        >
+                                            {t("candidatures_offre.confirm_refuse")}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={enCours}
+                                            onClick={annulerRefus}
+                                            className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer"
+                                        >
+                                            {t("candidatures_offre.cancel")}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </article>
+                    );
+                })}
             </div>
+
             {cvPdfModal && (
                 <ModalCvPdf
                     pdfUrl={cvPdfModal.url}
@@ -286,12 +398,13 @@ export default function CandidaturesOffre() {
                 />
             )}
 
-            {candidatureAConvoquer &&
+            {candidatureAConvoquer && (
                 <ModalCreerConvocation
                     rendezVousPossibles={[]}
                     onConfirm={onCreateConvocation}
                     onCancel={onCancelConvocation}
-                />}
+                />
+            )}
         </main>
     );
 }

@@ -83,6 +83,23 @@ export async function getCvCandidat(candidatureId, authHeader) {
   return response.blob();
 }
 
+export async function accepterCandidature(candidatureId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/accepter`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "defaultError");
+  }
+
+  return response.json();
+}
+
 export async function refuserCandidature(candidatureId, message, authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/refuser`, {
     method: "PUT",

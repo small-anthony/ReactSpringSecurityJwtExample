@@ -5,8 +5,8 @@ import APIHelper from "../../utils/APIHelper.ts";
 function getHeaders(authHeader) {
   const token = getTokenCookie() || localStorage.getItem("token");
   const auth = (authHeader && authHeader.Authorization)
-    ? authHeader.Authorization
-    : (token ? `Bearer ${token}` : "");
+      ? authHeader.Authorization
+      : (token ? `Bearer ${token}` : "");
   return {
     "Content-Type": "application/json",
     Authorization: auth,
@@ -49,7 +49,28 @@ export async function proposeConvocation(candidatureId, message, rendezVousPossi
       });
 
   if(!response.ok) {
-    throw new Error(await response.text() || "Unknown error");
+    const texte = await response.text();
+    let messageErreur = texte;
+    try {
+      messageErreur = JSON.parse(texte).message || texte;
+    } catch {
+
+    }
+    throw new Error(messageErreur || "Unknown error");
+  }
+
+  return response.json();
+}
+
+export async function getConvocationsEmployeur(authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/convocations`, {
+    method: "GET",
+    headers: getHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de récupérer les convocations de l'employeur");
   }
 
   return response.json();

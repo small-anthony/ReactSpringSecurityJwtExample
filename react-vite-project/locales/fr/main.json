@@ -334,13 +334,9 @@
     },
     "no_offers": "Aucune offre de stage n'a encore été créée.",
     "motif_refus": "Motif du refus :",
-    "status": {
-      "EN_ATTENTE": "En attente",
-      "ACCEPTE": "Acceptée",
-      "REFUSE": "Refusée"
-    },
-    "accept": "Convoquer",
+    "accept": "Accepter",
     "accepted": "Convoqué",
+    "convoquer": "Convoquer",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
@@ -348,7 +344,17 @@
     "cancel": "Annuler",
     "response_message": "Message de refus",
     "modal_convoquer_title": "Planifier une convocation:",
-    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas."
+    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas.",
+    "entrevue": {
+      "EN_ATTENTE": "Entrevue proposée, en attente de la réponse",
+      "ACCEPTEE": "Entrevue confirmée",
+      "REFUSEE": "Entrevue refusée",
+      "EXPIREE": "Entrevue expirée",
+      "ANNULEE": "Entrevue annulée",
+      "date_limite": "Réponse attendue avant le",
+      "date_retenue": "Rendez-vous retenu",
+      "reponse_etudiant": "Réponse de l'étudiant"
+    }
   },
   "candidature_etudiant": {
     "status": {

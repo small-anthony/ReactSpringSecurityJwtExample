@@ -124,6 +124,10 @@ public class EmployeurService {
         return cv.getData();
     }
 
+    public CandidatureDto accepterCandidature(Long candidatureId, String emailEmployeur) throws Exception {
+        return repondre(candidatureId, emailEmployeur, StatutCandidature.ACCEPTEE, null);
+    }
+
     public CandidatureDto refuserCandidature(Long candidatureId, String message, String emailEmployeur) throws Exception {
         String messageNettoye = (message == null || message.trim().isEmpty()) ? null : message.trim();
         return repondre(candidatureId, emailEmployeur, StatutCandidature.REFUSEE, messageNettoye);
@@ -150,17 +154,17 @@ public class EmployeurService {
             throw new Exception("Cette candidature a déjà reçu une réponse");
         }
 
-		StatutCandidature ancienStatut = candidature.getStatut();
-		candidature.setStatut(nouveauStatut);
-		candidature.setMessageReponse(message);
-		candidature.setDateDecision(LocalDateTime.now());
-		Candidature sauvegardee = candidatureRepository.save(candidature);
+        StatutCandidature ancienStatut = candidature.getStatut();
+        candidature.setStatut(nouveauStatut);
+        candidature.setMessageReponse(message);
+        candidature.setDateDecision(LocalDateTime.now());
+        Candidature sauvegardee = candidatureRepository.save(candidature);
 
-		historiqueRepository.save(
-				new HistoriqueCandidature(sauvegardee, ancienStatut, nouveauStatut, message, emailEmployeur));
+        historiqueRepository.save(
+                new HistoriqueCandidature(sauvegardee, ancienStatut, nouveauStatut, message, emailEmployeur));
 
-		return CandidatureDto.create(sauvegardee);
-	}
+        return CandidatureDto.create(sauvegardee);
+    }
 
     public void deleteOffre(Long offreId, String emailEmployeur) throws Exception {
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
