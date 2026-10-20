@@ -78,9 +78,7 @@ public class ConvocationService {
         boolean convocationEnCours = candidature.getConvocations().stream()
                 .anyMatch(c -> c.getStatut() == StatutConvocation.EN_ATTENTE
                         || c.getStatut() == StatutConvocation.ACCEPTEE);
-        if (convocationEnCours) {
-            throw new IllegalStateException("Une convocation est déjà en cours pour cette candidature");
-        }
+
 
 
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);

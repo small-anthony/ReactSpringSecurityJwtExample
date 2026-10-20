@@ -334,13 +334,9 @@
     },
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",
-    "status": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
-    },
-    "accept": "Summon",
+    "accept": "Accept",
     "accepted": "Summoned",
+    "convoquer": "Invite to interview",
     "refuse": "Reject",
     "refuse_message_label": "Explanatory message (optional)",
     "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",
@@ -348,12 +344,22 @@
     "cancel": "Cancel",
     "response_message": "Rejection message",
     "modal_convoquer_title": "Schedule an interview:",
-    "create_rendezvous": "Create a new time slot with the button below."
+    "create_rendezvous": "Create a new time slot with the button below.",
+    "entrevue": {
+      "EN_ATTENTE": "Interview proposed, awaiting the student's response",
+      "ACCEPTEE": "Interview confirmed",
+      "REFUSEE": "Interview declined",
+      "EXPIREE": "Interview expired",
+      "ANNULEE": "Interview cancelled",
+      "date_limite": "Response expected before",
+      "date_retenue": "Selected time slot",
+      "reponse_etudiant": "Student's response"
+    }
   },
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "Awaiting employer's decision",
-      "ACCEPTEE": "Invited to an interview",
+      "ACCEPTEE": "Application accepted by the employer",
       "REFUSEE": "Application rejected. Click \"View details\" for more information.",
       "EN_ATTENTE_REPONSE": "Awaiting response"
     },
