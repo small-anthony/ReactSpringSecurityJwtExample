@@ -22,20 +22,20 @@ const ENTREVUE_PAR_DEFAUT = {
     ANNULEE: "Entrevue annulée",
 };
 
-
-function derniereConvocation(convocations, candidatureId) {
-    if (candidatureId == null) return undefined;
+// Une candidature encore EN_ATTENTE n'a jamais de convocation affichée.
+function derniereConvocation(convocations, candidature) {
+    if (!candidature || candidature.id == null || candidature.statut === "EN_ATTENTE") return undefined;
     return convocations
-        .filter((c) => c.candidatureId != null && c.candidatureId === candidatureId)
+        .filter((c) => c.candidatureId != null && c.candidatureId === candidature.id)
         .sort((a, b) => b.id - a.id)[0];
 }
-
 
 const estAffichee = (candidature, convocation) =>
     candidature.statut !== "REFUSEE" || convocation?.statut === "REFUSEE";
 
 const peutDecider = (candidature) => candidature.statut === "EN_ATTENTE";
 
+// Filet de sécurité : candidature acceptée mais sans convocation en cours
 const peutConvoquer = (candidature, convocation) =>
     (candidature.statut === "ACCEPTEE" || candidature.statut === "EN_ATTENTE_REPONSE") &&
     (!convocation || CONVOCATIONS_TERMINEES.includes(convocation.statut));
@@ -149,25 +149,8 @@ export default function CandidaturesOffre() {
         setCvPdfModal(null);
     };
 
-    const remplacerCandidature = (misAJour) => {
-        setCandidatures((liste) => liste.map((c) => (c.id === misAJour.id ? misAJour : c)));
-    };
-
     const retirerCandidature = (candidatureId) => {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
-    };
-
-    const handleAccepter = async (candidatureId) => {
-        setError("");
-        setEnCours(true);
-        try {
-            const misAJour = await accepterCandidature(candidatureId, authService.buildAuthHeader());
-            remplacerCandidature(misAJour);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setEnCours(false);
-        }
     };
 
     const handleConfirmerRefus = async (candidatureId) => {
@@ -202,17 +185,26 @@ export default function CandidaturesOffre() {
         if (message !== null && !message.trim()) {
             message = null;
         }
-        await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
-        setCandidatureAConvoquer(null);
-        await chargerDonnees();
+        setError("");
+        const authHeader = authService.buildAuthHeader();
+        try {
+            if (candidatureAConvoquer.statut === "EN_ATTENTE") {
+                await accepterCandidature(candidatureAConvoquer.id, authHeader);
+            }
+            await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authHeader);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setCandidatureAConvoquer(null);
+            await chargerDonnees();
+        }
     }
-
     function onCancelConvocation() {
         setCandidatureAConvoquer(null);
     }
 
     const candidaturesVisibles = candidatures.filter((c) =>
-        estAffichee(c, derniereConvocation(convocations, c.id))
+        estAffichee(c, derniereConvocation(convocations, c))
     );
 
     return (
@@ -239,7 +231,7 @@ export default function CandidaturesOffre() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {candidaturesVisibles.map((candidat) => {
-                    const convocation = derniereConvocation(convocations, candidat.id);
+                    const convocation = derniereConvocation(convocations, candidat);
                     return (
                         <article
                             key={candidat.id}
@@ -323,7 +315,7 @@ export default function CandidaturesOffre() {
                                     <button
                                         type="button"
                                         disabled={enCours}
-                                        onClick={() => handleAccepter(candidat.id)}
+                                        onClick={() => setCandidatureAConvoquer(candidat)}
                                         className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                                     >
                                         {t("candidatures_offre.accept")}
