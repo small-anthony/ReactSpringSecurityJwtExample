@@ -21,6 +21,7 @@ export interface CalendarInputProps {
   name?: string;
   id?: string;
   className?: string;
+  buttonClassName?: string;
   locale?: string;
   closeOnSelect?: boolean;
   allowClear?: boolean;
@@ -82,6 +83,7 @@ function isAfterDay(d1: Date, d2: Date): boolean {
 
 export default function CalendarInput({
   className = "",
+  buttonClassName = "",
   id: customId,
   name,
   value,
@@ -137,7 +139,7 @@ export default function CalendarInput({
     if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (!containerRef.current?.contains(event.target as Node) && !dropdownRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -341,6 +343,7 @@ export default function CalendarInput({
             : isOpen
             ? "border-blue-500 ring-2 ring-blue-500/20 cursor-pointer"
             : "border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+          + ` ${buttonClassName}`
         }`}
       >
         <div className="flex items-center gap-2.5 truncate">

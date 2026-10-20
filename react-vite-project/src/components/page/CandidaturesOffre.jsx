@@ -109,13 +109,13 @@ export default function CandidaturesOffre() {
 
     async function onCreateConvocation(rendezVous, message) {
         rendezVous.forEach(entry => {
-            if(!entry.lieu.trim()) {
+            if(!entry.lieu || !entry.lieu.trim()) {
                 throw new Error("lieu vide");
             }
             console.log(entry.date)
             console.log(Date.now())
             if(entry.date.getTime() <= Date.now()) {
-                throw new Error("date vide");
+                throw new Error("date invalid");
             }
         })
         if(message !== null && !message.trim()) {
