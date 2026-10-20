@@ -119,6 +119,10 @@ public class Convocation {
         return dateLimite;
     }
 
+    public void setDateLimite(Instant dateLimite) {
+        this.dateLimite = dateLimite;
+    }
+
     public String getMessageEmployeur() {
         return messageEmployeur;
     }
