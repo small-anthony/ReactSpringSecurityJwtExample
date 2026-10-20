@@ -1,10 +1,12 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,9 @@ public class ConvocationService {
     }
 
     @Transactional()
-    public void verifierEtMettreAJourStatutsPasses() {
+    public void verifierEtMettreAJourStatutsPasses(Instant timestamp) {
         convocationRepository.expireConvocations(
-                Instant.now(),
+                timestamp,
                 StatutConvocation.ANNULEE,
                 StatutConvocation.EN_ATTENTE
         );
@@ -63,16 +65,15 @@ public class ConvocationService {
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée"));
 
-        if (actorEmail != null && candidature.getOffreStage() != null
-                && candidature.getOffreStage().getEmployeur() != null) {
-            if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
-                throw new SecurityException("Vous n'êtes pas autorisé à convoquer ce candidat");
-            }
+
+        if(!candidature.getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
+            throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
         // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
-
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
+        candidature.addConvocation(convocation);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
         convocation = convocationRepository.save(convocation);
 
         return ConvocationDto.create(convocation);
@@ -82,8 +83,8 @@ public class ConvocationService {
     public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
-        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth"); // TODO exception
+        if(!convocation.getEtudiant().getEmail().equalsIgnoreCase(actorEmail)) {
+            throw new AuthenticationException("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -98,10 +99,7 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth"); // TODO exception
-        }
-        if(convocation.estResolu()) {
-            throw new IllegalArgumentException("Convocation est immuable");
+            throw new AuthenticationException("No auth");
         }
 
         convocation.refuser(motif);

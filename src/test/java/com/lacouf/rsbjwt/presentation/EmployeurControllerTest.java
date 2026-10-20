@@ -246,36 +246,6 @@ public class EmployeurControllerTest {
     }
 
     @Test
-    void accepterCandidature_shouldReturnOkAndDto() throws Exception {
-//        ARRANGE
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.ACCEPTEE, LocalDateTime.now(), null, null, LocalDateTime.now());
-        when(employeurService.accepterCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
-//        ACT
-        ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
-//        ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void accepterCandidature_shouldReturnBadRequestOnException() throws Exception {
-//        ARRANGE
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        when(employeurService.accepterCandidature(1L, "employeur@entreprise.com"))
-                .thenThrow(new Exception("Cette candidature a déjà reçu une réponse"));
-//        ACT
-        ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
-//        ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Cette candidature a déjà reçu une réponse", response.getBody());
-    }
-
-    @Test
     void refuserCandidature_avecMessage_shouldReturnOkAndDto() throws Exception {
 //        ARRANGE
         Authentication authentication = mock(Authentication.class);

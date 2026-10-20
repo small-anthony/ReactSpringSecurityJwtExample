@@ -340,13 +340,16 @@
       "ACCEPTE": "Acceptée",
       "REFUSE": "Refusée"
     },
-    "accept": "Accepter la candidature",
+    "accept": "Convoquer",
+    "accepted": "Convoqué",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
     "confirm_refuse": "Confirmer le refus",
     "cancel": "Annuler",
-    "response_message": "Message de refus"
+    "response_message": "Message de refus",
+    "modal_convoquer_title": "Planifier une convocation:",
+    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas."
   },
   "candidature_etudiant": {
     "status": {
@@ -569,5 +572,11 @@
       "apply_success": "Félicitations ! Votre candidature a été transmise à l'employeur avec succès.",
       "apply_error": "Erreur lors de l'envoi de la candidature."
     }
+  },
+  "placeholder": {
+    "rendezvous": "Créez un rendez-vous...",
+    "lieu": "Choisissez un lieu...",
+    "message": "Entrez une message...",
+    "message_optionnel": "Message optionnel..."
   }
 }

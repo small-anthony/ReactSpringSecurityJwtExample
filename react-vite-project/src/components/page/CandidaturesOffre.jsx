@@ -5,12 +5,14 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {
     getCandidatures,
     getCvCandidat,
-    accepterCandidature,
     refuserCandidature,
 } from "../../services/api/OffreStageService.js";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
+import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
+import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
+const peutActionner = (candidature) => candidature.statut === "EN_ATTENTE";
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
@@ -19,6 +21,7 @@ export default function CandidaturesOffre() {
     const { t } = useTranslation("main");
 
     const [candidatures, setCandidatures] = useState([]);
+    const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [refusId, setRefusId] = useState(null);
@@ -27,22 +30,7 @@ export default function CandidaturesOffre() {
     const [cvPdfModal, setCvPdfModal] = useState(null);
 
     useEffect(() => {
-        let candidaturesChargees = true;
-
-        getCandidatures(offreId, authService.buildAuthHeader())
-            .then((data) => {
-                if (candidaturesChargees) setCandidatures(data.filter(estAffichee));
-            })
-            .catch((err) => {
-                if (candidaturesChargees) setError(err.message);
-            })
-            .finally(() => {
-                if (candidaturesChargees) setIsLoading(false);
-            });
-
-        return () => {
-            candidaturesChargees = false;
-        };
+        return refreshCandidatures();
     }, [offreId, authService]);
 
     useEffect(() => {
@@ -67,6 +55,25 @@ export default function CandidaturesOffre() {
                 return "bg-gray-100 text-gray-800 border-gray-200";
         }
     };
+
+    function refreshCandidatures() {
+        let candidaturesChargees = true;
+
+        getCandidatures(offreId, authService.buildAuthHeader())
+            .then((data) => {
+                if (candidaturesChargees) setCandidatures(data.filter(estAffichee));
+            })
+            .catch((err) => {
+                if (candidaturesChargees) setError(err.message);
+            })
+            .finally(() => {
+                if (candidaturesChargees) setIsLoading(false);
+            });
+
+        return () => {
+            candidaturesChargees = false;
+        };
+    }
 
     const handleVoirCv = async (candidat) => {
         try {
@@ -100,18 +107,31 @@ export default function CandidaturesOffre() {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
     };
 
-    const handleAccepter = async (candidatureId) => {
-        setError("");
-        setEnCours(true);
-        try {
-            const misAJour = await accepterCandidature(candidatureId, authService.buildAuthHeader());
-            remplacerCandidature(misAJour);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setEnCours(false);
+    async function onCreateConvocation(rendezVous, message) {
+        rendezVous.forEach(entry => {
+            if(!entry.lieu || !entry.lieu.trim()) {
+                throw new Error("lieu vide");
+            }
+            console.log(entry.date)
+            console.log(Date.now())
+            if(entry.date.getTime() <= Date.now()) {
+                throw new Error("date invalid");
+            }
+        })
+        if(message !== null && !message.trim()) {
+            message = null;
         }
-    };
+        const result = await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
+        if(result.statut === "EN_ATTENTE") {
+            setIsLoading(true);
+            setCandidatureAConvoquer(null);
+            refreshCandidatures();
+        }
+    }
+
+    function onCancelConvocation() {
+        setCandidatureAConvoquer(null);
+    }
 
     const handleConfirmerRefus = async (candidatureId) => {
         setError("");
@@ -201,12 +221,12 @@ export default function CandidaturesOffre() {
                             </p>
                         )}
 
-                        {candidat.statut === "EN_ATTENTE" && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap gap-3">
+                        {peutActionner(candidat) && refusId !== candidat.id && (
+                            <div className="mt-auto pt-4 flex flex-wrap justify-between">
                                 <button
                                     type="button"
                                     disabled={enCours}
-                                    onClick={() => handleAccepter(candidat.id)}
+                                    onClick={() => setCandidatureAConvoquer(candidat)}
                                     className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                                 >
                                     {t("candidatures_offre.accept")}
@@ -258,7 +278,6 @@ export default function CandidaturesOffre() {
                     </article>
                 ))}
             </div>
-
             {cvPdfModal && (
                 <ModalCvPdf
                     pdfUrl={cvPdfModal.url}
@@ -266,6 +285,13 @@ export default function CandidaturesOffre() {
                     titre={cvPdfModal.titre}
                 />
             )}
+
+            {candidatureAConvoquer &&
+                <ModalCreerConvocation
+                    rendezVousPossibles={[]}
+                    onConfirm={onCreateConvocation}
+                    onCancel={onCancelConvocation}
+                />}
         </main>
     );
 }

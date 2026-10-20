@@ -6,7 +6,6 @@ import CandidaturesOffre from "../../../components/page/CandidaturesOffre.jsx";
 import {
     getCandidatures,
     getCvCandidat,
-    accepterCandidature,
     refuserCandidature,
 } from "../../../services/api/OffreStageService.js";
 
@@ -120,20 +119,6 @@ describe("CandidaturesOffre", () => {
         expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
     });
 
-    it("accepte une candidature : le statut change et les boutons disparaissent", async () => {
-        const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([candidatureEnAttente]);
-        accepterCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "ACCEPTEE" });
-
-        afficherPage();
-        await user.click(await screen.findByText("candidatures_offre.accept"));
-
-        expect(await screen.findByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
-        expect(accepterCandidature).toHaveBeenCalledWith(1, {});
-        expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
-    });
-
     it("refuse une candidature avec un message : la carte disparaît et l'autre reste", async () => {
         const user = userEvent.setup();
         getCandidatures.mockResolvedValue([candidatureEnAttente, deuxiemeCandidature]);
@@ -195,18 +180,6 @@ describe("CandidaturesOffre", () => {
         expect(screen.getByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
-    });
-
-    it("affiche l'erreur du serveur quand l'acceptation échoue", async () => {
-        const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([candidatureEnAttente]);
-        accepterCandidature.mockRejectedValue(new Error("Cette candidature a déjà reçu une réponse"));
-
-        afficherPage();
-        await user.click(await screen.findByText("candidatures_offre.accept"));
-
-        expect(await screen.findByText("Cette candidature a déjà reçu une réponse")).toBeInTheDocument();
-        expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();
     });
 
     it("ouvre le modal CV au clic sur le bouton voir le CV puis le referme", async () => {

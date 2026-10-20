@@ -116,15 +116,6 @@ public class EmployeurController {
         }
     }
 
-    @PutMapping("/candidatures/{candidatureId}/accepter")
-    public ResponseEntity<Object> accepterCandidature(@PathVariable Long candidatureId, Authentication authentication) {
-        try {
-            return ResponseEntity.ok(employeurService.accepterCandidature(candidatureId, authentication.getName()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
     @PutMapping("/candidatures/{candidatureId}/refuser")
     public ResponseEntity<Object> refuserCandidature(@PathVariable Long candidatureId,
                                                      @RequestBody(required = false) Map<String, String> request,

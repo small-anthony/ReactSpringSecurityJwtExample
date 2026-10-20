@@ -297,32 +297,6 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    void accepterCandidature_succes_changeLeStatutEtEnregistreLHistorique() throws Exception {
-        //ARRANGE
-        String email = "employeur@entreprise.com";
-        Employeur employeur = preparerEmployeur(email);
-        Candidature candidature = creerCandidature(100L);
-        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
-        when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        //ACT
-        CandidatureDto resultat = employeurService.accepterCandidature(100L, email);
-
-        //ASSERT
-        assertEquals(StatutCandidature.ACCEPTEE, resultat.statut());
-        assertNull(resultat.messageReponse());
-        assertNotNull(resultat.dateDecision());
-
-        ArgumentCaptor<HistoriqueCandidature> captor = ArgumentCaptor.forClass(HistoriqueCandidature.class);
-        verify(historiqueRepository).save(captor.capture());
-        HistoriqueCandidature historique = captor.getValue();
-        assertEquals(StatutCandidature.EN_ATTENTE, historique.getAncienStatut());
-        assertEquals(StatutCandidature.ACCEPTEE, historique.getNouveauStatut());
-        assertEquals(email, historique.getAuteurEmail());
-        assertNull(historique.getMessage());
-    }
-
-    @Test
     void refuserCandidature_avecMessage_enregistreLeMessageSansEspaces() throws Exception {
         //ARRANGE
         String email = "employeur@entreprise.com";
@@ -379,25 +353,6 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    void accepterCandidature_dejaTraitee_lanceException() {
-        //ARRANGE
-        String email = "employeur@entreprise.com";
-        Employeur employeur = preparerEmployeur(email);
-        Candidature candidature = creerCandidature(100L);
-        candidature.setStatut(StatutCandidature.REFUSEE);
-        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
-
-        //ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.accepterCandidature(100L, email));
-
-        //ASSERT
-        assertEquals("Cette candidature a déjà reçu une réponse", exception.getMessage());
-        verify(candidatureRepository, never()).save(any(Candidature.class));
-        verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
-    }
-
-    @Test
     void refuserCandidature_candidatureDunAutreEmployeur_lanceException() {
         //ARRANGE
         String email = "employeur@entreprise.com";
@@ -411,37 +366,6 @@ public class EmployeurServiceTest {
         //ASSERT
         assertEquals("Candidature introuvable pour cet employeur", exception.getMessage());
         verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
-    }
-
-    @Test
-    void accepterCandidature_utilisateurIntrouvable_lanceException() {
-        //ARRANGE
-        String emailInexistant = "inconnu@entreprise.com";
-        when(userAppRepository.findUserAppByEmail(emailInexistant)).thenReturn(Optional.empty());
-
-        //ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.accepterCandidature(100L, emailInexistant));
-
-        //ASSERT
-        assertEquals("Utilisateur non trouvé avec l'email : " + emailInexistant, exception.getMessage());
-    }
-
-    @Test
-    void accepterCandidature_employeurIntrouvable_lanceException() {
-        //ARRANGE
-        String email = "utilisateur@entreprise.com";
-        UserApp userMock = mock(UserApp.class);
-        when(userMock.getId()).thenReturn(99L);
-        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
-        when(employeurRepository.findById(99L)).thenReturn(Optional.empty());
-
-        //ACT
-        Exception exception = assertThrows(Exception.class, () ->
-                employeurService.accepterCandidature(100L, email));
-
-        //ASSERT
-        assertEquals("Employeur non trouvé avec cette id", exception.getMessage());
     }
 
     @Test
