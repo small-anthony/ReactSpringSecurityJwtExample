@@ -7,7 +7,7 @@ import { AuthServiceContext } from "../../../services/AuthService.tsx";
 import * as ConvocationAPI from "../../../services/api/ConvocationAPI.jsx";
 import i18n from "../../../../i18n.config.js";
 
-vi.mock("../services/api/ConvocationAPI");
+vi.mock("../../../services/api/ConvocationAPI");
 
 const mockAuth = {
     buildAuthHeader: () => ({ Authorization: "Bearer token123" })

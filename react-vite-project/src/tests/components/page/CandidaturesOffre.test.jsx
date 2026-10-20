@@ -6,9 +6,13 @@ import CandidaturesOffre from "../../../components/page/CandidaturesOffre.jsx";
 import {
     getCandidatures,
     getCvCandidat,
+    accepterCandidature,
     refuserCandidature,
 } from "../../../services/api/OffreStageService.jsx";
-
+import {
+    getConvocationsEmployeur,
+    proposeConvocation,
+} from "../../../services/api/ConvocationAPI.jsx";
 
 vi.mock("../../../services/AuthService.tsx", async () => {
     const React = await import("react");
@@ -17,7 +21,6 @@ vi.mock("../../../services/AuthService.tsx", async () => {
     };
 });
 
-
 vi.mock("../../../services/api/OffreStageService", () => ({
     getCandidatures: vi.fn(),
     getCvCandidat: vi.fn(),
@@ -25,6 +28,38 @@ vi.mock("../../../services/api/OffreStageService", () => ({
     refuserCandidature: vi.fn(),
 }));
 
+vi.mock("../../../services/api/ConvocationAPI", () => ({
+    getConvocationsEmployeur: vi.fn(),
+    proposeConvocation: vi.fn(),
+}));
+
+vi.mock("../../../components/modal/ModalCreerConvocation", async () => {
+    const React = await import("react");
+    return {
+        default: ({ onConfirm, onCancel }) =>
+            React.createElement(
+                "div",
+                null,
+                React.createElement(
+                    "button",
+                    {
+                        type: "button",
+                        onClick: () =>
+                            onConfirm(
+                                [{ date: new Date("2030-01-01T10:00:00"), lieu: "Bureau CGI" }],
+                                "Message de test"
+                            ),
+                    },
+                    "stub.confirm"
+                ),
+                React.createElement(
+                    "button",
+                    { type: "button", onClick: onCancel },
+                    "stub.cancel"
+                )
+            ),
+    };
+});
 
 vi.mock("react-i18next", () => ({
     useTranslation: () => ({
@@ -58,6 +93,16 @@ const deuxiemeCandidature = {
     },
 };
 
+const uneConvocation = (surcharge = {}) => ({
+    id: 5,
+    candidatureId: 1,
+    statut: "EN_ATTENTE",
+    dateLimite: "2030-01-04T10:00:00Z",
+    rendezVousSelection: null,
+    reponseEtudiant: null,
+    ...surcharge,
+});
+
 function afficherPage() {
     return render(
         <MemoryRouter initialEntries={["/employeur/offres/10/candidatures"]}>
@@ -71,6 +116,7 @@ function afficherPage() {
 describe("CandidaturesOffre", () => {
     beforeEach(() => {
         vi.resetAllMocks();
+        getConvocationsEmployeur.mockResolvedValue([]);
     });
 
     it("smoke test : la page s'affiche sans erreur", async () => {
@@ -88,17 +134,12 @@ describe("CandidaturesOffre", () => {
 
         afficherPage();
 
-
         const boutonsAccepter = await screen.findAllByText("candidatures_offre.accept");
         expect(boutonsAccepter).toHaveLength(2);
-
-
         expect(screen.getAllByText("candidatures_offre.refuse")).toHaveLength(2);
         expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
         expect(screen.getByText("Marc Dubois")).toBeInTheDocument();
-
-
-        expect(screen.queryAllByText("candidatures_offre.status.ACCEPTEE")).toHaveLength(0);
+        expect(screen.queryAllByText("candidatures_offre.statuts.ACCEPTEE")).toHaveLength(0);
     });
 
     it("affiche le candidat et les boutons Accepter / Refuser quand la candidature est en attente", async () => {
@@ -117,6 +158,14 @@ describe("CandidaturesOffre", () => {
         afficherPage();
 
         expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
+    });
+
+    it("affiche une erreur quand le chargement échoue", async () => {
+        getCandidatures.mockRejectedValue(new Error("Erreur réseau"));
+
+        afficherPage();
+
+        expect(await screen.findByText("Erreur réseau")).toBeInTheDocument();
     });
 
     it("refuse une candidature avec un message : la carte disparaît et l'autre reste", async () => {
@@ -168,18 +217,152 @@ describe("CandidaturesOffre", () => {
 
         expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
         expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.status.REFUSEE")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.statuts.REFUSEE")).not.toBeInTheDocument();
     });
 
-    it("affiche une candidature déjà acceptée, sans les boutons Accepter / Refuser", async () => {
+    it("accepter ouvre le modal, puis confirmer accepte la candidature et crée la convocation", async () => {
+        const user = userEvent.setup();
+        getCandidatures
+            .mockResolvedValueOnce([candidatureEnAttente])
+            .mockResolvedValueOnce([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+        getConvocationsEmployeur
+            .mockResolvedValueOnce([])
+            .mockResolvedValueOnce([uneConvocation()]);
+        accepterCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "ACCEPTEE" });
+        proposeConvocation.mockResolvedValue({ statut: "EN_ATTENTE" });
+
+        afficherPage();
+        await user.click(await screen.findByText("candidatures_offre.accept"));
+
+        expect(screen.getByText("stub.confirm")).toBeInTheDocument();
+        expect(accepterCandidature).not.toHaveBeenCalled();
+
+        await user.click(screen.getByText("stub.confirm"));
+
+        await waitFor(() => {
+            expect(proposeConvocation).toHaveBeenCalledTimes(1);
+        });
+        expect(accepterCandidature).toHaveBeenCalledWith(1, {});
+        expect(proposeConvocation).toHaveBeenCalledWith(1, "Message de test", expect.any(Array), {});
+        expect(await screen.findByText("candidatures_offre.entrevue.EN_ATTENTE")).toBeInTheDocument();
+        expect(screen.queryByText("stub.confirm")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
+    });
+
+    it("annuler le modal n'accepte pas la candidature", async () => {
+        const user = userEvent.setup();
+        getCandidatures.mockResolvedValue([candidatureEnAttente]);
+
+        afficherPage();
+        await user.click(await screen.findByText("candidatures_offre.accept"));
+        await user.click(screen.getByText("stub.cancel"));
+
+        expect(screen.queryByText("stub.confirm")).not.toBeInTheDocument();
+        expect(accepterCandidature).not.toHaveBeenCalled();
+        expect(proposeConvocation).not.toHaveBeenCalled();
+        expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();
+    });
+
+    it("affiche l'erreur du serveur et ferme le modal quand la création échoue", async () => {
+        const user = userEvent.setup();
+        getCandidatures.mockResolvedValue([candidatureEnAttente]);
+        accepterCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "ACCEPTEE" });
+        proposeConvocation.mockRejectedValue(new Error("Erreur serveur convocation"));
+
+        afficherPage();
+        await user.click(await screen.findByText("candidatures_offre.accept"));
+        await user.click(screen.getByText("stub.confirm"));
+
+        expect(await screen.findByText("Erreur serveur convocation")).toBeInTheDocument();
+        expect(screen.queryByText("stub.confirm")).not.toBeInTheDocument();
+    });
+
+    it("une candidature acceptée sans convocation propose le bouton Convoquer", async () => {
+        const user = userEvent.setup();
         getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
+        proposeConvocation.mockResolvedValue({ statut: "EN_ATTENTE" });
 
         afficherPage();
 
         expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
-        expect(screen.getByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.statuts.ACCEPTEE")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
+
+        await user.click(screen.getByText("candidatures_offre.convoquer"));
+        await user.click(screen.getByText("stub.confirm"));
+
+        await waitFor(() => {
+            expect(proposeConvocation).toHaveBeenCalledWith(1, "Message de test", expect.any(Array), {});
+        });
+        expect(accepterCandidature).not.toHaveBeenCalled();
+    });
+
+    it("affiche l'entrevue proposée sans bouton de décision ni Convoquer", async () => {
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+        getConvocationsEmployeur.mockResolvedValue([uneConvocation()]);
+
+        afficherPage();
+
+        expect(await screen.findByText("candidatures_offre.entrevue.EN_ATTENTE")).toBeInTheDocument();
+        expect(screen.getByText(/candidatures_offre.entrevue.date_limite/)).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
+    });
+
+    it("affiche l'entrevue confirmée avec le rendez-vous retenu et la réponse de l'étudiant", async () => {
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
+        getConvocationsEmployeur.mockResolvedValue([
+            uneConvocation({
+                statut: "ACCEPTEE",
+                rendezVousSelection: { date: "2030-01-02T14:00:00", lieu: "Bureau CGI" },
+                reponseEtudiant: "Merci, j'y serai",
+            }),
+        ]);
+
+        afficherPage();
+
+        expect(await screen.findByText("candidatures_offre.entrevue.ACCEPTEE")).toBeInTheDocument();
+        expect(screen.getByText(/Bureau CGI/)).toBeInTheDocument();
+        expect(screen.getByText(/Merci, j'y serai/)).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
+    });
+
+    it("garde visible une candidature refusée par l'étudiant avec l'entrevue refusée", async () => {
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "REFUSEE" }]);
+        getConvocationsEmployeur.mockResolvedValue([
+            uneConvocation({ statut: "REFUSEE", reponseEtudiant: "Conflit d'horaire" }),
+        ]);
+
+        afficherPage();
+
+        expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.entrevue.REFUSEE")).toBeInTheDocument();
+        expect(screen.getByText(/Conflit d'horaire/)).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
+    });
+
+    it("propose de nouveau Convoquer quand la convocation est expirée", async () => {
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+        getConvocationsEmployeur.mockResolvedValue([uneConvocation({ statut: "EXPIREE" })]);
+
+        afficherPage();
+
+        expect(await screen.findByText("candidatures_offre.entrevue.EXPIREE")).toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.convoquer")).toBeInTheDocument();
+    });
+
+    it("n'affiche aucune entrevue sur une candidature encore en attente", async () => {
+        getCandidatures.mockResolvedValue([candidatureEnAttente]);
+        getConvocationsEmployeur.mockResolvedValue([uneConvocation()]);
+
+        afficherPage();
+
+        expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.entrevue.EN_ATTENTE")).not.toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();
     });
 
     it("ouvre le modal CV au clic sur le bouton voir le CV puis le referme", async () => {

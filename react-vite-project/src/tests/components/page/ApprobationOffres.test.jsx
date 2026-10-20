@@ -8,8 +8,8 @@ import * as OffreStageService from "../../../services/api/OffreStageService.jsx"
 import * as EtudiantService from "../../../services/api/EtudiantService.jsx";
 import i18n from "../../../../i18n.config.js";
 
-vi.mock("../services/api/OffreStageService");
-vi.mock("../services/api/EtudiantService");
+vi.mock("../../../services/api/OffreStageService");
+vi.mock("../../../services/api/EtudiantService");
 
 const mockAuth = {
     buildAuthHeader: () => ({ Authorization: "Bearer token123" })

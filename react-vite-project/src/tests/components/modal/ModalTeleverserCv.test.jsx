@@ -24,7 +24,7 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-vi.mock('../../services/api/EtudiantCvService.jsx', () => ({
+vi.mock('../../../services/api/EtudiantCvService.jsx', () => ({
     uploadCv: vi.fn(),
     checkCvExists: vi.fn(),
 }));
