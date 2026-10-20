@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState} from "react";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
-import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.jsx";
+import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.js";
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";

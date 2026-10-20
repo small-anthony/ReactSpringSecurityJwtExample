@@ -4,10 +4,10 @@ import "@testing-library/jest-dom/vitest";
 import { BrowserRouter } from "react-router-dom";
 import EtudiantConvocations from "../../../components/page/EtudiantConvocations.jsx";
 import { AuthServiceContext } from "../../../services/AuthService.tsx";
-import * as ConvocationAPI from "../../../services/api/ConvocationAPI.jsx";
+import * as ConvocationAPI from "../../../services/api/ConvocationAPI.js";
 import i18n from "../../../../i18n.config.js";
 
-vi.mock("../services/api/ConvocationAPI");
+vi.mock("../../../services/api/ConvocationAPI");
 
 const mockAuth = {
     buildAuthHeader: () => ({ Authorization: "Bearer token123" })

@@ -51,6 +51,7 @@
   "role": {
     "gestionnaire": "Gestionnaire",
     "etudiant": "Étudiant",
+    "etudiant_nocv": "Étudiant (CV manquant)",
     "employeur": "Employeur",
     "professeur": "Professeur"
   },
@@ -266,7 +267,7 @@
   "modal_cv": {
     "loading": "Chargement...",
     "no_cv_title": "Aucun CV téléversé",
-    "no_cv_desc": "Il est préférable de téléverser votre CV pour pouvoir postuler aux offres de stage.",
+    "no_cv_desc": "Il est préférable de téléverser votre CV.",
     "upload": "Téléverser mon CV",
     "update": "Mettre à jour mon CV",
     "pending_badge": "En attente de révision",

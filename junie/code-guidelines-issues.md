@@ -26,7 +26,7 @@ This document outlines the code guideline issues identified during the migration
 
 ## Naming Convention Issues
 
-1. **Inconsistent Component Naming**: Some components use PascalCase (e.g., MainContainer) while others use camelCase for their filenames.
+1. **Inconsistent Component Naming**: Some components use PascalCase (e.g., PageAccueilStagify) while others use camelCase for their filenames.
 
 2. **Non-descriptive Variable Names**: Variables like 'e' for events and 'u' for user are not descriptive enough.
 

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ModalTeleverserCv from "../../../components/modal/ModalTeleverserCv.jsx";
-import * as EtudiantCvService from "../../../services/api/EtudiantCvService.jsx";
+import * as EtudiantCvService from "../../../services/api/EtudiantCvService.js";
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -24,13 +24,14 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-vi.mock('../../services/api/EtudiantCvService.jsx', () => ({
+vi.mock('../../../services/api/EtudiantCvService.js', () => ({
     uploadCv: vi.fn(),
     checkCvExists: vi.fn(),
 }));
 
 describe('ModalTeleverserCv', () => {
     const mockOnUploadSuccess = vi.fn();
+    const mockOnClose = vi.fn();
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -40,12 +41,21 @@ describe('ModalTeleverserCv', () => {
         vi.useRealTimers();
     });
 
-    const renderModal = () => {
-        const { container } = render(<ModalTeleverserCv onUploadSuccess={mockOnUploadSuccess} />);
+    const renderModal = (props = {}) => {
+        const { container } = render(
+            <ModalTeleverserCv
+                onUploadSuccess={mockOnUploadSuccess}
+                onClose={mockOnClose}
+                {...props}
+            />
+        );
         return {
+            container,
             input: container.querySelector('input[type="file"]'),
+            dropZone: container.querySelector('label[for="cv-upload-input"]'),
             televerserButton: screen.getByRole('button', { name: /téléverser mon cv/i }),
             form: container.querySelector('form'),
+            closeButton: container.querySelector('button[type="button"]'),
         };
     };
 
@@ -58,7 +68,7 @@ describe('ModalTeleverserCv', () => {
         expect(televerserButton).toBeDisabled();
     });
 
-    it('doit afficher un message d\'erreur quand un fichier non pdf est choisi', async () => {
+    it('doit afficher un message d\'erreur quand un fichier non pdf est choisi via l\'explorateur', async () => {
         // Arrange
         const { input, televerserButton } = renderModal();
         const invalidFile = new File(['image-content'], 'photo.png', { type: 'image/png' });
@@ -71,7 +81,7 @@ describe('ModalTeleverserCv', () => {
         expect(televerserButton).toBeDisabled();
     });
 
-    it('doit activer le bouton de televerser le cv quand un fichier pdf est choisi', async () => {
+    it('doit activer le bouton de televerser le cv quand un fichier pdf est choisi via l\'explorateur', async () => {
         // Arrange
         const { input, televerserButton } = renderModal();
         const validFile = new File(['pdf-content'], 'cv.pdf', { type: 'application/pdf' });
@@ -81,6 +91,49 @@ describe('ModalTeleverserCv', () => {
 
         // Assert
         expect(televerserButton).toBeEnabled();
+        expect(screen.getByText('cv.pdf')).toBeInTheDocument();
+    });
+
+    it('doit afficher un message d\'erreur quand un fichier non-PDF est glissé-déposé (drag and drop)', () => {
+        // Arrange
+        const { dropZone, televerserButton } = renderModal();
+        const invalidFile = new File(['image-data'], 'document.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+        // Act
+        fireEvent.dragEnter(dropZone);
+        fireEvent.dragOver(dropZone, { dataTransfer: { files: [invalidFile] } });
+        fireEvent.drop(dropZone, { dataTransfer: { files: [invalidFile] } });
+
+        // Assert
+        expect(screen.getByText(/veuillez sélectionner un fichier pdf/i)).toBeInTheDocument();
+        expect(televerserButton).toBeDisabled();
+    });
+
+    it('doit accepter le fichier et activer le bouton quand un fichier PDF est glissé-déposé (drag and drop)', () => {
+        // Arrange
+        const { dropZone, televerserButton } = renderModal();
+        const validFile = new File(['pdf-data'], 'mon_cv.pdf', { type: 'application/pdf' });
+
+        // Act
+        fireEvent.dragEnter(dropZone);
+        fireEvent.dragOver(dropZone, { dataTransfer: { files: [validFile] } });
+        fireEvent.drop(dropZone, { dataTransfer: { files: [validFile] } });
+
+        // Assert
+        expect(screen.queryByText(/veuillez sélectionner un fichier pdf/i)).not.toBeInTheDocument();
+        expect(screen.getByText('mon_cv.pdf')).toBeInTheDocument();
+        expect(televerserButton).toBeEnabled();
+    });
+
+    it('doit appeler onClose quand l\'utilisateur clique sur le bouton fermer (X)', () => {
+        // Arrange
+        const { closeButton } = renderModal();
+
+        // Act
+        fireEvent.click(closeButton);
+
+        // Assert
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
     it('doit appeler le service de uploadCv et afficher le message de succes de televerser le cv', async () => {

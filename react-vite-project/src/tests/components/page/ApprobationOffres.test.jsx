@@ -4,15 +4,15 @@ import "@testing-library/jest-dom/vitest";
 import { BrowserRouter } from "react-router-dom";
 import ApprobationOffres from "../../../components/page/ApprobationOffres.jsx";
 import { AuthServiceContext } from "../../../services/AuthService.tsx";
-import * as OffreStageService from "../../../services/api/OffreStageService.jsx";
-import * as EtudiantService from "../../../services/api/EtudiantService.jsx";
+import * as OffreStageService from "../../../services/api/OffreStageService.js";
+import * as EtudiantService from "../../../services/api/EtudiantService.js";
 import i18n from "../../../../i18n.config.js";
 
-vi.mock("../services/api/OffreStageService");
-vi.mock("../services/api/EtudiantService");
+vi.mock("../../../services/api/OffreStageService");
+vi.mock("../../../services/api/EtudiantService");
 
 const mockAuth = {
-    buildAuthHeader: () => ({ Authorization: "Bearer token123" })
+    buildAuthHeader: vi.fn(() => ({ Authorization: "Bearer token123" }))
 };
 
 const MockApprobation = () => {

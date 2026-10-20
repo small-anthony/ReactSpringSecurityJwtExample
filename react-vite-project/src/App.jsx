@@ -1,7 +1,7 @@
 import PageLayout from "./components/PageLayout.jsx";
 import React, { useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import MainContainer from "./components/MainContainer.jsx";
+import PageAccueilStagify from "./components/page/PageAccueilStagify.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
 import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
@@ -43,7 +43,7 @@ function App() {
 
                     <Route
                         index
-                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<MainContainer/>)}
+                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify/>)}
                     />
 
                     <Route

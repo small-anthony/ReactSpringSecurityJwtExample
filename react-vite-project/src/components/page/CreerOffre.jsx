@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { createOffreStage } from "../../services/api/OffreStageService.jsx";
+import { createOffreStage } from "../../services/api/OffreStageService.js";
 import OffreForm from "../form/OffreForm.jsx";
 
 export default function CreerOffre() {

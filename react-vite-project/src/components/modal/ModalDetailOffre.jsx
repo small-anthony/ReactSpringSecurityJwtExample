@@ -1,11 +1,11 @@
-import { X, Building2, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
+import { X, XCircle, Building2, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { postuler } from "../../services/api/OffreStageService.jsx";
+import { postuler } from "../../services/api/OffreStageService.js";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 
-export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces }) {
+export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces, candidature }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
@@ -14,19 +14,14 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
+    const cand = candidature || offre?.candidature || (offre?.candidatures && offre.candidatures[0]);
+    const estRefusee = cand?.statut === "REFUSEE" || cand?.status === "REFUSEE";
+
     useEffect(() => {
         setHasApplied(aPostule);
         setErrorMessage("");
         setSuccessMessage("");
     }, [offre, aPostule]);
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === "Escape") onClose();
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [onClose]);
 
     if (!offre) return null;
 
@@ -67,7 +62,6 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                 className="bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* En-tête de modale */}
                 <div className="px-6 py-5 border-b border-[#E2E8F0] flex justify-between items-start bg-[#F8FAFC]">
                     <div>
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] mb-2.5">
@@ -92,6 +86,31 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         <X className="w-5 h-5" strokeWidth={1.5} />
                     </button>
                 </div>
+
+                {estRefusee && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">
+                        <div className="flex items-center gap-2 mb-1.5 font-semibold text-red-900">
+                            <XCircle className="w-5 h-5 text-red-600 shrink-0" strokeWidth={1.5} />
+                            <span>{t("candidature_etudiant.modal_refused_title", { defaultValue: "Candidature refusée" })}</span>
+                        </div>
+                        <div className="text-red-700 pl-7 leading-relaxed">
+                            {cand?.messageReponse ? (
+                                <p>
+                                    <span className="font-semibold text-red-800">
+                                        {t("candidature_etudiant.refuse_reason", { defaultValue: "Message de l'employeur" })} :{" "}
+                                    </span>
+                                    {cand.messageReponse}
+                                </p>
+                            ) : (
+                                <p>
+                                    {t("candidature_etudiant.modal_refused_no_reason", {
+                                        defaultValue: "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
+                                    })}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {successMessage && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm flex items-center gap-2.5">
@@ -170,7 +189,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         {t("offres_etudiant.modal.close", { defaultValue: "Fermer" })}
                     </button>
 
-                    {!hasApplied && (
+                    {!hasApplied && !estRefusee && (
                         <button
                             type="button"
                             onClick={handlePostuler}

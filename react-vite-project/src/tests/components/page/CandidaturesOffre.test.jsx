@@ -7,7 +7,7 @@ import {
     getCandidatures,
     getCvCandidat,
     refuserCandidature,
-} from "../../../services/api/OffreStageService.jsx";
+} from "../../../services/api/OffreStageService.js";
 
 
 vi.mock("../../../services/AuthService.tsx", async () => {

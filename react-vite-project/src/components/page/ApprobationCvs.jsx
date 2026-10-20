@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { accepterCv, getCvsEnAttente, refuserCv, voirCvPdf } from "../../services/api/GestionnaireService.jsx";
+import { accepterCv, getCvsEnAttente, refuserCv, voirCvPdf } from "../../services/api/GestionnaireService.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import { Check, Eye, IdCard, X } from "lucide-react";
 import {useTranslation} from "react-i18next";

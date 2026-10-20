@@ -13,7 +13,7 @@ import {
   getConvocationsEtudiant,
   accepterConvocation,
   refuserConvocation,
-} from "../../services/api/ConvocationAPI.jsx";
+} from "../../services/api/ConvocationAPI.js";
 import ConvocationCard from "../convocation/ConvocationCard.jsx";
 import ModalRefuserConvocation from "../modal/ModalRefuserConvocation.jsx";
 
