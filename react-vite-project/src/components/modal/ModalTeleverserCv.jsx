@@ -33,7 +33,9 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     const handleDragOver = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        e.dataTransfer.dropEffect = 'copy';
+        if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'copy';
+        }
     };
 
     const handleDragEnter = (e) => {
