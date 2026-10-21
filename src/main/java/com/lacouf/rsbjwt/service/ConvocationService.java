@@ -52,15 +52,15 @@ public class ConvocationService {
     @Transactional
     public ConvocationDto creerConvocation(String actorEmail, Long candidatureId,
             List<RendezVousDto> rendezVousPossibles,
-            String messageEmployeur) {
+            String messageEmployeur) throws Exception {
 
         Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée"));
+                .orElseThrow(() -> new Exception("Candidature non trouvée"));
 
         if (actorEmail != null && candidature.getOffreStage() != null
                 && candidature.getOffreStage().getEmployeur() != null) {
             if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
-                throw new SecurityException("Vous n'êtes pas autorisé à convoquer ce candidat");
+                throw new Exception("Vous n'êtes pas autorisé à convoquer ce candidat");
             }
         }
 
@@ -72,11 +72,11 @@ public class ConvocationService {
 
     @Transactional
     public ConvocationDto accepterConvocation(String actorEmail, Long convocationId,
-            RendezVousDto rendezVousSelection) {
+            RendezVousDto rendezVousSelection) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
+                .orElseThrow(() -> new Exception("Convocation non trouvée"));
         if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth");
+            throw new Exception("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -87,14 +87,14 @@ public class ConvocationService {
     }
 
     @Transactional
-    public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) {
+    public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
+                .orElseThrow(() -> new Exception("Convocation non trouvée"));
         if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth");
+            throw new Exception("No auth");
         }
         if (convocation.estResolu()) {
-            throw new IllegalArgumentException("Convocation est immuable");
+            throw new Exception("Convocation est immuable");
         }
 
         convocation.refuser(motif);

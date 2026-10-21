@@ -45,15 +45,15 @@ public class EmployeurService {
                                           String discipline, String duree, String salaire, String exigences,
                                           String emailEmployeur) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le titre est obligatoire");
+            throw new Exception("Le titre est obligatoire");
         }
 
         if (nomEntreprise == null || nomEntreprise.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le nom de l'entreprise est obligatoire");
+            throw new Exception("Le nom de l'entreprise est obligatoire");
         }
 
         if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("La description est obligatoire");
+            throw new Exception("La description est obligatoire");
         }
 
         if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
@@ -181,15 +181,15 @@ public class EmployeurService {
                                           String emailEmployeur) throws Exception {
 
         if (titre == null || titre.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le titre est obligatoire");
+            throw new Exception("Le titre est obligatoire");
         }
 
         if (nomEntreprise == null || nomEntreprise.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le nom de l'entreprise est obligatoire");
+            throw new Exception("Le nom de l'entreprise est obligatoire");
         }
 
         if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("La description est obligatoire");
+            throw new Exception("La description est obligatoire");
         }
 
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)

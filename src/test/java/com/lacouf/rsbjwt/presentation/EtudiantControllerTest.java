@@ -289,7 +289,7 @@ void getConvocations_shouldReturnOk() {
     }
 
     @Test
-    void accepterConvocation_shouldReturnOk() {
+    void accepterConvocation_shouldReturnOk() throws Exception {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
         List<RendezVousDto> rendezVousDtos = new ArrayList<>();
@@ -312,7 +312,7 @@ void getConvocations_shouldReturnOk() {
     }
 
     @Test
-    void refuserConvocation_shouldReturnOk() {
+    void refuserConvocation_shouldReturnOk() throws Exception {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
         List<RendezVousDto> rendezVousDtos = new ArrayList<>();

@@ -50,7 +50,7 @@ class ConvocationServiceTest {
         private List<RendezVous> rendezVousPossibles;
 
         @BeforeEach
-        void setUp() {
+        void setUp() throws Exception {
                 etudiant = new Etudiant("Hatim", "Fakhour", new Credentials("etudiant@test.com", "pass", Role.ETUDIANT),
                                 1234567, "Informatique");
                 employeur = new Employeur("Valentin", "Dimitrov",
@@ -74,7 +74,7 @@ class ConvocationServiceTest {
         }
 
         @Test
-        void accepterConvocation_succes() {
+        void accepterConvocation_succes() throws Exception {
                 // Arrange
                 when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                                 .thenReturn(Optional.of(convocation));
@@ -114,7 +114,7 @@ class ConvocationServiceTest {
         }
 
         @Test
-        void refuserConvocation_succes() {
+        void refuserConvocation_succes() throws Exception {
                 // Arrange
                 when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                                 .thenReturn(Optional.of(convocation));
@@ -136,7 +136,7 @@ class ConvocationServiceTest {
         }
 
         @Test
-        void creerConvocation_succes() {
+        void creerConvocation_succes() throws Exception {
                 // Arrange
                 LocalDateTime date = LocalDateTime.now().plusDays(4);
                 when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
