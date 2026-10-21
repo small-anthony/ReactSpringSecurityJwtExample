@@ -53,7 +53,8 @@
     "etudiant": "Student",
     "etudiant_nocv": "Student (No Resume)",
     "employeur": "Employer",
-    "professeur": "Teacher"
+    "professeur": "Teacher",
+    "admin": "Administrator"
   },
   "login_page": {
     "title": "Sign In",
@@ -291,7 +292,8 @@
     "no_interviews_link": "Interviews",
     "no_interviews_end": "tab to respond to your invitations.",
     "default_interview_title": "Internship interview",
-    "location_unspecified": "Location not specified"
+    "location_unspecified": "Location not specified",
+    "error_check": "An error occurred while checking the resume."
   },
   "employeur_home": {
     "title": "My internship offers",
@@ -303,17 +305,15 @@
     "status": {
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
+      "ACCEPTEE": "Accepted",
+      "REFUSE": "Refused",
+      "REFUSEE": "Refused"
     },
     "view_candidates": "View candidates",
-    "status": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
-    },
     "edit_error": "Error while updating the offer.",
     "edit_offer": "Edit",
     "delete_offer": "Delete",
+    "delete_error": "Error while deleting the offer.",
     "modal_edit_title": "Edit Offer",
     "save": "Save",
     "saving": "Saving...",
@@ -329,16 +329,11 @@
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
+      "ACCEPTE": "Accepted",
       "ACCEPTEE": "Accepted",
+      "REFUSE": "Rejected",
       "REFUSEE": "Rejected",
       "EN_ATTENTE_REPONSE": "Awaiting response"
-    },
-    "no_offers": "No internship offer has been created yet.",
-    "motif_refus": "Reason for refusal:",
-    "status": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
     },
     "accept": "Accept application",
     "refuse": "Reject",
@@ -351,11 +346,15 @@
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "Awaiting employer's decision",
+      "ACCEPTE": "Invited to an interview",
       "ACCEPTEE": "Invited to an interview",
+      "REFUSE": "Application rejected. Click \"View details\" for more information.",
       "REFUSEE": "Application rejected. Click \"View details\" for more information.",
       "EN_ATTENTE_REPONSE": "Awaiting response"
     },
-    "refuse_reason": "Employer's message"
+    "refuse_reason": "Employer's message",
+    "modal_refused_title": "Application rejected",
+    "modal_refused_no_reason": "Your application was not selected by the employer for this internship offer."
   },
   "historique": {
     "back": "Back to my offers",
@@ -390,6 +389,7 @@
     "refusal_reason_label": "Refusal reason provided:",
     "btn_accept": "Accept interview",
     "btn_refuse": "Decline",
+    "btn_refresh": "Refresh",
     "btn_propose_date": "Suggest another date",
     "processing": "Processing...",
     "loading": "Loading your invitations...",
