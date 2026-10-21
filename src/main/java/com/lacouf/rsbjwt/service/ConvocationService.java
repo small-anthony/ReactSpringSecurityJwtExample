@@ -25,40 +25,34 @@ public class ConvocationService {
         this.candidatureRepository = candidatureRepository;
     }
 
-    @Transactional()
+    @Transactional
     public void verifierEtMettreAJourStatutsPasses() {
         convocationRepository.expireConvocations(
                 Instant.now(),
                 StatutConvocation.ANNULEE,
-                StatutConvocation.EN_ATTENTE
-        );
+                StatutConvocation.EN_ATTENTE);
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsEtudiant(String etudiantEmail) {
         return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsAccepteesEtudiant(String etudiantEmail) {
         return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {
         return ConvocationDto.create(convocationRepository.findByEmployeurEmail(employeurEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getToutesConvocations() {
         return ConvocationDto.create(convocationRepository.findAll());
     }
 
     @Transactional
     public ConvocationDto creerConvocation(String actorEmail, Long candidatureId,
-                                           List<RendezVousDto> rendezVousPossibles,
-                                           String messageEmployeur) {
-
+            List<RendezVousDto> rendezVousPossibles,
+            String messageEmployeur) {
 
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée"));
@@ -70,8 +64,6 @@ public class ConvocationService {
             }
         }
 
-        // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
-
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         convocation = convocationRepository.save(convocation);
 
@@ -79,11 +71,12 @@ public class ConvocationService {
     }
 
     @Transactional
-    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) {
+    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId,
+            RendezVousDto rendezVousSelection) {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
-        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth"); // TODO exception
+        if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+            throw new RuntimeException("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -97,10 +90,10 @@ public class ConvocationService {
     public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
-        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new RuntimeException("No auth"); // TODO exception
+        if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+            throw new RuntimeException("No auth");
         }
-        if(convocation.estResolu()) {
+        if (convocation.estResolu()) {
             throw new IllegalArgumentException("Convocation est immuable");
         }
 

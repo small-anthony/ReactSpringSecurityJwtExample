@@ -160,9 +160,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         employeurRepository.save(employeurGoogle);
 
-                        // =========================================================================
-                        // SCÉNARIO 1 : EN_ATTENTE - Choix Multi-créneaux (Pour tester l'ACCEPTATION)
-                        // =========================================================================
                         Candidature cand1 = new Candidature(etudiant, offre1);
                         List<RendezVous> rv1 = new ArrayList<>();
                         RendezVous rv1_slot1 = RendezVous.read("En ligne - Microsoft Teams (Option 1)",
@@ -179,9 +176,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(cand1);
                         convocationRepository.save(conv1);
 
-                        // =========================================================================
-                        // SCÉNARIO 2 : EN_ATTENTE - Créneau unique (Pour tester le REFUS avec motif)
-                        // =========================================================================
                         Candidature cand2 = new Candidature(etudiant, offre3);
                         List<RendezVous> rv2 = new ArrayList<>();
                         RendezVous rv2_slot1 = RendezVous.read("Google Meet (Visioconférence)",
@@ -194,9 +188,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(cand2);
                         convocationRepository.save(conv2);
 
-                        // =========================================================================
-                        // SCÉNARIO 3 : ACCEPTEE (Déjà confirmée avec créneau sélectionné)
-                        // =========================================================================
                         Candidature cand3 = new Candidature(etudiant, offre4);
                         List<RendezVous> rv3 = new ArrayList<>();
                         RendezVous rv3_slot1 = RendezVous.read("En ligne - Zoom (Entrevue Sécurité)",
@@ -214,9 +205,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(cand3);
                         convocationRepository.save(conv3);
 
-                        // =========================================================================
-                        // SCÉNARIO 4 : REFUSEE (Déjà refusée avec motif d'étudiant)
-                        // =========================================================================
                         Candidature cand4 = new Candidature(etudiant, offre5);
                         List<RendezVous> rv4 = new ArrayList<>();
                         RendezVous rv4_slot1 = RendezVous.read("Google Montréal - Salle 201",
@@ -230,9 +218,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(cand4);
                         convocationRepository.save(conv4);
 
-                        // =========================================================================
-                        // SCÉNARIO 5 : EXPIREE (Date limite échue dans le passé)
-                        // =========================================================================
                         Candidature cand5 = new Candidature(etudiant, offre2);
                         List<RendezVous> rv5 = new ArrayList<>();
                         RendezVous rv5_slot1 = RendezVous.read("Bureau CGI Inc., 1000 rue de la Gauchetière, Montréal",
@@ -246,7 +231,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(cand5);
                         convocationRepository.save(conv5);
 
-                        // Données miroir pour hatim@test.com
                         Candidature candHatim = new Candidature(hatim, offre1);
                         List<RendezVous> rvHatim = new ArrayList<>();
                         rvHatim.add(RendezVous.read("En ligne - Microsoft Teams (Option 1)",

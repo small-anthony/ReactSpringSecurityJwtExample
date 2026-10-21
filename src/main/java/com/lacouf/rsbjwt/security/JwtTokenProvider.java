@@ -20,7 +20,6 @@ public class JwtTokenProvider{
 	private String jwtSecret = "2B7E151628AED2A6ABF7158809CF4F3C2B7E151628AED2A6ABF7158809CF4F3C";
 
 	private Key getSigningKey() {
-		// jwtSecret is a hex string, convert to bytes
 		byte[] keyBytes = hexStringToByteArray(jwtSecret);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}

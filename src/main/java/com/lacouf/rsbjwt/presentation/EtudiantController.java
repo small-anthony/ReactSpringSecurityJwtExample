@@ -110,7 +110,6 @@ public class EtudiantController {
         return ResponseEntity.ok(convocationService.getConvocationsEtudiant(authentication.getName()));
     }
 
-    // TODO convocations?statut=accepted
     @GetMapping("/convocations/acceptees")
     public ResponseEntity<List<ConvocationDto>> getConvocationsAcceptees(Authentication authentication) {
         return ResponseEntity.ok(convocationService.getConvocationsAccepteesEtudiant(authentication.getName()));

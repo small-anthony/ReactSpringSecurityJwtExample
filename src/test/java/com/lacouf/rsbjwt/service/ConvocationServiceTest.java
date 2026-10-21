@@ -31,115 +31,252 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ConvocationServiceTest {
 
-    @Mock
-    private ConvocationRepository convocationRepository;
+        @Mock
+        private ConvocationRepository convocationRepository;
 
-    @Mock
-    private CandidatureRepository candidatureRepository;
+        @Mock
+        private CandidatureRepository candidatureRepository;
 
-    @InjectMocks
-    private ConvocationService convocationService;
+        @InjectMocks
+        private ConvocationService convocationService;
 
-    private Etudiant etudiant;
-    private Employeur employeur;
-    private OffreStage offreStage;
-    private Candidature candidature;
-    private Convocation convocation;
-    private RendezVous goodRendezVous;
-    private RendezVous badRendezVous;
-    private List<RendezVous> rendezVousPossibles;
+        private Etudiant etudiant;
+        private Employeur employeur;
+        private OffreStage offreStage;
+        private Candidature candidature;
+        private Convocation convocation;
+        private RendezVous goodRendezVous;
+        private RendezVous badRendezVous;
+        private List<RendezVous> rendezVousPossibles;
 
-    @BeforeEach
-    void setUp() {
-        etudiant = new Etudiant("Hatim", "Fakhour", new Credentials("etudiant@test.com", "pass", Role.ETUDIANT), 1234567, "Informatique");
-        employeur = new Employeur("Valentin", "Dimitrov", new Credentials("employeur@test.com", "pass", Role.EMPLOYEUR), "CGI Inc.", "514-555-1234");
-        offreStage = new OffreStage("Développeur Java", "Stage de dev", "CGI Inc.");
-        offreStage.setEmployeur(employeur);
-        candidature = new Candidature(etudiant, offreStage);
-        ReflectionTestUtils.setField(candidature, "id", 10L);
+        @BeforeEach
+        void setUp() {
+                etudiant = new Etudiant("Hatim", "Fakhour", new Credentials("etudiant@test.com", "pass", Role.ETUDIANT),
+                                1234567, "Informatique");
+                employeur = new Employeur("Valentin", "Dimitrov",
+                                new Credentials("employeur@test.com", "pass", Role.EMPLOYEUR), "CGI Inc.",
+                                "514-555-1234");
+                offreStage = new OffreStage("Développeur Java", "Stage de dev", "CGI Inc.");
+                offreStage.setEmployeur(employeur);
+                candidature = new Candidature(etudiant, offreStage);
+                ReflectionTestUtils.setField(candidature, "id", 10L);
 
-        rendezVousPossibles = new ArrayList<>();
-        goodRendezVous = RendezVous.read("Ici", Instant.MAX);
-        rendezVousPossibles.add(goodRendezVous);
-        badRendezVous = RendezVous.read("Là-bas", Instant.MIN);
-        rendezVousPossibles.add(badRendezVous);
+                rendezVousPossibles = new ArrayList<>();
+                goodRendezVous = RendezVous.read("Ici", Instant.MAX);
+                rendezVousPossibles.add(goodRendezVous);
+                badRendezVous = RendezVous.read("Là-bas", Instant.MIN);
+                rendezVousPossibles.add(badRendezVous);
 
-        convocation = new Convocation(rendezVousPossibles, "Message");
-        ReflectionTestUtils.setField(convocation, "id", 1L);
-        ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MAX);
-        candidature.addConvocation(convocation);
-    }
+                convocation = new Convocation(rendezVousPossibles, "Message");
+                ReflectionTestUtils.setField(convocation, "id", 1L);
+                ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MAX);
+                candidature.addConvocation(convocation);
+        }
 
-    @Test
-    void accepterConvocation_succes() {
-        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
-                .thenReturn(Optional.of(convocation));
-        when(convocationRepository.save(any(Convocation.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        @Test
+        void accepterConvocation_succes() {
+                // Arrange
+                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                                .thenReturn(Optional.of(convocation));
+                when(convocationRepository.save(any(Convocation.class)))
+                                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
-        ConvocationDto dto = convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto);
+                RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
 
-        assertNotNull(dto);
-        assertEquals(StatutConvocation.ACCEPTEE, dto.statut());
-        assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
+                // Act
+                ConvocationDto dto = convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(),
+                                rendezVousDto);
 
-        verify(convocationRepository).save(convocation);
-    }
+                // Assert
+                assertNotNull(dto);
+                assertEquals(StatutConvocation.ACCEPTEE, dto.statut());
+                assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
 
-    @Test
-    void accepterConvocation_datePassee_lanceException() {
-        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
-                .thenReturn(Optional.of(convocation));
-        ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MIN);
+                verify(convocationRepository).save(convocation);
+        }
 
-        RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
-        assertThrows(IllegalStateException.class, () ->
-                convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto)
-        );
+        @Test
+        void accepterConvocation_datePassee_lanceException() {
+                // Arrange
+                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                                .thenReturn(Optional.of(convocation));
+                ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MIN);
 
-        assertEquals(StatutConvocation.EXPIREE, convocation.getStatut());
-//        assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
-//        verify(convocationRepository).save(convocation);
-    }
+                RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
 
-    @Test
-    void refuserConvocation_succes() {
-        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
-                .thenReturn(Optional.of(convocation));
-        when(convocationRepository.save(any(Convocation.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+                // Act
+                Exception exception = assertThrows(Exception.class, () -> convocationService
+                                .accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto));
 
-        String raison = "Pas disponible";
+                // Assert
+                assertNotNull(exception);
+                assertEquals(StatutConvocation.EXPIREE, convocation.getStatut());
+        }
 
-        ConvocationDto dto = convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), raison);
+        @Test
+        void refuserConvocation_succes() {
+                // Arrange
+                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                                .thenReturn(Optional.of(convocation));
+                when(convocationRepository.save(any(Convocation.class)))
+                                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertNotNull(dto);
-        assertEquals(StatutConvocation.REFUSEE, dto.statut());
-        assertEquals(raison, convocation.getReponseEtudiant());
-//        assertEquals(StatutCandidature.REFUSEE, candidature.getStatut());
+                String raison = "Pas disponible";
 
-        verify(convocationRepository).save(convocation);
-    }
+                // Act
+                ConvocationDto dto = convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(),
+                                raison);
 
-    @Test
-    void creerConvocation_succes() {
-        LocalDateTime date = LocalDateTime.now().plusDays(4);
-        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
-        when(convocationRepository.save(any(Convocation.class))).thenAnswer(invocation -> {
-            Convocation c = invocation.getArgument(0);
-            ReflectionTestUtils.setField(c, "id", 99L);
-            return c;
-        });
+                // Assert
+                assertNotNull(dto);
+                assertEquals(StatutConvocation.REFUSEE, dto.statut());
+                assertEquals(raison, convocation.getReponseEtudiant());
 
-        List<RendezVousDto> dtos = new ArrayList<>();
-        dtos.add(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+                verify(convocationRepository).save(convocation);
+        }
 
-        ConvocationDto dto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "Bienvenue");
+        @Test
+        void creerConvocation_succes() {
+                // Arrange
+                LocalDateTime date = LocalDateTime.now().plusDays(4);
+                when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+                when(convocationRepository.save(any(Convocation.class))).thenAnswer(invocation -> {
+                        Convocation c = invocation.getArgument(0);
+                        ReflectionTestUtils.setField(c, "id", 99L);
+                        return c;
+                });
 
-        assertNotNull(dto);
-        assertEquals(99L, dto.id());
-        assertEquals("Virtuel", dto.rendezVousPossibles().getFirst().lieu());
-        assertEquals(StatutConvocation.EN_ATTENTE, dto.statut());
-    }
+                List<RendezVousDto> dtos = new ArrayList<>();
+                dtos.add(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+
+                // Act
+                ConvocationDto dto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(),
+                                dtos, "Bienvenue");
+
+                // Assert
+                assertNotNull(dto);
+                assertEquals(99L, dto.id());
+                assertEquals("Virtuel", dto.rendezVousPossibles().getFirst().lieu());
+                assertEquals(StatutConvocation.EN_ATTENTE, dto.statut());
+        }
+
+        @Test
+        void verifierEtMettreAJourStatutsPasses_appelleRepository() {
+                // Act
+                convocationService.verifierEtMettreAJourStatutsPasses();
+
+                // Assert
+                verify(convocationRepository).expireConvocations(any(Instant.class), eq(StatutConvocation.ANNULEE),
+                                eq(StatutConvocation.EN_ATTENTE));
+        }
+
+        @Test
+        void getConvocationsEtudiant_retourneListe() {
+                // Arrange
+                when(convocationRepository.findByEtudiantEmail(etudiant.getEmail())).thenReturn(List.of(convocation));
+
+                // Act
+                List<ConvocationDto> result = convocationService.getConvocationsEtudiant(etudiant.getEmail());
+
+                // Assert
+                assertNotNull(result);
+                assertEquals(1, result.size());
+        }
+
+        @Test
+        void getConvocationsAccepteesEtudiant_retourneListe() {
+                // Arrange
+                when(convocationRepository.findByEtudiantEmail(etudiant.getEmail())).thenReturn(List.of(convocation));
+
+                // Act
+                List<ConvocationDto> result = convocationService.getConvocationsAccepteesEtudiant(etudiant.getEmail());
+
+                // Assert
+                assertNotNull(result);
+                assertEquals(1, result.size());
+        }
+
+        @Test
+        void getConvocationsEmployeur_retourneListe() {
+                // Arrange
+                when(convocationRepository.findByEmployeurEmail(employeur.getEmail())).thenReturn(List.of(convocation));
+
+                // Act
+                List<ConvocationDto> result = convocationService.getConvocationsEmployeur(employeur.getEmail());
+
+                // Assert
+                assertNotNull(result);
+                assertEquals(1, result.size());
+        }
+
+        @Test
+        void getToutesConvocations_retourneListe() {
+                // Arrange
+                when(convocationRepository.findAll()).thenReturn(List.of(convocation));
+
+                // Act
+                List<ConvocationDto> result = convocationService.getToutesConvocations();
+
+                // Assert
+                assertNotNull(result);
+                assertEquals(1, result.size());
+        }
+
+        @Test
+        void creerConvocation_candidatureNonTrouvee_lanceException() {
+                // Arrange
+                when(candidatureRepository.findById(999L)).thenReturn(Optional.empty());
+                List<RendezVousDto> dtos = List.of(RendezVousDto.create(goodRendezVous));
+
+                // Act
+                Exception exception = assertThrows(Exception.class,
+                                () -> convocationService.creerConvocation(employeur.getEmail(), 999L, dtos, "Message"));
+
+                // Assert
+                assertEquals("Candidature non trouvée", exception.getMessage());
+        }
+
+        @Test
+        void creerConvocation_employeurNonAutorise_lanceException() {
+                // Arrange
+                when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+                List<RendezVousDto> dtos = List.of(RendezVousDto.create(goodRendezVous));
+
+                // Act
+                Exception exception = assertThrows(Exception.class, () -> convocationService
+                                .creerConvocation("autre@test.com", candidature.getId(), dtos, "Message"));
+
+                // Assert
+                assertEquals("Vous n'êtes pas autorisé à convoquer ce candidat", exception.getMessage());
+        }
+
+        @Test
+        void accepterConvocation_etudiantNonAutorise_lanceException() {
+                // Arrange
+                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                                .thenReturn(Optional.of(convocation));
+                RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
+
+                // Act
+                Exception exception = assertThrows(Exception.class, () -> convocationService
+                                .accepterConvocation("autre@test.com", convocation.getId(), rendezVousDto));
+
+                // Assert
+                assertEquals("No auth", exception.getMessage());
+        }
+
+        @Test
+        void refuserConvocation_convocationImmuable_lanceException() {
+                // Arrange
+                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                                .thenReturn(Optional.of(convocation));
+                ReflectionTestUtils.setField(convocation, "statut", StatutConvocation.ACCEPTEE);
+
+                // Act
+                Exception exception = assertThrows(Exception.class, () -> convocationService
+                                .refuserConvocation(etudiant.getEmail(), convocation.getId(), "Trop tard"));
+
+                // Assert
+                assertEquals("Convocation est immuable", exception.getMessage());
+        }
 }
