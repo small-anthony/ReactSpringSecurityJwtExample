@@ -8,8 +8,10 @@ import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Candidature;
@@ -38,12 +40,18 @@ public class EmployeurService {
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur);
+        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur, null);
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
                                           String emailEmployeur) throws Exception {
+        return createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences, emailEmployeur, null);
+    }
+
+    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
+                                          String discipline, String duree, String salaire, String exigences,
+                                          String emailEmployeur, Integer annee) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
         }
@@ -76,19 +84,47 @@ public class EmployeurService {
                 exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
         );
 
+        if (annee != null && annee > 0) {
+            offreStage.setAnnee(annee);
+        }
+
         employeur.ajouterOffre(offreStage);
 
         return OffreStageDto.create(offreStageRepository.save(offreStage));
     }
 
     public List<OffreStageDto> getOffres(String emailEmployeur) throws Exception {
+        return getOffres(emailEmployeur, null);
+    }
+
+    public List<OffreStageDto> getOffres(String emailEmployeur, Integer annee) throws Exception {
         UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
 
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
+        List<OffreStage> offres = (annee != null)
+                ? offreStageRepository.findWithCandidaturesByEmployeurAndAnnee(employeur, annee)
+                : offreStageRepository.findWithCandidaturesByEmployeur(employeur);
+
         return OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur));
+    }
+
+    public List<Integer> getAnnees(String emailEmployeur) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
+
+        annees.add(LocalDate.now().getYear());
+
+        annees.addAll(offreStageRepository.findDistinctAnneesByEmployeur(employeur));
+
+        return new ArrayList<>(annees);
     }
 
     public List<CandidatureDto> getCandidatures(Long offreId, String emailEmployeur) throws Exception {
@@ -136,6 +172,17 @@ public class EmployeurService {
     public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur) {
         return historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream()
                 .map(HistoriqueCandidatureDto::create)
+                .collect(Collectors.toList());
+    }
+
+    public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur, Integer annee) {
+        var historique = historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream();
+        if (annee != null) {
+            historique = historique.filter(h -> h.getCandidature() != null
+                    && h.getCandidature().getOffreStage() != null
+                    && h.getCandidature().getOffreStage().getAnnee() == annee);
+        }
+        return historique.map(HistoriqueCandidatureDto::create)
                 .collect(Collectors.toList());
     }
 
