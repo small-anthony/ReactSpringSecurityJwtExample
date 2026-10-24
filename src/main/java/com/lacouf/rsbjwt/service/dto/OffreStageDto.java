@@ -4,6 +4,8 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,26 +20,35 @@ public record OffreStageDto(
         String salaire,
         String duree,
         String exigences,
-        List<CandidatureDto> candidatures
+        List<CandidatureDto> candidatures,
+        int annee
 ) implements DataTransferObject {
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                null, null, null, null, List.of());
+                null, null, null, null, List.of(), LocalDate.now().getYear());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          List<CandidatureDto> candidatures) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                null, null, null, null, candidatures);
+                null, null, null, null, candidatures, LocalDate.now().getYear());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          String discipline, String salaire, String duree, String exigences) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, List.of());
+                discipline, salaire, duree, exigences, List.of(), LocalDate.now().getYear());
+    }
+
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
+                         StatusAcceptation status, String messageReponse,
+                         String discipline, String salaire, String duree, String exigences,
+                         List<CandidatureDto> candidatures) {
+        this(id, titre, description, nomEntreprise, status, messageReponse,
+                discipline, salaire, duree, exigences, candidatures, LocalDate.now().getYear());
     }
 
     public static OffreStageDto create(OffreStage offreStage) {
@@ -52,7 +63,8 @@ public record OffreStageDto(
                 offreStage.getSalaire(),
                 offreStage.getDuree(),
                 offreStage.getExigences(),
-                offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>()
+                offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>(),
+                offreStage.getAnnee()
         );
     }
 
@@ -77,7 +89,8 @@ public record OffreStageDto(
                         offreStage.getCandidatures().stream()
                                 .filter(candidat -> candidat.getEtudiant().equals(etudiant))
                                 .toList() : List.of()
-                )
+                ),
+                offreStage.getAnnee()
         );
     }
 
