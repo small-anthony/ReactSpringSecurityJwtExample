@@ -102,6 +102,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "24$/h",
                                         "15 semaines",
                                         "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie.");
+                        offre1.setAnnee(2025);
                         offre1.accepter();
                         employeur.ajouterOffre(offre1);
 
@@ -113,6 +114,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "26$/h",
                                         "15 semaines",
                                         "Connaissance de Linux, Git et Docker. Notions de cloud computing un atout.");
+                        offre2.setAnnee(2025);
                         offre2.accepter();
                         employeur.ajouterOffre(offre2);
 
@@ -124,6 +126,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "27$/h",
                                         "15 semaines",
                                         "Intérêt pour la sécurité web, OWASP et les tests d'intrusion.");
+                        offre4.setAnnee(2025);
                         offre4.accepter();
                         employeur.ajouterOffre(offre4);
 
@@ -144,6 +147,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "28$/h",
                                         "16 semaines",
                                         "Maîtrise de React, JavaScript moderne et Git.");
+                        offre3.setAnnee(2026);
                         offre3.accepter();
                         employeurGoogle.ajouterOffre(offre3);
 
@@ -155,6 +159,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "25$/h",
                                         "15 semaines",
                                         "Connaissance de tests d'intégration, JavaScript et rigueur méthodique.");
+                        offre5.setAnnee(2026);
                         offre5.accepter();
                         employeurGoogle.ajouterOffre(offre5);
 
