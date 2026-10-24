@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.model.embeddable;
 
 import com.lacouf.rsbjwt.model.UserApp;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToOne;
 
 import java.util.Arrays;
 
@@ -14,6 +16,7 @@ public class Signature<User extends UserApp> {
 
 	private boolean valid;
 	private byte[] data;
+	@ManyToOne(targetEntity = UserApp.class)
 	private User signataire;
 
 	public Signature(User signataire, byte[] data) {
@@ -32,6 +35,10 @@ public class Signature<User extends UserApp> {
 
 		ret.signataire = signataire;
 		return ret;
+	}
+
+	public User getSignataire() {
+		return signataire;
 	}
 
 	public byte[] getData() {
