@@ -108,7 +108,7 @@ public class EmployeurService {
                 ? offreStageRepository.findWithCandidaturesByEmployeurAndAnnee(employeur, annee)
                 : offreStageRepository.findWithCandidaturesByEmployeur(employeur);
 
-        return OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur));
+        return OffreStageDto.create(offres);
     }
 
     public List<Integer> getAnnees(String emailEmployeur) throws Exception {
