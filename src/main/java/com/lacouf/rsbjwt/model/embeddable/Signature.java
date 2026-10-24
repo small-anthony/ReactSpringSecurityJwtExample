@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.model.embeddable;
 
 import com.lacouf.rsbjwt.model.UserApp;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;
 
