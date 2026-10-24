@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,6 +92,12 @@ public class EtudiantService {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
 
+        int anneeActuelle = LocalDate.now().getYear();
+
+        if (offre.getAnnee() != anneeActuelle) {
+            throw new Exception("Cette offre n'est plus disponible pour l'année en cours");
+        }
+
         offre.addCandidature(new Candidature(etudiant, offre));
         offreStageRepository.save(offre);
 
@@ -104,7 +111,9 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Etudiant non trouvé"));
 
-        List<OffreStage> offre = offreStageRepository.findByEtudiant(etudiant);
+        int anneeActuelle = LocalDate.now().getYear();
+
+        List<OffreStage> offre = offreStageRepository.findByEtudiantAndAnnee(etudiant, anneeActuelle);
 
         return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
@@ -132,7 +141,9 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
+        int anneeActuelle = LocalDate.now().getYear();
+
+        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, anneeActuelle);
 
         return offresAcceptees.stream()
                 .filter(offre -> offre.getEtudiantsAutorises() == null
