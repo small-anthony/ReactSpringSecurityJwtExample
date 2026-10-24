@@ -92,6 +92,26 @@ public class Contrat {
 		signatureGestionnaire = Signature.invalid(gestionnaire);
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public Signature<Etudiant> getSignatureEtudiant() {
+		return signatureEtudiant;
+	}
+
+	public Signature<Employeur> getSignatureEmployeur() {
+		return signatureEmployeur;
+	}
+
+	public Signature<Gestionnaire> getSignatureGestionnaire() {
+		return signatureGestionnaire;
+	}
+
 	private void ThrowExistingSignatureException() throws IllegalStateException {
 		throw new IllegalStateException("signature existe déjà");
 	}
