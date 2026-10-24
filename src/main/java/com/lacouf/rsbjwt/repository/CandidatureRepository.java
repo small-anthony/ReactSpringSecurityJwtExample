@@ -5,6 +5,8 @@ import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.OffreStage;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +15,7 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
     List<Candidature> findByEtudiant(Etudiant etudiant);
     List<Candidature> findByOffreStage(OffreStage offreStage);
     Optional<Candidature> findByIdAndOffreStageEmployeur(Long id, Employeur employeur);
+
+    @Query("SELECT c FROM Candidature c WHERE c.offreStage.annee = :annee")
+    List<Candidature> findByAnnee(int annee);
 }
