@@ -19,10 +19,6 @@ public class Signature<User extends UserApp> {
 	private User signataire;
 
 	public Signature(User signataire, byte[] data) {
-		if(data == null || data.length == 0) {
-			throw new IllegalStateException("data doit éxister pour les signatures valides");
-		}
-
 		this.data = data;
 		this.signataire = signataire;
 		this.valid = true;

@@ -26,9 +26,6 @@ public class Contrat {
 	private Signature<Gestionnaire> signatureGestionnaire = null;
 
 	public Contrat(byte[] data) {
-		if (data == null || data.length == 0) {
-			throw new IllegalArgumentException("contrats doivent avoir du data");
-		}
 		this.data = data;
 	}
 
