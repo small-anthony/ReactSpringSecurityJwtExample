@@ -9,7 +9,9 @@ import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,9 +80,32 @@ public class GestionnaireService {
     }
 
     public List<OffreStageDto> getOffresEnAttente() {
-        return offreStageRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE)
-                .stream()
+        return getOffresEnAttente(null);
+    }
+
+    public List<OffreStageDto> getOffresEnAttente(Integer annee) {
+        List<OffreStage> offres = (annee != null)
+                ? offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.EN_ATTENTE, annee)
+                : offreStageRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE);
+
+        return offres.stream()
                 .map(OffreStageDto::create)
                 .collect(Collectors.toList());
+    }
+
+    public List<OffreStageDto> getToutesOffres(Integer annee) {
+        List<OffreStage> offres = (annee != null)
+                ? offreStageRepository.findAllByAnnee(annee)
+                : offreStageRepository.findAll();
+        return offres.stream()
+                .map(OffreStageDto::create)
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> getAnneesDisponibles() {
+        Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
+        annees.add(LocalDate.now().getYear());
+        annees.addAll(offreStageRepository.findDistinctAnnees());
+        return new ArrayList<>(annees);
     }
 }

@@ -5,7 +5,6 @@ import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import com.lacouf.rsbjwt.service.GestionnaireService;
@@ -13,7 +12,6 @@ import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -86,10 +84,35 @@ public class GestionnaireController {
         }
     }
 
-    @GetMapping("/offre/pending")
     public ResponseEntity<List<OffreStageDto>> getOffresEnAttente() {
+        return getOffresEnAttente(null);
+    }
+
+    @GetMapping("/offre/pending")
+    public ResponseEntity<List<OffreStageDto>> getOffresEnAttente(@RequestParam(required = false) Integer annee) {
         try {
+            if (annee != null) {
+                return ResponseEntity.ok(gestionnaireService.getOffresEnAttente(annee));
+            }
             return ResponseEntity.ok(gestionnaireService.getOffresEnAttente());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/offres")
+    public ResponseEntity<List<OffreStageDto>> getToutesOffres(@RequestParam(required = false) Integer annee) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getToutesOffres(annee));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/annees")
+    public ResponseEntity<List<Integer>> getAnneesDisponibles() {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getAnneesDisponibles());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
