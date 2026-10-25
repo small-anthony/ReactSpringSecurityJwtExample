@@ -3,7 +3,9 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
+import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,9 @@ import static org.mockito.Mockito.when;
 public class GestionnaireControllerTest {
     @Mock
     private GestionnaireService gestionnaireService;
+
+    @Mock
+    private ConvocationService convocationService;
 
     @InjectMocks
     private GestionnaireController gestionnaireController;
@@ -163,11 +168,53 @@ public class GestionnaireControllerTest {
         when(gestionnaireService.getOffresEnAttente()).thenReturn(liste);
 
 //        ACT
-        ResponseEntity<List<OffreStageDto>> response = gestionnaireController.getOffresEnAttente();
+        ResponseEntity<Object> response = gestionnaireController.getOffresEnAttente(null);
 
 //        ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getOffresEnAttente_avecAnnee_shouldReturnOk() {
+//        ARRANGE
+        List<OffreStageDto> liste = List.of(mock(OffreStageDto.class));
+        when(gestionnaireService.getOffresEnAttente(2025)).thenReturn(liste);
+
+//        ACT
+        ResponseEntity<Object> response = gestionnaireController.getOffresEnAttente(2025);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getToutesOffres_avecAnnee_shouldReturnOk() {
+//        ARRANGE
+        List<OffreStageDto> liste = List.of(mock(OffreStageDto.class));
+        when(gestionnaireService.getToutesOffres(2025)).thenReturn(liste);
+
+//        ACT
+        ResponseEntity<Object> response = gestionnaireController.getToutesOffres(2025);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getAnneesDisponibles_shouldReturnOk() {
+//        ARRANGE
+        List<Integer> annees = List.of(2026, 2025);
+        when(gestionnaireService.getAnneesDisponibles()).thenReturn(annees);
+
+//        ACT
+        ResponseEntity<Object> response = gestionnaireController.getAnneesDisponibles();
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(annees, response.getBody());
     }
 
     @Test
@@ -199,5 +246,19 @@ public class GestionnaireControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Offre de stage non trouvée", response.getBody());
+    }
+
+    @Test
+    void getToutesConvocations_avecAnnee_shouldReturnOk() {
+//        ARRANGE
+        List<ConvocationDto> convocations = List.of();
+        when(convocationService.getToutesConvocations(2025)).thenReturn(convocations);
+
+//        ACT
+        ResponseEntity<Object> response = gestionnaireController.getToutesConvocations(2025);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(convocations, response.getBody());
     }
 }

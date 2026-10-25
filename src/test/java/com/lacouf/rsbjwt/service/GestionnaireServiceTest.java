@@ -221,4 +221,49 @@ public class GestionnaireServiceTest {
         assertEquals(1, resultat.size());
         assertEquals(1, resultat.getFirst().id());
     }
+
+    @Test
+    void getOffresEnAttente_avecAnnee_retourneOffresEnAttenteAnnee() {
+//        ARRANGE
+        OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        offre.setId(1L);
+
+        when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.EN_ATTENTE, 2025))
+                .thenReturn(List.of(offre));
+
+//        ACT
+        List<OffreStageDto> resultat = gestionnaireService.getOffresEnAttente(2025);
+
+//        ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals(2025, resultat.getFirst().annee());
+    }
+
+    @Test
+    void getToutesOffres_avecAnnee_retourneToutesLesOffresAnnee() {
+//        ARRANGE
+        OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        offre.setId(1L);
+
+        when(offreStageRepository.findAllByAnnee(2025)).thenReturn(List.of(offre));
+
+//        ACT
+        List<OffreStageDto> resultat = gestionnaireService.getToutesOffres(2025);
+
+//        ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals(2025, resultat.getFirst().annee());
+    }
+
+    @Test
+    void getAnneesDisponibles_retourneAnneesTriees() {
+//        ARRANGE
+        when(offreStageRepository.findDistinctAnnees()).thenReturn(List.of(2025));
+
+//        ACT
+        List<Integer> annees = gestionnaireService.getAnneesDisponibles();
+
+//        ASSERT
+        assertTrue(annees.contains(2025));
+    }
 }
