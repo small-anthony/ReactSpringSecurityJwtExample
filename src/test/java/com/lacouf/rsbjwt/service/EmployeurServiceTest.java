@@ -481,6 +481,69 @@ public class EmployeurServiceTest {
     }
 
     @Test
+    void getOffres_avecAnnee_retourneOffresFiltreesParAnnee() throws Exception {
+//        ARRANGE
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+
+        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        offre2025.setId(1L);
+
+        when(offreStageRepository.findWithCandidaturesByEmployeurAndAnnee(employeur, 2025))
+                .thenReturn(List.of(offre2025));
+
+//        ACT
+        List<OffreStageDto> resultat = employeurService.getOffres(email, 2025);
+
+//        ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals(2025, resultat.getFirst().annee());
+        assertEquals("Stage 2025", resultat.getFirst().titre());
+    }
+
+    @Test
+    void getHistorique_avecAnnee_filtreLesDecisionsParAnneeOffre() {
+//        ARRANGE
+        String email = "employeur@entreprise.com";
+        Candidature cand2025 = creerCandidature(100L);
+        cand2025.getOffreStage().setAnnee(2025);
+        Candidature cand2026 = creerCandidature(101L);
+        cand2026.getOffreStage().setAnnee(2026);
+
+        HistoriqueCandidature h2025 = new HistoriqueCandidature(
+                cand2025, StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, email);
+
+        HistoriqueCandidature h2026 = new HistoriqueCandidature(
+                cand2026, StatutCandidature.EN_ATTENTE, StatutCandidature.REFUSEE, "Refus 2026", email);
+
+        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email))
+                .thenReturn(List.of(h2026, h2025));
+
+//        ACT
+        List<HistoriqueCandidatureDto> resultat2025 = employeurService.getHistorique(email, 2025);
+
+//        ASSERT
+        assertEquals(1, resultat2025.size());
+        assertEquals(100L, resultat2025.getFirst().candidatureId());
+    }
+
+    @Test
+    void getAnnees_retourneAnneesDisponiblesPourEmployeur() throws Exception {
+//        ARRANGE
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+
+        when(offreStageRepository.findDistinctAnneesByEmployeur(employeur)).thenReturn(List.of(2025));
+
+//        ACT
+        List<Integer> annees = employeurService.getAnnees(email);
+
+//        ASSERT
+        assertTrue(annees.contains(2025));
+        assertTrue(annees.size() >= 1);
+    }
+
+    @Test
     void deleteOffre_avecOffreValide_supprimeLOffre() {
         //ARRANGE
         String email = "employeur@entreprise.com";
