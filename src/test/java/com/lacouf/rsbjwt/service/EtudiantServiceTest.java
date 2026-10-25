@@ -22,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -288,6 +290,29 @@ public class EtudiantServiceTest {
         }
 
         @Test
+        void postuler_shouldRejectIfOffreIsFromPastYear() throws Exception {
+//                ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+
+                OffreStage offreAncienne = new OffreStage("Stage 2025", "Desc", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2025);
+                offreAncienne.setId(10L);
+                offreAncienne.accepter();
+
+                when(userAppRepository.findUserAppByEmail("test@gmail.com")).thenReturn(Optional.of(etudiant));
+                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+                when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offreAncienne));
+
+//                ACT
+                Exception exception = assertThrows(Exception.class,
+                        () -> etudiantService.postuler(10L, "test@gmail.com"));
+
+//                ASSERT
+                assertEquals("Cette offre n'est plus disponible pour l'année en cours", exception.getMessage());
+        }
+
+        @Test
         void getMesCandidatures_shouldReturnStudentCandidatures() throws Exception {
                 // ARRANGE
                 Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
@@ -300,7 +325,7 @@ public class EtudiantServiceTest {
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                         .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findByEtudiant(etudiant)).thenReturn(List.of(offre));
+                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, LocalDate.now().getYear())).thenReturn(List.of(offre));
 
                 // ACT
                 List<OffreStageDto> resultat = etudiantService.getMesCandidatures("test@gmail.com");
@@ -320,7 +345,7 @@ public class EtudiantServiceTest {
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                         .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findByEtudiant(etudiant)).thenReturn(List.of());
+                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, LocalDate.now().getYear())).thenReturn(List.of());
 
                 // ACT
                 List<OffreStageDto> resultat = etudiantService.getMesCandidatures("test@gmail.com");
@@ -369,7 +394,7 @@ public class EtudiantServiceTest {
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                                 .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findByEtudiant(etudiant)).thenReturn(List.of(offre));
+                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, LocalDate.now().getYear())).thenReturn(List.of(offre));
 
                 // ACT
                 List<OffreStageDto> resultat = etudiantService.getMesCandidatures("test@gmail.com");
@@ -387,8 +412,6 @@ public class EtudiantServiceTest {
                 assertEquals(1, etudiantResultat.id());
                 assertEquals("Peter", etudiantResultat.firstName());
         }
-
-
 
         @Test
         void getStatutCv_sansCv_retourneHasCvFalse() {
@@ -445,7 +468,7 @@ public class EtudiantServiceTest {
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
-                when(offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE))
+                when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, LocalDate.now().getYear()))
                                 .thenReturn(List.of(offrePublique));
 
                 // ACT
@@ -474,7 +497,7 @@ public class EtudiantServiceTest {
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
-                when(offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE))
+                when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, LocalDate.now().getYear()))
                                 .thenReturn(List.of(offrePublique));
 
                 // ACT
@@ -551,6 +574,5 @@ public class EtudiantServiceTest {
                 assertEquals(1, resultat.size());
                 assertEquals(12345, resultat.getFirst().matricule());
                 assertEquals("Peter", resultat.getFirst().firstName());
-
         }
 }
