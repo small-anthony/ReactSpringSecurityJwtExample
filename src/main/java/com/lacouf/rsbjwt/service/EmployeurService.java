@@ -174,6 +174,14 @@ public class EmployeurService {
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         offre.supprimer();
+
+        List<Candidature> candidatures = candidatureRepository.findByOffreStage(offre);
+        for (Candidature candidature : candidatures) {
+            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE) {
+                refuserCandidature(candidature.getId(), "L'offre a été supprimée par l'employeur", emailEmployeur);
+            }
+        }
+
         offreStageRepository.save(offre);
     }
 

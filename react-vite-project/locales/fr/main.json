@@ -354,7 +354,8 @@
     },
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
-    "modal_refused_no_reason": "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage."
+    "modal_refused_no_reason": "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
+    "offer_deleted": "L'offre a été supprimée par l'employeur."
   },
   "historique": {
     "back": "Retour à mes offres",

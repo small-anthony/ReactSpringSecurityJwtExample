@@ -31,7 +31,7 @@ public class OffreStage {
     @Embedded
     private Approbation approbation = new Approbation();
 
-    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final List<Candidature> candidatures = new ArrayList<>();
 
     private LocalDate dateSuppression = null;

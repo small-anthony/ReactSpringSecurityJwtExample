@@ -354,7 +354,8 @@
     },
     "refuse_reason": "Employer's message",
     "modal_refused_title": "Application rejected",
-    "modal_refused_no_reason": "Your application was not selected by the employer for this internship offer."
+    "modal_refused_no_reason": "Your application was not selected by the employer for this internship offer.",
+    "offer_deleted": "This offer has been deleted by the employer."
   },
   "historique": {
     "back": "Back to my offers",
