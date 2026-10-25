@@ -1,8 +1,14 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.auth.Credentials;
+import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
@@ -35,6 +41,9 @@ public class GestionnaireServiceTest {
 
     @InjectMocks
     private GestionnaireService gestionnaireService;
+
+    @Mock
+    private CandidatureRepository candidatureRepository;
 
     @Test
     void getCvEnAttente_shouldReturnListCvEnAttente() {
@@ -220,5 +229,58 @@ public class GestionnaireServiceTest {
         // ASSERT
         assertEquals(1, resultat.size());
         assertEquals(1, resultat.getFirst().id());
+    }
+
+    @Test
+    void getCandidaturesAcceptees_succes() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        OffreStage offre = new OffreStage("Dev Java", "Description", "CGI");
+        offre.setId(10L);
+
+        Candidature candidature = new Candidature(etudiant, offre);
+        candidature.setId(100L);
+        candidature.setStatut(StatutCandidature.ACCEPTEE);
+
+        when(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE))
+                .thenReturn(List.of(candidature));
+
+        // ACT
+        List<CandidatureDto> resultat = gestionnaireService.getCandidaturesAcceptees();
+
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals(StatutCandidature.ACCEPTEE, resultat.getFirst().statut());
+        assertEquals("Jean", resultat.getFirst().etudiant().firstName());
+        assertEquals("Dev Java", resultat.getFirst().titreOffre());
+        assertEquals("CGI", resultat.getFirst().nomEntreprise());
+    }
+    @Test
+    void getCandidaturesRefusees_succes() {
+        // ARRANGE
+        Credentials cred = new Credentials("marie@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Marie", "Curie", cred, 7654321, "Informatique");
+        etudiant.setId(2L);
+
+        OffreStage offre = new OffreStage("Dev Web", "Description", "Desjardins");
+        offre.setId(11L);
+
+        Candidature candidature = new Candidature(etudiant, offre);
+        candidature.setId(101L);
+        candidature.setStatut(StatutCandidature.REFUSEE);
+        candidature.setMessageReponse("Poste comblé");
+
+        when(candidatureRepository.findByStatut(StatutCandidature.REFUSEE))
+                .thenReturn(List.of(candidature));
+        // ACT
+        List<CandidatureDto> resultat = gestionnaireService.getCandidaturesRefusees();
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals(StatutCandidature.REFUSEE, resultat.getFirst().statut());
+        assertEquals("Marie", resultat.getFirst().etudiant().firstName());
+        assertEquals("Poste comblé", resultat.getFirst().messageReponse());
     }
 }

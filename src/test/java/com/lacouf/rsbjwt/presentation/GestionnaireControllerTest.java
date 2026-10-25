@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -199,5 +201,34 @@ public class GestionnaireControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Offre de stage non trouvée", response.getBody());
+    }
+
+    @Test
+    void getCandidaturesAcceptees_shouldReturnOk() {
+        // ARRANGE
+        List<CandidatureDto> candidatures = List.of(mock(CandidatureDto.class));
+
+        when(gestionnaireService.getCandidaturesAcceptees()).thenReturn(candidatures);
+
+        // ACT
+        ResponseEntity<List<CandidatureDto>> response = gestionnaireController.getCandidaturesAcceptees();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(candidatures, response.getBody());
+    }
+    @Test
+    void getCandidaturesRefusees_shouldReturnOk() {
+        // ARRANGE
+        List<CandidatureDto> candidatures = List.of(mock(CandidatureDto.class));
+
+        when(gestionnaireService.getCandidaturesRefusees()).thenReturn(candidatures);
+
+        // ACT
+        ResponseEntity<List<CandidatureDto>> response = gestionnaireController.getCandidaturesRefusees();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(candidatures, response.getBody());
     }
 }

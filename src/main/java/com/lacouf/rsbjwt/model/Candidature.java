@@ -64,4 +64,8 @@ public class Candidature {
         convocation.setCandidature(this);
         convocations.add(convocation);
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

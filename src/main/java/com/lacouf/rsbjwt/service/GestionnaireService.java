@@ -2,10 +2,13 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
@@ -14,14 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class GestionnaireService {
-    public CvRepository cvRepository;
+    private final CandidatureRepository candidatureRepository;
+    private final CvRepository cvRepository;
     private final OffreStageRepository offreStageRepository;
     private final EtudiantRepository etudiantRepository;
 
-    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository) {
+    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository, CandidatureRepository candidatureRepository) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
+        this.candidatureRepository = candidatureRepository;
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -82,5 +87,18 @@ public class GestionnaireService {
                 .stream()
                 .map(OffreStageDto::create)
                 .collect(Collectors.toList());
+    }
+
+    public List<CandidatureDto> getCandidaturesAcceptees() {
+        return candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE)
+                .stream()
+                .map(CandidatureDto::create)
+                .toList();
+    }
+    public List<CandidatureDto> getCandidaturesRefusees() {
+        return candidatureRepository.findByStatut(StatutCandidature.REFUSEE)
+                .stream()
+                .map(CandidatureDto::create)
+                .toList();
     }
 }
