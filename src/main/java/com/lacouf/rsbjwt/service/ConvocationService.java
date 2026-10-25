@@ -42,11 +42,31 @@ public class ConvocationService {
     }
 
     public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {
-        return ConvocationDto.create(convocationRepository.findByEmployeurEmail(employeurEmail));
+        return getConvocationsEmployeur(employeurEmail, null);
+    }
+
+    public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail, Integer annee) {
+        var historique = convocationRepository.findByEmployeurEmail(employeurEmail).stream();
+        if (annee != null) {
+            historique = historique.filter(c -> c.getCandidature() != null
+                    && c.getCandidature().getOffreStage() != null
+                    && c.getCandidature().getOffreStage().getAnnee() == annee);
+        }
+        return ConvocationDto.create(historique.toList());
     }
 
     public List<ConvocationDto> getToutesConvocations() {
-        return ConvocationDto.create(convocationRepository.findAll());
+        return getToutesConvocations(null);
+    }
+
+    public List<ConvocationDto> getToutesConvocations(Integer annee) {
+        var historique = convocationRepository.findAll().stream();
+        if (annee != null) {
+            historique = historique.filter(c -> c.getCandidature() != null
+                    && c.getCandidature().getOffreStage() != null
+                    && c.getCandidature().getOffreStage().getAnnee() == annee);
+        }
+        return ConvocationDto.create(historique.toList());
     }
 
     @Transactional

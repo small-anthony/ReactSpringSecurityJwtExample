@@ -53,33 +53,45 @@ public class ProfesseurController {
 
     @GetMapping("/offres")
     public ResponseEntity<List<OffreStageDto>> getOffres(@RequestParam(required = false) Integer annee) {
-        if (offreStageRepository == null) {
-            return ResponseEntity.ok(List.of());
+        try {
+            if (offreStageRepository == null) {
+                return ResponseEntity.ok(List.of());
+            }
+            List<OffreStage> offres = (annee != null)
+                    ? offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, annee)
+                    : offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
+            return ResponseEntity.ok(OffreStageDto.create(offres));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        List<OffreStage> offres = (annee != null)
-                ? offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, annee)
-                : offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
-        return ResponseEntity.ok(OffreStageDto.create(offres));
     }
 
     @GetMapping("/candidatures")
     public ResponseEntity<List<CandidatureDto>> getCandidatures(@RequestParam(required = false) Integer annee) {
-        if (candidatureRepository == null) {
-            return ResponseEntity.ok(List.of());
+        try {
+            if (candidatureRepository == null) {
+                return ResponseEntity.ok(List.of());
+            }
+            var candidatures = (annee != null)
+                    ? candidatureRepository.findByAnnee(annee)
+                    : candidatureRepository.findAll();
+            return ResponseEntity.ok(CandidatureDto.create(candidatures));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        var candidatures = (annee != null)
-                ? candidatureRepository.findByAnnee(annee)
-                : candidatureRepository.findAll();
-        return ResponseEntity.ok(CandidatureDto.create(candidatures));
     }
 
     @GetMapping("/annees")
-    public ResponseEntity<List<Integer>> getAnnees() {
-        Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
-        annees.add(LocalDate.now().getYear());
-        if (offreStageRepository != null) {
-            annees.addAll(offreStageRepository.findDistinctAnnees());
+    public ResponseEntity<Object> getAnnees() {
+        try {
+            Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
+            annees.add(LocalDate.now().getYear());
+            if (offreStageRepository != null) {
+                annees.addAll(offreStageRepository.findDistinctAnnees());
+            }
+            return ResponseEntity.ok(new ArrayList<>(annees));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return ResponseEntity.ok(new ArrayList<>(annees));
     }
 }

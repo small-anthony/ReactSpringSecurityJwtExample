@@ -177,11 +177,15 @@ public class EmployeurController {
 
     @GetMapping("/historique")
     public ResponseEntity<Object> getHistorique(@RequestParam(required = false) Integer annee, Authentication authentication) {
-        if (annee != null) {
-            return ResponseEntity.ok(employeurService.getHistorique(authentication.getName(), annee));
-        }
+        try {
+            if (annee != null) {
+                return ResponseEntity.ok(employeurService.getHistorique(authentication.getName(), annee));
+            }
 
-        return ResponseEntity.ok(employeurService.getHistorique(authentication.getName()));
+            return ResponseEntity.ok(employeurService.getHistorique(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/candidatures/{candidatureId}/convoquer")
@@ -203,8 +207,17 @@ public class EmployeurController {
     }
 
     @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDto>> getConvocationsEmployeur(Authentication authentication) {
-        return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
+    public ResponseEntity<Object> getConvocationsEmployeur(
+            @RequestParam(required = false) Integer annee,
+            Authentication authentication) {
+        try {
+            if (annee != null) {
+                return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName(), annee));
+            }
+            return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/offres/{offreId}")

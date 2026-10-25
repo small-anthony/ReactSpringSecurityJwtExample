@@ -84,42 +84,45 @@ public class GestionnaireController {
         }
     }
 
-    public ResponseEntity<List<OffreStageDto>> getOffresEnAttente() {
-        return getOffresEnAttente(null);
-    }
-
     @GetMapping("/offre/pending")
-    public ResponseEntity<List<OffreStageDto>> getOffresEnAttente(@RequestParam(required = false) Integer annee) {
+    public ResponseEntity<Object> getOffresEnAttente(@RequestParam(required = false) Integer annee) {
         try {
             if (annee != null) {
                 return ResponseEntity.ok(gestionnaireService.getOffresEnAttente(annee));
             }
             return ResponseEntity.ok(gestionnaireService.getOffresEnAttente());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/offres")
-    public ResponseEntity<List<OffreStageDto>> getToutesOffres(@RequestParam(required = false) Integer annee) {
+    public ResponseEntity<Object> getToutesOffres(@RequestParam(required = false) Integer annee) {
         try {
             return ResponseEntity.ok(gestionnaireService.getToutesOffres(annee));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/annees")
-    public ResponseEntity<List<Integer>> getAnneesDisponibles() {
+    public ResponseEntity<Object> getAnneesDisponibles() {
         try {
             return ResponseEntity.ok(gestionnaireService.getAnneesDisponibles());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDto>> getToutesConvocations() {
-        return ResponseEntity.ok(convocationService.getToutesConvocations());
+    public ResponseEntity<Object> getToutesConvocations(@RequestParam(required = false) Integer annee) {
+        try {
+            if (annee != null) {
+                return ResponseEntity.ok(convocationService.getToutesConvocations(annee));
+            }
+            return ResponseEntity.ok(convocationService.getToutesConvocations());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
