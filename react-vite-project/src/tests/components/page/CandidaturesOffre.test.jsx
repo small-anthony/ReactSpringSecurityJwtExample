@@ -34,6 +34,23 @@ vi.mock("react-i18next", () => ({
     }),
 }));
 
+vi.mock("../../../components/modal/ModalCvPdf", async () => {
+    const React = await import("react");
+    return {
+        default: ({ onClose, titre }) =>
+            React.createElement(
+                "div",
+                null,
+                React.createElement("span", null, titre),
+                React.createElement(
+                    "button",
+                    { type: "button", title: "approbation.cvs.close", onClick: onClose },
+                    "fermer"
+                )
+            ),
+    };
+});
+
 const candidatureEnAttente = {
     id: 1,
     statut: "EN_ATTENTE",
