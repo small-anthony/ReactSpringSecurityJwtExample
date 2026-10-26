@@ -101,20 +101,6 @@ export async function refuserCandidature(candidatureId, message, authHeader) {
   return response.json();
 }
 
-export async function embaucherCandidature(candidatureId, authHeader) {
-  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/embaucher`, {
-    method: "PUT",
-    headers: authHeader,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "defaultError");
-  }
-
-  return response.json();
-}
-
 export async function getHistoriqueDecisions(authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/historique`, {
     headers: authHeader,

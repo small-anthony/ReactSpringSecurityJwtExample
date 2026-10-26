@@ -6,24 +6,13 @@ import {
     getCandidatures,
     getCvCandidat,
     refuserCandidature,
-    embaucherCandidature,
 } from "../../services/api/OffreStageService.js";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
 import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
-const peutConvoquer = (candidature) => candidature.statut === "EN_ATTENTE";
-const peutEmbaucher = (candidature) => candidature.statut === "ACCEPTEE";
-const peutRefuser = (candidature) =>
-    ["EN_ATTENTE", "EN_ATTENTE_REPONSE", "ACCEPTEE"].includes(candidature.statut);
-const aUnBadge = (candidature) => candidature.statut !== "EN_ATTENTE";
-
-const COULEURS_BADGE = {
-    EN_ATTENTE_REPONSE: "bg-yellow-100 text-yellow-800",
-    ACCEPTEE: "bg-blue-100 text-blue-800",
-    EMBAUCHEE: "bg-green-100 text-green-800",
-};
+const peutActionner = (candidature) => candidature.statut === "EN_ATTENTE";
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
@@ -51,6 +40,21 @@ export default function CandidaturesOffre() {
             }
         };
     }, [cvPdfModal]);
+
+    const formatStatut = (statut) => t(`candidatures_offre.status.${statut}`, { defaultValue: statut });
+
+    const statutClasses = (statut) => {
+        switch (statut) {
+            case "ACCEPTEE":
+                return "bg-green-100 text-green-800 border-green-200";
+            case "REFUSEE":
+                return "bg-red-100 text-red-800 border-red-200";
+            case "EN_ATTENTE_REPONSE":
+                return "bg-blue-100 text-blue-800 border-blue-200";
+            default:
+                return "bg-gray-100 text-gray-800 border-gray-200";
+        }
+    };
 
     function refreshCandidatures() {
         let candidaturesChargees = true;
@@ -108,6 +112,8 @@ export default function CandidaturesOffre() {
             if(!entry.lieu || !entry.lieu.trim()) {
                 throw new Error("lieu vide");
             }
+            console.log(entry.date)
+            console.log(Date.now())
             if(entry.date.getTime() <= Date.now()) {
                 throw new Error("date invalid");
             }
@@ -126,19 +132,6 @@ export default function CandidaturesOffre() {
     function onCancelConvocation() {
         setCandidatureAConvoquer(null);
     }
-
-    const handleEmbaucher = async (candidatureId) => {
-        setError("");
-        setEnCours(true);
-        try {
-            const misAJour = await embaucherCandidature(candidatureId, authService.buildAuthHeader());
-            remplacerCandidature(misAJour);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setEnCours(false);
-        }
-    };
 
     const handleConfirmerRefus = async (candidatureId) => {
         setError("");
@@ -188,27 +181,23 @@ export default function CandidaturesOffre() {
                         key={candidat.id}
                         className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
                     >
-                        <div className="min-w-0">
-                            <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
                                 <h2 className="text-lg font-semibold text-gray-800 break-words">
                                     {candidat.etudiant.firstName} {candidat.etudiant.lastName}
                                 </h2>
-                                {aUnBadge(candidat) && (
-                                    <span
-                                        className={`shrink-0 px-2 py-1 text-xs font-semibold rounded-full ${
-                                            COULEURS_BADGE[candidat.statut] || "bg-gray-100 text-gray-700"
-                                        }`}
-                                    >
-                                        {t(`candidatures_offre.status.${candidat.statut}`)}
-                                    </span>
-                                )}
+                                <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
+                                <p className="text-sm text-blue-600">
+                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
+                                        defaultValue: candidat.etudiant.discipline,
+                                    })}
+                                </p>
                             </div>
-                            <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
-                            <p className="text-sm text-blue-600">
-                                {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                    defaultValue: candidat.etudiant.discipline,
-                                })}
-                            </p>
+                            <span
+                                className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
+                            >
+                                {formatStatut(candidat.statut)}
+                            </span>
                         </div>
 
                         <div className="mt-4 flex items-center gap-3">
@@ -232,28 +221,16 @@ export default function CandidaturesOffre() {
                             </p>
                         )}
 
-                        {peutRefuser(candidat) && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap justify-between gap-3">
-                                {peutConvoquer(candidat) && (
-                                    <button
-                                        type="button"
-                                        disabled={enCours}
-                                        onClick={() => setCandidatureAConvoquer(candidat)}
-                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
-                                    >
-                                        {t("candidatures_offre.convoquer")}
-                                    </button>
-                                )}
-                                {peutEmbaucher(candidat) && (
-                                    <button
-                                        type="button"
-                                        disabled={enCours}
-                                        onClick={() => handleEmbaucher(candidat.id)}
-                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
-                                    >
-                                        {t("candidatures_offre.hire")}
-                                    </button>
-                                )}
+                        {peutActionner(candidat) && refusId !== candidat.id && (
+                            <div className="mt-auto pt-4 flex flex-wrap justify-between">
+                                <button
+                                    type="button"
+                                    disabled={enCours}
+                                    onClick={() => setCandidatureAConvoquer(candidat)}
+                                    className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                >
+                                    {t("candidatures_offre.accept")}
+                                </button>
                                 <button
                                     type="button"
                                     disabled={enCours}

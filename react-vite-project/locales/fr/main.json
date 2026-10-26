@@ -306,6 +306,11 @@
       "REFUSE": "Refusée"
     },
     "view_candidates": "Voir les candidatures",
+    "status": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
+    },
     "edit_offer": "Modifier",
     "edit_error": "Erreur lors de la modification de l'offre.",
     "delete_offer": "Supprimer",
@@ -324,15 +329,17 @@
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
-      "ACCEPTEE": "Entrevue acceptée",
+      "ACCEPTEE": "Acceptée",
       "REFUSEE": "Refusée",
-      "EN_ATTENTE_REPONSE": "En attente de la réponse",
-      "EMBAUCHEE": "Embauché"
+      "EN_ATTENTE_REPONSE": "En attente de réponse"
     },
     "no_offers": "Aucune offre de stage n'a encore été créée.",
     "motif_refus": "Motif du refus :",
-    "convoquer": "Convoquer",
-    "hire": "Embaucher",
+    "status": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTE": "Acceptée",
+      "REFUSE": "Refusée"
+    },
     "accept": "Convoquer",
     "accepted": "Convoqué",
     "refuse": "Refuser",
@@ -349,8 +356,7 @@
       "EN_ATTENTE": "En attente de réponse de l'employeur",
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSEE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
-      "EN_ATTENTE_REPONSE": "En attente de réponse",
-      "EMBAUCHEE": "Félicitations, vous êtes embauché(e) !"
+      "EN_ATTENTE_REPONSE": "En attente de réponse"
     },
     "refuse_reason": "Message de l'employeur"
   },
