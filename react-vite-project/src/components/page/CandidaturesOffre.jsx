@@ -53,21 +53,6 @@ export default function CandidaturesOffre() {
         };
     }, [cvPdfModal]);
 
-    const formatStatut = (statut) => t(`candidatures_offre.status.${statut}`, { defaultValue: statut });
-
-    const statutClasses = (statut) => {
-        switch (statut) {
-            case "ACCEPTEE":
-                return "bg-green-100 text-green-800 border-green-200";
-            case "REFUSEE":
-                return "bg-red-100 text-red-800 border-red-200";
-            case "EN_ATTENTE_REPONSE":
-                return "bg-blue-100 text-blue-800 border-blue-200";
-            default:
-                return "bg-gray-100 text-gray-800 border-gray-200";
-        }
-    };
-
     const handleVoirCv = async (candidat) => {
         try {
             const blob = await getCvCandidat(candidat.id, authService.buildAuthHeader());
@@ -161,23 +146,16 @@ export default function CandidaturesOffre() {
                         key={candidat.id}
                         className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
                     >
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                                <h2 className="text-lg font-semibold text-gray-800 break-words">
-                                    {candidat.etudiant.firstName} {candidat.etudiant.lastName}
-                                </h2>
-                                <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
-                                <p className="text-sm text-blue-600">
-                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                        defaultValue: candidat.etudiant.discipline,
-                                    })}
-                                </p>
-                            </div>
-                            <span
-                                className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
-                            >
-                                {formatStatut(candidat.statut)}
-                            </span>
+                        <div className="min-w-0">
+                            <h2 className="text-lg font-semibold text-gray-800 break-words">
+                                {candidat.etudiant.firstName} {candidat.etudiant.lastName}
+                            </h2>
+                            <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
+                            <p className="text-sm text-blue-600">
+                                {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
+                                    defaultValue: candidat.etudiant.discipline,
+                                })}
+                            </p>
                         </div>
 
                         <div className="mt-4 flex items-center gap-3">
