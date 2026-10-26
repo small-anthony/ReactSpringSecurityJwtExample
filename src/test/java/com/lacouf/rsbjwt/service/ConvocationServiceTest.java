@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
+import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
@@ -41,6 +42,9 @@ class ConvocationServiceTest {
 
     @Mock
     private CandidatureRepository candidatureRepository;
+
+    @Mock
+    private HistoriqueCandidatureRepository historiqueRepository;
 
     @InjectMocks
     private ConvocationService convocationService;
@@ -171,6 +175,7 @@ class ConvocationServiceTest {
         assertEquals(99L, dto.id());
         assertEquals("Virtuel", dto.rendezVousPossibles().getFirst().lieu());
         assertEquals(StatutConvocation.EN_ATTENTE, dto.statut());
+        verify(historiqueRepository).save(any(HistoriqueCandidature.class));
     }
 
     @Test

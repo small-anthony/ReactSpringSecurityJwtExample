@@ -293,6 +293,34 @@ public class EmployeurControllerTest {
 		assertEquals("Candidature introuvable pour cet employeur", response.getBody());
 	}
 
+    @Test
+    void embaucherCandidature_shouldReturnOkAndDto() throws Exception {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.EMBAUCHEE, LocalDateTime.now(), null, null, LocalDateTime.now());
+        when(employeurService.embaucherCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
+
+        ResponseEntity<Object> response = employeurController.embaucherCandidature(1L, authentication);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void embaucherCandidature_shouldReturnBadRequestOnException() throws Exception {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        when(employeurService.embaucherCandidature(1L, "employeur@entreprise.com"))
+                .thenThrow(new Exception("L'entrevue doit être confirmée par l'étudiant avant l'embauche"));
+
+        ResponseEntity<Object> response = employeurController.embaucherCandidature(1L, authentication);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("L'entrevue doit être confirmée par l'étudiant avant l'embauche", response.getBody());
+    }
+
 	@Test
 	void getHistorique_shouldReturnOkAndList() {
 //        ARRANGE
