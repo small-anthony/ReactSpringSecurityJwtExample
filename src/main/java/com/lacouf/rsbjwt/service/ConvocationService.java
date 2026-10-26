@@ -6,6 +6,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
+import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
@@ -20,11 +21,14 @@ public class ConvocationService {
 
     private final ConvocationRepository convocationRepository;
     private final CandidatureRepository candidatureRepository;
+    private final HistoriqueCandidatureRepository historiqueRepository;
 
     public ConvocationService(ConvocationRepository convocationRepository,
-            CandidatureRepository candidatureRepository) {
+                              CandidatureRepository candidatureRepository,
+                              HistoriqueCandidatureRepository historiqueRepository) {
         this.convocationRepository = convocationRepository;
         this.candidatureRepository = candidatureRepository;
+        this.historiqueRepository = historiqueRepository;
     }
 
     @Transactional()
@@ -73,8 +77,13 @@ public class ConvocationService {
         // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         candidature.addConvocation(convocation);
+
+        StatutCandidature ancienStatut = candidature.getStatut();
         candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
         convocation = convocationRepository.save(convocation);
+
+        historiqueRepository.save(new HistoriqueCandidature(
+                candidature, ancienStatut, StatutCandidature.EN_ATTENTE_REPONSE, null, actorEmail));
 
         return ConvocationDto.create(convocation);
     }

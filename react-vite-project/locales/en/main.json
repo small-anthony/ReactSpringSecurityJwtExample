@@ -306,11 +306,6 @@
       "REFUSE": "Refused"
     },
     "view_candidates": "View candidates",
-    "status": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
-    },
     "edit_error": "Error while updating the offer.",
     "edit_offer": "Edit",
     "delete_offer": "Delete",
@@ -329,17 +324,15 @@
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
-      "ACCEPTEE": "Accepted",
+      "ACCEPTEE": "Interview accepted",
       "REFUSEE": "Rejected",
-      "EN_ATTENTE_REPONSE": "Awaiting response"
+      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EMBAUCHEE": "Hired"
     },
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",
-    "status": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "REFUSE": "Refused"
-    },
+    "convoquer": "Schedule interview",
+    "hire": "Hire",
     "accept": "Summon",
     "accepted": "Summoned",
     "refuse": "Reject",
@@ -356,7 +349,8 @@
       "EN_ATTENTE": "Awaiting employer's decision",
       "ACCEPTEE": "Invited to an interview",
       "REFUSEE": "Application rejected. Click \"View details\" for more information.",
-      "EN_ATTENTE_REPONSE": "Awaiting response"
+      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EMBAUCHEE": "Congratulations, you have been hired!"
     },
     "refuse_reason": "Employer's message"
   },
