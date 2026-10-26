@@ -326,7 +326,7 @@
       "EN_ATTENTE": "Pending",
       "ACCEPTEE": "Interview accepted",
       "REFUSEE": "Rejected",
-      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EN_ATTENTE_REPONSE": "Interview sent",
       "EMBAUCHEE": "Hired"
     },
     "no_offers": "No internship offer has been created yet.",
