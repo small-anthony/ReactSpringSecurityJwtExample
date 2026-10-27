@@ -1,17 +1,22 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
+import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
+import com.lacouf.rsbjwt.service.ContratService;
 import com.lacouf.rsbjwt.service.ConvocationService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
+import com.lacouf.rsbjwt.service.dto.ContratDto;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,17 +26,20 @@ import java.util.List;
 public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
     private final ConvocationService convocationService;
+    private final ContratService contratService;
 
-    public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
+    public GestionnaireController(GestionnaireService gestionnaireService,
+                                  ConvocationService convocationService,
+                                  ContratService contratService) {
         this.gestionnaireService = gestionnaireService;
         this.convocationService = convocationService;
+        this.contratService = contratService;
     }
 
     @PutMapping("/cv/accepter")
     public ResponseEntity<Object> acceptCv(@RequestBody DecisionCvRequest request) {
         try {
             CvDto cvDto = gestionnaireService.accepterCv(request.id());
-
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -42,7 +50,6 @@ public class GestionnaireController {
     public ResponseEntity<Object> refuseCv(@RequestBody DecisionCvRequest request) {
         try {
             CvDto cvDto = gestionnaireService.refuserCv(request.id(), request.message());
-
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -98,5 +105,48 @@ public class GestionnaireController {
     @GetMapping("/convocations")
     public ResponseEntity<List<ConvocationDto>> getToutesConvocations() {
         return ResponseEntity.ok(convocationService.getToutesConvocations());
+    }
+
+    @GetMapping("/contrats/candidatures-acceptees")
+    public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
+        return ResponseEntity.ok(contratService.getCandidaturesPourContrat());
+    }
+
+    @PostMapping("/contrats")
+    public ResponseEntity<?> creerContrat(@RequestBody CreationContratRequest request, Authentication authentication) {
+        try {
+            String email = authentication != null ? authentication.getName() : null;
+            ContratDto contrat = contratService.creerContrat(request, email);
+            return ResponseEntity.status(HttpStatus.CREATED).body(contrat);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/contrats")
+    public ResponseEntity<List<ContratDto>> getTousLesContrats() {
+        return ResponseEntity.ok(contratService.getTousLesContrats());
+    }
+
+    @GetMapping("/contrats/{id}")
+    public ResponseEntity<?> getContratById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(contratService.getContratById(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/contrats/{id}/document")
+    public ResponseEntity<byte[]> getContratDocument(@PathVariable Long id) {
+        try {
+            byte[] data = contratService.getContratPdf(id);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"contrat-" + id + ".txt\"")
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(data);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }

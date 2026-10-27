@@ -19,10 +19,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
+import com.lacouf.rsbjwt.service.ContratService;
+import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
+import com.lacouf.rsbjwt.service.dto.ContratDto;
+import org.springframework.security.core.Authentication;
+
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireControllerTest {
     @Mock
     private GestionnaireService gestionnaireService;
+
+    @Mock
+    private ContratService contratService;
 
     @InjectMocks
     private GestionnaireController gestionnaireController;
@@ -199,5 +208,86 @@ public class GestionnaireControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Offre de stage non trouvée", response.getBody());
+    }
+
+    @Test
+    void getCandidaturesAccepteesPourContrat_shouldReturnList() {
+        CandidaturePourContratDto dto = mock(CandidaturePourContratDto.class);
+        when(contratService.getCandidaturesPourContrat()).thenReturn(List.of(dto));
+
+        ResponseEntity<List<CandidaturePourContratDto>> response = gestionnaireController.getCandidaturesAccepteesPourContrat();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void creerContrat_shouldReturnCreated() throws Exception {
+        CreationContratRequest request = mock(CreationContratRequest.class);
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("gestionnaire@test.com");
+        ContratDto contratDto = mock(ContratDto.class);
+        when(contratService.creerContrat(request, "gestionnaire@test.com")).thenReturn(contratDto);
+
+        ResponseEntity<?> response = gestionnaireController.creerContrat(request, auth);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(contratDto, response.getBody());
+    }
+
+    @Test
+    void creerContrat_shouldReturnBadRequestOnException() throws Exception {
+        CreationContratRequest request = mock(CreationContratRequest.class);
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("gestionnaire@test.com");
+        when(contratService.creerContrat(request, "gestionnaire@test.com"))
+                .thenThrow(new Exception("Des informations obligatoires manquent dans le contrat."));
+
+        ResponseEntity<?> response = gestionnaireController.creerContrat(request, auth);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Des informations obligatoires manquent dans le contrat.", response.getBody());
+    }
+
+    @Test
+    void getTousLesContrats_shouldReturnList() {
+        ContratDto dto = mock(ContratDto.class);
+        when(contratService.getTousLesContrats()).thenReturn(List.of(dto));
+
+        ResponseEntity<List<ContratDto>> response = gestionnaireController.getTousLesContrats();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getContratById_shouldReturnContrat() throws Exception {
+        ContratDto dto = mock(ContratDto.class);
+        when(contratService.getContratById(1L)).thenReturn(dto);
+
+        ResponseEntity<?> response = gestionnaireController.getContratById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void getContratById_shouldReturnNotFoundOnException() throws Exception {
+        when(contratService.getContratById(99L)).thenThrow(new Exception("Contrat introuvable"));
+
+        ResponseEntity<?> response = gestionnaireController.getContratById(99L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void getContratDocument_shouldReturnDocument() throws Exception {
+        byte[] doc = "doc".getBytes();
+        when(contratService.getContratPdf(1L)).thenReturn(doc);
+
+        ResponseEntity<byte[]> response = gestionnaireController.getContratDocument(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(doc, response.getBody());
     }
 }
