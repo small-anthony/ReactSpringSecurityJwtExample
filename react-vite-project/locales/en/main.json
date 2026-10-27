@@ -370,7 +370,8 @@
     "title": "Manager Workspace",
     "cvs": "Resume Approvals",
     "offres": "Offer Approvals",
-    "convocations": "Interview Invitations"
+    "convocations": "Interview Invitations",
+    "contrats": "Internship Contracts"
   },
   "convocation": {
     "title": "My Interview Invitations",
@@ -568,6 +569,107 @@
       "applying": "Submitting application...",
       "apply_success": "Congratulations! Your application has been sent to the employer.",
       "apply_error": "Error submitting your application."
+    }
+  },
+  "contrats": {
+    "title": "Internship Contract Management",
+    "subtitle": "Create internship agreements for hired students and track signatures across all three parties.",
+    "tabs": {
+      "create": "Create a Contract",
+      "list": "Existing Contracts"
+    },
+    "candidature_select": {
+      "label": "Select an Accepted Candidate",
+      "placeholder": "-- Choose a hired student --",
+      "help": "Only students whose application was accepted by an employer are eligible.",
+      "student": "Student",
+      "company": "Company",
+      "offer": "Position / Offer",
+      "matricule": "Student ID",
+      "already_contracted": "A contract already exists"
+    },
+    "form": {
+      "title": "Internship Agreement Terms",
+      "dates_section": "Internship Period",
+      "dateDebut": "Start Date",
+      "dateFin": "End Date",
+      "horaire": "Work Schedule",
+      "horaire_placeholder": "E.g.: Monday to Friday, 9am to 5pm (35h/week)",
+      "salaire": "Compensation / Salary",
+      "salaire_placeholder": "E.g.: $22.50/hr or $800/week",
+      "taches": "Description of Duties & Responsibilities",
+      "taches_placeholder": "Detail the tasks assigned to the intern...",
+      "conditions": "Working Conditions & Perks",
+      "conditions_placeholder": "E.g.: Hybrid remote work (2 days at office), laptop provided...",
+      "submit": "Create & Send for Signatures",
+      "submitting": "Creating..."
+    },
+    "status": {
+      "label": "Status",
+      "EN_ATTENTE_SIGNATURE": "Pending Signatures",
+      "SIGNE_PAR_EMPLOYEUR": "Signed by Employer",
+      "SIGNE_PAR_ETUDIANT": "Signed by Student",
+      "COMPLETE": "Completed (Fully Signed)",
+      "REFUSE": "Rejected"
+    },
+    "signatures": {
+      "student": "Student",
+      "employer": "Employer",
+      "manager": "Manager",
+      "signed": "Signed",
+      "waiting": "Pending"
+    },
+    "alerts": {
+      "success_created": "Internship contract successfully created! All three parties (employer, student, and manager) have been notified for signature.",
+      "error_missing_fields": "Mandatory information is missing in the contract.",
+      "error_date_order": "End date cannot be before start date.",
+      "error_download": "Error downloading contract document.",
+      "error_open": "Error opening contract document.",
+      "error_load": "Error loading contract data.",
+      "error_not_hired": "The student was not hired by the employer, cannot create a contract.",
+      "error_already_exists": "A contract already exists for this student and employer.",
+      "no_accepted_candidates": "No accepted candidates waiting for a contract at this time.",
+      "no_contracts": "No contracts created yet."
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "close": "Close",
+      "contract_number": "Contract #"
+    },
+    "table": {
+      "id": "#",
+      "student": "Student",
+      "company": "Company",
+      "position": "Position",
+      "dates": "Period",
+      "salary": "Salary",
+      "status": "Status",
+      "signatures": "Signatures",
+      "actions": "Actions",
+      "download": "Download Agreement",
+      "view": "Details"
+    },
+    "stats": {
+      "total": "Total contracts",
+      "pending": "Pending signature",
+      "partial": "Partially signed",
+      "completed": "Completed"
+    },
+    "filter": {
+      "all": "All contracts",
+      "pending": "Pending",
+      "completed": "Completed",
+      "search_placeholder": "Search by student, company, or position..."
+    },
+    "view": {
+      "cards": "Cards",
+      "table": "Table"
+    },
+    "hero_pending": {
+      "title": "Contract(s) awaiting signatures",
+      "badge": "Action required",
+      "desc": "All three signatories (student, employer, and manager) have been notified. The contract will be automatically finalized once all 3 signatures are received.",
+      "progress_label": "Signature progress"
     }
   }
 }
