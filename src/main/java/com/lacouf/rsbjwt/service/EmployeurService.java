@@ -9,9 +9,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Candidature;
@@ -142,9 +140,12 @@ public class EmployeurService {
     }
 
     public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur) {
-        return historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream()
-                .map(HistoriqueCandidatureDto::create)
-                .collect(Collectors.toList());
+        Map<Long, HistoriqueCandidatureDto> derniereDecisionParCandidature = new LinkedHashMap<>();
+        historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).forEach(historique -> {
+            HistoriqueCandidatureDto dto = HistoriqueCandidatureDto.create(historique);
+            derniereDecisionParCandidature.putIfAbsent(dto.candidatureId(), dto);
+        });
+        return new ArrayList<>(derniereDecisionParCandidature.values());
     }
 
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,

@@ -531,6 +531,40 @@ public class EmployeurServiceTest {
     }
 
     @Test
+    void getHistorique_plusieursDecisionsPourUneCandidature_retourneSeulementLaPlusRecente() {
+        String email = "employeur@entreprise.com";
+        Candidature candidature = creerCandidature(100L);
+        HistoriqueCandidature convocation = new HistoriqueCandidature(
+                candidature, StatutCandidature.EN_ATTENTE, StatutCandidature.EN_ATTENTE_REPONSE, null, email);
+        HistoriqueCandidature embauche = new HistoriqueCandidature(
+                candidature, StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE, null, email);
+        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email))
+                .thenReturn(List.of(embauche, convocation));
+
+        List<HistoriqueCandidatureDto> resultat = employeurService.getHistorique(email);
+
+        assertEquals(1, resultat.size());
+        assertEquals(StatutCandidature.EMBAUCHEE, resultat.get(0).nouveauStatut());
+    }
+
+    @Test
+    void getHistorique_candidaturesDifferentes_gardeUneDecisionParCandidature() {
+        String email = "employeur@entreprise.com";
+        HistoriqueCandidature premiere = new HistoriqueCandidature(
+                creerCandidature(100L), StatutCandidature.EN_ATTENTE, StatutCandidature.REFUSEE, null, email);
+        HistoriqueCandidature deuxieme = new HistoriqueCandidature(
+                creerCandidature(101L), StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE, null, email);
+        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email))
+                .thenReturn(List.of(deuxieme, premiere));
+
+        List<HistoriqueCandidatureDto> resultat = employeurService.getHistorique(email);
+
+        assertEquals(2, resultat.size());
+        assertEquals(101L, resultat.get(0).candidatureId());
+        assertEquals(100L, resultat.get(1).candidatureId());
+    }
+
+    @Test
     void deleteOffre_avecOffreValide_supprimeLOffre() {
         //ARRANGE
         String email = "employeur@entreprise.com";
