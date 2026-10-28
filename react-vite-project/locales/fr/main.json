@@ -212,6 +212,7 @@
     },
     "errorPrefix": "Erreur : ",
     "successPrefix": "Succès : ",
+    "successTitle": "Offre créée avec succès",
     "success": "Votre offre de stage a été créée avec succès !",
     "submit": "Créer l'offre",
     "submitting": "Création en cours..."

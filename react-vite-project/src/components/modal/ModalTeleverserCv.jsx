@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { uploadCv } from '../../services/api/EtudiantCvService.js';
 import {useTranslation} from "react-i18next";
-import {X} from "lucide-react";
+import {CheckCircle2, X} from "lucide-react";
 
 export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     const { t } = useTranslation("main");
@@ -43,6 +43,7 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
         e.stopPropagation();
         setIsDragging(true);
     };
+
     const handleDragLeave = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -72,10 +73,6 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
         try {
             await uploadCv(file);
             setIsSuccess(true);
-
-            setTimeout(() => {
-                onUploadSuccess();
-            }, 2000);
         } catch (err) {
             setError(err.message || t('cv_upload.errors.default'));
         } finally {
@@ -89,8 +86,23 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
              className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
             <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl relative">
                 {isSuccess ? (
-                    <div className="p-4 bg-green-50 text-green-700 text-center rounded-md">
-                        {t('cv_upload.successMessage')}
+                    <div className="text-center py-4 space-y-4">
+                        <div className="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
+                            <CheckCircle2 className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800">
+                            {t('cv_upload.successMessage')}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate px-4">
+                            {file?.name}
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => onUploadSuccess()}
+                            className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition-colors cursor-pointer"
+                        >
+                            {t('common.confirm')}
+                        </button>
                     </div>
                 ) : (
                     <>

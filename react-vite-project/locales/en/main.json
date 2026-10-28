@@ -212,6 +212,7 @@
     },
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
+    "successTitle": "Internship Offer Created",
     "success": "Your internship offer has been created successfully!",
     "submit": "Create Offer",
     "submitting": "Creating..."
