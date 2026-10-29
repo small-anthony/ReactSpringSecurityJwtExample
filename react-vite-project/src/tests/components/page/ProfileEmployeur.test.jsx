@@ -84,6 +84,9 @@ describe("ProfileEmployeur - Modifier et Supprimer une offre d'emploi", () => {
         // Act
         fireEvent.click(boutonsSupprimer[0]);
 
+        const boutonConfirmer = screen.getByRole("button", { name: /confirmer/i });
+        fireEvent.click(boutonConfirmer);
+
         // Assert
         await waitFor(() => {
             expect(OffreStageService.deleteOffreStage).toHaveBeenCalledWith(1, { Authorization: "Bearer token123" });
@@ -104,6 +107,9 @@ describe("ProfileEmployeur - Modifier et Supprimer une offre d'emploi", () => {
 
         // Act
         fireEvent.click(boutonsSupprimer[0]);
+
+        const boutonConfirmer = screen.getByRole("button", { name: /confirmer/i });
+        fireEvent.click(boutonConfirmer);
 
         // Assert
         expect(await screen.findByText("Impossible de supprimer cette offre")).toBeInTheDocument();

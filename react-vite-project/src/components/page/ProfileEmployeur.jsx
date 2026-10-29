@@ -3,9 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {deleteOffreStage, getOffresStages} from "../../services/api/OffreStageService.js";
 import {useTranslation} from "react-i18next";
-import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
+import {
+    DollarSign,
+    Clock,
+    GraduationCap,
+    ClipboardList,
+    AlignLeft,
+    Briefcase,
+    CheckCircle2,
+    AlertTriangle
+} from "lucide-react";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
+import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 
 const STATUS_STYLES = {
     EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -25,6 +35,9 @@ export default function ProfileEmployeur() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [offreAEditer, setOffreAEditer] = useState(null);
+    const [offreASupprimer, setOffreASupprimer] = useState(null);
+    const [messageConfirmation, setMessageConfirmation] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         let offresChargees = true;
@@ -46,12 +59,19 @@ export default function ProfileEmployeur() {
     }, [authService]);
 
     const handleSupprimer = async (offreId) => {
+        const idCible = typeof offreId === "number" ? offreId : offreASupprimer?.id;
+        if (!idCible) return;
+        setIsDeleting(true);
         try {
-            await deleteOffreStage(offreId, authService.buildAuthHeader());
-
-            setOffres((prev) => prev.filter((o) => o.id !== offreId));
+            await deleteOffreStage(idCible, authService.buildAuthHeader());
+            setOffres((prev) => prev.filter((o) => o.id !== idCible));
+            setOffreASupprimer(null);
+            setMessageConfirmation(t("employeur_home.delete_success"));
         } catch (err) {
             setError(err.message || t("employeur_home.delete_error"));
+            setOffreASupprimer(null);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -168,7 +188,7 @@ export default function ProfileEmployeur() {
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => handleSupprimer(offre.id)}
+                                    onClick={() => setOffreASupprimer(offre)}
                                     className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
                                 >
                                     {t("employeur_home.delete_offer")}
@@ -178,6 +198,28 @@ export default function ProfileEmployeur() {
                     </article>
                 ))}
             </div>
+
+            <ModalConfirmation
+                isOpen={Boolean(offreASupprimer)}
+                type="danger"
+                title={t("employeur_home.delete_confirm_title")}
+                message={t("employeur_home.delete_confirm_message")}
+                details={offreASupprimer ? `${offreASupprimer.titre}` : null}
+                confirmText={t("common.confirm")}
+                onClose={() => setOffreASupprimer(null)}
+                onConfirm={() => handleSupprimer(offreASupprimer?.id)}
+                loading={isDeleting}
+            />
+
+            <ModalConfirmation
+                isOpen={Boolean(messageConfirmation)}
+                type="success"
+                isSuccess={true}
+                title={t("employeur_home.delete_success_title")}
+                message={messageConfirmation}
+                confirmText={t("common.confirm")}
+                onConfirm={() => setMessageConfirmation(null)}
+            />
 
             {offreAEditer && (
                 <ModalModifierOffre
