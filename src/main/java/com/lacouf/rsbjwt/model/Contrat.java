@@ -25,20 +25,27 @@ public class Contrat {
 	@JoinColumn(name = "candidature_id")
 	private Candidature candidature;
 
+	@Immutable
 	private LocalDate dateDebut;
+	@Immutable
 	private LocalDate dateFin;
+	@Immutable
 	private String horaire;
+	@Immutable
 	private String salaire;
 
+	@Immutable
 	@Column(length = 2000)
 	private String descriptionTaches;
 
+	@Immutable
 	@Column(length = 2000)
 	private String conditions;
 
 	@Enumerated(EnumType.STRING)
 	private StatutContrat statut = StatutContrat.EN_ATTENTE_SIGNATURE;
 
+	@Immutable
 	private Instant dateCreation = Instant.now();
 
 	@Embedded
