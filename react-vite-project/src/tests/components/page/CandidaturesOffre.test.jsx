@@ -224,6 +224,8 @@ describe("CandidaturesOffre", () => {
         afficherPage();
         await user.click(await screen.findByText("candidatures_offre.accept"));
 
+        await user.click(screen.getByText("candidatures_offre.confirm_accept"));
+
         expect(await screen.findByText("Cette candidature a déjà reçu une réponse")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();
     });
