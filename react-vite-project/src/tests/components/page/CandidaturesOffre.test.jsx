@@ -143,6 +143,8 @@ describe("CandidaturesOffre", () => {
         afficherPage();
         await user.click(await screen.findByText("candidatures_offre.accept"));
 
+        await user.click(screen.getByText("candidatures_offre.confirm_accept"));
+
         await waitFor(() => {
             expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         });
