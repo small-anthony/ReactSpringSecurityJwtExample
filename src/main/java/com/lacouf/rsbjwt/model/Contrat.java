@@ -25,20 +25,27 @@ public class Contrat {
 	@JoinColumn(name = "candidature_id")
 	private Candidature candidature;
 
+	@Immutable
 	private LocalDate dateDebut;
+	@Immutable
 	private LocalDate dateFin;
+	@Immutable
 	private String horaire;
+	@Immutable
 	private String salaire;
 
+	@Immutable
 	@Column(length = 2000)
 	private String descriptionTaches;
 
+	@Immutable
 	@Column(length = 2000)
 	private String conditions;
 
 	@Enumerated(EnumType.STRING)
 	private StatutContrat statut = StatutContrat.EN_ATTENTE_SIGNATURE;
 
+	@Immutable
 	private Instant dateCreation = Instant.now();
 
 	@Embedded
@@ -71,10 +78,6 @@ public class Contrat {
 	})
 	private Signature<Gestionnaire> signatureGestionnaire = null;
 
-	public Contrat(byte[] data) {
-		this.data = data;
-	}
-
 	public Contrat(Candidature candidature, byte[] data, LocalDate dateDebut, LocalDate dateFin,
 				   String horaire, String salaire, String descriptionTaches, String conditions) {
 		this.candidature = candidature;
@@ -85,8 +88,6 @@ public class Contrat {
 		this.salaire = salaire;
 		this.descriptionTaches = descriptionTaches;
 		this.conditions = conditions;
-		this.statut = StatutContrat.EN_ATTENTE_SIGNATURE;
-		this.dateCreation = Instant.now();
 	}
 
 	public void signAsEtudiant(Signature<Etudiant> signature) throws Exception {
