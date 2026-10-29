@@ -15,6 +15,7 @@ import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -232,55 +233,109 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void getCandidaturesAcceptees_succes() {
+    void getTousLesEtudiants_succes() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
+
+        // ACT
+        List<RapportEtudiantDto> resultat = gestionnaireService.getTousLesEtudiants();
+
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("Jean", resultat.getFirst().firstName());
+        assertTrue(resultat.getFirst().candidatures().isEmpty());
+    }
+    @Test
+    void getEtudiantsSansConvocation_succes() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        when(etudiantRepository.findEtudiantsSansConvocation()).thenReturn(List.of(etudiant));
+        // ACT
+
+        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsSansConvocation();
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("Jean", resultat.getFirst().firstName());
+        assertTrue(resultat.getFirst().candidatures().isEmpty());
+    }
+    @Test
+    void getEtudiantsEnAttenteEntrevue_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
 
         OffreStage offre = new OffreStage("Dev Java", "Description", "CGI");
-        offre.setId(10L);
 
         Candidature candidature = new Candidature(etudiant, offre);
         candidature.setId(100L);
-        candidature.setStatut(StatutCandidature.ACCEPTEE);
 
-        when(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE))
-                .thenReturn(List.of(candidature));
+        etudiant.setCandidatures(List.of(candidature));
+
+        when(etudiantRepository.findEtudiantsEnAttenteEntrevue()).thenReturn(List.of(etudiant));
 
         // ACT
-        List<CandidatureDto> resultat = gestionnaireService.getCandidaturesAcceptees();
+        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsEnAttenteEntrevue();
 
         // ASSERT
         assertEquals(1, resultat.size());
-        assertEquals(StatutCandidature.ACCEPTEE, resultat.getFirst().statut());
-        assertEquals("Jean", resultat.getFirst().etudiant().firstName());
-        assertEquals("Dev Java", resultat.getFirst().titreOffre());
-        assertEquals("CGI", resultat.getFirst().nomEntreprise());
+        assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("Dev Java", resultat.getFirst().candidatures().getFirst().titreOffre());
+        assertEquals("CGI", resultat.getFirst().candidatures().getFirst().nomEntreprise());
     }
     @Test
-    void getCandidaturesRefusees_succes() {
+    void getEtudiantsEnAttenteReponse_succes() {
         // ARRANGE
-        Credentials cred = new Credentials("marie@test.com", "pass", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Marie", "Curie", cred, 7654321, "Informatique");
-        etudiant.setId(2L);
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
 
         OffreStage offre = new OffreStage("Dev Web", "Description", "Desjardins");
-        offre.setId(11L);
 
         Candidature candidature = new Candidature(etudiant, offre);
         candidature.setId(101L);
-        candidature.setStatut(StatutCandidature.REFUSEE);
-        candidature.setMessageReponse("Poste comblé");
+        etudiant.setCandidatures(List.of(candidature));
 
-        when(candidatureRepository.findByStatut(StatutCandidature.REFUSEE))
-                .thenReturn(List.of(candidature));
+        when(etudiantRepository.findEtudiantsEnAttenteReponse()).thenReturn(List.of(etudiant));
+
         // ACT
-        List<CandidatureDto> resultat = gestionnaireService.getCandidaturesRefusees();
+        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsEnAttenteReponse();
+
         // ASSERT
         assertEquals(1, resultat.size());
-        assertEquals(StatutCandidature.REFUSEE, resultat.getFirst().statut());
-        assertEquals("Marie", resultat.getFirst().etudiant().firstName());
-        assertEquals("Poste comblé", resultat.getFirst().messageReponse());
+        assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("Dev Web", resultat.getFirst().candidatures().getFirst().titreOffre());
+        assertEquals("Desjardins", resultat.getFirst().candidatures().getFirst().nomEntreprise());
+    }
+    @Test
+    void getEtudiantsTrouveStage_succes() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        OffreStage offre = new OffreStage("Dev Fullstack", "Description", "Hydro-Québec");
+        Candidature candidature = new Candidature(etudiant, offre);
+        candidature.setId(102L);
+
+        etudiant.setCandidatures(List.of(candidature));
+
+        when(etudiantRepository.findEtudiantsTrouveStage()).thenReturn(List.of(etudiant));
+
+        // ACT
+        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsTrouveStage();
+
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("Dev Fullstack", resultat.getFirst().candidatures().getFirst().titreOffre());
+        assertEquals("Hydro-Québec", resultat.getFirst().candidatures().getFirst().nomEntreprise());
     }
 }

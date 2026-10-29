@@ -2,10 +2,10 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.auth.Credentials;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("S")
@@ -15,6 +15,9 @@ public class Etudiant extends UserApp {
 
     @OneToOne(mappedBy = "etudiant", cascade = CascadeType.ALL)
     private Cv cv;
+
+    @OneToMany(mappedBy = "etudiant")
+    private List<Candidature> candidatures = new ArrayList<>();
 
     public Etudiant(String firstName, String lastName, Credentials credentials, int matricule, String discipline) {
         super(firstName, lastName, credentials);
@@ -54,5 +57,12 @@ public class Etudiant extends UserApp {
 
     public void setCv(Cv cv) {
         this.cv = cv;
+    }
+
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
+    public void setCandidatures(List<Candidature> candidatures) {
+        this.candidatures = candidatures;
     }
 }

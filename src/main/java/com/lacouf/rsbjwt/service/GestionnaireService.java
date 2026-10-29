@@ -3,14 +3,13 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.CvDto;
-import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.*;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,16 +88,34 @@ public class GestionnaireService {
                 .collect(Collectors.toList());
     }
 
-    public List<CandidatureDto> getCandidaturesAcceptees() {
-        return candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE)
+    public List<RapportEtudiantDto> getTousLesEtudiants() {
+        return etudiantRepository.findAll()
                 .stream()
-                .map(CandidatureDto::create)
+                .map(RapportEtudiantDto::create)
                 .toList();
     }
-    public List<CandidatureDto> getCandidaturesRefusees() {
-        return candidatureRepository.findByStatut(StatutCandidature.REFUSEE)
+    public List<RapportEtudiantDto> getEtudiantsSansConvocation() {
+        return etudiantRepository.findEtudiantsSansConvocation()
                 .stream()
-                .map(CandidatureDto::create)
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue() {
+        return etudiantRepository.findEtudiantsEnAttenteEntrevue()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse() {
+        return etudiantRepository.findEtudiantsEnAttenteReponse()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsTrouveStage() {
+        return etudiantRepository.findEtudiantsTrouveStage()
+                .stream()
+                .map(RapportEtudiantDto::create)
                 .toList();
     }
 }
