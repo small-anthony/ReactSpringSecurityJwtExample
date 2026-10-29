@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { createOffreStage } from "../../services/api/OffreStageService.js";
 import OffreForm from "../form/OffreForm.jsx";
-import {CheckCircle2} from "lucide-react";
+import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 
 export default function CreerOffre() {
   const authService = useContext(AuthServiceContext);
@@ -51,8 +51,6 @@ export default function CreerOffre() {
       <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border">
         <h2 className="text-2xl font-bold mb-4">{t("creer_offre.title")}</h2>
 
-
-
         <OffreForm
             id="formCreerOffre"
             initialValues={{ nomEntreprise: userData?.entreprise || "" }}
@@ -76,28 +74,15 @@ export default function CreerOffre() {
             </div>
         )}
 
-        {isSuccess && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-              <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl text-center">
-                <div className="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {t("creer_offre.successTitle")}
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  {t("creer_offre.success")}
-                </p>
-                <button
-                    type="button"
-                    onClick={() => navigate("/employeur")}
-                    className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition-colors cursor-pointer"
-                >
-                  {t("common.confirm")}
-                </button>
-              </div>
-            </div>
-        )}
+        <ModalConfirmation
+            isOpen={isSuccess}
+            type="success"
+            isSuccess={true}
+            title={t("creer_offre.successTitle")}
+            message={t("creer_offre.success")}
+            confirmText={t("common.confirm")}
+            onConfirm={() => navigate("/employeur")}
+        />
       </div>
   );
 }
