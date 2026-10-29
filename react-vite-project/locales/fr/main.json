@@ -314,6 +314,10 @@
     "edit_offer": "Modifier",
     "edit_error": "Erreur lors de la modification de l'offre.",
     "delete_offer": "Supprimer",
+    "delete_confirm_title": "Confirmer la suppression",
+    "delete_confirm_message": "Êtes-vous certain de vouloir supprimer cette offre? Cette action est irréversible.",
+    "delete_success_title": "Offre supprimée",
+    "delete_success": "L'offre a été supprimée avec succès.",
     "delete_error": "Erreur lors de la suppression de l'offre.",
     "modal_edit_title": "Modifier l'offre",
     "save": "Enregistrer",
@@ -337,6 +341,10 @@
       "EN_ATTENTE_REPONSE": "En attente de réponse"
     },
     "accept": "Accepter la candidature",
+    "accept_success_title": "Candidature acceptée",
+    "accept_success": "La candidature a été acceptée avec succès.",
+    "confirm_accept": "Confirmer l'acceptation",
+    "confirm_accept_question": "Voulez-vous accepter cette candidature?",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
@@ -459,6 +467,11 @@
   },
   "approbation": {
     "cvs": {
+      "modal_approve": {
+        "title": "Approuver le CV",
+        "description": "Êtes-vous certain de vouloir approuver le CV?",
+        "confirm": "Approuver l'approbation"
+      },
       "errors": {
         "fetch": "Erreur lors de la récupération des CVs.",
         "approve": "Erreur lors de l'approbation du CV.",
@@ -478,7 +491,8 @@
       "confirm": "Confirmer le refus",
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
-      "cvPdf": "CV PDF"
+      "cvPdf": "CV PDF",
+      "accept_success": "Le CV a été approuvé avec succès."
     },
     "offres": {
       "title": "Offres en attente d'approbation",
