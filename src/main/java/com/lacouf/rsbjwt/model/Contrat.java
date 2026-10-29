@@ -78,10 +78,6 @@ public class Contrat {
 	})
 	private Signature<Gestionnaire> signatureGestionnaire = null;
 
-	public Contrat(byte[] data) {
-		this.data = data;
-	}
-
 	public Contrat(Candidature candidature, byte[] data, LocalDate dateDebut, LocalDate dateFin,
 				   String horaire, String salaire, String descriptionTaches, String conditions) {
 		this.candidature = candidature;
@@ -92,8 +88,6 @@ public class Contrat {
 		this.salaire = salaire;
 		this.descriptionTaches = descriptionTaches;
 		this.conditions = conditions;
-		this.statut = StatutContrat.EN_ATTENTE_SIGNATURE;
-		this.dateCreation = Instant.now();
 	}
 
 	public void signAsEtudiant(Signature<Etudiant> signature) throws Exception {
