@@ -21,7 +21,6 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         LEFT JOIN FETCH e.candidatures c
-        LEFT JOIN FETCH c.offreStage
         WHERE e.id NOT IN (
             SELECT DISTINCT c2.etudiant.id FROM Candidature c2 JOIN c2.convocations conv
         )
@@ -31,12 +30,11 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        JOIN FETCH c.offreStage
         JOIN c.convocations conv
-        WHERE conv.statut = com.lacouf.rsbjwt.model.ENUM.StatutConvocation.EN_ATTENTE
+        WHERE conv.statut = StatutConvocation.EN_ATTENTE
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteEntrevue();
@@ -44,11 +42,10 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        JOIN FETCH c.offreStage
-        WHERE c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE
+        WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse();
@@ -56,8 +53,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        JOIN FETCH c.offreStage
-        WHERE c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+        WHERE c.statut = StatutCandidature.ACCEPTEE
     """)
     List<Etudiant> findEtudiantsTrouveStage();
 
