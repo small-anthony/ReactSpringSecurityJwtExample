@@ -9,6 +9,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
@@ -19,6 +20,7 @@ import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
+import java.util.Comparator;
 
 @Service
 public class EmployeurService {
@@ -88,7 +90,10 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        return OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur));
+        List<OffreStageDto> offres = new ArrayList<>(
+                OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur)));
+        offres.sort(Comparator.comparing(OffreStageDto::id, Comparator.reverseOrder()));
+        return offres;
     }
 
     public List<CandidatureDto> getCandidatures(Long offreId, String emailEmployeur) throws Exception {
