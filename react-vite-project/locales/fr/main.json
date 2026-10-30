@@ -304,10 +304,10 @@
     "no_offers": "Aucune offre de stage n'a encore été créée.",
     "motif_refus": "Motif du refus :",
     "status": {
-      "EN_ATTENTE": "En attente",
-      "ACCEPTE": "Acceptée",
+      "EN_ATTENTE": "En attente d'approbation par le gestionnaire",
+      "ACCEPTE": "Offre approuvée",
       "ACCEPTEE": "Acceptée",
-      "REFUSE": "Refusée",
+      "REFUSE": "Offre refusée",
       "REFUSEE": "Refusée"
     },
     "view_candidates": "Voir les candidatures",
