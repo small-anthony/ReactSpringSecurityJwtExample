@@ -211,7 +211,7 @@ public class GestionnaireServiceTest {
         OffreStage offre = new OffreStage("Titre", "Description", "CGI");
         offre.setId(1L);
 
-        when(offreStageRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE))
+        when(offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.EN_ATTENTE))
                 .thenReturn(List.of(offre));
 
         // ACT

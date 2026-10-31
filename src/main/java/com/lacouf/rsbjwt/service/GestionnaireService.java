@@ -78,7 +78,7 @@ public class GestionnaireService {
     }
 
     public List<OffreStageDto> getOffresEnAttente() {
-        return offreStageRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE)
+        return offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.EN_ATTENTE)
                 .stream()
                 .map(OffreStageDto::create)
                 .collect(Collectors.toList());
