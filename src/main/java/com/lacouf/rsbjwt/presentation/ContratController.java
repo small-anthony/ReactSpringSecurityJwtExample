@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exceptions.UnexpectedUserException;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.ContratService;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,6 +64,21 @@ public class ContratController {
 			String email = authentication != null ? authentication.getName() : null;
 			ContratDto contrat = contratService.signerContrat(id, email, signature);
 			return ResponseEntity.ok(contrat);
+		} catch (UnexpectedUserException | UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.create(e));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.create(e));
+		}
+	}
+
+	@PostMapping("/{id}/rejeter")
+	public ResponseEntity<DataTransferObject> rejeterContrat(@PathVariable Long id, Authentication authentication) {
+		try {
+			String email = authentication != null ? authentication.getName() : null;
+			ContratDto contrat = contratService.rejeterContrat(id, email);
+			return ResponseEntity.ok(contrat);
+		} catch (UnexpectedUserException | UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.create(e));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.create(e));
 		}

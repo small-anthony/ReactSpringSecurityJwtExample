@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exceptions.UnexpectedUserException;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.ContratService;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
@@ -11,7 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -107,5 +111,30 @@ public class ContratControllerTest {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(doc, response.getBody());
+	}
+
+	@Test
+	void signerContrat_onUserError_ShouldReturnForbidden() throws Exception {
+		MultipartFile file = new MockMultipartFile("test.png", "".getBytes());
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("gestionnaire@test.com");
+		when(contratService.signerContrat(1L, "gestionnaire@test.com", file))
+				.thenThrow(new UnexpectedUserException(""));
+
+		ResponseEntity<?> response = contratController.signerContrat(1L, file, auth);
+
+		assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+	}
+
+	@Test
+	void rejeterContrat_onUserError_ShouldReturnForbidden() throws Exception {
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("gestionnaire@test.com");
+		when(contratService.rejeterContrat(1L, "gestionnaire@test.com"))
+				.thenThrow(new UnexpectedUserException(""));
+
+		ResponseEntity<?> response = contratController.rejeterContrat(1L, auth);
+
+		assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
 	}
 }

@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exceptions.UnexpectedUserException;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
@@ -110,7 +111,7 @@ public class ContratService {
 
     @Transactional()
     public ContratDto signerContrat(Long contratId, String actorEmail, MultipartFile signatureFile)
-        throws AuthenticationException, UserNotFoundException, Exception {
+        throws UnexpectedUserException, UserNotFoundException, Exception {
         UserApp utilisateur = userAppRepository.findUserAppByEmail(actorEmail)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -121,6 +122,22 @@ public class ContratService {
         Signature<?> signature = new Signature<>(utilisateur, signatureData);
 
         contrat.signer(signature);
+        contrat = contratRepository.save(contrat);
+
+        return toDto(contrat);
+    }
+
+    @Transactional()
+    public ContratDto rejeterContrat(Long contratId, String actorEmail)
+        throws AuthenticationException, UserNotFoundException, Exception {
+
+        UserApp utilisateur = userAppRepository.findUserAppByEmail(actorEmail)
+                .orElseThrow(UserNotFoundException::new);
+
+        Contrat contrat = contratRepository.findById(contratId)
+                .orElseThrow(Exception::new);
+
+        contrat.rejeter(utilisateur);
         contrat = contratRepository.save(contrat);
 
         return toDto(contrat);

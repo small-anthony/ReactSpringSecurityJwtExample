@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.exceptions.UnexpectedUserException;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
 import jakarta.persistence.*;
@@ -239,7 +240,7 @@ public class Contrat {
 		throw new Exception("signature est invalide");
 	}
 
-	private void ThrowUninvolvedUserException() throws Exception {
-		throw new Exception("signataire est invalide");
+	private void ThrowUninvolvedUserException() throws UnexpectedUserException {
+		throw new UnexpectedUserException("signataire est invalide");
 	}
 }
