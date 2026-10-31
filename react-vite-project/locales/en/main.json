@@ -300,6 +300,13 @@
     "title": "My internship offers",
     "subtitle": "Manage the offers published by your company.",
     "create_offer": "Create an offer",
+    "tabs": {
+      "all": "All my offers",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "refused": "Refused"
+    },
+    "no_offers_category": "No offers in this category.",
     "loading": "Loading offers...",
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",

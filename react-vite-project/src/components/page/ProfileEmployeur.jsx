@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import {deleteOffreStage, getOffresStages} from "../../services/api/OffreStageService.js";
-import {useTranslation} from "react-i18next";
+import { deleteOffreStage, getOffresStages } from "../../services/api/OffreStageService.js";
+import { useTranslation } from "react-i18next";
 import {
     DollarSign,
     Clock,
@@ -10,10 +10,8 @@ import {
     ClipboardList,
     AlignLeft,
     Briefcase,
-    CheckCircle2,
-    AlertTriangle
 } from "lucide-react";
-import {useOffreFormater} from "../../hooks/useOffreFormater.js";
+import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 
@@ -38,6 +36,7 @@ export default function ProfileEmployeur() {
     const [offreASupprimer, setOffreASupprimer] = useState(null);
     const [messageConfirmation, setMessageConfirmation] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [categorie, setCategorie] = useState("toutes");
 
     useEffect(() => {
         let offresChargees = true;
@@ -75,6 +74,15 @@ export default function ProfileEmployeur() {
         }
     };
 
+    const offresEnAttente = offres.filter((o) => o.status === "EN_ATTENTE");
+    const offresAcceptees = offres.filter((o) => o.status === "ACCEPTE" || o.status === "ACCEPTEE");
+    const offresRefusees = offres.filter((o) => o.status === "REFUSE" || o.status === "REFUSEE");
+
+    let offresAffichees = offres;
+    if (categorie === "en_attente") offresAffichees = offresEnAttente;
+    if (categorie === "accepte") offresAffichees = offresAcceptees;
+    if (categorie === "refuse") offresAffichees = offresRefusees;
+
     return (
         <main className="max-w-5xl mx-auto my-10 px-4">
             <div className="flex items-center justify-between gap-4 mb-8">
@@ -97,6 +105,56 @@ export default function ProfileEmployeur() {
                     </Link>
                 </div>
             </div>
+
+            {!isLoading && !error && offres.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-gray-100 rounded-xl mb-6 w-fit">
+                    <button
+                        type="button"
+                        onClick={() => setCategorie("toutes")}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                            categorie === "toutes"
+                                ? "bg-white text-gray-900 shadow-xs"
+                                : "text-gray-600 hover:text-gray-900"
+                        }`}
+                    >
+                        {t("employeur_home.tabs.all")} ({offres.length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setCategorie("en_attente")}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                            categorie === "en_attente"
+                                ? "bg-white text-gray-900 shadow-xs"
+                                : "text-gray-600 hover:text-gray-900"
+                        }`}
+                    >
+                        {t("employeur_home.tabs.pending")} ({offresEnAttente.length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setCategorie("accepte")}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                            categorie === "accepte"
+                                ? "bg-white text-gray-900 shadow-xs"
+                                : "text-gray-600 hover:text-gray-900"
+                        }`}
+                    >
+                        {t("employeur_home.tabs.accepted")} ({offresAcceptees.length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setCategorie("refuse")}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                            categorie === "refuse"
+                                ? "bg-white text-gray-900 shadow-xs"
+                                : "text-gray-600 hover:text-gray-900"
+                        }`}
+                    >
+                        {t("employeur_home.tabs.refused")} ({offresRefusees.length})
+                    </button>
+                </div>
+            )}
+
             {isLoading && <p className="text-gray-500">{t("employeur_home.loading")}</p>}
             {error && <p className="p-4 rounded-lg bg-red-50 text-red-700 mb-4">{error}</p>}
             {!isLoading && !error && offres.length === 0 && (
@@ -104,8 +162,14 @@ export default function ProfileEmployeur() {
                     {t("employeur_home.no_offers")}
                 </p>
             )}
+            {!isLoading && !error && offres.length > 0 && offresAffichees.length === 0 && (
+                <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                    {t("employeur_home.no_offers_category")}
+                </p>
+            )}
+
             <div className="grid gap-4">
-                {offres.map((offre) => (
+                {offresAffichees.map((offre) => (
                     <article key={offre.id} className="p-7 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between gap-4 mb-4">
                             <div>
@@ -116,8 +180,8 @@ export default function ProfileEmployeur() {
                                 </p>
                             </div>
                             <span className={`shrink-0 px-3 py-1.5 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
-                    {t(`employeur_home.status.${offre.status}`)}
-                  </span>
+                                {t(`employeur_home.status.${offre.status}`)}
+                            </span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div className="flex items-start gap-3">
@@ -148,6 +212,7 @@ export default function ProfileEmployeur() {
                                 </div>
                             </div>
                         </div>
+
                         <div className="space-y-4 bg-gray-50/50 rounded-xl p-5 border border-gray-100">
                             <div>
                                 <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">

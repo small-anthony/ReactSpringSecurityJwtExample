@@ -300,6 +300,13 @@
     "title": "Mes offres de stage",
     "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
+    "tabs": {
+      "all": "Toutes mes offres",
+      "pending": "En attente",
+      "accepted": "Acceptées",
+      "refused": "Refusées"
+    },
+    "no_offers_category": "Aucune offre dans cette catégorie.",
     "loading": "Chargement des offres...",
     "no_offers": "Aucune offre de stage n'a encore été créée.",
     "motif_refus": "Motif du refus :",
