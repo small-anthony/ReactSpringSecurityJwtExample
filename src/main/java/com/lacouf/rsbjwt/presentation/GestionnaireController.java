@@ -1,15 +1,17 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
+import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
+import com.lacouf.rsbjwt.service.ContratService;
 import com.lacouf.rsbjwt.service.ConvocationService;
+import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import com.lacouf.rsbjwt.service.GestionnaireService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,17 +21,20 @@ import java.util.List;
 public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
     private final ConvocationService convocationService;
+    private final ContratService contratService;
 
-    public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
+    public GestionnaireController(GestionnaireService gestionnaireService,
+                                  ConvocationService convocationService,
+                                  ContratService contratService) {
         this.gestionnaireService = gestionnaireService;
         this.convocationService = convocationService;
+        this.contratService = contratService;
     }
 
     @PutMapping("/cv/accepter")
     public ResponseEntity<Object> acceptCv(@RequestBody DecisionCvRequest request) {
         try {
             CvDto cvDto = gestionnaireService.accepterCv(request.id());
-
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -40,7 +45,6 @@ public class GestionnaireController {
     public ResponseEntity<Object> refuseCv(@RequestBody DecisionCvRequest request) {
         try {
             CvDto cvDto = gestionnaireService.refuserCv(request.id(), request.message());
-
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

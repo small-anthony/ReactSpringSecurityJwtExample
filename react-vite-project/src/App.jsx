@@ -18,6 +18,7 @@ import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import EtudiantConvocations from "./components/page/EtudiantConvocations.jsx";
 import GestionnaireConvocations from "./components/page/GestionnaireConvocations.jsx";
+import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 
 function App() {
@@ -136,6 +137,15 @@ function App() {
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "GESTIONNAIRE" ? <GestionnaireConvocations /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/contrats"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
                                         <Navigate to="/" />
                         }
                     />

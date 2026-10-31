@@ -22,6 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
+import com.lacouf.rsbjwt.service.ContratService;
+import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
+import com.lacouf.rsbjwt.service.dto.ContratDto;
+import org.springframework.security.core.Authentication;
+
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireControllerTest {
     @Mock

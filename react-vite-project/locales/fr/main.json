@@ -390,6 +390,7 @@
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
     "convocations": "Convocations d'entrevues",
+    "contrats": "Contrats de stage",
     "rapports": "Rapports étudiants"
   },
   "rapports_etudiants": {
@@ -616,6 +617,107 @@
       "applying": "Envoi de la candidature...",
       "apply_success": "Félicitations ! Votre candidature a été transmise à l'employeur avec succès.",
       "apply_error": "Erreur lors de l'envoi de la candidature."
+    }
+  },
+  "contrats": {
+    "title": "Gestion des Contrats de Stage",
+    "subtitle": "Créez les ententes de stage pour les étudiants embauchés et suivez les signatures des trois parties.",
+    "tabs": {
+      "create": "Créer un contrat",
+      "list": "Contrats existants"
+    },
+    "candidature_select": {
+      "label": "Sélectionner une candidature acceptée",
+      "placeholder": "-- Choisissez un étudiant embauché --",
+      "help": "Seuls les étudiants dont la candidature a été acceptée par un employeur sont éligibles.",
+      "student": "Étudiant",
+      "company": "Entreprise",
+      "offer": "Poste / Offre",
+      "matricule": "Matricule",
+      "already_contracted": "Un contrat existe déjà"
+    },
+    "form": {
+      "title": "Termes du contrat de stage",
+      "dates_section": "Période du stage",
+      "dateDebut": "Date de début",
+      "dateFin": "Date de fin",
+      "horaire": "Horaire de travail",
+      "horaire_placeholder": "Ex: Du lundi au vendredi, 9h à 17h (35h/semaine)",
+      "salaire": "Rémunération / Salaire",
+      "salaire_placeholder": "Ex: 22.50$/h ou 800$/semaine",
+      "taches": "Description des tâches et responsabilités",
+      "taches_placeholder": "Détaillez les tâches confiées au stagiaire...",
+      "conditions": "Conditions de travail et avantages",
+      "conditions_placeholder": "Ex: Télétravail hybride (2 jours au bureau), équipement informatique fourni...",
+      "submit": "Créer et envoyer pour signature",
+      "submitting": "Création en cours..."
+    },
+    "status": {
+      "label": "Statut",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
+      "SIGNE_PAR_EMPLOYEUR": "Signé par l'employeur",
+      "SIGNE_PAR_ETUDIANT": "Signé par l'étudiant",
+      "COMPLETE": "Complété (signé par tous)",
+      "REFUSE": "Refusé"
+    },
+    "signatures": {
+      "student": "Étudiant",
+      "employer": "Employeur",
+      "manager": "Gestionnaire",
+      "signed": "Signé",
+      "waiting": "En attente"
+    },
+    "alerts": {
+      "success_created": "Contrat de stage créé avec succès ! Les trois parties (employeur, étudiant et gestionnaire) ont été notifiées pour signature.",
+      "error_missing_fields": "Des informations obligatoires manquent dans le contrat.",
+      "error_date_order": "La date de fin ne peut pas être antérieure à la date de début.",
+      "error_download": "Erreur lors du téléchargement du contrat.",
+      "error_open": "Erreur lors de l'ouverture du document du contrat.",
+      "error_load": "Erreur lors du chargement des données.",
+      "error_not_hired": "L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.",
+      "error_already_exists": "Un contrat existe déjà pour cet étudiant et cet employeur.",
+      "no_accepted_candidates": "Aucune candidature acceptée en attente de contrat pour le moment.",
+      "no_contracts": "Aucun contrat créé pour le moment."
+    },
+    "actions": {
+      "refresh": "Actualiser",
+      "close": "Fermer",
+      "contract_number": "Contrat #"
+    },
+    "table": {
+      "id": "#",
+      "student": "Étudiant",
+      "company": "Entreprise",
+      "position": "Poste",
+      "dates": "Période",
+      "salary": "Salaire",
+      "status": "Statut",
+      "signatures": "Signatures",
+      "actions": "Actions",
+      "download": "Télécharger l'entente",
+      "view": "Détails"
+    },
+    "stats": {
+      "total": "Total contrats",
+      "pending": "Contrats en attente",
+      "partial": "Partiellement signé",
+      "completed": "Complétés"
+    },
+    "filter": {
+      "all": "Tous les contrats",
+      "pending": "En attente",
+      "completed": "Complétés",
+      "search_placeholder": "Rechercher par étudiant, entreprise ou poste..."
+    },
+    "view": {
+      "cards": "Cartes",
+      "table": "Tableau"
+    },
+    "hero_pending": {
+      "title": "Contrat(s) en attente de signatures",
+      "badge": "Action requise",
+      "desc": "Les trois signataires (étudiant, employeur et gestionnaire) ont été notifiés. Le contrat sera automatiquement complété dès la réception des 3 signatures.",
+      "progress_label": "Progression des signatures"
     }
   }
 }
