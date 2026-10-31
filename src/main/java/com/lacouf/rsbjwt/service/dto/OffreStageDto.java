@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,21 +27,21 @@ public record OffreStageDto(
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                null, null, null, null, List.of(), LocalDate.now().getYear());
+                null, null, null, null, List.of(), AcademicSessionUtils.getAnneeActuelle());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          List<CandidatureDto> candidatures) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                null, null, null, null, candidatures, LocalDate.now().getYear());
+                null, null, null, null, candidatures, AcademicSessionUtils.getAnneeActuelle());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          String discipline, String salaire, String duree, String exigences) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, List.of(), LocalDate.now().getYear());
+                discipline, salaire, duree, exigences, List.of(), AcademicSessionUtils.getAnneeActuelle());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
@@ -48,7 +49,7 @@ public record OffreStageDto(
                          String discipline, String salaire, String duree, String exigences,
                          List<CandidatureDto> candidatures) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, candidatures, LocalDate.now().getYear());
+                discipline, salaire, duree, exigences, candidatures, AcademicSessionUtils.getAnneeActuelle());
     }
 
     public static OffreStageDto create(OffreStage offreStage) {
