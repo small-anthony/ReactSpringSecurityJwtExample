@@ -37,7 +37,15 @@ export async function getContratDocumentBlob(id, authHeader) {
 }
 
 export async function signerContrat(id, signatureData, authHeader) {
-    const response = await APIHelper.post_raw(`/contrats/${id}/signature`, authHeader, signatureData);
+    const response = await APIHelper.post_raw(`/contrats/${id}/signer`, authHeader, signatureData);
+    if (!response.ok) {
+        throw new Error(await response.text() || "Erreur interne");
+    }
+    return response.json();
+}
+
+export async function rejeterContrat(id, authHeader) {
+    const response = await APIHelper.post(`/contrats/${id}/rejeter`, authHeader);
     if (!response.ok) {
         throw new Error(await response.text() || "Erreur interne");
     }

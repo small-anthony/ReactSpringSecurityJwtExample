@@ -55,7 +55,7 @@ public class ContratController {
 		}
 	}
 
-	@PostMapping("/{id}/signature")
+	@PostMapping("/{id}/signer")
 	public ResponseEntity<DataTransferObject> signerContrat(@PathVariable Long id, @RequestBody MultipartFile signature, Authentication authentication) {
 		try {
 			String email = authentication != null ? authentication.getName() : null;
