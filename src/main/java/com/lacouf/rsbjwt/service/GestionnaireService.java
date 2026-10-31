@@ -121,28 +121,52 @@ public class GestionnaireService {
                 .map(RapportEtudiantDto::create)
                 .toList();
     }
+
     public List<RapportEtudiantDto> getEtudiantsSansConvocation() {
-        return etudiantRepository.findEtudiantsSansConvocation()
+        return getEtudiantsSansConvocation(null);
+    }
+
+    public List<RapportEtudiantDto> getEtudiantsSansConvocation(Integer annee) {
+        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
+        return etudiantRepository.findEtudiantsSansConvocation(anneeCible)
                 .stream()
-                .map(RapportEtudiantDto::create)
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
                 .toList();
     }
+
     public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue() {
-        return etudiantRepository.findEtudiantsEnAttenteEntrevue()
+        return getEtudiantsEnAttenteEntrevue(null);
+    }
+
+    public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue(Integer annee) {
+        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
+        return etudiantRepository.findEtudiantsEnAttenteEntrevue(anneeCible)
                 .stream()
-                .map(RapportEtudiantDto::create)
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
                 .toList();
     }
+
     public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse() {
-        return etudiantRepository.findEtudiantsEnAttenteReponse()
+        return getEtudiantsEnAttenteReponse(null);
+    }
+
+    public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse(Integer annee) {
+        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
+        return etudiantRepository.findEtudiantsEnAttenteReponse(anneeCible)
                 .stream()
-                .map(RapportEtudiantDto::create)
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
                 .toList();
     }
+
     public List<RapportEtudiantDto> getEtudiantsTrouveStage() {
-        return etudiantRepository.findEtudiantsTrouveStage()
+        return getEtudiantsTrouveStage(null);
+    }
+
+    public List<RapportEtudiantDto> getEtudiantsTrouveStage(Integer annee) {
+        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
+        return etudiantRepository.findEtudiantsTrouveStage(anneeCible)
                 .stream()
-                .map(RapportEtudiantDto::create)
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
                 .toList();
     }
 }

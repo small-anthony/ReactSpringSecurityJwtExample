@@ -22,39 +22,44 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         SELECT DISTINCT e FROM Etudiant e
         LEFT JOIN FETCH e.candidatures c
         WHERE e.id NOT IN (
-            SELECT DISTINCT c2.etudiant.id FROM Candidature c2 JOIN c2.convocations conv
+            SELECT DISTINCT c2.etudiant.id FROM Candidature c2 
+            JOIN c2.convocations conv
+            WHERE c2.offreStage.annee = :annee
         )
     """)
-    List<Etudiant> findEtudiantsSansConvocation();
+    List<Etudiant> findEtudiantsSansConvocation(@Param("annee") int annee);
 
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
         JOIN c.convocations conv
         WHERE conv.statut = StatutConvocation.EN_ATTENTE
+        AND c.offreStage.annee = :annee
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
             WHERE c2.statut = StatutCandidature.ACCEPTEE
+            AND c2.offreStage.annee = :annee
         )
     """)
-    List<Etudiant> findEtudiantsEnAttenteEntrevue();
+    List<Etudiant> findEtudiantsEnAttenteEntrevue(@Param("annee") int annee);
 
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
         WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
+        AND c.offreStage.annee = :annee
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
             WHERE c2.statut = StatutCandidature.ACCEPTEE
+            AND c2.offreStage.annee = :annee
         )
     """)
-    List<Etudiant> findEtudiantsEnAttenteReponse();
-
+    List<Etudiant> findEtudiantsEnAttenteReponse(@Param("annee") int annee);
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
         WHERE c.statut = StatutCandidature.ACCEPTEE
+        AND c.offreStage.annee = :annee
     """)
-    List<Etudiant> findEtudiantsTrouveStage();
-
+    List<Etudiant> findEtudiantsTrouveStage(@Param("annee") int annee);
 }
