@@ -2,13 +2,18 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ContratRepository;
+import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -20,11 +25,13 @@ public class ContratService {
 
     private final ContratRepository contratRepository;
     private final CandidatureRepository candidatureRepository;
+    private final UserAppRepository userAppRepository;
 
     public ContratService(ContratRepository contratRepository,
-                          CandidatureRepository candidatureRepository) {
+                          CandidatureRepository candidatureRepository, UserAppRepository userAppRepository) {
         this.contratRepository = contratRepository;
         this.candidatureRepository = candidatureRepository;
+        this.userAppRepository = userAppRepository;
     }
 
     @Transactional(readOnly = true)
@@ -99,6 +106,24 @@ public class ContratService {
         Contrat contratSauvegarde = contratRepository.save(contrat);
 
         return toDto(contratSauvegarde);
+    }
+
+    @Transactional()
+    public ContratDto signerContrat(Long contratId, String actorEmail, MultipartFile signatureFile)
+        throws AuthenticationException, UserNotFoundException, Exception {
+        UserApp utilisateur = userAppRepository.findUserAppByEmail(actorEmail)
+                .orElseThrow(UserNotFoundException::new);
+
+        Contrat contrat = contratRepository.findById(contratId)
+                .orElseThrow(Exception::new);
+
+        byte[] signatureData = signatureFile.getBytes();
+        Signature<?> signature = new Signature<>(utilisateur, signatureData);
+
+        contrat.signer(signature);
+        contrat = contratRepository.save(contrat);
+
+        return toDto(contrat);
     }
 
     @Transactional(readOnly = true)

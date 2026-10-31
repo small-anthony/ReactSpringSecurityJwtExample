@@ -90,70 +90,53 @@ public class Contrat {
 		this.conditions = conditions;
 	}
 
-	public void signAsEtudiant(Signature<Etudiant> signature) throws Exception {
-		if(signatureEtudiant != null) {
-			ThrowExistingSignatureException();
-		}
-
+	public void signer(Signature<?> signature) throws Exception {
 		if(!signature.isValid()) {
 			ThrowInvalidSignatureException();
 		}
 
-		signatureEtudiant = signature;
+		setSignature(signature);
 		evaluerStatut();
 	}
 
-	public void rejectAsEtudiant(Etudiant etudiant) throws Exception {
-		if(signatureEtudiant != null) {
-			ThrowExistingSignatureException();
-		}
-
-		signatureEtudiant = Signature.invalid(etudiant);
+	public void rejeter(UserApp user) throws Exception {
+		setSignature(Signature.invalid(user));
 		this.statut = StatutContrat.REFUSE;
 	}
 
-	public void signAsEmployeur(Signature<Employeur> signature) throws Exception {
-		if(signatureEmployeur != null) {
-			ThrowExistingSignatureException();
+	@SuppressWarnings("unchecked")
+	private void setSignature(Signature<?> signature) throws Exception {
+		switch(signature.getSignataire()) {
+			case Etudiant _ -> {
+				Signature<Etudiant> sig = (Signature<Etudiant>) signature;
+				validateSigner(signatureEtudiant, sig, getEtudiant());
+				signatureEtudiant = sig;
+			}
+			case Employeur _ -> {
+				Signature<Employeur> sig = (Signature<Employeur>) signature;
+				validateSigner(signatureEmployeur, sig, getEmployeur());
+				signatureEmployeur = sig;
+			}
+			case Gestionnaire _ -> {
+				Signature<Gestionnaire> sig = (Signature<Gestionnaire>) signature;
+				validateSigner(signatureGestionnaire);
+				signatureGestionnaire = sig;
+			}
+			default -> throw new Exception("signataire inconnu");
 		}
-
-		if(!signature.isValid()) {
-			ThrowInvalidSignatureException();
-		}
-
-		signatureEmployeur = signature;
-		evaluerStatut();
 	}
 
-	public void rejectAsEmployeur(Employeur employeur) throws Exception {
-		if(signatureEmployeur != null) {
+	private <User extends UserApp> void validateSigner(Signature<User> existing) throws Exception {
+		if(existing != null) {
 			ThrowExistingSignatureException();
 		}
-
-		signatureEmployeur = Signature.invalid(employeur);
-		this.statut = StatutContrat.REFUSE;
 	}
 
-	public void signAsGestionnaire(Signature<Gestionnaire> signature) throws Exception {
-		if(signatureGestionnaire != null) {
-			ThrowExistingSignatureException();
+	private <User extends UserApp> void validateSigner(Signature<User> existing, Signature<User> adding, User involved) throws Exception {
+		validateSigner(existing);
+		if(!involved.getId().equals(adding.getSignataire().getId())) {
+			ThrowUninvolvedUserException();
 		}
-
-		if(!signature.isValid()) {
-			ThrowInvalidSignatureException();
-		}
-
-		signatureGestionnaire = signature;
-		evaluerStatut();
-	}
-
-	public void rejectAsGestionnaire(Gestionnaire gestionnaire) throws Exception {
-		if(signatureGestionnaire != null) {
-			ThrowExistingSignatureException();
-		}
-
-		signatureGestionnaire = Signature.invalid(gestionnaire);
-		this.statut = StatutContrat.REFUSE;
 	}
 
 	private void evaluerStatut() {
@@ -254,5 +237,9 @@ public class Contrat {
 
 	private void ThrowInvalidSignatureException() throws Exception {
 		throw new Exception("signature est invalide");
+	}
+
+	private void ThrowUninvolvedUserException() throws Exception {
+		throw new Exception("signataire est invalide");
 	}
 }
