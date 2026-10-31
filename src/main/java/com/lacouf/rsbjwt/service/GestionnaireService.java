@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -104,7 +105,7 @@ public class GestionnaireService {
 
     public List<Integer> getAnneesDisponibles() {
         Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
-        annees.add(LocalDate.now().getYear());
+        annees.add(AcademicSessionUtils.getAnneeActuelle());
         annees.addAll(offreStageRepository.findDistinctAnnees());
         return new ArrayList<>(annees);
     }

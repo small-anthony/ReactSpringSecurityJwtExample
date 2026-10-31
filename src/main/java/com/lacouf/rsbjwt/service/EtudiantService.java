@@ -14,6 +14,7 @@ import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -92,7 +93,7 @@ public class EtudiantService {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
 
-        int anneeActuelle = LocalDate.now().getYear();
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
         if (offre.getAnnee() != anneeActuelle) {
             throw new Exception("Cette offre n'est plus disponible pour l'année en cours");
@@ -111,7 +112,7 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Etudiant non trouvé"));
 
-        int anneeActuelle = LocalDate.now().getYear();
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
         List<OffreStage> offre = offreStageRepository.findByEtudiantAndAnnee(etudiant, anneeActuelle);
 
@@ -141,7 +142,7 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        int anneeActuelle = LocalDate.now().getYear();
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
         List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, anneeActuelle);
 

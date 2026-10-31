@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.repository.EmployeurRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -120,7 +121,7 @@ public class EmployeurService {
 
         Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
 
-        annees.add(LocalDate.now().getYear());
+        annees.add(AcademicSessionUtils.getAnneeActuelle());
 
         annees.addAll(offreStageRepository.findDistinctAnneesByEmployeur(employeur));
 
