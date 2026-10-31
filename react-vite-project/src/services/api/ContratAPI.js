@@ -29,7 +29,9 @@ export async function getTousLesContrats(authHeader) {
 }
 
 export async function getContratDocumentBlob(id, authHeader) {
-    const response = await fetch(`/contrats/${id}/document`, authHeader);
+    const response = await fetch(`${BASE_URL}/contrats/${id}/document`, {
+        headers: authHeader,
+    });
     if (!response.ok) {
         throw new Error("Impossible de télécharger le document du contrat");
     }

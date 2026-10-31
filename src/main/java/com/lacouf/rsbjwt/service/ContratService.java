@@ -28,7 +28,7 @@ public class ContratService {
     private final UserAppRepository userAppRepository;
 
     public ContratService(ContratRepository contratRepository,
-                          CandidatureRepository candidatureRepository, UserAppRepository userAppRepository) {
+            CandidatureRepository candidatureRepository, UserAppRepository userAppRepository) {
         this.contratRepository = contratRepository;
         this.candidatureRepository = candidatureRepository;
         this.userAppRepository = userAppRepository;
@@ -39,25 +39,7 @@ public class ContratService {
         List<Candidature> candidaturesAcceptees = candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE);
         return candidaturesAcceptees.stream().map(c -> {
             Optional<Contrat> contratOpt = contratRepository.findByCandidatureId(c.getId());
-            Etudiant etudiant = c.getEtudiant();
-            OffreStage offre = c.getOffreStage();
-            Employeur employeur = offre != null ? offre.getEmployeur() : null;
-
-            return new CandidaturePourContratDto(
-                    c.getId(),
-                    offre != null ? offre.getId() : null,
-                    offre != null ? offre.getTitre() : "N/A",
-                    employeur != null ? employeur.getEntreprise() : "N/A",
-                    employeur != null ? (employeur.getFirstName() + " " + employeur.getLastName()) : "N/A",
-                    employeur != null ? employeur.getEmail() : "N/A",
-                    etudiant != null ? etudiant.getId() : null,
-                    etudiant != null ? etudiant.getLastName() : "N/A",
-                    etudiant != null ? etudiant.getFirstName() : "N/A",
-                    etudiant != null ? etudiant.getEmail() : "N/A",
-                    etudiant != null ? etudiant.getMatricule() : 0,
-                    contratOpt.isPresent(),
-                    contratOpt.map(Contrat::getId).orElse(null)
-            );
+            return CandidaturePourContratDto.create(c, contratOpt);
         }).collect(Collectors.toList());
     }
 
@@ -80,7 +62,8 @@ public class ContratService {
         }
 
         Candidature candidature = candidatureRepository.findById(request.candidatureId())
-                .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
+                .orElseThrow(
+                        () -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
         if (candidature.getStatut() != StatutCandidature.ACCEPTEE) {
             throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
@@ -100,17 +83,16 @@ public class ContratService {
                 request.horaire().trim(),
                 request.salaire().trim(),
                 request.descriptionTaches().trim(),
-                request.conditions().trim()
-        );
+                request.conditions().trim());
 
         Contrat contratSauvegarde = contratRepository.save(contrat);
 
-        return toDto(contratSauvegarde);
+        return ContratDto.create(contratSauvegarde);
     }
 
     @Transactional()
     public ContratDto signerContrat(Long contratId, String actorEmail, MultipartFile signatureFile)
-        throws AuthenticationException, UserNotFoundException, Exception {
+            throws AuthenticationException, UserNotFoundException, Exception {
         UserApp utilisateur = userAppRepository.findUserAppByEmail(actorEmail)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -123,21 +105,19 @@ public class ContratService {
         contrat.signer(signature);
         contrat = contratRepository.save(contrat);
 
-        return toDto(contrat);
+        return ContratDto.create(contrat);
     }
 
     @Transactional(readOnly = true)
     public List<ContratDto> getTousLesContrats() {
-        return contratRepository.findAllByOrderByDateCreationDesc().stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        return ContratDto.create(contratRepository.findAllByOrderByDateCreationDesc());
     }
 
     @Transactional(readOnly = true)
     public ContratDto getContratById(Long id) throws Exception {
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new Exception("Contrat introuvable avec l'identifiant : " + id));
-        return toDto(contrat);
+        return ContratDto.create(contrat);
     }
 
     @Transactional(readOnly = true)
@@ -149,16 +129,12 @@ public class ContratService {
 
     @Transactional(readOnly = true)
     public List<ContratDto> getContratsEtudiant(String email) {
-        return contratRepository.findByCandidatureEtudiantEmail(email).stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        return ContratDto.create(contratRepository.findByCandidatureEtudiantEmail(email));
     }
 
     @Transactional(readOnly = true)
     public List<ContratDto> getContratsEmployeur(String email) {
-        return contratRepository.findByCandidatureOffreStageEmployeurEmail(email).stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        return ContratDto.create(contratRepository.findByCandidatureOffreStageEmployeurEmail(email));
     }
 
     private byte[] genererContratDocument(Candidature candidature, CreationContratRequest request) {
@@ -171,10 +147,14 @@ public class ContratService {
         sb.append("                         ENTENTE DE STAGE / CONTRAT DE STAGE                    \n");
         sb.append("================================================================================\n\n");
         sb.append("1. PARTIES IMPLIQUÉES :\n");
-        sb.append("   - ÉTUDIANT(E) : ").append(etudiant != null ? etudiant.getFirstName() + " " + etudiant.getLastName() : "N/A");
-        sb.append(" (Matricule: ").append(etudiant != null ? etudiant.getMatricule() : 0).append(", Email: ").append(etudiant != null ? etudiant.getEmail() : "N/A").append(")\n");
+        sb.append("   - ÉTUDIANT(E) : ")
+                .append(etudiant != null ? etudiant.getFirstName() + " " + etudiant.getLastName() : "N/A");
+        sb.append(" (Matricule: ").append(etudiant != null ? etudiant.getMatricule() : 0).append(", Email: ")
+                .append(etudiant != null ? etudiant.getEmail() : "N/A").append(")\n");
         sb.append("   - EMPLOYEUR : ").append(employeur != null ? employeur.getEntreprise() : "N/A");
-        sb.append(" (Représentant: ").append(employeur != null ? employeur.getFirstName() + " " + employeur.getLastName() : "N/A").append(", Email: ").append(employeur != null ? employeur.getEmail() : "N/A").append(")\n");
+        sb.append(" (Représentant: ")
+                .append(employeur != null ? employeur.getFirstName() + " " + employeur.getLastName() : "N/A")
+                .append(", Email: ").append(employeur != null ? employeur.getEmail() : "N/A").append(")\n");
         sb.append("   - COLLÈGE : Cégep André-Laurendeau - Gestion des stages\n\n");
         sb.append("2. POSTE ET OFFRE DE STAGE :\n");
         sb.append("   - Titre du stage : ").append(offre != null ? offre.getTitre() : "N/A").append("\n");
@@ -192,40 +172,5 @@ public class ContratService {
         sb.append("================================================================================\n");
 
         return sb.toString().getBytes(StandardCharsets.UTF_8);
-    }
-
-    private ContratDto toDto(Contrat c) {
-        Etudiant etudiant = c.getEtudiant();
-        Employeur employeur = c.getEmployeur();
-        OffreStage offre = c.getOffreStage();
-
-        boolean signeEtudiant = c.getSignatureEtudiant() != null && c.getSignatureEtudiant().isValid();
-        boolean signeEmployeur = c.getSignatureEmployeur() != null && c.getSignatureEmployeur().isValid();
-        boolean signeGestionnaire = c.getSignatureGestionnaire() != null && c.getSignatureGestionnaire().isValid();
-
-        return new ContratDto(
-                c.getId(),
-                c.getCandidature() != null ? c.getCandidature().getId() : null,
-                offre != null ? offre.getId() : null,
-                offre != null ? offre.getTitre() : "N/A",
-                employeur != null ? employeur.getEntreprise() : "N/A",
-                employeur != null ? (employeur.getFirstName() + " " + employeur.getLastName()) : "N/A",
-                employeur != null ? employeur.getEmail() : "N/A",
-                etudiant != null ? etudiant.getLastName() : "N/A",
-                etudiant != null ? etudiant.getFirstName() : "N/A",
-                etudiant != null ? etudiant.getEmail() : "N/A",
-                etudiant != null ? etudiant.getMatricule() : 0,
-                c.getDateDebut(),
-                c.getDateFin(),
-                c.getHoraire(),
-                c.getSalaire(),
-                c.getDescriptionTaches(),
-                c.getConditions(),
-                c.getStatut(),
-                c.getDateCreation(),
-                signeEtudiant,
-                signeEmployeur,
-                signeGestionnaire
-        );
     }
 }
