@@ -15,6 +15,7 @@ import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -325,7 +326,7 @@ public class EtudiantServiceTest {
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                         .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, LocalDate.now().getYear())).thenReturn(List.of(offre));
+                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, AcademicSessionUtils.getAnneeActuelle())).thenReturn(List.of(offre));
 
                 // ACT
                 List<OffreStageDto> resultat = etudiantService.getMesCandidatures("test@gmail.com");
@@ -345,7 +346,7 @@ public class EtudiantServiceTest {
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                         .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, LocalDate.now().getYear())).thenReturn(List.of());
+                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, AcademicSessionUtils.getAnneeActuelle())).thenReturn(List.of());
 
                 // ACT
                 List<OffreStageDto> resultat = etudiantService.getMesCandidatures("test@gmail.com");
@@ -394,7 +395,7 @@ public class EtudiantServiceTest {
                 when(userAppRepository.findUserAppByEmail("test@gmail.com"))
                                 .thenReturn(Optional.of(etudiant));
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
-                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, LocalDate.now().getYear())).thenReturn(List.of(offre));
+                when(offreStageRepository.findByEtudiantAndAnnee(etudiant, AcademicSessionUtils.getAnneeActuelle())).thenReturn(List.of(offre));
 
                 // ACT
                 List<OffreStageDto> resultat = etudiantService.getMesCandidatures("test@gmail.com");
@@ -468,7 +469,7 @@ public class EtudiantServiceTest {
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
-                when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, LocalDate.now().getYear()))
+                when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, AcademicSessionUtils.getAnneeActuelle()))
                                 .thenReturn(List.of(offrePublique));
 
                 // ACT
@@ -497,7 +498,7 @@ public class EtudiantServiceTest {
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
-                when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, LocalDate.now().getYear()))
+                when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, AcademicSessionUtils.getAnneeActuelle()))
                                 .thenReturn(List.of(offrePublique));
 
                 // ACT
