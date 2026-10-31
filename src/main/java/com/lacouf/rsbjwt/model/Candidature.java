@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"etudiant_id", "offre_stage_id"}))
 public class Candidature {
+    public Candidature() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +37,8 @@ public class Candidature {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Convocation> convocations = new ArrayList<>();
 
-    public Candidature() {}
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private Contrat contrat = null;
 
     public Candidature(Etudiant etudiant, OffreStage offreStage) {
         this.etudiant = etudiant;
@@ -60,9 +62,16 @@ public class Candidature {
     public List<Convocation> getConvocations() {
         return convocations;
     }
-
     public void addConvocation(Convocation convocation) {
         convocation.setCandidature(this);
         convocations.add(convocation);
+    }
+
+    public Contrat getContrat() {
+        return contrat;
+    }
+    public void setContrat(Contrat contrat) {
+        this.contrat = contrat;
+        contrat.setCandidature(this);
     }
 }

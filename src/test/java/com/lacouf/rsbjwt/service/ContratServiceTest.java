@@ -69,8 +69,7 @@ public class ContratServiceTest {
     @Test
     void creerContrat_succes() throws Exception {
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
-        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
-        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(candidatureRepository.save(any(Candidature.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ContratDto result = contratService.creerContrat(requestValide, "alice@college.ca");
 
@@ -82,7 +81,7 @@ public class ContratServiceTest {
         assertThat(result.statut()).isEqualTo(StatutContrat.EN_ATTENTE_SIGNATURE);
         assertThat(result.salaire()).isEqualTo("22.50$/h");
 
-        verify(contratRepository, times(1)).save(any(Contrat.class));
+        verify(candidatureRepository, times(1)).save(any(Candidature.class));
     }
 
     @Test
@@ -161,14 +160,23 @@ public class ContratServiceTest {
 
     @Test
     void creerContrat_contratExisteDeja_doitLancerException() {
+        candidature.setContrat(new Contrat(
+                candidature,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        ));
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
-        when(contratRepository.existsByCandidatureId(1L)).thenReturn(true);
 
         assertThatThrownBy(() -> contratService.creerContrat(requestValide, "admin@college.ca"))
                 .isInstanceOf(Exception.class)
-                .hasMessage("Un contrat existe déjà pour cet étudiant et cet employeur.");
+                .hasMessage("La candidature possède déjà un contrat.");
 
-        verify(contratRepository, never()).save(any());
+        verify(candidatureRepository, never()).save(any());
     }
 
     @Test

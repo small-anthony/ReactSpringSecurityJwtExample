@@ -22,7 +22,7 @@ public class Contrat {
 	@Column(name = "document_data", nullable = false)
 	private byte[] data;
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "candidature_id")
 	private Candidature candidature;
 

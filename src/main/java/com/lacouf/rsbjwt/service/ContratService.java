@@ -87,8 +87,8 @@ public class ContratService {
             throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
         }
 
-        if (contratRepository.existsByCandidatureId(candidature.getId())) {
-            throw new Exception("Un contrat existe déjà pour cet étudiant et cet employeur.");
+        if (candidature.getContrat() != null) {
+            throw new Exception("La candidature possède déjà un contrat.");
         }
 
         byte[] documentData = genererContratDocument(candidature, request);
@@ -104,9 +104,11 @@ public class ContratService {
                 request.conditions().trim()
         );
 
-        Contrat contratSauvegarde = contratRepository.save(contrat);
+        candidature.setContrat(contrat);
+        candidature = candidatureRepository.save(candidature);
+        Contrat contratSauvegarde = candidature.getContrat();
 
-        return toDto(contratSauvegarde);
+        return ContratDto.create(contratSauvegarde);
     }
 
     @Transactional()
@@ -124,7 +126,7 @@ public class ContratService {
         contrat.signer(signature);
         contrat = contratRepository.save(contrat);
 
-        return toDto(contrat);
+        return ContratDto.create(contrat);
     }
 
     @Transactional()
@@ -140,13 +142,13 @@ public class ContratService {
         contrat.rejeter(utilisateur);
         contrat = contratRepository.save(contrat);
 
-        return toDto(contrat);
+        return ContratDto.create(contrat);
     }
 
     @Transactional(readOnly = true)
     public List<ContratDto> getTousLesContrats() {
         return contratRepository.findAllByOrderByDateCreationDesc().stream()
-                .map(this::toDto)
+                .map(ContratDto::create)
                 .collect(Collectors.toList());
     }
 
@@ -154,7 +156,7 @@ public class ContratService {
     public ContratDto getContratById(Long id) throws Exception {
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new Exception("Contrat introuvable avec l'identifiant : " + id));
-        return toDto(contrat);
+        return ContratDto.create(contrat);
     }
 
     @Transactional(readOnly = true)
@@ -167,14 +169,14 @@ public class ContratService {
     @Transactional(readOnly = true)
     public List<ContratDto> getContratsEtudiant(String email) {
         return contratRepository.findByCandidatureEtudiantEmail(email).stream()
-                .map(this::toDto)
+                .map(ContratDto::create)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<ContratDto> getContratsEmployeur(String email) {
         return contratRepository.findByCandidatureOffreStageEmployeurEmail(email).stream()
-                .map(this::toDto)
+                .map(ContratDto::create)
                 .collect(Collectors.toList());
     }
 
@@ -209,40 +211,5 @@ public class ContratService {
         sb.append("================================================================================\n");
 
         return sb.toString().getBytes(StandardCharsets.UTF_8);
-    }
-
-    private ContratDto toDto(Contrat c) {
-        Etudiant etudiant = c.getEtudiant();
-        Employeur employeur = c.getEmployeur();
-        OffreStage offre = c.getOffreStage();
-
-        boolean signeEtudiant = c.getSignatureEtudiant() != null && c.getSignatureEtudiant().isValid();
-        boolean signeEmployeur = c.getSignatureEmployeur() != null && c.getSignatureEmployeur().isValid();
-        boolean signeGestionnaire = c.getSignatureGestionnaire() != null && c.getSignatureGestionnaire().isValid();
-
-        return new ContratDto(
-                c.getId(),
-                c.getCandidature() != null ? c.getCandidature().getId() : null,
-                offre != null ? offre.getId() : null,
-                offre != null ? offre.getTitre() : "N/A",
-                employeur != null ? employeur.getEntreprise() : "N/A",
-                employeur != null ? (employeur.getFirstName() + " " + employeur.getLastName()) : "N/A",
-                employeur != null ? employeur.getEmail() : "N/A",
-                etudiant != null ? etudiant.getLastName() : "N/A",
-                etudiant != null ? etudiant.getFirstName() : "N/A",
-                etudiant != null ? etudiant.getEmail() : "N/A",
-                etudiant != null ? etudiant.getMatricule() : 0,
-                c.getDateDebut(),
-                c.getDateFin(),
-                c.getHoraire(),
-                c.getSalaire(),
-                c.getDescriptionTaches(),
-                c.getConditions(),
-                c.getStatut(),
-                c.getDateCreation(),
-                signeEtudiant,
-                signeEmployeur,
-                signeGestionnaire
-        );
     }
 }
