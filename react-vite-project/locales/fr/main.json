@@ -212,6 +212,7 @@
     },
     "errorPrefix": "Erreur : ",
     "successPrefix": "Succès : ",
+    "successTitle": "Offre créée avec succès",
     "success": "Votre offre de stage a été créée avec succès !",
     "submit": "Créer l'offre",
     "submitting": "Création en cours..."
@@ -299,20 +300,33 @@
     "title": "Mes offres de stage",
     "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
+    "tabs": {
+      "all": "Toutes mes offres",
+      "pending": "En attente",
+      "accepted": "Acceptées",
+      "refused": "Refusées"
+    },
+    "no_offers_category": "Aucune offre dans cette catégorie.",
     "loading": "Chargement des offres...",
     "no_offers": "Aucune offre de stage n'a encore été créée.",
     "motif_refus": "Motif du refus :",
     "status": {
-      "EN_ATTENTE": "En attente",
-      "ACCEPTE": "Acceptée",
+      "EN_ATTENTE": "En attente d'approbation par le gestionnaire",
+      "ACCEPTE": "Offre approuvée",
       "ACCEPTEE": "Acceptée",
-      "REFUSE": "Refusée",
+      "REFUSE": "Offre refusée",
       "REFUSEE": "Refusée"
     },
     "view_candidates": "Voir les candidatures",
     "edit_offer": "Modifier",
     "edit_error": "Erreur lors de la modification de l'offre.",
+    "modal_edit_success_title": "Offre modifiée",
+    "modal_edit_success_message": "Les modifications de l'offre ont été enregistrées avec succès.",
     "delete_offer": "Supprimer",
+    "delete_confirm_title": "Confirmer la suppression",
+    "delete_confirm_message": "Êtes-vous certain de vouloir supprimer cette offre? Cette action est irréversible.",
+    "delete_success_title": "Offre supprimée",
+    "delete_success": "L'offre a été supprimée avec succès.",
     "delete_error": "Erreur lors de la suppression de l'offre.",
     "modal_edit_title": "Modifier l'offre",
     "save": "Enregistrer",
@@ -336,6 +350,10 @@
       "EN_ATTENTE_REPONSE": "En attente de réponse"
     },
     "accept": "Accepter la candidature",
+    "accept_success_title": "Candidature acceptée",
+    "accept_success": "La candidature a été acceptée avec succès.",
+    "confirm_accept": "Confirmer l'acceptation",
+    "confirm_accept_question": "Voulez-vous accepter cette candidature?",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
@@ -481,6 +499,11 @@
   },
   "approbation": {
     "cvs": {
+      "modal_approve": {
+        "title": "Approuver le CV",
+        "description": "Êtes-vous certain de vouloir approuver le CV?",
+        "confirm": "Approuver l'approbation"
+      },
       "errors": {
         "fetch": "Erreur lors de la récupération des CVs.",
         "approve": "Erreur lors de l'approbation du CV.",
@@ -500,7 +523,8 @@
       "confirm": "Confirmer le refus",
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
-      "cvPdf": "CV PDF"
+      "cvPdf": "CV PDF",
+      "accept_success": "Le CV a été approuvé avec succès."
     },
     "offres": {
       "title": "Offres en attente d'approbation",

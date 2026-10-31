@@ -19,9 +19,12 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
 
     useEffect(() => {
         setHasApplied(aPostule);
+    }, [aPostule]);
+
+    useEffect(() => {
         setErrorMessage("");
         setSuccessMessage("");
-    }, [offre, aPostule]);
+    }, [offre?.id]);
 
     if (!offre) return null;
 

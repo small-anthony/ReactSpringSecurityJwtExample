@@ -212,6 +212,7 @@
     },
     "errorPrefix": "Error: ",
     "successPrefix": "Success: ",
+    "successTitle": "Internship Offer Created",
     "success": "Your internship offer has been created successfully!",
     "submit": "Create Offer",
     "submitting": "Creating..."
@@ -299,20 +300,33 @@
     "title": "My internship offers",
     "subtitle": "Manage the offers published by your company.",
     "create_offer": "Create an offer",
+    "tabs": {
+      "all": "All my offers",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "refused": "Refused"
+    },
+    "no_offers_category": "No offers in this category.",
     "loading": "Loading offers...",
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",
     "status": {
-      "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
+      "EN_ATTENTE": "Awaiting coordinator approval",
+      "ACCEPTE": "Offer approved",
       "ACCEPTEE": "Accepted",
-      "REFUSE": "Refused",
+      "REFUSE": " Offer rejected",
       "REFUSEE": "Refused"
     },
     "view_candidates": "View candidates",
     "edit_error": "Error while updating the offer.",
     "edit_offer": "Edit",
+    "modal_edit_success_title": "Offer Updated",
+    "modal_edit_success_message": "The changes to the offer have been saved successfully.",
     "delete_offer": "Delete",
+    "delete_confirm_title": "Confirm Deletion",
+    "delete_confirm_message": "Are you sure you want to delete this offer? This action cannot be undone.",
+    "delete_success_title": "Offer Deleted",
+    "delete_success": "The offer has been successfully deleted.",
     "delete_error": "Error while deleting the offer.",
     "modal_edit_title": "Edit Offer",
     "save": "Save",
@@ -336,6 +350,10 @@
       "EN_ATTENTE_REPONSE": "Awaiting response"
     },
     "accept": "Accept application",
+    "accept_success_title": "Application Accepted",
+    "accept_success": "The student has been invited for an interview.",
+    "confirm_accept": "Confirm acceptance",
+    "confirm_accept_question": "Do you want to accept this application?",
     "refuse": "Reject",
     "refuse_message_label": "Explanatory message (optional)",
     "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",
@@ -481,6 +499,11 @@
   },
   "approbation": {
     "cvs": {
+      "modal_approve": {
+        "title": "Approve Resume",
+        "description": "Are you sure you want to approve the resume?",
+        "confirm": "Confirm Approval"
+      },
       "errors": {
         "fetch": "Error fetching resumes.",
         "approve": "Error approving the resume.",
@@ -500,7 +523,8 @@
       "confirm": "Confirm rejection",
       "nocvs": "No resumes pending approval.",
       "close": "Close",
-      "cvPdf": "PDF resume"
+      "cvPdf": "PDF resume",
+      "accept_success": "The resume has been approved successfully."
     },
     "offres": {
       "title": "Offers pending approval",

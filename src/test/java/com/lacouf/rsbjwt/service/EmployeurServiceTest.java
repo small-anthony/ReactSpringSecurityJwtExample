@@ -182,6 +182,25 @@ public class EmployeurServiceTest {
     }
 
     @Test
+    void getOffres_retourneLesOffresDeLaPlusRecenteALaPlusAncienne() throws Exception {
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+
+        OffreStage ancienne = new OffreStage("Ancienne offre", "Description", "CGI");
+        ancienne.setId(1L);
+        OffreStage recente = new OffreStage("Offre récente", "Description", "CGI");
+        recente.setId(2L);
+        when(offreStageRepository.findWithCandidaturesByEmployeur(employeur))
+                .thenReturn(List.of(ancienne, recente));
+
+        List<OffreStageDto> resultat = employeurService.getOffres(email);
+
+        assertEquals(2, resultat.size());
+        assertEquals("Offre récente", resultat.get(0).titre());
+        assertEquals("Ancienne offre", resultat.get(1).titre());
+    }
+
+    @Test
     void getCandidatures_avecOffreValide_retourneLaListe() throws Exception {
         //ARRANGE
         String email = "employeur@entreprise.com";
