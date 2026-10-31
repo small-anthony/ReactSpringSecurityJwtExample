@@ -92,7 +92,7 @@ public class EmployeurService {
 
         List<OffreStageDto> offres = new ArrayList<>(
                 OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur)));
-        offres.sort(Comparator.comparing(OffreStageDto::id, Comparator.reverseOrder()));
+        offres.sort((a, b) -> Integer.compare(b.id(), a.id()));
         return offres;
     }
 
