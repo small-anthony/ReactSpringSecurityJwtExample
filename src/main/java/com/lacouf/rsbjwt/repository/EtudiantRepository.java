@@ -17,4 +17,44 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
             "LOWER(e.credentials.email) LIKE LOWER(CONCAT('%', :motCle, '%')) OR " +
             "CAST(e.matricule AS string) LIKE CONCAT('%', :motCle, '%')")
     List<Etudiant> rechercherParMotCle(@Param("motCle") String motCle);
+
+    @Query("""
+        SELECT DISTINCT e FROM Etudiant e
+        LEFT JOIN FETCH e.candidatures c
+        WHERE e.id NOT IN (
+            SELECT DISTINCT c2.etudiant.id FROM Candidature c2 JOIN c2.convocations conv
+        )
+    """)
+    List<Etudiant> findEtudiantsSansConvocation();
+
+    @Query("""
+        SELECT DISTINCT e FROM Etudiant e
+        JOIN FETCH e.candidatures c
+        JOIN c.convocations conv
+        WHERE conv.statut = StatutConvocation.EN_ATTENTE
+        AND e.id NOT IN (
+            SELECT c2.etudiant.id FROM Candidature c2
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
+        )
+    """)
+    List<Etudiant> findEtudiantsEnAttenteEntrevue();
+
+    @Query("""
+        SELECT DISTINCT e FROM Etudiant e
+        JOIN FETCH e.candidatures c
+        WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
+        AND e.id NOT IN (
+            SELECT c2.etudiant.id FROM Candidature c2
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
+        )
+    """)
+    List<Etudiant> findEtudiantsEnAttenteReponse();
+
+    @Query("""
+        SELECT DISTINCT e FROM Etudiant e
+        JOIN FETCH e.candidatures c
+        WHERE c.statut = StatutCandidature.ACCEPTEE
+    """)
+    List<Etudiant> findEtudiantsTrouveStage();
+
 }

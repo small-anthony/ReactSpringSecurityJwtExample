@@ -15,11 +15,11 @@ public class Candidature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "etudiant_id")
     private Etudiant etudiant;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "offre_stage_id")
     private OffreStage offreStage;
 
@@ -33,7 +33,7 @@ public class Candidature {
 
     private LocalDateTime dateDecision;
 
-    @OneToMany(mappedBy = "candidature", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "candidature", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Convocation> convocations = new ArrayList<>();
 
     public Candidature() {}
@@ -63,5 +63,9 @@ public class Candidature {
     public void addConvocation(Convocation convocation) {
         convocation.setCandidature(this);
         convocations.add(convocation);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

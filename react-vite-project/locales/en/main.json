@@ -386,10 +386,33 @@
     "button": "Decision history"
   },
   "sidepanel": {
-    "title": "Manager Workspace",
-    "cvs": "Resume Approvals",
+    "title": "Dashboard",
+    "cvs": "CV Approvals",
     "offres": "Offer Approvals",
-    "convocations": "Interview Invitations"
+    "convocations": "Interview Invitations",
+    "rapports": "Student Reports"
+  },
+  "rapports_etudiants": {
+    "title": "Student Reports",
+    "subtitle": "View tracking reports for students registered on the platform.",
+    "select_label": "Report type:",
+    "total": "Total: {{count}} student",
+    "total_plural": "Total: {{count}} students",
+    "loading": "Loading report...",
+    "empty": "No students match this report at the moment.",
+    "error_fetch": "Error loading the report.",
+    "th_student": "Student",
+    "th_matricule": "Student ID",
+    "th_email": "Email",
+    "th_discipline": "Discipline",
+    "th_offers": "Position & Company",
+    "types": {
+      "etudiants-inscrits": "Students registered on the platform",
+      "etudiants-sans-convocation": "Students with no interview invitation",
+      "etudiants-attente-entrevue": "Students waiting for an interview",
+      "etudiants-attente-reponse": "Students waiting for an interview response",
+      "etudiants-trouve-stage": "Students who found an internship"
+    }
   },
   "convocation": {
     "title": "My Interview Invitations",

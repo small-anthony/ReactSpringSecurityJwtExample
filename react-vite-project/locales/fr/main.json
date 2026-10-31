@@ -389,7 +389,30 @@
     "title": "Tableau de bord",
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
-    "convocations": "Convocations d'entrevues"
+    "convocations": "Convocations d'entrevues",
+    "rapports": "Rapports étudiants"
+  },
+  "rapports_etudiants": {
+    "title": "Rapports des étudiants",
+    "subtitle": "Consultez les différents rapports de suivi des étudiants inscrits sur la plateforme.",
+    "select_label": "Type de rapport :",
+    "total": "Total : {{count}} étudiant",
+    "total_plural": "Total : {{count}} étudiants",
+    "loading": "Chargement du rapport...",
+    "empty": "Aucun étudiant ne correspond à ce rapport pour le moment.",
+    "error_fetch": "Erreur lors du chargement du rapport.",
+    "th_student": "Étudiant",
+    "th_matricule": "Matricule",
+    "th_email": "Courriel",
+    "th_discipline": "Discipline",
+    "th_offers": "Poste & Entreprise",
+    "types": {
+      "etudiants-inscrits": "Étudiants inscrits sur la plate-forme",
+      "etudiants-sans-convocation": "Étudiants n'ayant aucune convocation à une entrevue",
+      "etudiants-attente-entrevue": "Étudiants en attente d'entrevue",
+      "etudiants-attente-reponse": "Étudiants en attente d'une réponse d'entrevue",
+      "etudiants-trouve-stage": "Étudiants ayant trouvé un stage"
+    }
   },
   "convocation": {
     "title": "Mes Convocations d'Entrevue",
