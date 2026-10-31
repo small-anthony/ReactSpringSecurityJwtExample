@@ -42,8 +42,12 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
   return response.json();
 }
 
-export async function getOffresStages(authHeader) {
-  const response = await fetch(`${BASE_URL}/employeur/offres`, {
+export async function getOffresStages(authHeader, annee = null) {
+  const url = annee
+      ? `${BASE_URL}/employeur/offres?annee=${annee}`
+      : `${BASE_URL}/employeur/offres`;
+
+  const response = await fetch(url, {
     headers: authHeader,
   });
 
@@ -52,10 +56,8 @@ export async function getOffresStages(authHeader) {
     throw new Error(errorText || "Impossible de charger les offres");
   }
 
-  const json = await response.json();
-  return json;
+  return await response.json();
 }
-
 
 export async function getCandidatures(offreId, authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}/candidatures`, {
@@ -118,8 +120,24 @@ export async function refuserCandidature(candidatureId, message, authHeader) {
   return response.json();
 }
 
-export async function getHistoriqueDecisions(authHeader) {
-  const response = await fetch(`${BASE_URL}/employeur/historique`, {
+export async function getAnneesEmployeur(authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/annees`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return await response.json();
+}
+
+export async function getHistoriqueDecisions(authHeader, annee = null) {
+  const url = annee
+      ? `${BASE_URL}/employeur/historique?annee=${annee}`
+      : `${BASE_URL}/employeur/historique`;
+
+  const response = await fetch(url, {
     headers: authHeader,
   });
 
@@ -131,15 +149,21 @@ export async function getHistoriqueDecisions(authHeader) {
   return response.json();
 }
 
-export const fetchOffresEnAttente = async (authHeader) => {
-  const response = await fetch(`${BASE_URL}/gestionnaire/offre/pending`, {
+export const fetchOffresEnAttente = async (authHeader, annee = null) => {
+  const url = annee
+      ? `${BASE_URL}/gestionnaire/offre/pending?annee=${annee}`
+      : `${BASE_URL}/gestionnaire/offre/pending`;
+
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       ...authHeader,
     }
   });
+
   if (!response.ok) throw new Error("Erreur de récupération");
+
   return response.json();
 };
 
@@ -211,4 +235,16 @@ export async function updateOffreStage(offreData, authHeader) {
     throw new Error(errorText || "Erreur lors de la modification de l'offre");
   }
   return response.json();
+}
+
+export async function getAnneesGestionnaire(authHeader) {
+  const response = await fetch(`${BASE_URL}/gestionnaire/annees`, {
+    headers: authHeader,
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return await response.json();
 }
