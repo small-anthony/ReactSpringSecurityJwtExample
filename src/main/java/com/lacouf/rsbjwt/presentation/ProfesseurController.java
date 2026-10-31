@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +86,7 @@ public class ProfesseurController {
     public ResponseEntity<Object> getAnnees() {
         try {
             Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
-            annees.add(LocalDate.now().getYear());
+            annees.add(AcademicSessionUtils.getAnneeActuelle());
             if (offreStageRepository != null) {
                 annees.addAll(offreStageRepository.findDistinctAnnees());
             }
