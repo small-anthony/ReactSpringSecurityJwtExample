@@ -313,6 +313,8 @@
     "view_candidates": "Voir les candidatures",
     "edit_offer": "Modifier",
     "edit_error": "Erreur lors de la modification de l'offre.",
+    "modal_edit_success_title": "Offre modifiée",
+    "modal_edit_success_message": "Les modifications de l'offre ont été enregistrées avec succès.",
     "delete_offer": "Supprimer",
     "delete_confirm_title": "Confirmer la suppression",
     "delete_confirm_message": "Êtes-vous certain de vouloir supprimer cette offre? Cette action est irréversible.",

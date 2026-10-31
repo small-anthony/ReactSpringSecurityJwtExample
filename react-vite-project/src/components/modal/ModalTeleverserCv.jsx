@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { uploadCv } from '../../services/api/EtudiantCvService.js';
 import {useTranslation} from "react-i18next";
-import {CheckCircle2, X} from "lucide-react";
+import { X } from "lucide-react";
 import ModalConfirmation from "./ModalConfirmation.jsx";
 
 export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {

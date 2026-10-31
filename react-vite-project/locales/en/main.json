@@ -313,6 +313,8 @@
     "view_candidates": "View candidates",
     "edit_error": "Error while updating the offer.",
     "edit_offer": "Edit",
+    "modal_edit_success_title": "Offer Updated",
+    "modal_edit_success_message": "The changes to the offer have been saved successfully.",
     "delete_offer": "Delete",
     "delete_confirm_title": "Confirm Deletion",
     "delete_confirm_message": "Are you sure you want to delete this offer? This action cannot be undone.",
