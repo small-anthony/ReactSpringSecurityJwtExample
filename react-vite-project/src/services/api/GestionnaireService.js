@@ -57,3 +57,39 @@ export async function voirCvPdf(id, authHeader) {
     return URL.createObjectURL(pdfBlob);
 }
 
+export async function getEtudiantsInscrits(authHeader) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-inscrits`, {
+        headers: authHeader,
+    });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants inscrits");
+    return response.json();
+}
+export async function getEtudiantsSansConvocation(authHeader) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-sans-convocation`, {
+        headers: authHeader,
+    });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants sans convocation");
+    return response.json();
+}
+export async function getEtudiantsAttenteEntrevue(authHeader) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-attente-entrevue`, {
+        headers: authHeader,
+    });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants en attente d'entrevue");
+    return response.json();
+}
+export async function getEtudiantsAttenteReponse(authHeader) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-attente-reponse`, {
+        headers: authHeader,
+    });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants en attente de réponse");
+    return response.json();
+}
+export async function getEtudiantsTrouveStage(authHeader) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-trouve-stage`, {
+        headers: authHeader,
+    });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants ayant trouvé un stage");
+    return response.json();
+}
+
