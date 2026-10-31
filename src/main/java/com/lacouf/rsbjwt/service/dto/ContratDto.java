@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -27,4 +29,4 @@ public record ContratDto(
         boolean signeParEtudiant,
         boolean signeParEmployeur,
         boolean signeParGestionnaire
-) {}
+) implements DataTransferObject {}
