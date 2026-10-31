@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class OffreStage {
     private String exigences;
 
     @Column(nullable = false)
-    private int annee = LocalDate.now().getYear();
+    private int annee = AcademicSessionUtils.getAnneeActuelle();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeur_id")
