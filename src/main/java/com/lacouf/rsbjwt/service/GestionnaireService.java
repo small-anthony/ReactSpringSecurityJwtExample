@@ -127,10 +127,16 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsSansConvocation(Integer annee) {
-        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
-        return etudiantRepository.findEtudiantsSansConvocation(anneeCible)
+        if (annee == null) {
+            return etudiantRepository.findEtudiantsSansConvocation()
+                    .stream()
+                    .map(RapportEtudiantDto::create)
+                    .toList();
+        }
+
+        return etudiantRepository.findEtudiantsSansConvocation(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
                 .toList();
     }
 
@@ -139,10 +145,16 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue(Integer annee) {
-        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
-        return etudiantRepository.findEtudiantsEnAttenteEntrevue(anneeCible)
+        if (annee == null) {
+            return etudiantRepository.findEtudiantsEnAttenteEntrevue()
+                    .stream()
+                    .map(RapportEtudiantDto::create)
+                    .toList();
+        }
+
+        return etudiantRepository.findEtudiantsEnAttenteEntrevue(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
                 .toList();
     }
 
@@ -151,10 +163,16 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse(Integer annee) {
-        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
-        return etudiantRepository.findEtudiantsEnAttenteReponse(anneeCible)
+        if (annee == null) {
+            return etudiantRepository.findEtudiantsEnAttenteReponse()
+                    .stream()
+                    .map(RapportEtudiantDto::create)
+                    .toList();
+        }
+
+        return etudiantRepository.findEtudiantsEnAttenteReponse(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
                 .toList();
     }
 
@@ -163,10 +181,16 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsTrouveStage(Integer annee) {
-        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
-        return etudiantRepository.findEtudiantsTrouveStage(anneeCible)
+        if (annee == null) {
+            return etudiantRepository.findEtudiantsTrouveStage()
+                    .stream()
+                    .map(RapportEtudiantDto::create)
+                    .toList();
+        }
+
+        return etudiantRepository.findEtudiantsTrouveStage(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, anneeCible))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
                 .toList();
     }
 }
