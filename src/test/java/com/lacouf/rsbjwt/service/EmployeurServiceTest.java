@@ -25,6 +25,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
@@ -180,6 +182,25 @@ public class EmployeurServiceTest {
     }
 
     @Test
+    void getOffres_retourneLesOffresDeLaPlusRecenteALaPlusAncienne() throws Exception {
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+
+        OffreStage ancienne = new OffreStage("Ancienne offre", "Description", "CGI");
+        ancienne.setId(1L);
+        OffreStage recente = new OffreStage("Offre récente", "Description", "CGI");
+        recente.setId(2L);
+        when(offreStageRepository.findWithCandidaturesByEmployeur(employeur))
+                .thenReturn(List.of(ancienne, recente));
+
+        List<OffreStageDto> resultat = employeurService.getOffres(email);
+
+        assertEquals(2, resultat.size());
+        assertEquals("Offre récente", resultat.get(0).titre());
+        assertEquals("Ancienne offre", resultat.get(1).titre());
+    }
+
+    @Test
     void getCandidatures_avecOffreValide_retourneLaListe() throws Exception {
         //ARRANGE
         String email = "employeur@entreprise.com";
@@ -195,7 +216,7 @@ public class EmployeurServiceTest {
 
         OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
         offre.setId(10L);
-        when(offreStageRepository.findByIdAndEmployeur(10L, employeur)).thenReturn(Optional.of(offre));
+        when(offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(10L, employeur)).thenReturn(Optional.of(offre));
 
         Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "Informatique");
@@ -226,7 +247,7 @@ public class EmployeurServiceTest {
         employeur.setId(1L);
         when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
-        when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
+        when(offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(99L, employeur)).thenReturn(Optional.empty());
 
         //ACT
         Exception exception = assertThrows(Exception.class, () ->
@@ -482,27 +503,32 @@ public class EmployeurServiceTest {
 
     @Test
     void deleteOffre_avecOffreValide_supprimeLOffre() {
-        //ARRANGE
+        // ARRANGE
         String email = "employeur@entreprise.com";
         Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
 
         Employeur employeur = new Employeur("Jean", "Tremblay", credentialsEmployeur, "CGI", "514-555-1234");
         employeur.setId(1L);
-
-        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
 
         OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
         offre.setId(10L);
 
-        when(offreStageRepository.findByIdAndEmployeur(10L, employeur)).thenReturn(Optional.of(offre));
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
+        when(offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(10L, employeur))
+                .thenReturn(Optional.of(offre));
 
-        //ACT & ASSERT
+        // ACT
         assertDoesNotThrow(() -> employeurService.deleteOffre(10L, email));
+
+        // ASSERT
+        assertTrue(offre.isSupprime());
+        assertNotNull(offre.getDateSuppression());
+        assertEquals(LocalDate.now(), offre.getDateSuppression());
     }
 
     @Test
-    void deleteOffre_avecOffreDunAutreEmployeur_lanceException() {
-        //ARRANGE
+    void deleteOffre_shouldThrowException_whenOffreNotFound() {
+        // ARRANGE
         String email = "employeur@entreprise.com";
         Credentials credentialsEmployeur = new Credentials(email, "password123", Role.EMPLOYEUR);
 
@@ -510,27 +536,29 @@ public class EmployeurServiceTest {
         employeur.setId(1L);
 
         when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
-        when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
+        when(offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(99L, employeur))
+                .thenReturn(Optional.empty());
 
-        //ACT
+        // ACT
         Exception exception = assertThrows(Exception.class, () ->
                 employeurService.deleteOffre(99L, email));
 
         // ASSERT
         assertEquals("Offre introuvable pour cet employeur", exception.getMessage());
     }
+
     @Test
-    void deleteOffre_employeurIntrouvable_lanceException() {
-        //ARRANGE
+    void deleteOffre_shouldThrowException_whenEmployeurNotFound() {
+        // ARRANGE
         String emailInexistant = "inconnu@entreprise.com";
 
         when(userAppRepository.findUserAppByEmail(emailInexistant)).thenReturn(Optional.empty());
 
-        //ACT
+        // ACT
         Exception exception = assertThrows(Exception.class, () ->
                 employeurService.deleteOffre(10L, emailInexistant));
 
-        //ASSERT
+        // ASSERT
         assertEquals("Employeur non trouvé", exception.getMessage());
     }
 
@@ -549,7 +577,7 @@ public class EmployeurServiceTest {
         offre.setId(10L);
         offre.accepter();
 
-        when(offreStageRepository.findByIdAndEmployeur(10L, employeur)).thenReturn(Optional.of(offre));
+        when(offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(10L, employeur)).thenReturn(Optional.of(offre));
         when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         //ACT
@@ -627,7 +655,7 @@ public class EmployeurServiceTest {
         employeur.setId(1L);
 
         when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(employeur));
-        when(offreStageRepository.findByIdAndEmployeur(99L, employeur)).thenReturn(Optional.empty());
+        when(offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(99L, employeur)).thenReturn(Optional.empty());
 
         //ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService

@@ -19,6 +19,7 @@ import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import EtudiantConvocations from "./components/page/EtudiantConvocations.jsx";
 import GestionnaireConvocations from "./components/page/GestionnaireConvocations.jsx";
 import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
+import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
@@ -130,7 +131,7 @@ function App() {
                         path="gestionnaire/approbations/cvs"
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ApprobationCvs /> : <Navigate to="/" />))}
                     />
-<Route
+                    <Route
                         path="gestionnaire/convocations"
                         element={
                             !token ? <Navigate to="/login" /> :
@@ -145,6 +146,15 @@ function App() {
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/rapports"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <RapportsEtudiants /> :
                                         <Navigate to="/" />
                         }
                     />

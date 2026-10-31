@@ -288,6 +288,30 @@ public class EtudiantServiceTest {
         }
 
         @Test
+        void postuler_shouldThrowIfOffreDeleted() {
+                // ARRANGE
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+
+                OffreStage offre = new OffreStage("Développeur Web Junior", "Stage de quatre mois.", "TechCorp");
+                offre.setId(10L);
+                offre.supprimer();
+
+                when(userAppRepository.findUserAppByEmail("test@gmail.com")).thenReturn(Optional.of(etudiant));
+                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+                when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
+
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                        () -> etudiantService.postuler(10L, "test@gmail.com"));
+
+                // ASSERT
+                assertEquals("Cette offre n'est plus disponible", exception.getMessage());
+        }
+
+        @Test
         void getMesCandidatures_shouldReturnStudentCandidatures() throws Exception {
                 // ARRANGE
                 Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
@@ -445,7 +469,7 @@ public class EtudiantServiceTest {
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
-                when(offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE))
+                when(offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.ACCEPTE))
                                 .thenReturn(List.of(offrePublique));
 
                 // ACT
@@ -474,7 +498,7 @@ public class EtudiantServiceTest {
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
-                when(offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE))
+                when(offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.ACCEPTE))
                                 .thenReturn(List.of(offrePublique));
 
                 // ACT
@@ -532,6 +556,30 @@ public class EtudiantServiceTest {
                                 () -> etudiantService.getOffreDetail(999L, "etudiant@gmail.com"));
 
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        }
+
+        @Test
+        void getOffreDetail_shouldThrowIfOffreDeleted() {
+                // ARRANGE
+                String email = "etudiant@gmail.com";
+                Credentials credentials = new Credentials(email, "password", Role.ETUDIANT);
+
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+
+                OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI");
+                offre.setId(10L);
+                offre.supprimer();
+
+                when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(etudiant));
+                when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
+
+                // ACT
+                Exception exception = assertThrows(Exception.class,
+                        () -> etudiantService.getOffreDetail(10L, email));
+
+                // ASSERT
+                assertEquals("Cette offre n'est plus disponible", exception.getMessage());
         }
 
         @Test

@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.repository;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.OffreStage;

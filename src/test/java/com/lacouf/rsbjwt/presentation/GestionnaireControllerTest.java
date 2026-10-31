@@ -4,8 +4,10 @@ import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -97,7 +100,6 @@ public class GestionnaireControllerTest {
     }
 
     @Test
-
     void getCvPdf_shouldReturnOkPdfData() throws Exception {
 //        ARRANGE
         DecisionCvRequest request = new DecisionCvRequest(1L, null);
@@ -129,7 +131,6 @@ public class GestionnaireControllerTest {
     }
 
     @Test
-
     void accepterOffreStage_shouldReturnOk() throws Exception {
 //        ARRANGE
         AcceptationOffreDto request = new AcceptationOffreDto(1L, List.of(2L));
@@ -191,6 +192,7 @@ public class GestionnaireControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(offreDto, response.getBody());
     }
+
     @Test
     void refuserOffreStage_shouldReturnBadRequestOnException() throws Exception {
 //        ARRANGE
@@ -205,5 +207,81 @@ public class GestionnaireControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Offre de stage non trouvée", response.getBody());
+    }
+
+    @Test
+    void getTousLesEtudiants_shouldReturnOk() {
+        // ARRANGE
+        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+
+        when(gestionnaireService.getTousLesEtudiants()).thenReturn(liste);
+
+        // ACT
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getTousLesEtudiants();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getEtudiantsSansConvocation_shouldReturnOk() {
+        // ARRANGE
+        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+
+        when(gestionnaireService.getEtudiantsSansConvocation()).thenReturn(liste);
+
+        // ACT
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsSansConvocation();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getEtudiantsEnAttenteEntrevue_shouldReturnOk() {
+        // ARRANGE
+        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+
+        when(gestionnaireService.getEtudiantsEnAttenteEntrevue()).thenReturn(liste);
+
+        // ACT
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteEntrevue();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getEtudiantsEnAttenteReponse_shouldReturnOk() {
+        // ARRANGE
+        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+
+        when(gestionnaireService.getEtudiantsEnAttenteReponse()).thenReturn(liste);
+
+        // ACT
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteReponse();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getEtudiantsTrouveStage_shouldReturnOk() {
+        // ARRANGE
+        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+
+        when(gestionnaireService.getEtudiantsTrouveStage()).thenReturn(liste);
+
+        // ACT
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsTrouveStage();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+
     }
 }

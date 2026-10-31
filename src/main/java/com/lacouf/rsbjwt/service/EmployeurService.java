@@ -9,6 +9,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
@@ -19,6 +20,7 @@ import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
+import java.util.Comparator;
 
 @Service
 public class EmployeurService {
@@ -88,7 +90,10 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        return OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur));
+        List<OffreStageDto> offres = new ArrayList<>(
+                OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur)));
+        offres.sort((a, b) -> Integer.compare(b.id(), a.id()));
+        return offres;
     }
 
     public List<CandidatureDto> getCandidatures(Long offreId, String emailEmployeur) throws Exception {
@@ -98,7 +103,7 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeur(offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         return candidatureRepository.findByOffreStage(offre).stream()
@@ -170,10 +175,19 @@ public class EmployeurService {
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeur( offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull( offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
-        offreStageRepository.delete(offre);
+        offre.supprimer();
+
+        List<Candidature> candidatures = candidatureRepository.findByOffreStage(offre);
+        for (Candidature candidature : candidatures) {
+            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE) {
+                refuserCandidature(candidature.getId(), "L'offre a été supprimée par l'employeur", emailEmployeur);
+            }
+        }
+
+        offreStageRepository.save(offre);
     }
 
     public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
@@ -195,7 +209,7 @@ public class EmployeurService {
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeur(offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         offre.setTitre(titre.trim());

@@ -251,8 +251,8 @@ public class EmployeurControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.ACCEPTEE, LocalDateTime.now(), null, null, LocalDateTime.now());
-        when(employeurService.accepterCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.ACCEPTEE, LocalDateTime.now(), null, null, LocalDateTime.now(), "Stagiaire", "CGI");
+                when(employeurService.accepterCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
 //        ACT
         ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
 //        ASSERT
@@ -284,7 +284,7 @@ public class EmployeurControllerTest {
         Map<String, String> request = new HashMap<>();
         request.put("message", "Profil non retenu");
 
-        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, "Profil non retenu", LocalDateTime.now());
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, "Profil non retenu", LocalDateTime.now(), "Stagiaire", "CGI");
         when(employeurService.refuserCandidature(1L, "Profil non retenu", "employeur@entreprise.com")).thenReturn(dto);
 //        ACT
         ResponseEntity<Object> response = employeurController.refuserCandidature(1L, request, authentication);
@@ -299,7 +299,7 @@ public class EmployeurControllerTest {
 		Authentication authentication = mock(Authentication.class);
 		when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-		CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, null, LocalDateTime.now());
+		CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, null, LocalDateTime.now(), "Stagiaire", "CGI");
 		when(employeurService.refuserCandidature(1L, null, "employeur@entreprise.com")).thenReturn(dto);
 //        ACT
 		ResponseEntity<Object> response = employeurController.refuserCandidature(1L, null, authentication);
