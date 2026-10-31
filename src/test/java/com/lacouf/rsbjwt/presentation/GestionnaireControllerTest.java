@@ -283,10 +283,10 @@ public class GestionnaireControllerTest {
         // ARRANGE
         List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
 
-        when(gestionnaireService.getEtudiantsSansConvocation()).thenReturn(liste);
+        when(gestionnaireService.getEtudiantsSansConvocation(null)).thenReturn(liste);
 
         // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsSansConvocation();
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsSansConvocation(null);
 
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -298,10 +298,10 @@ public class GestionnaireControllerTest {
         // ARRANGE
         List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
 
-        when(gestionnaireService.getEtudiantsEnAttenteEntrevue()).thenReturn(liste);
+        when(gestionnaireService.getEtudiantsEnAttenteEntrevue(null)).thenReturn(liste);
 
         // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteEntrevue();
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteEntrevue(null);
 
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -313,10 +313,10 @@ public class GestionnaireControllerTest {
         // ARRANGE
         List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
 
-        when(gestionnaireService.getEtudiantsEnAttenteReponse()).thenReturn(liste);
+        when(gestionnaireService.getEtudiantsEnAttenteReponse(null)).thenReturn(liste);
 
         // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteReponse();
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteReponse(null);
 
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -328,14 +328,29 @@ public class GestionnaireControllerTest {
         // ARRANGE
         List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
 
-        when(gestionnaireService.getEtudiantsTrouveStage()).thenReturn(liste);
+        when(gestionnaireService.getEtudiantsTrouveStage(null)).thenReturn(liste);
 
         // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsTrouveStage();
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsTrouveStage(null);
 
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(liste, response.getBody());
+    }
 
+    @Test
+    void getEtudiantsTrouveStage_avecAnnee_shouldReturnOk() {
+        // ARRANGE
+        int annee = 2026;
+        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+
+        when(gestionnaireService.getEtudiantsTrouveStage(annee)).thenReturn(liste);
+
+        // ACT
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsTrouveStage(annee);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
     }
 }

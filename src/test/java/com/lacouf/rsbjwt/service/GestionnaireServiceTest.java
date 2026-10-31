@@ -16,6 +16,7 @@ import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -294,37 +296,43 @@ public class GestionnaireServiceTest {
         assertEquals("Jean", resultat.getFirst().firstName());
         assertTrue(resultat.getFirst().candidatures().isEmpty());
     }
+
     @Test
     void getEtudiantsSansConvocation_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
-        when(etudiantRepository.findEtudiantsSansConvocation()).thenReturn(List.of(etudiant));
+        when(etudiantRepository.findEtudiantsSansConvocation(anneeActuelle)).thenReturn(List.of(etudiant));
+
         // ACT
-
         List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsSansConvocation();
+
         // ASSERT
         assertEquals(1, resultat.size());
         assertEquals("Jean", resultat.getFirst().firstName());
         assertTrue(resultat.getFirst().candidatures().isEmpty());
     }
+
     @Test
     void getEtudiantsEnAttenteEntrevue_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
         OffreStage offre = new OffreStage("Dev Java", "Description", "CGI");
+        offre.setAnnee(anneeActuelle);
 
         Candidature candidature = new Candidature(etudiant, offre);
         candidature.setId(100L);
 
         etudiant.setCandidatures(List.of(candidature));
 
-        when(etudiantRepository.findEtudiantsEnAttenteEntrevue()).thenReturn(List.of(etudiant));
+        when(etudiantRepository.findEtudiantsEnAttenteEntrevue(anneeActuelle)).thenReturn(List.of(etudiant));
 
         // ACT
         List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsEnAttenteEntrevue();
@@ -335,20 +343,23 @@ public class GestionnaireServiceTest {
         assertEquals("Dev Java", resultat.getFirst().candidatures().getFirst().titreOffre());
         assertEquals("CGI", resultat.getFirst().candidatures().getFirst().nomEntreprise());
     }
+
     @Test
     void getEtudiantsEnAttenteReponse_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
         OffreStage offre = new OffreStage("Dev Web", "Description", "Desjardins");
+        offre.setAnnee(anneeActuelle);
 
         Candidature candidature = new Candidature(etudiant, offre);
         candidature.setId(101L);
         etudiant.setCandidatures(List.of(candidature));
 
-        when(etudiantRepository.findEtudiantsEnAttenteReponse()).thenReturn(List.of(etudiant));
+        when(etudiantRepository.findEtudiantsEnAttenteReponse(anneeActuelle)).thenReturn(List.of(etudiant));
 
         // ACT
         List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsEnAttenteReponse();
@@ -359,20 +370,24 @@ public class GestionnaireServiceTest {
         assertEquals("Dev Web", resultat.getFirst().candidatures().getFirst().titreOffre());
         assertEquals("Desjardins", resultat.getFirst().candidatures().getFirst().nomEntreprise());
     }
+
     @Test
     void getEtudiantsTrouveStage_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
         OffreStage offre = new OffreStage("Dev Fullstack", "Description", "Hydro-Québec");
+        offre.setAnnee(anneeActuelle);
+
         Candidature candidature = new Candidature(etudiant, offre);
         candidature.setId(102L);
 
         etudiant.setCandidatures(List.of(candidature));
 
-        when(etudiantRepository.findEtudiantsTrouveStage()).thenReturn(List.of(etudiant));
+        when(etudiantRepository.findEtudiantsTrouveStage(anneeActuelle)).thenReturn(List.of(etudiant));
 
         // ACT
         List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsTrouveStage();
@@ -382,5 +397,20 @@ public class GestionnaireServiceTest {
         assertEquals("Jean", resultat.getFirst().firstName());
         assertEquals("Dev Fullstack", resultat.getFirst().candidatures().getFirst().titreOffre());
         assertEquals("Hydro-Québec", resultat.getFirst().candidatures().getFirst().nomEntreprise());
+    }
+
+    @Test
+    void getEtudiantsTrouveStage_avecAnneeSpecifique() {
+        // ARRANGE
+        int anneeArchive = 2025;
+        when(etudiantRepository.findEtudiantsTrouveStage(anneeArchive)).thenReturn(List.of());
+
+        // ACT
+        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsTrouveStage(anneeArchive);
+
+        // ASSERT
+        assertNotNull(resultat);
+        assertTrue(resultat.isEmpty());
+        verify(etudiantRepository).findEtudiantsTrouveStage(anneeArchive);
     }
 }
