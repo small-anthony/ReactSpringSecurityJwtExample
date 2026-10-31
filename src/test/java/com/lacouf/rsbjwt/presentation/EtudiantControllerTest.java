@@ -201,7 +201,7 @@ public class EtudiantControllerTest {
     }
 
     @Test
-    void getOffreDetail_shouldReturnOk() {
+    void getOffreDetail_shouldReturnOk() throws Exception {
         // ARRANGE
         String email = "etudiant@gmail.com";
         Authentication authentication = mock(Authentication.class);

@@ -2,29 +2,34 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
+import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
+import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class GestionnaireService {
-    public CvRepository cvRepository;
+    private final CandidatureRepository candidatureRepository;
+    private final CvRepository cvRepository;
     private final OffreStageRepository offreStageRepository;
     private final EtudiantRepository etudiantRepository;
 
-    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository) {
+    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository, CandidatureRepository candidatureRepository) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
+        this.candidatureRepository = candidatureRepository;
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -87,9 +92,9 @@ public class GestionnaireService {
     public List<OffreStageDto> getOffresEnAttente(Integer annee) {
         List<OffreStage> offres = (annee != null)
                 ? offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.EN_ATTENTE, annee)
-                : offreStageRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE);
-
+                : offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.EN_ATTENTE);
         return offres.stream()
+                .filter(offre -> !offre.isSupprime())
                 .map(OffreStageDto::create)
                 .collect(Collectors.toList());
     }
@@ -108,5 +113,36 @@ public class GestionnaireService {
         annees.add(AcademicSessionUtils.getAnneeActuelle());
         annees.addAll(offreStageRepository.findDistinctAnnees());
         return new ArrayList<>(annees);
+    }
+
+    public List<RapportEtudiantDto> getTousLesEtudiants() {
+        return etudiantRepository.findAll()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsSansConvocation() {
+        return etudiantRepository.findEtudiantsSansConvocation()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue() {
+        return etudiantRepository.findEtudiantsEnAttenteEntrevue()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse() {
+        return etudiantRepository.findEtudiantsEnAttenteReponse()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
+    }
+    public List<RapportEtudiantDto> getEtudiantsTrouveStage() {
+        return etudiantRepository.findEtudiantsTrouveStage()
+                .stream()
+                .map(RapportEtudiantDto::create)
+                .toList();
     }
 }

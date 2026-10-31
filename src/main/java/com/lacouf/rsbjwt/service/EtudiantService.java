@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,6 +78,10 @@ public class EtudiantService {
 
         OffreStage offre = offreStageRepository.findById(offreId)
                 .orElseThrow(() -> new Exception("Offre de stage introuvable"));
+
+        if (offre.isSupprime()) {
+            throw new Exception("Cette offre n'est plus disponible");
+        }
 
         if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
             throw new Exception("Cette offre n'est pas disponible");
@@ -154,12 +157,16 @@ public class EtudiantService {
                 .toList();
     }
 
-    public OffreStageDto getOffreDetail(Long id, String email) {
+    public OffreStageDto getOffreDetail(Long id, String email) throws Exception {
         Etudiant etudiant = (Etudiant) userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
         OffreStage offre = offreStageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offre de stage introuvable"));
+
+        if (offre.isSupprime()) {
+            throw new Exception("Cette offre n'est plus disponible");
+        }
 
         if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette offre n'est pas disponible.");

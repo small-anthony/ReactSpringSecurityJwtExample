@@ -9,6 +9,7 @@ import {
     refuserCandidature,
 } from "../../services/api/OffreStageService.js";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
+import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
 
@@ -21,10 +22,12 @@ export default function CandidaturesOffre() {
     const [candidatures, setCandidatures] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [acceptId, setAcceptId] = useState(null);
     const [refusId, setRefusId] = useState(null);
     const [messageRefus, setMessageRefus] = useState("");
     const [enCours, setEnCours] = useState(false);
     const [cvPdfModal, setCvPdfModal] = useState(null);
+    const [messageConfirmation, setMessageConfirmation] = useState(null);
 
     useEffect(() => {
         let candidaturesChargees = true;
@@ -52,21 +55,6 @@ export default function CandidaturesOffre() {
             }
         };
     }, [cvPdfModal]);
-
-    const formatStatut = (statut) => t(`candidatures_offre.status.${statut}`, { defaultValue: statut });
-
-    const statutClasses = (statut) => {
-        switch (statut) {
-            case "ACCEPTEE":
-                return "bg-green-100 text-green-800 border-green-200";
-            case "REFUSEE":
-                return "bg-red-100 text-red-800 border-red-200";
-            case "EN_ATTENTE_REPONSE":
-                return "bg-blue-100 text-blue-800 border-blue-200";
-            default:
-                return "bg-gray-100 text-gray-800 border-gray-200";
-        }
-    };
 
     const handleVoirCv = async (candidat) => {
         try {
@@ -100,17 +88,22 @@ export default function CandidaturesOffre() {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
     };
 
-    const handleAccepter = async (candidatureId) => {
+    const handleConfirmerAccepter = async (candidatureId) => {
         setError("");
         setEnCours(true);
         try {
             const misAJour = await accepterCandidature(candidatureId, authService.buildAuthHeader());
             remplacerCandidature(misAJour);
+            setAcceptId(null);
         } catch (err) {
             setError(err.message);
+            setAcceptId(null);
         } finally {
             setEnCours(false);
         }
+    };
+    const annulerAccepter = () => {
+        setAcceptId(null);
     };
 
     const handleConfirmerRefus = async (candidatureId) => {
@@ -161,23 +154,16 @@ export default function CandidaturesOffre() {
                         key={candidat.id}
                         className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
                     >
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                                <h2 className="text-lg font-semibold text-gray-800 break-words">
-                                    {candidat.etudiant.firstName} {candidat.etudiant.lastName}
-                                </h2>
-                                <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
-                                <p className="text-sm text-blue-600">
-                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                        defaultValue: candidat.etudiant.discipline,
-                                    })}
-                                </p>
-                            </div>
-                            <span
-                                className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
-                            >
-                                {formatStatut(candidat.statut)}
-                            </span>
+                        <div className="min-w-0">
+                            <h2 className="text-lg font-semibold text-gray-800 break-words">
+                                {candidat.etudiant.firstName} {candidat.etudiant.lastName}
+                            </h2>
+                            <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
+                            <p className="text-sm text-blue-600">
+                                {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
+                                    defaultValue: candidat.etudiant.discipline,
+                                })}
+                            </p>
                         </div>
 
                         <div className="mt-4 flex items-center gap-3">
@@ -201,12 +187,12 @@ export default function CandidaturesOffre() {
                             </p>
                         )}
 
-                        {candidat.statut === "EN_ATTENTE" && refusId !== candidat.id && (
+                        {candidat.statut === "EN_ATTENTE" && refusId !== candidat.id && acceptId !== candidat.id && (
                             <div className="mt-auto pt-4 flex flex-wrap gap-3">
                                 <button
                                     type="button"
                                     disabled={enCours}
-                                    onClick={() => handleAccepter(candidat.id)}
+                                    onClick={() => { setAcceptId(candidat.id); setRefusId(null); }}
                                     className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                                 >
                                     {t("candidatures_offre.accept")}
@@ -214,11 +200,39 @@ export default function CandidaturesOffre() {
                                 <button
                                     type="button"
                                     disabled={enCours}
-                                    onClick={() => setRefusId(candidat.id)}
+                                    onClick={() => { setRefusId(candidat.id); setAcceptId(null); }}
                                     className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
                                 >
                                     {t("candidatures_offre.refuse")}
                                 </button>
+                            </div>
+                        )}
+
+                        {acceptId === candidat.id && (
+                            <div className="mt-auto pt-4">
+                                <p className="text-sm font-semibold text-gray-700 mb-2">
+                                    {t("candidatures_offre.confirm_accept_question", {
+                                        defaultValue: "Voulez-vous accepter cette candidature ?",
+                                    })}
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    <button
+                                        type="button"
+                                        disabled={enCours}
+                                        onClick={() => handleConfirmerAccepter(candidat.id)}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {t("candidatures_offre.confirm_accept", { defaultValue: "Confirmer l'acceptation" })}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={enCours}
+                                        onClick={annulerAccepter}
+                                        className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer"
+                                    >
+                                        {t("candidatures_offre.cancel")}
+                                    </button>
+                                </div>
                             </div>
                         )}
 

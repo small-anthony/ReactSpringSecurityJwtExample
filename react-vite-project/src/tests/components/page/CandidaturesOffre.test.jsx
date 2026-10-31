@@ -34,6 +34,23 @@ vi.mock("react-i18next", () => ({
     }),
 }));
 
+vi.mock("../../../components/modal/ModalCvPdf", async () => {
+    const React = await import("react");
+    return {
+        default: ({ onClose, titre }) =>
+            React.createElement(
+                "div",
+                null,
+                React.createElement("span", null, titre),
+                React.createElement(
+                    "button",
+                    { type: "button", title: "approbation.cvs.close", onClick: onClose },
+                    "fermer"
+                )
+            ),
+    };
+});
+
 const candidatureEnAttente = {
     id: 1,
     statut: "EN_ATTENTE",
@@ -97,9 +114,6 @@ describe("CandidaturesOffre", () => {
         expect(screen.getAllByText("candidatures_offre.refuse")).toHaveLength(2);
         expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
         expect(screen.getByText("Marc Dubois")).toBeInTheDocument();
-
-
-        expect(screen.queryAllByText("candidatures_offre.status.ACCEPTEE")).toHaveLength(0);
     });
 
     it("affiche le candidat et les boutons Accepter / Refuser quand la candidature est en attente", async () => {
@@ -110,6 +124,7 @@ describe("CandidaturesOffre", () => {
         expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.refuse")).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.status.EN_ATTENTE")).not.toBeInTheDocument();
     });
 
     it("affiche un message quand il n'y a aucune candidature", async () => {
@@ -120,7 +135,7 @@ describe("CandidaturesOffre", () => {
         expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
     });
 
-    it("accepte une candidature : le statut change et les boutons disparaissent", async () => {
+    it("accepte une candidature : les boutons disparaissent sans badge de statut", async () => {
         const user = userEvent.setup();
         getCandidatures.mockResolvedValue([candidatureEnAttente]);
         accepterCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "ACCEPTEE" });
@@ -128,10 +143,15 @@ describe("CandidaturesOffre", () => {
         afficherPage();
         await user.click(await screen.findByText("candidatures_offre.accept"));
 
-        expect(await screen.findByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
+        await user.click(screen.getByText("candidatures_offre.confirm_accept"));
+
+        await waitFor(() => {
+            expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
+        });
         expect(accepterCandidature).toHaveBeenCalledWith(1, {});
-        expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.status.ACCEPTEE")).not.toBeInTheDocument();
+        expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
     });
 
     it("refuse une candidature avec un message : la carte disparaît et l'autre reste", async () => {
@@ -183,16 +203,15 @@ describe("CandidaturesOffre", () => {
 
         expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
         expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.status.REFUSEE")).not.toBeInTheDocument();
     });
 
-    it("affiche une candidature déjà acceptée, sans les boutons Accepter / Refuser", async () => {
+    it("affiche une candidature déjà acceptée sans badge de statut ni boutons de décision", async () => {
         getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
 
         afficherPage();
 
         expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
-        expect(screen.getByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.status.ACCEPTEE")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.accept")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
     });
@@ -204,6 +223,8 @@ describe("CandidaturesOffre", () => {
 
         afficherPage();
         await user.click(await screen.findByText("candidatures_offre.accept"));
+
+        await user.click(screen.getByText("candidatures_offre.confirm_accept"));
 
         expect(await screen.findByText("Cette candidature a déjà reçu une réponse")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.accept")).toBeInTheDocument();

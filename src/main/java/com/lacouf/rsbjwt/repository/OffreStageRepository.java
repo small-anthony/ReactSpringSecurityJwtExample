@@ -6,23 +6,25 @@ import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Employeur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 import java.util.Optional;
 
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	List<OffreStage> findByEmployeur(Employeur employeur);
+	Optional<OffreStage> findByIdAndEmployeurAndDateSuppressionIsNull(Long id, Employeur employeur);
+	List<OffreStage> findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation status);
 	Optional<OffreStage> findByIdAndEmployeur(Long id, Employeur employeur);
 	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	List<OffreStage> findByApprobationStatusAndAnnee(StatusAcceptation status, int annee);
 	List<OffreStage> findAllByAnnee(int annee);
 
 	@Query("""
-	SELECT DISTINCT offre
+		SELECT DISTINCT offre
 		FROM OffreStage offre
 		LEFT JOIN FETCH offre.candidatures
 		WHERE offre.employeur = :employeur
-""")
+		  AND offre.dateSuppression IS NULL
+	""")
 	List<OffreStage> findWithCandidaturesByEmployeur(Employeur employeur);
 
 	@Query("""

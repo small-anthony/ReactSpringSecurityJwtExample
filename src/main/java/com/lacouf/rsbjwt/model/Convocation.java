@@ -40,7 +40,7 @@ public class Convocation {
     @Column(length = 1000)
     private String reponseEtudiant = null;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     private Candidature candidature;
 
     public Convocation(List<RendezVous> rendezVousPossibles) throws Exception {
