@@ -127,7 +127,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "27$/h",
                                         "15 semaines",
                                         "Intérêt pour la sécurité web, OWASP et les tests d'intrusion.");
-                        offre4.setAnnee(AcademicSessionUtils.getAnneeActuelle() - 1);
+                        offre4.setAnnee(AcademicSessionUtils.getAnneeActuelle());
                         offre4.accepter();
                         employeur.ajouterOffre(offre4);
 
