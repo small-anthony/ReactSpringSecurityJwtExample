@@ -569,5 +569,9 @@
       "apply_success": "Félicitations ! Votre candidature a été transmise à l'employeur avec succès.",
       "apply_error": "Erreur lors de l'envoi de la candidature."
     }
+  },
+  "session": {
+    "toutes": "Toutes les sessions",
+    "libelle": "Hiver {{annee}}"
   }
 }

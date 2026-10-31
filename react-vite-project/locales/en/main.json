@@ -569,5 +569,9 @@
       "apply_success": "Congratulations! Your application has been sent to the employer.",
       "apply_error": "Error submitting your application."
     }
+  },
+  "session": {
+    "toutes": "All sessions",
+    "libelle": "Winter {{annee}}"
   }
 }
