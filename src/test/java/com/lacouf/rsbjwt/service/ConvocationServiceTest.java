@@ -163,7 +163,7 @@ class ConvocationServiceTest {
         @Test
         void verifierEtMettreAJourStatutsPasses_appelleRepository() {
                 // Act
-                convocationService.verifierEtMettreAJourStatutsPasses();
+                convocationService.verifierEtMettreAJourStatutsPasses(Instant.now());
 
                 // Assert
                 verify(convocationRepository).expireConvocations(any(Instant.class), eq(StatutConvocation.ANNULEE),
