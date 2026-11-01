@@ -1,19 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { deleteOffreStage, getOffresStages } from "../../services/api/OffreStageService.js";
-import { useTranslation } from "react-i18next";
-import {
-    DollarSign,
-    Clock,
-    GraduationCap,
-    ClipboardList,
-    AlignLeft,
-    Briefcase,
-} from "lucide-react";
-import { useOffreFormater } from "../../hooks/useOffreFormater.js";
+import {deleteOffreStage, getOffresStages, getAnneesEmployeur} from "../../services/api/OffreStageService.js";
+import {useTranslation} from "react-i18next";
+import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
+import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 const STATUS_STYLES = {
     EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -30,6 +24,8 @@ export default function ProfileEmployeur() {
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
+    const [annees, setAnnees] = useState([]);
+    const [anneeChoisie, setAnneeChoisie] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [offreAEditer, setOffreAEditer] = useState(null);
@@ -39,9 +35,22 @@ export default function ProfileEmployeur() {
     const [categorie, setCategorie] = useState("toutes");
 
     useEffect(() => {
-        let offresChargees = true;
+        getAnneesEmployeur(authService.buildAuthHeader())
+            .then((data) => {
+                setAnnees(data);
 
-        getOffresStages(authService.buildAuthHeader())
+                if (data && data.length > 0) {
+                    setAnneeChoisie(data[0]);
+                }
+            })
+            .catch(() => setAnnees([]));
+    }, [authService]);
+
+    useEffect(() => {
+        let offresChargees = true;
+        setIsLoading(true);
+
+        getOffresStages(authService.buildAuthHeader(), anneeChoisie)
             .then((data) => {
                 if (offresChargees) setOffres(data);
             })
@@ -55,7 +64,7 @@ export default function ProfileEmployeur() {
         return () => {
             offresChargees = false;
         };
-    }, [authService]);
+    }, [authService, anneeChoisie]);
 
     const handleSupprimer = async (offreId) => {
         const idCible = typeof offreId === "number" ? offreId : offreASupprimer?.id;
@@ -91,6 +100,11 @@ export default function ProfileEmployeur() {
                     <p className="text-gray-500 mt-1">{t("employeur_home.subtitle")}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                    <SelecteurSession
+                        annees={annees}
+                        anneeSelectionnee={anneeChoisie}
+                        onChangementAnnee={setAnneeChoisie}
+                    />
                     <Link
                         to="/employeur/historique"
                         className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50"

@@ -1,12 +1,13 @@
 import {useContext, useEffect, useState} from "react";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
-import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.js";
+import {accepterOffre, fetchOffresEnAttente, refuserOffre, getAnneesGestionnaire} from "../../services/api/OffreStageService.js";
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
 import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft } from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 const ApprobationOffres = () => {
     const { t } = useTranslation("main");
@@ -15,6 +16,8 @@ const ApprobationOffres = () => {
     const [offres, setOffres] = useState([]);
     const [offreToApprove, setOffreToApprove] = useState(null);
     const [offreToRefuse, setOffreToRefuse] = useState(null);
+    const [annees, setAnnees] = useState([]);
+    const [anneeChoisie, setAnneeChoisie] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
 
     const formatSalaire = (valeur) => {
@@ -30,7 +33,19 @@ const ApprobationOffres = () => {
     }
 
     useEffect(() => {
-        fetchOffresEnAttente(authService.buildAuthHeader())
+        getAnneesGestionnaire(authService.buildAuthHeader())
+            .then((data) => {
+                setAnnees(data);
+
+                if (data && data.length > 0) {
+                    setAnneeChoisie(data[0]);
+                }
+            })
+            .catch(() => setAnnees([]));
+    }, [authService]);
+
+    useEffect(() => {
+        fetchOffresEnAttente(authService.buildAuthHeader(), anneeChoisie)
             .then((data) => {
                 setOffres(data);
                 setErrorMessage("")
@@ -38,7 +53,7 @@ const ApprobationOffres = () => {
             .catch(() => {
                 setErrorMessage(t("approbation.offres.errors.fetch"));
             });
-    }, [authService]);
+    }, [authService, anneeChoisie]);
 
     const handleAccepter = (offreId, etudiantsIds) => {
         accepterOffre(offreId, etudiantsIds, authService.buildAuthHeader())
@@ -72,7 +87,14 @@ const ApprobationOffres = () => {
         <main className="flex flex-col md:flex-row w-full bg-gray-50/30">
             <SidePanelGestionnaire activeTab="approbationsOffres" />
             <div className="flex-1 p-8 md:p-12 animate-in fade-in duration-300">
-                <h2 className="text-2xl font-bold mb-8 text-gray-800">{t('approbation.offres.title')}</h2>
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800">{t('approbation.offres.title')}</h2>
+                    <SelecteurSession
+                        annees={annees}
+                        anneeSelectionnee={anneeChoisie}
+                        onChangementAnnee={setAnneeChoisie}
+                    />
+                </div>
 
                 {errorMessage && (
                     <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md font-medium shadow-sm">
