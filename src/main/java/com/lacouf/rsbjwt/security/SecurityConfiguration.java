@@ -38,7 +38,8 @@ public class SecurityConfiguration {
     private final UserAppRepository userRepository;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityConfiguration(JwtTokenProvider jwtTokenProvider, UserAppRepository userRepository, JwtAuthenticationEntryPoint authenticationEntryPoint) {
+    public SecurityConfiguration(JwtTokenProvider jwtTokenProvider, UserAppRepository userRepository,
+            JwtAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -54,7 +55,6 @@ public class SecurityConfiguration {
     private static final String EMPLOYEUR_PATH = "/employeur/**";
     private static final String PROFESSEUR_PATH = "/professeur/**";
     private static final String GESTIONNAIRE_PATH = "/gestionnaire/**";
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -83,10 +83,7 @@ public class SecurityConfiguration {
                         .requestMatchers(PROFESSEUR_PATH).hasAuthority(Role.PROFESSEUR.name())
                         .requestMatchers(GESTIONNAIRE_PATH).hasAuthority(Role.GESTIONNAIRE.name())
 
-
                         .anyRequest().authenticated()
-
-
 
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console
@@ -104,8 +101,8 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 1. Specify allowed origins (VERY IMPORTANT!)
-        //    Must match your React app's URL exactly (e.g., http://localhost:3000)
-        //    Do NOT use "*" if you need credentials (like sending Authorization headers)
+        // Must match your React app's URL exactly (e.g., http://localhost:3000)
+        // Do NOT use "*" if you need credentials (like sending Authorization headers)
         configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Adjust if your frontend runs elsewhere
 
         // 2. Specify allowed HTTP methods
@@ -118,8 +115,8 @@ public class SecurityConfiguration {
         ));
 
         // 3. Specify allowed headers
-        //    Include standard headers and importantly "Authorization" for JWT,
-        //    and "Content-Type". Add any other custom headers your frontend sends.
+        // Include standard headers and importantly "Authorization" for JWT,
+        // and "Content-Type". Add any other custom headers your frontend sends.
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization",
                 "Cache-Control",
@@ -127,15 +124,16 @@ public class SecurityConfiguration {
                 "Accept",
                 "X-Requested-With",
                 "*"
-                // Add any other headers needed by your frontend
+        // Add any other headers needed by your frontend
         ));
 
         // 4. Allow credentials (cookies, Authorization headers)
-        //    Required if your frontend sends credentials.
+        // Required if your frontend sends credentials.
         configuration.setAllowCredentials(true);
 
         // 5. (Optional) Specify exposed headers
-        //    If your frontend needs to read headers from the response (e.g., a custom header)
+        // If your frontend needs to read headers from the response (e.g., a custom
+        // header)
         // configuration.setExposedHeaders(List.of("Custom-Header"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -157,13 +155,12 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration
-    ) throws Exception{
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

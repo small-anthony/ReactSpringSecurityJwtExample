@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { BrowserRouter } from "react-router-dom";
 import ApprobationOffres from "../../../components/page/ApprobationOffres.jsx";
@@ -78,6 +78,9 @@ describe("ApprobationOffres", () => {
 
         // Assert
         expect(OffreStageService.accepterOffre).toHaveBeenCalledWith(1, [], { Authorization: "Bearer token123" });
+        await waitFor(() => {
+            expect(screen.queryByRole("button", { name: /confirmer l'approbation/i })).not.toBeInTheDocument();
+        });
     });
 
     it("should search and target a student when accepting an offer", async () => {
@@ -111,6 +114,9 @@ describe("ApprobationOffres", () => {
 
         // Assert
         expect(OffreStageService.accepterOffre).toHaveBeenCalledWith(1, [101], { Authorization: "Bearer token123" });
+        await waitFor(() => {
+            expect(screen.queryByRole("button", { name: /confirmer l'approbation/i })).not.toBeInTheDocument();
+        });
     });
 
     it("should refuse an offer with a reason", async () => {
@@ -134,5 +140,8 @@ describe("ApprobationOffres", () => {
 
         // Assert
         expect(OffreStageService.refuserOffre).toHaveBeenCalledWith(1, "Salaire trop bas", { Authorization: "Bearer token123" });
+        await waitFor(() => {
+            expect(screen.queryByRole("button", { name: /confirmer le refus/i })).not.toBeInTheDocument();
+        });
     });
 });

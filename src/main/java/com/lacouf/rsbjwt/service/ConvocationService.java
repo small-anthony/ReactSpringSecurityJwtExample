@@ -32,45 +32,38 @@ public class ConvocationService {
         convocationRepository.expireConvocations(
                 timestamp,
                 StatutConvocation.ANNULEE,
-                StatutConvocation.EN_ATTENTE
-        );
+                StatutConvocation.EN_ATTENTE);
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsEtudiant(String etudiantEmail) {
         return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsAccepteesEtudiant(String etudiantEmail) {
         return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {
         return ConvocationDto.create(convocationRepository.findByEmployeurEmail(employeurEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getToutesConvocations() {
         return ConvocationDto.create(convocationRepository.findAll());
     }
 
     @Transactional
     public ConvocationDto creerConvocation(String actorEmail, Long candidatureId,
-                                           List<RendezVousDto> rendezVousPossibles,
-                                           String messageEmployeur) {
-
+            List<RendezVousDto> rendezVousPossibles,
+            String messageEmployeur) throws Exception {
 
         Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée"));
+                .orElseThrow(() -> new Exception("Candidature non trouvée"));
 
 
         if(!candidature.getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
-            throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
+            throw new Exception("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
-        // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         candidature.addConvocation(convocation);
         candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
@@ -80,11 +73,12 @@ public class ConvocationService {
     }
 
     @Transactional
-    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) {
+    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId,
+            RendezVousDto rendezVousSelection) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
+                .orElseThrow(() -> new Exception("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equalsIgnoreCase(actorEmail)) {
-            throw new AuthenticationException("No auth");
+            throw new Exception("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -95,11 +89,14 @@ public class ConvocationService {
     }
 
     @Transactional
-    public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) {
+    public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
-                .orElseThrow(() -> new IllegalArgumentException("Convocation non trouvée"));
+                .orElseThrow(() -> new Exception("Convocation non trouvée"));
         if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new AuthenticationException("No auth");
+            throw new Exception("No auth");
+        }
+        if(convocation.estResolu()) {
+            throw new Exception("Convocation est immuable");
         }
 
         convocation.refuser(motif);

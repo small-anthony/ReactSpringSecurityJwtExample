@@ -26,7 +26,7 @@ export default function ModalCvEtudiant() {
                 const exists = await checkCvExists();
                 setCvExiste(exists);
             } catch (e) {
-                setErreur("Une erreur est survenue lors de la vérification du CV");
+                setErreur(t("modal_cv.error_check", { defaultValue: "Une erreur est survenue lors de la vérification du CV" }));
                 setCvExiste(false);
             }
         }

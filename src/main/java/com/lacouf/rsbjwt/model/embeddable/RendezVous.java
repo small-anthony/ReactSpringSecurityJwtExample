@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import jakarta.persistence.Embeddable;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,23 +20,29 @@ public class RendezVous {
 		this.lieu = lieu;
 	}
 
-	public static RendezVous create(String lieu, Instant date) {
+	public static RendezVous create(String lieu, Instant date) throws Exception {
 		if(lieu.isBlank()) {
-			throw new IllegalArgumentException("lieu doit être spécifié");
+			throw new Exception("lieu doit être spécifié");
 		}
 		if(!date.isAfter(Instant.now())) {
-			throw new IllegalArgumentException("date doit être dans le futur");
+			throw new Exception("date doit être dans le futur");
 		}
 
 		return new RendezVous(lieu, date);
 	}
 
-	public static RendezVous create(RendezVousDto dto) {
+	public static RendezVous create(RendezVousDto dto) throws Exception {
 		return create(dto.lieu(), dto.date());
 	}
 
-	public static List<RendezVous> create(List<RendezVousDto> dtos) {
-		return dtos.stream().map(RendezVous::create).toList();
+	public static List<RendezVous> create(List<RendezVousDto> dtos) throws Exception {
+		List<RendezVous> list = new ArrayList<>();
+		if (dtos != null) {
+			for (RendezVousDto dto : dtos) {
+				list.add(create(dto));
+			}
+		}
+		return list;
 	}
 
 	public static RendezVous read(String lieu, Instant date) {
