@@ -101,7 +101,7 @@ public class EmployeurService {
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeur(offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         return candidatureRepository.findByOffreStage(offre).stream()
@@ -184,7 +184,7 @@ public class EmployeurService {
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeur( offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         offreStageRepository.delete(offre);
@@ -209,7 +209,7 @@ public class EmployeurService {
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeur(offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         offre.setTitre(titre.trim());
