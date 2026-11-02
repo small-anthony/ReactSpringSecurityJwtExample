@@ -5,10 +5,8 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-/**
- * Représentation d'une signature par un utilisateur. Immuable.
- */
 @Embeddable
 public class Signature<User extends UserApp> {
 	protected Signature() {}
@@ -24,7 +22,6 @@ public class Signature<User extends UserApp> {
 		this.valid = true;
 	}
 
-	/// Créé une signature "invalide"
 	public static <User extends UserApp> Signature<User> invalid(User signataire) {
 		Signature<User> ret = new Signature<>();
 
@@ -42,6 +39,10 @@ public class Signature<User extends UserApp> {
 
 	public boolean isValid() {
 		return valid;
+	}
+
+	public boolean isSignedBy(User user) {
+		return user != null && signataire != null && Objects.equals(user.getId(), signataire.getId());
 	}
 
 	@Override

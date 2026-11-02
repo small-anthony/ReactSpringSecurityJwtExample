@@ -40,22 +40,18 @@ public record ContratDto(
         Employeur employeur = c.getEmployeur();
         OffreStage offre = c.getOffreStage();
 
-        boolean signeEtudiant = c.getSignatureEtudiant() != null && c.getSignatureEtudiant().isValid();
-        boolean signeEmployeur = c.getSignatureEmployeur() != null && c.getSignatureEmployeur().isValid();
-        boolean signeGestionnaire = c.getSignatureGestionnaire() != null && c.getSignatureGestionnaire().isValid();
-
         return new ContratDto(
                 c.getId(),
-                c.getCandidature() != null ? c.getCandidature().getId() : null,
-                offre != null ? offre.getId() : null,
-                offre != null ? offre.getTitre() : "N/A",
-                employeur != null ? employeur.getEntreprise() : "N/A",
-                employeur != null ? (employeur.getFirstName() + " " + employeur.getLastName()) : "N/A",
-                employeur != null ? employeur.getEmail() : "N/A",
-                etudiant != null ? etudiant.getLastName() : "N/A",
-                etudiant != null ? etudiant.getFirstName() : "N/A",
-                etudiant != null ? etudiant.getEmail() : "N/A",
-                etudiant != null ? etudiant.getMatricule() : 0,
+                c.getCandidatureId(),
+                offre.getId(),
+                offre.getTitre(),
+                employeur.getEntreprise(),
+                employeur.getFirstName() + " " + employeur.getLastName(),
+                employeur.getEmail(),
+                etudiant.getLastName(),
+                etudiant.getFirstName(),
+                etudiant.getEmail(),
+                etudiant.getMatricule(),
                 c.getDateDebut(),
                 c.getDateFin(),
                 c.getHoraire(),
@@ -64,9 +60,9 @@ public record ContratDto(
                 c.getConditions(),
                 c.getStatut(),
                 c.getDateCreation(),
-                signeEtudiant,
-                signeEmployeur,
-                signeGestionnaire);
+                c.isSigneParEtudiant(),
+                c.isSigneParEmployeur(),
+                c.isSigneParGestionnaire());
     }
 
     public static List<ContratDto> create(List<Contrat> contrats) {

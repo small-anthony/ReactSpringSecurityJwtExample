@@ -7,7 +7,7 @@ export default function SidePanelGestionnaire({ activeTab = "none" }) {
     const tabs = [
         { key: "approbationsOffres", label: t('sidepanel.offres'), to: "/gestionnaire/approbations/offres" },
         { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
-        { key: "contrats", label: t('sidepanel.contrats', { defaultValue: "Contrats de stage" }), to: "/gestionnaire/contrats" },
+        { key: "contrats", label: t('sidepanel.contrats'), to: "/gestionnaire/contrats" },
         { key: "rapports", label: t('sidepanel.rapports'), to: "/gestionnaire/rapports" },
     ];
 

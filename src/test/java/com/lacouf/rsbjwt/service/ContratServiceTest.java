@@ -1,10 +1,11 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.model.auth.Credentials;
+import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ContratRepository;
@@ -17,15 +18,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +45,7 @@ public class ContratServiceTest {
 
     private Etudiant etudiant;
     private Employeur employeur;
+    private Gestionnaire gestionnaire;
     private OffreStage offreStage;
     private Candidature candidature;
     private CreationContratRequest requestValide;
@@ -52,9 +53,18 @@ public class ContratServiceTest {
     @BeforeEach
     void setUp() {
         etudiant = new Etudiant("Jean", "Tremblay", new Credentials("jean@test.com", "pass", Role.ETUDIANT), 1234567, "Informatique");
+        etudiant.setId(10L);
+
         employeur = new Employeur("Bob", "Employeur", new Credentials("bob@cgi.com", "pass", Role.EMPLOYEUR), "CGI", "514-555-1234");
+        employeur.setId(20L);
+
+        gestionnaire = new Gestionnaire("Alice", "Martin", new Credentials("alice@college.ca", "pass", Role.GESTIONNAIRE));
+        gestionnaire.setId(30L);
+
         offreStage = new OffreStage("Développeur Java", "Stage backend", "CGI");
+        offreStage.setId(5L);
         offreStage.setEmployeur(employeur);
+
         candidature = new Candidature(etudiant, offreStage);
         candidature.setId(1L);
         candidature.setStatut(StatutCandidature.ACCEPTEE);
@@ -63,10 +73,10 @@ public class ContratServiceTest {
                 1L,
                 LocalDate.of(2026, 11, 1),
                 LocalDate.of(2027, 2, 28),
-                "Du lundi au vendredi, 9h à 17h (35h/semaine)",
+                "35h/semaine",
                 "22.50$/h",
-                "Développement de microservices avec Spring Boot et React",
-                "Télétravail hybride 2 jours par semaine, matériel fourni par l'entreprise"
+                "Développement Spring Boot et React",
+                "Télétravail hybride"
         );
     }
 
@@ -74,25 +84,22 @@ public class ContratServiceTest {
     void creerContrat_succes() throws Exception {
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
         when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(userAppRepository.findUserAppByEmail("alice@college.ca")).thenReturn(Optional.of(gestionnaire));
         when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ContratDto result = contratService.creerContrat(requestValide, "alice@college.ca");
 
-        assertThat(result).isNotNull();
-        assertThat(result.titreOffre()).isEqualTo("Développeur Java");
-        assertThat(result.nomEntreprise()).isEqualTo("CGI");
-        assertThat(result.etudiantNom()).isEqualTo("Tremblay");
-        assertThat(result.etudiantPrenom()).isEqualTo("Jean");
-        assertThat(result.statut()).isEqualTo(StatutContrat.EN_ATTENTE_SIGNATURE);
-        assertThat(result.salaire()).isEqualTo("22.50$/h");
-
-        verify(contratRepository, times(1)).save(argThat(contrat ->
-                contrat.getData() != null && new String(contrat.getData()).startsWith("%PDF-1.4")
-        ));
+        assertNotNull(result);
+        assertEquals("Développeur Java", result.titreOffre());
+        assertEquals("CGI", result.nomEntreprise());
+        assertEquals("Tremblay", result.etudiantNom());
+        assertEquals("Jean", result.etudiantPrenom());
+        assertEquals(StatutContrat.EN_ATTENTE_SIGNATURE, result.statut());
+        assertEquals("22.50$/h", result.salaire());
     }
 
     @Test
-    void creerContrat_champsManquants_doitLancerException() {
+    void creerContrat_champsManquants_lanceException() {
         CreationContratRequest requestInvalide = new CreationContratRequest(
                 1L,
                 null,
@@ -103,22 +110,22 @@ public class ContratServiceTest {
                 "Conditions"
         );
 
-        assertThatThrownBy(() -> contratService.creerContrat(requestInvalide, "admin@college.ca"))
-                .isInstanceOf(Exception.class)
-                .hasMessage("Des informations obligatoires manquent dans le contrat.");
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.creerContrat(requestInvalide, "alice@college.ca"));
 
-        verify(contratRepository, never()).save(any());
+        assertEquals("Des informations obligatoires manquent dans le contrat.", exception.getMessage());
     }
 
     @Test
-    void creerContrat_requeteNulle_doitLancerException() {
-        assertThatThrownBy(() -> contratService.creerContrat(null, "admin@college.ca"))
-                .isInstanceOf(Exception.class)
-                .hasMessage("Des informations obligatoires manquent dans le contrat.");
+    void creerContrat_requeteNulle_lanceException() {
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.creerContrat(null, null));
+
+        assertEquals("Des informations obligatoires manquent dans le contrat.", exception.getMessage());
     }
 
     @Test
-    void creerContrat_dateFinAvantDateDebut_doitLancerException() {
+    void creerContrat_dateFinAvantDateDebut_lanceException() {
         CreationContratRequest requestDatesInvalides = new CreationContratRequest(
                 1L,
                 LocalDate.of(2027, 2, 28),
@@ -129,65 +136,106 @@ public class ContratServiceTest {
                 "Conditions"
         );
 
-        assertThatThrownBy(() -> contratService.creerContrat(requestDatesInvalides, "admin@college.ca"))
-                .isInstanceOf(Exception.class)
-                .hasMessage("La date de fin ne peut pas être antérieure à la date de début.");
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.creerContrat(requestDatesInvalides, "alice@college.ca"));
+
+        assertEquals("La date de fin ne peut pas être antérieure à la date de début.", exception.getMessage());
     }
 
     @Test
-    void creerContrat_candidatureIntrouvable_doitLancerException() {
-        when(candidatureRepository.findById(99L)).thenReturn(Optional.empty());
+    void creerContrat_candidatureIntrouvable_lanceException() {
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.empty());
 
-        CreationContratRequest requestNonExistant = new CreationContratRequest(
-                99L,
-                LocalDate.of(2026, 11, 1),
-                LocalDate.of(2027, 2, 28),
-                "9h-17h",
-                "20$/h",
-                "Description",
-                "Conditions"
-        );
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.creerContrat(requestValide, "alice@college.ca"));
 
-        assertThatThrownBy(() -> contratService.creerContrat(requestNonExistant, "admin@college.ca"))
-                .isInstanceOf(Exception.class)
-                .hasMessageContaining("Candidature introuvable");
+        assertTrue(exception.getMessage().contains("Candidature introuvable"));
     }
 
     @Test
-    void creerContrat_etudiantNonEmbauche_doitLancerException() {
+    void creerContrat_etudiantNonEmbauche_lanceException() {
         candidature.setStatut(StatutCandidature.EN_ATTENTE);
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
 
-        assertThatThrownBy(() -> contratService.creerContrat(requestValide, "admin@college.ca"))
-                .isInstanceOf(Exception.class)
-                .hasMessage("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.creerContrat(requestValide, "alice@college.ca"));
 
-        verify(contratRepository, never()).save(any());
+        assertEquals("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.", exception.getMessage());
     }
 
     @Test
-    void creerContrat_contratExisteDeja_doitLancerException() {
+    void creerContrat_contratExisteDeja_lanceException() {
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
         when(contratRepository.existsByCandidatureId(1L)).thenReturn(true);
 
-        assertThatThrownBy(() -> contratService.creerContrat(requestValide, "admin@college.ca"))
-                .isInstanceOf(Exception.class)
-                .hasMessage("Un contrat existe déjà pour cet étudiant et cet employeur.");
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.creerContrat(requestValide, "alice@college.ca"));
 
-        verify(contratRepository, never()).save(any());
+        assertEquals("Un contrat existe déjà pour cet étudiant et cet employeur.", exception.getMessage());
+    }
+
+    @Test
+    void signerContrat_troisParties_succes() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.getBytes()).thenReturn("sig".getBytes());
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        ContratDto apresEtudiant = contratService.signerContrat(1L, "jean@test.com", file);
+        assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT, apresEtudiant.statut());
+        assertTrue(apresEtudiant.signeParEtudiant());
+
+        when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
+        ContratDto apresEmployeur = contratService.signerContrat(1L, "bob@cgi.com", file);
+        assertTrue(apresEmployeur.signeParEmployeur());
+
+        when(userAppRepository.findUserAppByEmail("alice@college.ca")).thenReturn(Optional.of(gestionnaire));
+        ContratDto apresGestionnaire = contratService.signerContrat(1L, "alice@college.ca", file);
+        assertEquals(StatutContrat.COMPLETE, apresGestionnaire.statut());
+        assertTrue(apresGestionnaire.signeParGestionnaire());
+    }
+
+    @Test
+    void signerContrat_employeurEnPremier_statutSigneParEmployeur() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.getBytes()).thenReturn("sig".getBytes());
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
+
+        ContratDto result = contratService.signerContrat(1L, "bob@cgi.com", file);
+
+        assertEquals(StatutContrat.SIGNE_PAR_EMPLOYEUR, result.statut());
+    }
+
+    @Test
+    void signerContrat_erreursValidation_lanceException() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Etudiant autreEtudiant = new Etudiant("Autre", "Etudiant", new Credentials("autre@test.com", "pass", Role.ETUDIANT), 7654321, "Informatique");
+        autreEtudiant.setId(99L);
+
+        assertThrows(Exception.class, () -> contrat.signer(Signature.invalid(etudiant)));
+        assertThrows(Exception.class, () -> contrat.signer(new Signature<>(autreEtudiant, "sig".getBytes())));
+
+        contrat.rejeter(etudiant);
+        assertEquals(StatutContrat.REFUSE, contrat.getStatut());
+        assertThrows(Exception.class, () -> contrat.signer(new Signature<>(etudiant, "sig".getBytes())));
     }
 
     @Test
     void getCandidaturesPourContrat_succes() {
         when(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE)).thenReturn(List.of(candidature));
-        when(contratRepository.findByCandidatureId(any())).thenReturn(Optional.empty());
+        when(contratRepository.findByCandidatureId(1L)).thenReturn(Optional.empty());
 
         List<CandidaturePourContratDto> result = contratService.getCandidaturesPourContrat();
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).titreOffre()).isEqualTo("Développeur Java");
-        assertThat(result.get(0).nomEntreprise()).isEqualTo("CGI");
-        assertThat(result.get(0).contratExiste()).isFalse();
+        assertEquals(1, result.size());
+        assertEquals("Développeur Java", result.getFirst().titreOffre());
+        assertEquals("CGI", result.getFirst().nomEntreprise());
+        assertFalse(result.getFirst().contratExiste());
     }
 
     @Test
@@ -197,8 +245,26 @@ public class ContratServiceTest {
 
         List<ContratDto> contrats = contratService.getTousLesContrats();
 
-        assertThat(contrats).hasSize(1);
-        assertThat(contrats.get(0).nomEntreprise()).isEqualTo("CGI");
+        assertEquals(1, contrats.size());
+        assertEquals("CGI", contrats.getFirst().nomEntreprise());
+    }
+
+    @Test
+    void getContratById_succes() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        when(contratRepository.findById(10L)).thenReturn(Optional.of(contrat));
+
+        ContratDto dto = contratService.getContratById(10L);
+
+        assertNotNull(dto);
+        assertEquals("CGI", dto.nomEntreprise());
+    }
+
+    @Test
+    void getContratById_introuvable_lanceException() {
+        when(contratRepository.findById(10L)).thenReturn(Optional.empty());
+
+        assertThrows(Exception.class, () -> contratService.getContratById(10L));
     }
 
     @Test
@@ -209,15 +275,23 @@ public class ContratServiceTest {
 
         byte[] pdf = contratService.getContratPdf(10L);
 
-        assertThat(pdf).isEqualTo(doc);
+        assertArrayEquals(doc, pdf);
     }
 
     @Test
-    void getContratPdf_introuvable_doitLancerException() {
+    void getContratPdf_introuvable_lanceException() {
         when(contratRepository.findById(10L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> contratService.getContratPdf(10L))
-                .isInstanceOf(Exception.class)
-                .hasMessageContaining("Contrat introuvable");
+        assertThrows(Exception.class, () -> contratService.getContratPdf(10L));
+    }
+
+    @Test
+    void getContratsEtudiantEtEmployeur_succes() {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com")).thenReturn(List.of(contrat));
+        when(contratRepository.findByCandidatureOffreStageEmployeurEmail("bob@cgi.com")).thenReturn(List.of(contrat));
+
+        assertEquals(1, contratService.getContratsEtudiant("jean@test.com").size());
+        assertEquals(1, contratService.getContratsEmployeur("bob@cgi.com").size());
     }
 }

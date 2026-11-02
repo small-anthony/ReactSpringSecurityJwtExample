@@ -51,7 +51,6 @@ export default class {
     static post = (path: RequestInfo, headers: object = {}, body?: object) =>
         request(path, "POST", {...headers, ...DEFAULT_HEADERS}, JSON.stringify(body || {}));
 
-    /// Variant de post qui ne convertie pas le body en JSON.
     static post_raw = (path: RequestInfo, headers: object = {}, body?: object) =>
         request(path, "POST", {...headers}, body || {});
 };

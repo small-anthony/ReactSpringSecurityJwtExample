@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.service.ContratService;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
+import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,10 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -99,6 +102,33 @@ public class ContratControllerTest {
 	}
 
 	@Test
+	void signerContrat_shouldReturnOk() throws Exception {
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("etudiant@test.com");
+		MultipartFile file = mock(MultipartFile.class);
+		ContratDto dto = mock(ContratDto.class);
+		when(contratService.signerContrat(1L, "etudiant@test.com", file)).thenReturn(dto);
+
+		ResponseEntity<DataTransferObject> response = contratController.signerContrat(1L, file, auth);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(dto, response.getBody());
+	}
+
+	@Test
+	void signerContrat_shouldReturnInternalServerErrorOnException() throws Exception {
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("etudiant@test.com");
+		MultipartFile file = mock(MultipartFile.class);
+		when(contratService.signerContrat(1L, "etudiant@test.com", file))
+				.thenThrow(new Exception("Signature invalide"));
+
+		ResponseEntity<DataTransferObject> response = contratController.signerContrat(1L, file, auth);
+
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+	}
+
+	@Test
 	void getContratDocument_shouldReturnDocument() throws Exception {
 		byte[] doc = "doc".getBytes();
 		when(contratService.getContratPdf(1L)).thenReturn(doc);
@@ -107,5 +137,15 @@ public class ContratControllerTest {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(doc, response.getBody());
+	}
+
+	@Test
+	void getContratDocument_shouldReturnNotFoundOnException() throws Exception {
+		when(contratService.getContratPdf(99L)).thenThrow(new Exception("Introuvable"));
+
+		ResponseEntity<byte[]> response = contratController.getContratDocument(99L);
+
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		assertNull(response.getBody());
 	}
 }

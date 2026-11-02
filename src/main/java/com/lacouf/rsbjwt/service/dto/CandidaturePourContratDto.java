@@ -28,20 +28,20 @@ public record CandidaturePourContratDto(
     public static CandidaturePourContratDto create(Candidature c, Optional<Contrat> contratOpt) {
         Etudiant etudiant = c.getEtudiant();
         OffreStage offre = c.getOffreStage();
-        Employeur employeur = offre != null ? offre.getEmployeur() : null;
+        Employeur employeur = c.getEmployeur();
 
         return new CandidaturePourContratDto(
                 c.getId(),
-                offre != null ? offre.getId() : null,
-                offre != null ? offre.getTitre() : "N/A",
-                employeur != null ? employeur.getEntreprise() : "N/A",
-                employeur != null ? (employeur.getFirstName() + " " + employeur.getLastName()) : "N/A",
-                employeur != null ? employeur.getEmail() : "N/A",
-                etudiant != null ? etudiant.getId() : null,
-                etudiant != null ? etudiant.getLastName() : "N/A",
-                etudiant != null ? etudiant.getFirstName() : "N/A",
-                etudiant != null ? etudiant.getEmail() : "N/A",
-                etudiant != null ? etudiant.getMatricule() : 0,
+                offre.getId(),
+                offre.getTitre(),
+                employeur.getEntreprise(),
+                employeur.getFirstName() + " " + employeur.getLastName(),
+                employeur.getEmail(),
+                etudiant.getId(),
+                etudiant.getLastName(),
+                etudiant.getFirstName(),
+                etudiant.getEmail(),
+                etudiant.getMatricule(),
                 contratOpt.isPresent(),
                 contratOpt.map(Contrat::getId).orElse(null)
         );

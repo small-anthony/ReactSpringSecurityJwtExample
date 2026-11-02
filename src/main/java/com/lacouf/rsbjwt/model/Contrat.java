@@ -21,7 +21,7 @@ public class Contrat {
 	@Column(name = "document_data", nullable = false)
 	private byte[] data;
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "candidature_id")
 	private Candidature candidature;
 
@@ -91,8 +91,8 @@ public class Contrat {
 	}
 
 	public void signer(Signature<?> signature) throws Exception {
-		if(!signature.isValid()) {
-			ThrowInvalidSignatureException();
+		if (!signature.isValid()) {
+			throw new Exception("signature est invalide");
 		}
 
 		setSignature(signature);
@@ -106,36 +106,34 @@ public class Contrat {
 
 	@SuppressWarnings("unchecked")
 	private void setSignature(Signature<?> signature) throws Exception {
-		switch(signature.getSignataire()) {
+		switch (signature.getSignataire()) {
 			case Etudiant _ -> {
+				if (signatureEtudiant != null) {
+					throw new Exception("signature existe déjà");
+				}
 				Signature<Etudiant> sig = (Signature<Etudiant>) signature;
-				validateSigner(signatureEtudiant, sig, getEtudiant());
+				if (!sig.isSignedBy(getEtudiant())) {
+					throw new Exception("signataire est invalide");
+				}
 				signatureEtudiant = sig;
 			}
 			case Employeur _ -> {
+				if (signatureEmployeur != null) {
+					throw new Exception("signature existe déjà");
+				}
 				Signature<Employeur> sig = (Signature<Employeur>) signature;
-				validateSigner(signatureEmployeur, sig, getEmployeur());
+				if (!sig.isSignedBy(getEmployeur())) {
+					throw new Exception("signataire est invalide");
+				}
 				signatureEmployeur = sig;
 			}
 			case Gestionnaire _ -> {
-				Signature<Gestionnaire> sig = (Signature<Gestionnaire>) signature;
-				validateSigner(signatureGestionnaire);
-				signatureGestionnaire = sig;
+				if (signatureGestionnaire != null) {
+					throw new Exception("signature existe déjà");
+				}
+				signatureGestionnaire = (Signature<Gestionnaire>) signature;
 			}
-			default -> throw new Exception("signataire inconnu");
-		}
-	}
-
-	private <User extends UserApp> void validateSigner(Signature<User> existing) throws Exception {
-		if(existing != null) {
-			ThrowExistingSignatureException();
-		}
-	}
-
-	private <User extends UserApp> void validateSigner(Signature<User> existing, Signature<User> adding, User involved) throws Exception {
-		validateSigner(existing);
-		if(!involved.getId().equals(adding.getSignataire().getId())) {
-			ThrowUninvolvedUserException();
+			case null, default -> throw new Exception("signataire inconnu");
 		}
 	}
 
@@ -143,19 +141,27 @@ public class Contrat {
 		if (this.statut == StatutContrat.REFUSE) {
 			return;
 		}
-		boolean etudiantSigne = signatureEtudiant != null && signatureEtudiant.isValid();
-		boolean employeurSigne = signatureEmployeur != null && signatureEmployeur.isValid();
-		boolean gestionnaireSigne = signatureGestionnaire != null && signatureGestionnaire.isValid();
-
-		if (etudiantSigne && employeurSigne && gestionnaireSigne) {
+		if (isSigneParEtudiant() && isSigneParEmployeur() && isSigneParGestionnaire()) {
 			this.statut = StatutContrat.COMPLETE;
-		} else if (employeurSigne && !etudiantSigne) {
+		} else if (isSigneParEmployeur() && !isSigneParEtudiant()) {
 			this.statut = StatutContrat.SIGNE_PAR_EMPLOYEUR;
-		} else if (etudiantSigne && !employeurSigne) {
+		} else if (isSigneParEtudiant() && !isSigneParEmployeur()) {
 			this.statut = StatutContrat.SIGNE_PAR_ETUDIANT;
 		} else {
 			this.statut = StatutContrat.EN_ATTENTE_SIGNATURE;
 		}
+	}
+
+	public boolean isSigneParEtudiant() {
+		return signatureEtudiant != null && signatureEtudiant.isValid();
+	}
+
+	public boolean isSigneParEmployeur() {
+		return signatureEmployeur != null && signatureEmployeur.isValid();
+	}
+
+	public boolean isSigneParGestionnaire() {
+		return signatureGestionnaire != null && signatureGestionnaire.isValid();
 	}
 
 	public Long getId() {
@@ -168,6 +174,10 @@ public class Contrat {
 
 	public Candidature getCandidature() {
 		return candidature;
+	}
+
+	public Long getCandidatureId() {
+		return candidature.getId();
 	}
 
 	public void setCandidature(Candidature candidature) {
@@ -207,16 +217,15 @@ public class Contrat {
 	}
 
 	public Etudiant getEtudiant() {
-		return candidature != null ? candidature.getEtudiant() : null;
+		return candidature.getEtudiant();
 	}
 
 	public Employeur getEmployeur() {
-		return (candidature != null && candidature.getOffreStage() != null)
-				? candidature.getOffreStage().getEmployeur() : null;
+		return candidature.getEmployeur();
 	}
 
 	public OffreStage getOffreStage() {
-		return candidature != null ? candidature.getOffreStage() : null;
+		return candidature.getOffreStage();
 	}
 
 	public Signature<Etudiant> getSignatureEtudiant() {
@@ -229,17 +238,5 @@ public class Contrat {
 
 	public Signature<Gestionnaire> getSignatureGestionnaire() {
 		return signatureGestionnaire;
-	}
-
-	private void ThrowExistingSignatureException() throws Exception {
-		throw new Exception("signature existe déjà");
-	}
-
-	private void ThrowInvalidSignatureException() throws Exception {
-		throw new Exception("signature est invalide");
-	}
-
-	private void ThrowUninvolvedUserException() throws Exception {
-		throw new Exception("signataire est invalide");
 	}
 }
