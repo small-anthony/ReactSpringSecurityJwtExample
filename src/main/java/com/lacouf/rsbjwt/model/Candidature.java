@@ -33,7 +33,7 @@ public class Candidature {
 
     private LocalDateTime dateDecision;
 
-    @OneToMany(mappedBy = "candidature", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "candidature", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Convocation> convocations = new ArrayList<>();
 
     public Candidature() {}
