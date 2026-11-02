@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useId } from "react";
-import {createPortal} from "react-dom";
+import { createPortal } from "react-dom";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -7,28 +7,8 @@ import {
   ChevronDown,
   X,
 } from "lucide-react";
-import i18n from "i18next";
 
-export interface CalendarInputProps {
-  value?: Date | string | null;
-  defaultValue?: Date | string | null;
-  onChange?: (date: Date | null, dateString: string) => void;
-  min?: Date | string | null;
-  max?: Date | string | null;
-  placeholder?: string;
-  disabled?: boolean;
-  required?: boolean;
-  name?: string;
-  id?: string;
-  className?: string;
-  buttonClassName?: string;
-  locale?: string;
-  closeOnSelect?: boolean;
-  allowClear?: boolean;
-  formatDate?: (date: Date) => string;
-}
-
-function normalizeDate(val: Date | string | null | undefined): Date | null {
+function normalizeDate(val) {
   if (!val) return null;
 
   if (val instanceof Date) {
@@ -57,14 +37,14 @@ function normalizeDate(val: Date | string | null | undefined): Date | null {
   return null;
 }
 
-function toIsoDateString(date: Date): string {
+function toIsoDateString(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
-function isSameDay(d1: Date | null, d2: Date | null): boolean {
+function isSameDay(d1, d2) {
   if (!d1 || !d2) return false;
   return (
       d1.getFullYear() === d2.getFullYear() &&
@@ -73,11 +53,11 @@ function isSameDay(d1: Date | null, d2: Date | null): boolean {
   );
 }
 
-function isBeforeDay(d1: Date, d2: Date): boolean {
+function isBeforeDay(d1, d2) {
   return d1.getTime() < d2.getTime();
 }
 
-function isAfterDay(d1: Date, d2: Date): boolean {
+function isAfterDay(d1, d2) {
   return d1.getTime() > d2.getTime();
 }
 
@@ -98,7 +78,7 @@ export default function CalendarInput({
                                         closeOnSelect = true,
                                         allowClear = true,
                                         formatDate,
-                                      }: CalendarInputProps) {
+                                      }) {
   const generatedId = useId();
   const inputId = customId || `calendar-input-${generatedId}`;
 
@@ -109,8 +89,8 @@ export default function CalendarInput({
     return normalizeDate(value !== undefined ? value : defaultValue);
   }, []);
 
-  const [internalDate, setInternalDate] = useState<Date | null>(initialDate);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [internalDate, setInternalDate] = useState(initialDate);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (value !== undefined) {
@@ -120,7 +100,7 @@ export default function CalendarInput({
 
   const selectedDate = value !== undefined ? normalizeDate(value) : internalDate;
 
-  const [viewDate, setViewDate] = useState<Date>(() => {
+  const [viewDate, setViewDate] = useState(() => {
     if (selectedDate) return new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     if (effectiveMin && isBeforeDay(new Date(), effectiveMin)) {
       return new Date(effectiveMin.getFullYear(), effectiveMin.getMonth(), 1);
@@ -132,10 +112,10 @@ export default function CalendarInput({
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const wasOpen = useRef<boolean>(false);
+  const containerRef = useRef(null);
+  const buttonRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -146,7 +126,7 @@ export default function CalendarInput({
     wasOpen.current = isOpen;
   }, [isOpen]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event) => {
     if (event.key === "Escape" && isOpen) {
       event.stopPropagation();
       setIsOpen(false);
@@ -167,13 +147,13 @@ export default function CalendarInput({
     setIsOpen((prev) => !prev);
   };
 
-  const isDateDisabled = (date: Date): boolean => {
+  const isDateDisabled = (date) => {
     if (effectiveMin && isBeforeDay(date, effectiveMin)) return true;
     if (effectiveMax && isAfterDay(date, effectiveMax)) return true;
     return false;
   };
 
-  const handleSelectDate = (date: Date) => {
+  const handleSelectDate = (date) => {
     if (disabled || isDateDisabled(date)) return;
 
     if (value === undefined) {
@@ -189,7 +169,7 @@ export default function CalendarInput({
     }
   };
 
-  const handleClear = (e: React.MouseEvent) => {
+  const handleClear = (e) => {
     e.stopPropagation();
     if (disabled) return;
 
@@ -236,7 +216,7 @@ export default function CalendarInput({
   }, [viewDate, locale]);
 
   const weekDays = useMemo(() => {
-    const days: string[] = [];
+    const days = [];
     const monday = new Date(2026, 0, 5);
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
@@ -261,7 +241,7 @@ export default function CalendarInput({
     const startDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-    const cells: { date: Date; isCurrentMonth: boolean }[] = [];
+    const cells = [];
     for (let i = startDayIndex - 1; i >= 0; i--) {
       cells.push({
         date: new Date(year, month - 1, daysInPrevMonth - i),
@@ -301,15 +281,15 @@ export default function CalendarInput({
     }
   }, [selectedDate, formatDate, locale]);
 
-  const today = useMemo(() => normalizeDate(new Date())!, []);
+  const today = useMemo(() => normalizeDate(new Date()), []);
 
-  function getGlobalButtonPosition(): {x: number; y: number} {
+  function getGlobalButtonPosition() {
     const rect = containerRef.current.getBoundingClientRect();
-    return {x: rect.left, y: rect.top + rect.height};
+    return { x: rect.left, y: rect.top + rect.height };
   }
 
-  const getGlobalButtonPositionX = () => getGlobalButtonPosition()["x"];
-  const getGlobalButtonPositionY = () => getGlobalButtonPosition()["y"];
+  const getGlobalButtonPositionX = () => getGlobalButtonPosition().x;
+  const getGlobalButtonPositionY = () => getGlobalButtonPosition().y;
 
   return (
       <div
@@ -372,7 +352,7 @@ export default function CalendarInput({
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        handleClear(e as unknown as React.MouseEvent);
+                        handleClear(e);
                       }
                     }}
                     className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
