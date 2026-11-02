@@ -86,7 +86,9 @@ public class ContratServiceTest {
         assertThat(result.statut()).isEqualTo(StatutContrat.EN_ATTENTE_SIGNATURE);
         assertThat(result.salaire()).isEqualTo("22.50$/h");
 
-        verify(contratRepository, times(1)).save(any(Contrat.class));
+        verify(contratRepository, times(1)).save(argThat(contrat ->
+                contrat.getData() != null && new String(contrat.getData()).startsWith("%PDF-1.4")
+        ));
     }
 
     @Test

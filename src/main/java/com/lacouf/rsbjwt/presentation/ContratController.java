@@ -71,8 +71,8 @@ public class ContratController {
 		try {
 			byte[] data = contratService.getContratPdf(id);
 			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"contrat-" + id + ".txt\"")
-					.contentType(MediaType.TEXT_PLAIN)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"contrat-" + id + ".pdf\"")
+					.contentType(MediaType.APPLICATION_PDF)
 					.body(data);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

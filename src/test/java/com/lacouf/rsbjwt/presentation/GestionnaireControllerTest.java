@@ -4,7 +4,6 @@ import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.GestionnaireService;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
@@ -21,12 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
-import com.lacouf.rsbjwt.service.ContratService;
-import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
-import com.lacouf.rsbjwt.service.dto.ContratDto;
-import org.springframework.security.core.Authentication;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireControllerTest {

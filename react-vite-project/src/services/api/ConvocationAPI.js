@@ -84,17 +84,3 @@ export async function proposerAutreDate(id, nouvelleDate, motif, authHeader) {
 
   return response.json();
 }
-
-export async function getConvocationsGestionnaire(authHeader) {
-  const response = await fetch(`${BASE_URL}/gestionnaire/convocations`, {
-    method: "GET",
-    headers: getHeaders(authHeader),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Impossible de récupérer les convocations gestionnaire");
-  }
-
-  return response.json();
-}

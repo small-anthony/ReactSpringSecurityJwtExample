@@ -16,6 +16,9 @@ import {
   Check
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import {
@@ -25,8 +28,13 @@ import {
   getContratDocumentBlob
 } from "../../services/api/ContratAPI.js";
 
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
+
 export default function GestionnaireContrats() {
-  const { t, i18n } = useTranslation("main");
+  const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
 
   const [activeTab, setActiveTab] = useState("create");
@@ -46,6 +54,8 @@ export default function GestionnaireContrats() {
   const [conditions, setConditions] = useState("");
 
   const [previewDoc, setPreviewDoc] = useState(null);
+  const [nombrePages, setNombrePages] = useState(0);
+  const [pageCourante, setPageCourante] = useState(1);
 
   const authHeader = authService.buildAuthHeader();
 
@@ -141,10 +151,11 @@ export default function GestionnaireContrats() {
   const handleTelechargerDoc = async (contratId) => {
     try {
       const blob = await getContratDocumentBlob(contratId, authHeader);
-      const url = window.URL.createObjectURL(blob);
+      const pdfBlob = new Blob([blob], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(pdfBlob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `contrat-stage-${contratId}.txt`;
+      a.download = `contrat-stage-${contratId}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -157,12 +168,28 @@ export default function GestionnaireContrats() {
   const handleVoirDocument = async (contratId) => {
     try {
       const blob = await getContratDocumentBlob(contratId, authHeader);
-      const text = await blob.text();
-      setPreviewDoc({ id: contratId, text });
+      const pdfBlob = new Blob([blob], { type: "application/pdf" });
+      if (previewDoc?.url) {
+        window.URL.revokeObjectURL(previewDoc.url);
+      }
+      const url = window.URL.createObjectURL(pdfBlob);
+      setNombrePages(0);
+      setPageCourante(1);
+      setPreviewDoc({ id: contratId, url });
     } catch (err) {
       setErreur(t("contrats.alerts.error_open"));
     }
   };
+
+  const fermerPreviewDoc = () => {
+    if (previewDoc?.url) {
+      window.URL.revokeObjectURL(previewDoc.url);
+    }
+    setPreviewDoc(null);
+  };
+
+  const pagePrecedente = () => setPageCourante((p) => Math.max(1, p - 1));
+  const pageSuivante = () => setPageCourante((p) => Math.min(nombrePages, p + 1));
 
   const getStatusBadge = (statut) => {
     switch (statut) {
@@ -684,10 +711,10 @@ export default function GestionnaireContrats() {
           <div
             id="contrat-preview-modal"
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
-            onClick={() => setPreviewDoc(null)}
+            onClick={fermerPreviewDoc}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
@@ -708,7 +735,7 @@ export default function GestionnaireContrats() {
                   </button>
 
                   <button
-                    onClick={() => setPreviewDoc(null)}
+                    onClick={fermerPreviewDoc}
                     className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
                     title={t("contrats.actions.close")}
                   >
@@ -717,11 +744,57 @@ export default function GestionnaireContrats() {
                 </div>
               </div>
 
-              <div className="flex-grow bg-gray-100 p-4 md:p-6 overflow-y-auto">
-                <div className="bg-white p-6 md:p-8 rounded-xl border border-gray-200 shadow-xs font-mono text-xs text-gray-800 whitespace-pre-wrap leading-relaxed">
-                  {previewDoc.text}
-                </div>
+              <div className="flex-grow bg-gray-100 p-4 overflow-auto flex justify-center">
+                <Document
+                  file={previewDoc.url}
+                  onLoadSuccess={({ numPages }) => {
+                    setNombrePages(numPages);
+                    setPageCourante(1);
+                  }}
+                  loading={
+                    <p className="text-gray-500 p-4">
+                      {t("approbation.cvs.loading_pdf", { defaultValue: "Chargement du PDF..." })}
+                    </p>
+                  }
+                  error={
+                    <p className="text-red-600 p-4">
+                      {t("approbation.cvs.error_pdf", { defaultValue: "Impossible d'afficher le PDF." })}
+                    </p>
+                  }
+                >
+                  <Page pageNumber={pageCourante} width={620} className="shadow-md bg-white" />
+                </Document>
               </div>
+
+              {nombrePages > 1 && (
+                <div className="flex items-center justify-center gap-4 p-3 border-t border-gray-200 bg-gray-50">
+                  <button
+                    id="pdf-prev-page-btn"
+                    type="button"
+                    onClick={pagePrecedente}
+                    disabled={pageCourante <= 1}
+                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                  >
+                    {t("approbation.cvs.previous_page", { defaultValue: "Précédente" })}
+                  </button>
+                  <span id="pdf-page-indicator" className="text-sm font-medium text-gray-700">
+                    {t("approbation.cvs.page_of", {
+                      defaultValue: "Page {{current}} / {{total}}",
+                      current: pageCourante,
+                      total: nombrePages
+                    })}
+                  </span>
+                  <button
+                    id="pdf-next-page-btn"
+                    type="button"
+                    onClick={pageSuivante}
+                    disabled={pageCourante >= nombrePages}
+                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                  >
+                    {t("approbation.cvs.next_page", { defaultValue: "Suivante" })}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -21,7 +21,6 @@
     "convocations": "Interview Invitations",
     "approbation_offres": "Offer Approvals",
     "approbation_cvs": "Resume Approvals",
-    "gestionnaire_convocations": "Convocations",
     "voir_offres": "View offers",
     "logout": "Logout"
   },
@@ -389,7 +388,6 @@
     "title": "Dashboard",
     "cvs": "CV Approvals",
     "offres": "Offer Approvals",
-    "convocations": "Interview Invitations",
     "contrats": "Internship Contracts",
     "rapports": "Student Reports"
   },
@@ -479,20 +477,6 @@
       "error_date_required": "Please select a new date and time.",
       "error_date_past": "The proposed date must be in the future."
     }
-  },
-  "gestionnaire_convocations": {
-    "title": "Interview Invitations Tracking",
-    "subtitle": "Overview of all students invited to interviews by employers.",
-    "total": "Total: {{count}} invitation",
-    "total_plural": "Total: {{count}} invitations",
-    "loading": "Loading interview invitations...",
-    "empty": "No interview invitations recorded at this time.",
-    "th_student": "Student",
-    "th_position_company": "Position & Company",
-    "th_datetime": "Date & Time",
-    "th_location": "Location / Link",
-    "th_status": "Status",
-    "matricule": "Student ID:"
   },
   "gestionnaire_home": {
     "title": "Welcome to your Manager Workspace",
