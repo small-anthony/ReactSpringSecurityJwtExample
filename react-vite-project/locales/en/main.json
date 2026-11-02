@@ -353,12 +353,15 @@
     "accept_success": "The student has been invited for an interview.",
     "confirm_accept": "Confirm acceptance",
     "confirm_accept_question": "Do you want to accept this application?",
+    "accepted": "Summoned",
     "refuse": "Reject",
     "refuse_message_label": "Explanatory message (optional)",
     "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",
     "confirm_refuse": "Confirm rejection",
     "cancel": "Cancel",
-    "response_message": "Rejection message"
+    "response_message": "Rejection message",
+    "modal_convoquer_title": "Schedule an interview:",
+    "create_rendezvous": "Create a new time slot with the button below."
   },
   "candidature_etudiant": {
     "status": {
@@ -703,5 +706,11 @@
       "desc": "All three signatories (student, employer, and manager) have been notified. The contract will be automatically finalized once all 3 signatures are received.",
       "progress_label": "Signature progress"
     }
+  },
+  "placeholder": {
+    "rendezvous": "Create an interview",
+    "lieu": "Enter a location...",
+    "message": "Enter a message...",
+    "message_optionnel": "Optional message..."
   }
 }

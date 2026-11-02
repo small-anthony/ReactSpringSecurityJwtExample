@@ -6,7 +6,6 @@ import CandidaturesOffre from "../../../components/page/CandidaturesOffre.jsx";
 import {
     getCandidatures,
     getCvCandidat,
-    accepterCandidature,
     refuserCandidature,
 } from "../../../services/api/OffreStageService.js";
 

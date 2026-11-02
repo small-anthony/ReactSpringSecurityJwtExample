@@ -353,12 +353,15 @@
     "accept_success": "La candidature a été acceptée avec succès.",
     "confirm_accept": "Confirmer l'acceptation",
     "confirm_accept_question": "Voulez-vous accepter cette candidature?",
+    "accepted": "Convoqué",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
     "confirm_refuse": "Confirmer le refus",
     "cancel": "Annuler",
-    "response_message": "Message de refus"
+    "response_message": "Message de refus",
+    "modal_convoquer_title": "Planifier une convocation:",
+    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas."
   },
   "candidature_etudiant": {
     "status": {
@@ -703,5 +706,11 @@
       "desc": "Les trois signataires (étudiant, employeur et gestionnaire) ont été notifiés. Le contrat sera automatiquement complété dès la réception des 3 signatures.",
       "progress_label": "Progression des signatures"
     }
+  },
+  "placeholder": {
+    "rendezvous": "Créez un rendez-vous...",
+    "lieu": "Choisissez un lieu...",
+    "message": "Entrez une message...",
+    "message_optionnel": "Message optionnel..."
   }
 }
