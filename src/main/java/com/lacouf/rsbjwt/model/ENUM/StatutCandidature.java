@@ -4,5 +4,6 @@ public enum StatutCandidature {
     EN_ATTENTE,
     ACCEPTEE,
     REFUSEE,
-    EN_ATTENTE_REPONSE
+    EN_ATTENTE_REPONSE,
+    EMBAUCHEE
 }

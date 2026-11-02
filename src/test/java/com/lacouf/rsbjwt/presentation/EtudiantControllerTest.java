@@ -201,7 +201,7 @@ public class EtudiantControllerTest {
     }
 
     @Test
-    void getOffreDetail_shouldReturnOk() {
+    void getOffreDetail_shouldReturnOk() throws Exception {
         // ARRANGE
         String email = "etudiant@gmail.com";
         Authentication authentication = mock(Authentication.class);
@@ -277,7 +277,7 @@ public class EtudiantControllerTest {
     }
 
     @Test
-void getConvocations_shouldReturnOk() {
+    void getConvocations_shouldReturnOk() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
         when(convocationService.getConvocationsEtudiant("etudiant@test.com")).thenReturn(List.of());
@@ -351,4 +351,3 @@ void getConvocations_shouldReturnOk() {
         assertEquals(etudiantDto, response.getBody().getFirst());
     }
 }
-

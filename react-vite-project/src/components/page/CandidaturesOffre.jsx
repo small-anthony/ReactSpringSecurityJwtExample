@@ -5,12 +5,25 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {
     getCandidatures,
     getCvCandidat,
-    accepterCandidature,
     refuserCandidature,
+    embaucherCandidature,
 } from "../../services/api/OffreStageService.js";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
+import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
+import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
 
 const estAffichee = (candidature) => candidature.statut !== "REFUSEE";
+const peutConvoquer = (candidature) => candidature.statut === "EN_ATTENTE";
+const peutEmbaucher = (candidature) => candidature.statut === "ACCEPTEE";
+const peutRefuser = (candidature) =>
+    ["EN_ATTENTE", "EN_ATTENTE_REPONSE", "ACCEPTEE"].includes(candidature.statut);
+const aUnBadge = (candidature) => candidature.statut !== "EN_ATTENTE";
+
+const COULEURS_BADGE = {
+    EN_ATTENTE_REPONSE: "bg-yellow-100 text-yellow-800",
+    ACCEPTEE: "bg-blue-100 text-blue-800",
+    EMBAUCHEE: "bg-green-100 text-green-800",
+};
 
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
@@ -19,6 +32,7 @@ export default function CandidaturesOffre() {
     const { t } = useTranslation("main");
 
     const [candidatures, setCandidatures] = useState([]);
+    const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [refusId, setRefusId] = useState(null);
@@ -27,6 +41,18 @@ export default function CandidaturesOffre() {
     const [cvPdfModal, setCvPdfModal] = useState(null);
 
     useEffect(() => {
+        return refreshCandidatures();
+    }, [offreId, authService]);
+
+    useEffect(() => {
+        return () => {
+            if (cvPdfModal?.url) {
+                URL.revokeObjectURL(cvPdfModal.url);
+            }
+        };
+    }, [cvPdfModal]);
+
+    function refreshCandidatures() {
         let candidaturesChargees = true;
 
         getCandidatures(offreId, authService.buildAuthHeader())
@@ -43,30 +69,7 @@ export default function CandidaturesOffre() {
         return () => {
             candidaturesChargees = false;
         };
-    }, [offreId, authService]);
-
-    useEffect(() => {
-        return () => {
-            if (cvPdfModal?.url) {
-                URL.revokeObjectURL(cvPdfModal.url);
-            }
-        };
-    }, [cvPdfModal]);
-
-    const formatStatut = (statut) => t(`candidatures_offre.status.${statut}`, { defaultValue: statut });
-
-    const statutClasses = (statut) => {
-        switch (statut) {
-            case "ACCEPTEE":
-                return "bg-green-100 text-green-800 border-green-200";
-            case "REFUSEE":
-                return "bg-red-100 text-red-800 border-red-200";
-            case "EN_ATTENTE_REPONSE":
-                return "bg-blue-100 text-blue-800 border-blue-200";
-            default:
-                return "bg-gray-100 text-gray-800 border-gray-200";
-        }
-    };
+    }
 
     const handleVoirCv = async (candidat) => {
         try {
@@ -100,11 +103,35 @@ export default function CandidaturesOffre() {
         setCandidatures((liste) => liste.filter((c) => c.id !== candidatureId));
     };
 
-    const handleAccepter = async (candidatureId) => {
+    async function onCreateConvocation(rendezVous, message) {
+        rendezVous.forEach(entry => {
+            if(!entry.lieu || !entry.lieu.trim()) {
+                throw new Error("lieu vide");
+            }
+            if(entry.date.getTime() <= Date.now()) {
+                throw new Error("date invalid");
+            }
+        })
+        if(message !== null && !message.trim()) {
+            message = null;
+        }
+        const result = await proposeConvocation(candidatureAConvoquer.id, message, rendezVous, authService.buildAuthHeader());
+        if(result.statut === "EN_ATTENTE") {
+            setIsLoading(true);
+            setCandidatureAConvoquer(null);
+            refreshCandidatures();
+        }
+    }
+
+    function onCancelConvocation() {
+        setCandidatureAConvoquer(null);
+    }
+
+    const handleEmbaucher = async (candidatureId) => {
         setError("");
         setEnCours(true);
         try {
-            const misAJour = await accepterCandidature(candidatureId, authService.buildAuthHeader());
+            const misAJour = await embaucherCandidature(candidatureId, authService.buildAuthHeader());
             remplacerCandidature(misAJour);
         } catch (err) {
             setError(err.message);
@@ -161,23 +188,27 @@ export default function CandidaturesOffre() {
                         key={candidat.id}
                         className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
                     >
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
+                        <div className="min-w-0">
+                            <div className="flex items-start justify-between gap-2">
                                 <h2 className="text-lg font-semibold text-gray-800 break-words">
                                     {candidat.etudiant.firstName} {candidat.etudiant.lastName}
                                 </h2>
-                                <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
-                                <p className="text-sm text-blue-600">
-                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                        defaultValue: candidat.etudiant.discipline,
-                                    })}
-                                </p>
+                                {aUnBadge(candidat) && (
+                                    <span
+                                        className={`shrink-0 px-2 py-1 text-xs font-semibold rounded-full ${
+                                            COULEURS_BADGE[candidat.statut] || "bg-gray-100 text-gray-700"
+                                        }`}
+                                    >
+                                        {t(`candidatures_offre.status.${candidat.statut}`)}
+                                    </span>
+                                )}
                             </div>
-                            <span
-                                className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full border shrink-0 ${statutClasses(candidat.statut)}`}
-                            >
-                                {formatStatut(candidat.statut)}
-                            </span>
+                            <p className="text-sm text-gray-500 break-all">{candidat.etudiant.email}</p>
+                            <p className="text-sm text-blue-600">
+                                {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
+                                    defaultValue: candidat.etudiant.discipline,
+                                })}
+                            </p>
                         </div>
 
                         <div className="mt-4 flex items-center gap-3">
@@ -201,16 +232,28 @@ export default function CandidaturesOffre() {
                             </p>
                         )}
 
-                        {candidat.statut === "EN_ATTENTE" && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap gap-3">
-                                <button
-                                    type="button"
-                                    disabled={enCours}
-                                    onClick={() => handleAccepter(candidat.id)}
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
-                                >
-                                    {t("candidatures_offre.accept")}
-                                </button>
+                        {peutRefuser(candidat) && refusId !== candidat.id && (
+                            <div className="mt-auto pt-4 flex flex-wrap justify-between gap-3">
+                                {peutConvoquer(candidat) && (
+                                    <button
+                                        type="button"
+                                        disabled={enCours}
+                                        onClick={() => setCandidatureAConvoquer(candidat)}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {t("candidatures_offre.convoquer")}
+                                    </button>
+                                )}
+                                {peutEmbaucher(candidat) && (
+                                    <button
+                                        type="button"
+                                        disabled={enCours}
+                                        onClick={() => handleEmbaucher(candidat.id)}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {t("candidatures_offre.hire")}
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     disabled={enCours}
@@ -258,7 +301,6 @@ export default function CandidaturesOffre() {
                     </article>
                 ))}
             </div>
-
             {cvPdfModal && (
                 <ModalCvPdf
                     pdfUrl={cvPdfModal.url}
@@ -266,6 +308,13 @@ export default function CandidaturesOffre() {
                     titre={cvPdfModal.titre}
                 />
             )}
+
+            {candidatureAConvoquer &&
+                <ModalCreerConvocation
+                    rendezVousPossibles={[]}
+                    onConfirm={onCreateConvocation}
+                    onCancel={onCancelConvocation}
+                />}
         </main>
     );
 }

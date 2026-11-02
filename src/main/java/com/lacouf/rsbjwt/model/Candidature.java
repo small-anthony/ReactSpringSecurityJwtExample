@@ -45,6 +45,7 @@ public class Candidature {
 
     public Long getId() { return id; }
     public Etudiant getEtudiant() { return etudiant; }
+    public Employeur getEmployeur() { return offreStage.getEmployeur(); }
     public OffreStage getOffreStage() { return offreStage; }
     public LocalDateTime getDateCandidature() { return dateCandidature; }
     public StatutCandidature getStatut() { return statut; }
@@ -63,5 +64,13 @@ public class Candidature {
     public void addConvocation(Convocation convocation) {
         convocation.setCandidature(this);
         convocations.add(convocation);
+    }
+
+    public boolean appartientAEmployeur(String courriel) {
+        return getEmployeur().aPourCourriel(courriel);
+    }
+
+    public boolean appartientAEtudiant(String courriel) {
+        return etudiant.aPourCourriel(courriel);
     }
 }

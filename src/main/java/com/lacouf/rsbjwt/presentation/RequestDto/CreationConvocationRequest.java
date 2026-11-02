@@ -6,7 +6,6 @@ import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 import java.util.List;
 
 public record CreationConvocationRequest (
-        Long candidatureId,
         String messageEmployeur,
         List<RendezVousDto> rendezVousPossibles
 ) implements DataTransferObject { }
