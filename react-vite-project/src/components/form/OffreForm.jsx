@@ -15,7 +15,7 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
         nomEntreprise: initialValues.nomEntreprise || "",
         discipline: initialValues.discipline || "",
         duree: initialValues.duree || "",
-        salaire: formaterSalaire(initialValues.salaire),
+        salaire: initialValues.salaire ? (initialValues.salaire.toString().match(/\d+([.,]\d+)?/)?.[0] || "") : "",
         exigences: initialValues.exigences || "",
         description: initialValues.description || "",
     });

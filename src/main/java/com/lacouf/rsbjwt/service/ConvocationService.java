@@ -36,26 +36,21 @@ public class ConvocationService {
         convocationRepository.expireConvocations(
                 timestamp,
                 StatutConvocation.ANNULEE,
-                StatutConvocation.EN_ATTENTE
-        );
+                StatutConvocation.EN_ATTENTE);
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsEtudiant(String etudiantEmail) {
         return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsAccepteesEtudiant(String etudiantEmail) {
         return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {
         return ConvocationDto.create(convocationRepository.findByEmployeurEmail(employeurEmail));
     }
 
-    @Transactional(readOnly = true)
     public List<ConvocationDto> getToutesConvocations() {
         return ConvocationDto.create(convocationRepository.findAll());
     }
@@ -72,7 +67,6 @@ public class ConvocationService {
             throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
-        // FIXME: faut verifier que les rendez-vous sont chronologiquement cohérents
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         candidature.addConvocation(convocation);
 

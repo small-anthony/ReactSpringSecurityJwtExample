@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {createContext} from "react";
+import React, { useState } from "react";
+import { createContext } from "react";
 
 type NotificationData = {
     id: number;
@@ -14,7 +14,7 @@ interface INotificationService {
 }
 
 export const NotificationServiceContext = createContext<INotificationService>(undefined);
-const NotificationService = ({children}) => {
+const NotificationService = ({ children }) => {
     const [notifications, setNotifications] = useState<NotificationData[]>([]);
 
     const notificationService: INotificationService = {

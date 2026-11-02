@@ -51,7 +51,7 @@ export default function ProfileEmployeur() {
 
             setOffres((prev) => prev.filter((o) => o.id !== offreId));
         } catch (err) {
-            setError(err.message || "Erreur lors de la suppression");
+            setError(err.message || t("employeur_home.delete_error"));
         }
     };
 
