@@ -16,8 +16,7 @@ import HistoriqueDecisions from "./components/page/HistoriqueDecisions.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
-import EtudiantConvocations from "./components/page/EtudiantConvocations.jsx";
-import GestionnaireConvocations from "./components/page/GestionnaireConvocations.jsx";
+import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 
 function App() {
@@ -44,7 +43,7 @@ function App() {
 
                     <Route
                         index
-                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify/>)}
+                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify />)}
                     />
 
                     <Route
@@ -131,11 +130,11 @@ function App() {
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ApprobationCvs /> : <Navigate to="/" />))}
                     />
                     <Route
-                        path="gestionnaire/convocations"
+                        path="gestionnaire/contrats"
                         element={
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
-                                    role === "GESTIONNAIRE" ? <GestionnaireConvocations /> :
+                                    role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
                                         <Navigate to="/" />
                         }
                     />

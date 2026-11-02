@@ -44,8 +44,10 @@ public class Candidature {
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public Etudiant getEtudiant() { return etudiant; }
     public OffreStage getOffreStage() { return offreStage; }
+    public Employeur getEmployeur() { return offreStage.getEmployeur(); }
     public LocalDateTime getDateCandidature() { return dateCandidature; }
     public StatutCandidature getStatut() { return statut; }
     public void setStatut(StatutCandidature statut) { this.statut = statut; }
@@ -63,9 +65,5 @@ public class Candidature {
     public void addConvocation(Convocation convocation) {
         convocation.setCandidature(this);
         convocations.add(convocation);
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }
