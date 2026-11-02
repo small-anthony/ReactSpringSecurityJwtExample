@@ -17,6 +17,11 @@ public record CandidatureDto(int id,
                              String titreOffre,
                              String nomEntreprise) {
 
+    public CandidatureDto(int id, StatutCandidature statut, LocalDateTime dateCandidature,
+                          EtudiantDto etudiant, String messageReponse, LocalDateTime dateDecision) {
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, null, null);
+    }
+
     public static CandidatureDto create(Candidature candidature) {
         Etudiant etudiant = candidature.getEtudiant();
         OffreStage offre = candidature.getOffreStage();

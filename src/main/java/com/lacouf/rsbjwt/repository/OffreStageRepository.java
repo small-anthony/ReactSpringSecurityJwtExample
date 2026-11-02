@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	List<OffreStage> findByEmployeur(Employeur employeur);
 	Optional<OffreStage> findByIdAndEmployeurAndDateSuppressionIsNull(Long id, Employeur employeur);
+	Optional<OffreStage> findByIdAndEmployeur(Long id, Employeur employeur);
 	List<OffreStage> findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation status);
 
 
