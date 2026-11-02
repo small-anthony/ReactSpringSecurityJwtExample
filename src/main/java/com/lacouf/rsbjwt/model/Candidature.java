@@ -65,4 +65,12 @@ public class Candidature {
         convocation.setCandidature(this);
         convocations.add(convocation);
     }
+
+    public boolean appartientAEmployeur(String courriel) {
+        return getEmployeur().aPourCourriel(courriel);
+    }
+
+    public boolean appartientAEtudiant(String courriel) {
+        return etudiant.aPourCourriel(courriel);
+    }
 }

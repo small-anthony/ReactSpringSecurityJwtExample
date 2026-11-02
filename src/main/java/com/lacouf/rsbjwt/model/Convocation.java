@@ -63,6 +63,10 @@ public class Convocation {
         return getStatut() != StatutConvocation.EN_ATTENTE;
     }
 
+    public boolean estDestineAEtudiant(String courriel) {
+        return candidature.appartientAEtudiant(courriel);
+    }
+
     public void accepter(RendezVous rendezVous, String message) throws Exception {
         if(estResolu()) {
             throw new Exception("convocation already resolved");
@@ -152,6 +156,7 @@ public class Convocation {
     }
 
     public Employeur getEmployeur() {
-        return candidature.getOffreStage().getEmployeur();
+        return candidature.getEmployeur();
     }
+
 }

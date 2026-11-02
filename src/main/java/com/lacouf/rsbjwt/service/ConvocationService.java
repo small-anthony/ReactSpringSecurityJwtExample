@@ -65,12 +65,10 @@ public class ConvocationService {
                                            List<RendezVousDto> rendezVousPossibles,
                                            String messageEmployeur) throws Exception {
 
-
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new Exception("Candidature non trouvée"));
 
-
-        if(!candidature.getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
+        if (!candidature.appartientAEmployeur(actorEmail)) {
             throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
@@ -92,7 +90,7 @@ public class ConvocationService {
     public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
-        if(!convocation.getEtudiant().getEmail().equalsIgnoreCase(actorEmail)) {
+        if (!convocation.estDestineAEtudiant(actorEmail)) {
             throw new AuthenticationException("No auth");
         }
 
@@ -107,7 +105,7 @@ public class ConvocationService {
     public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
-        if(!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+        if (!convocation.estDestineAEtudiant(actorEmail)) {
             throw new AuthenticationException("No auth");
         }
 

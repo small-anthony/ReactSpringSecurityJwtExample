@@ -38,6 +38,11 @@ public abstract class UserApp  {
         return credentials.getUsername();
     }
 
+    public boolean aPourCourriel(String courriel) {
+        String email = getEmail();
+        return email != null && email.equalsIgnoreCase(courriel);
+    }
+
     public String getPassword(){
         return credentials.getPassword();
     }
