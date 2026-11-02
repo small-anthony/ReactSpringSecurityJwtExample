@@ -196,7 +196,7 @@ class ConvocationServiceTest {
     void verifierEtMettreAJourStatutsPasses_shouldExpireConvocations() {
 //        ARRANGE
         Instant timestamp = Instant.now();
-        when(convocationRepository.expireConvocations(Instant.now(), StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
+        when(convocationRepository.expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
                 .thenReturn(0);
 
 //        ACT

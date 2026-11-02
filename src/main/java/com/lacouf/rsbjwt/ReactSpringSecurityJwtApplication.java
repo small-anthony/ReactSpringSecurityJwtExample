@@ -74,7 +74,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Techniques de l'informatique");
                         etudiant.setCv(new byte[] { 1, 2, 3 });
                         etudiant.getCv().accepterApprobation();
-                        etudiantRepository.save(etudiant);
+                        etudiant = etudiantRepository.save(etudiant);
 
                         Etudiant hatim = new Etudiant("Hatim", "Fakhour",
                                         new Credentials("hatim@test.com", defaultPass, Role.ETUDIANT),
