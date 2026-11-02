@@ -93,20 +93,27 @@ public class GestionnaireController {
     public ResponseEntity<List<RapportEtudiantDto>> getTousLesEtudiants() {
         return ResponseEntity.ok(gestionnaireService.getTousLesEtudiants());
     }
+
     @GetMapping("/rapports/etudiants-sans-convocation")
     public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsSansConvocation() {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsSansConvocation());
     }
+
     @GetMapping("/rapports/etudiants-attente-entrevue")
     public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteEntrevue() {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteEntrevue());
     }
+
     @GetMapping("/rapports/etudiants-attente-reponse")
     public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteReponse() {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteReponse());
     }
+
     @GetMapping("/rapports/etudiants-trouve-stage")
     public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage() {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage());
     }
+
 }
+
+    
