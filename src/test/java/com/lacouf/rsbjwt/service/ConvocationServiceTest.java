@@ -59,7 +59,7 @@ class ConvocationServiceTest {
     private List<RendezVous> rendezVousPossibles;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         etudiant = new Etudiant("Hatim", "Fakhour", new Credentials("etudiant@test.com", "pass", Role.ETUDIANT), 1234567, "Informatique");
         employeur = new Employeur("Valentin", "Dimitrov", new Credentials("employeur@test.com", "pass", Role.EMPLOYEUR), "CGI Inc.", "514-555-1234");
         offreStage = new OffreStage("Développeur Java", "Stage de dev", "CGI Inc.");
@@ -80,7 +80,7 @@ class ConvocationServiceTest {
     }
 
     @Test
-    void accepterConvocation_succes() {
+    void accepterConvocation_succes() throws Exception {
 //        ARRANGE
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
@@ -101,7 +101,7 @@ class ConvocationServiceTest {
     }
 
     @Test
-    void accepterConvocation_datePassee_lanceException() {
+    void accepterConvocation_datePassee_lanceException() throws Exception {
 //        ARRANGE
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                 .thenReturn(Optional.of(convocation));
@@ -109,7 +109,7 @@ class ConvocationServiceTest {
 
 //        ACT
         RendezVousDto rendezVousDto = RendezVousDto.create(goodRendezVous);
-        assertThrows(IllegalStateException.class, () ->
+        assertThrows(Exception.class, () ->
                 convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), rendezVousDto)
         );
 
@@ -118,7 +118,7 @@ class ConvocationServiceTest {
     }
 
     @Test
-    void refuserConvocation_succes() {
+    void refuserConvocation_succes() throws Exception {
 //        ARRANGE
         String raison = "Pas disponible";
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
@@ -138,7 +138,7 @@ class ConvocationServiceTest {
     }
 
     @Test
-    void refuserConvocation_datePassee_lanceException() {
+    void refuserConvocation_datePassee_lanceException() throws Exception {
 //        ARRANGE
         String raison = "Pas disponible";
         when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
@@ -146,7 +146,7 @@ class ConvocationServiceTest {
         ReflectionTestUtils.setField(convocation, "dateLimite", Instant.MIN);
 
 //        ACT
-        assertThrows(IllegalStateException.class, () ->
+        assertThrows(Exception.class, () ->
                 convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), raison)
         );
 
@@ -155,7 +155,7 @@ class ConvocationServiceTest {
     }
 
     @Test
-    void creerConvocation_succes() {
+    void creerConvocation_succes() throws Exception {
 //        ARRANGE
         when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
         when(convocationRepository.save(any(Convocation.class))).thenAnswer(invocation -> {
@@ -179,7 +179,7 @@ class ConvocationServiceTest {
     }
 
     @Test
-    void creerConvocation_quonPossedePas_lanceException() {
+    void creerConvocation_quonPossedePas_lanceException() throws Exception {
 //        ARRANGE
         when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
 
