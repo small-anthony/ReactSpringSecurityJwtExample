@@ -342,17 +342,21 @@
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
-      "ACCEPTE": "Accepted",
-      "ACCEPTEE": "Accepted",
-      "REFUSE": "Rejected",
+      "ACCEPTEE": "Interview accepted",
       "REFUSEE": "Rejected",
-      "EN_ATTENTE_REPONSE": "Awaiting response"
+      "EN_ATTENTE_REPONSE": "Interview sent",
+      "EMBAUCHEE": "Hired"
     },
     "accept": "Accept application",
     "accept_success_title": "Application Accepted",
     "accept_success": "The student has been invited for an interview.",
     "confirm_accept": "Confirm acceptance",
     "confirm_accept_question": "Do you want to accept this application?",
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "convoquer": "Schedule interview",
+    "hire": "Hire",
+    "accept": "Summon",
     "accepted": "Summoned",
     "refuse": "Reject",
     "refuse_message_label": "Explanatory message (optional)",
@@ -370,7 +374,8 @@
       "ACCEPTEE": "Invited to an interview",
       "REFUSE": "Application rejected. Click \"View details\" for more information.",
       "REFUSEE": "Application rejected. Click \"View details\" for more information.",
-      "EN_ATTENTE_REPONSE": "Awaiting response"
+      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EMBAUCHEE": "Congratulations, you have been hired!"
     },
     "refuse_reason": "Employer's message",
     "modal_refused_title": "Application rejected",

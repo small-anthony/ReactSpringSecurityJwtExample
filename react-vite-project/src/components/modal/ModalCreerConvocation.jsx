@@ -1,6 +1,6 @@
 import React, {useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
-import CalendarInput from "./CalendarInput.tsx";
+import CalendarInput from "./CalendarInput.jsx";
 import { Building, Clock, Mail, Plus, Trash } from "lucide-react";
 
 function isDateValid(date, minDate) {

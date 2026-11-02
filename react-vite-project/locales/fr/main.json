@@ -342,17 +342,21 @@
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
-      "ACCEPTE": "Acceptée",
-      "ACCEPTEE": "Acceptée",
-      "REFUSE": "Refusée",
+      "ACCEPTEE": "Entrevue acceptée",
       "REFUSEE": "Refusée",
-      "EN_ATTENTE_REPONSE": "En attente de réponse"
+      "EN_ATTENTE_REPONSE": "Convocation envoyée",
+      "EMBAUCHEE": "Embauché"
     },
     "accept": "Accepter la candidature",
     "accept_success_title": "Candidature acceptée",
     "accept_success": "La candidature a été acceptée avec succès.",
     "confirm_accept": "Confirmer l'acceptation",
     "confirm_accept_question": "Voulez-vous accepter cette candidature?",
+    "no_offers": "Aucune offre de stage n'a encore été créée.",
+    "motif_refus": "Motif du refus :",
+    "convoquer": "Convoquer",
+    "hire": "Embaucher",
+    "accept": "Convoquer",
     "accepted": "Convoqué",
     "refuse": "Refuser",
     "refuse_message_label": "Message explicatif (facultatif)",
@@ -370,7 +374,8 @@
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
       "REFUSEE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
-      "EN_ATTENTE_REPONSE": "En attente de réponse"
+      "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "EMBAUCHEE": "Félicitations, vous êtes embauché(e) !"
     },
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
