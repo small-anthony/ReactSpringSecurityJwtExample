@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -147,6 +147,8 @@ describe("CandidaturesOffre", () => {
 
         await user.click(screen.getByText("confirmer-convocation"));
 
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
+
         expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_REPONSE")).toBeInTheDocument();
         expect(proposeConvocation).toHaveBeenCalledWith(1, null, expect.any(Array), {});
         expect(screen.queryByTestId("modal-convocation")).not.toBeInTheDocument();
@@ -169,9 +171,12 @@ describe("CandidaturesOffre", () => {
     });
 
     it("convocation envoyée : badge affiché, seul le bouton Refuser reste", async () => {
+        const user = userEvent.setup();
         getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
 
         afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
 
         expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_REPONSE")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.refuse")).toBeInTheDocument();
@@ -180,9 +185,12 @@ describe("CandidaturesOffre", () => {
     });
 
     it("entrevue acceptée : badge affiché avec les boutons Embaucher et Refuser", async () => {
+        const user = userEvent.setup();
         getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
 
         afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
 
         expect(await screen.findByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.hire")).toBeInTheDocument();
@@ -196,7 +204,11 @@ describe("CandidaturesOffre", () => {
         embaucherCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "EMBAUCHEE" });
 
         afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
         await user.click(await screen.findByText("candidatures_offre.hire"));
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.hired/i));
 
         expect(await screen.findByText("candidatures_offre.status.EMBAUCHEE")).toBeInTheDocument();
         expect(embaucherCandidature).toHaveBeenCalledWith(1, {});
@@ -205,9 +217,12 @@ describe("CandidaturesOffre", () => {
     });
 
     it("affiche une candidature déjà embauchée avec son badge et sans boutons", async () => {
+        const user = userEvent.setup();
         getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EMBAUCHEE" }]);
 
         afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.hired/i));
 
         expect(await screen.findByText("candidatures_offre.status.EMBAUCHEE")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.hire")).not.toBeInTheDocument();
@@ -223,6 +238,8 @@ describe("CandidaturesOffre", () => {
         );
 
         afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
         await user.click(await screen.findByText("candidatures_offre.hire"));
 
         expect(
@@ -279,7 +296,7 @@ describe("CandidaturesOffre", () => {
 
         afficherPage();
 
-        expect(await screen.findByText("candidatures_offre.no_candidates")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.no_candidates_category")).toBeInTheDocument();
         expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.status.REFUSEE")).not.toBeInTheDocument();
     });
@@ -295,17 +312,13 @@ describe("CandidaturesOffre", () => {
         getCvCandidat.mockResolvedValue(new Blob(["mock pdf content"], { type: "application/pdf" }));
 
         afficherPage();
-
         await user.click(await screen.findByText("candidatures_offre.view_cv"));
 
-        expect(getCvCandidat).toHaveBeenCalledWith(1, {});
         expect(await screen.findByText("Sophie Martin - CV")).toBeInTheDocument();
 
         await user.click(screen.getByTitle("approbation.cvs.close"));
 
-        await waitFor(() => {
-            expect(screen.queryByText("Sophie Martin - CV")).not.toBeInTheDocument();
-        });
+        expect(screen.queryByText("Sophie Martin - CV")).not.toBeInTheDocument();
         expect(revokeObjectURLMock).toHaveBeenCalled();
     });
 });

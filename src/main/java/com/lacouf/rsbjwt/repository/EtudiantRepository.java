@@ -1,12 +1,13 @@
 package com.lacouf.rsbjwt.repository;
 
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     boolean existsByMatricule(int matricule);
@@ -17,6 +18,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
             "LOWER(e.credentials.email) LIKE LOWER(CONCAT('%', :motCle, '%')) OR " +
             "CAST(e.matricule AS string) LIKE CONCAT('%', :motCle, '%')")
     List<Etudiant> rechercherParMotCle(@Param("motCle") String motCle);
+
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         LEFT JOIN FETCH e.candidatures c
@@ -25,31 +27,34 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         )
     """)
     List<Etudiant> findEtudiantsSansConvocation();
+
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
         JOIN c.convocations conv
-        WHERE conv.statut = com.lacouf.rsbjwt.model.ENUM.StatutConvocation.EN_ATTENTE
+        WHERE conv.statut = StatutConvocation.EN_ATTENTE
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteEntrevue();
+
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE
+        WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse();
+
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+        WHERE c.statut = StatutCandidature.ACCEPTEE
     """)
     List<Etudiant> findEtudiantsTrouveStage();
 }
