@@ -43,7 +43,7 @@ function App() {
 
                     <Route
                         index
-                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify />)}
+                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify/>)}
                     />
 
                     <Route

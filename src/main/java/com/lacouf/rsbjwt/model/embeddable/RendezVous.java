@@ -36,13 +36,11 @@ public class RendezVous {
 	}
 
 	public static List<RendezVous> create(List<RendezVousDto> dtos) throws Exception {
-		List<RendezVous> list = new ArrayList<>();
-		if (dtos != null) {
-			for (RendezVousDto dto : dtos) {
-				list.add(create(dto));
-			}
+		List<RendezVous> rendezVous = new ArrayList<>();
+		for (RendezVousDto dto : dtos) {
+			rendezVous.add(create(dto));
 		}
-		return list;
+		return List.copyOf(rendezVous);
 	}
 
 	public static RendezVous read(String lieu, Instant date) {
