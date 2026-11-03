@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -98,5 +99,26 @@ public class GestionnaireController {
     @GetMapping("/convocations")
     public ResponseEntity<List<ConvocationDto>> getToutesConvocations() {
         return ResponseEntity.ok(convocationService.getToutesConvocations());
+    }
+
+    @GetMapping("/rapports/etudiants-inscrits")
+    public ResponseEntity<List<RapportEtudiantDto>> getTousLesEtudiants() {
+        return ResponseEntity.ok(gestionnaireService.getTousLesEtudiants());
+    }
+    @GetMapping("/rapports/etudiants-sans-convocation")
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsSansConvocation() {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsSansConvocation());
+    }
+    @GetMapping("/rapports/etudiants-attente-entrevue")
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteEntrevue() {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteEntrevue());
+    }
+    @GetMapping("/rapports/etudiants-attente-reponse")
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteReponse() {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteReponse());
+    }
+    @GetMapping("/rapports/etudiants-trouve-stage")
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage() {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage());
     }
 }

@@ -2,6 +2,8 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class OffreStage {
     private String salaire;
     private String duree;
     private String exigences;
+    private LocalDate dateSuppression = null;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeur_id")
@@ -188,4 +191,19 @@ public class OffreStage {
         this.nomEntreprise = nomEntreprise;
     }
 
+    public LocalDate getDateSuppression() {
+        return dateSuppression;
+    }
+
+    public void setDateSuppression(LocalDate dateSuppression) {
+        this.dateSuppression = dateSuppression;
+    }
+
+    public boolean isSupprime() {
+        return this.dateSuppression != null;
+    }
+
+    public void supprimer() {
+        this.dateSuppression = LocalDate.now();
+    }
 }
