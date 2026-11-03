@@ -122,6 +122,22 @@ public class ContratControllerTest {
 	}
 
 	@Test
+	void getContratsEmployeur_devraitRetournerOk() {
+		// Arrange
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("employeur@test.com");
+		List<ContratDto> liste = List.of(mock(ContratDto.class));
+		when(contratService.getContratsEmployeur("employeur@test.com")).thenReturn(liste);
+
+		// Act
+		ResponseEntity<List<ContratDto>> response = contratController.getContratsEmployeur(auth);
+
+		// Assert
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(1, response.getBody().size());
+	}
+
+	@Test
 	void getContratById_shouldReturnContrat() throws Exception {
 		// Arrange
 		ContratDto dto = mock(ContratDto.class);

@@ -206,6 +206,7 @@ public class ContratServiceTest {
         // Act & Assert - Employeur
         when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
         ContratDto apresEmployeur = contratService.signerContrat(1L, "bob@cgi.com", file);
+        assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR, apresEmployeur.statut());
         assertTrue(apresEmployeur.signeParEmployeur());
 
         // Act & Assert - Gestionnaire
@@ -397,6 +398,22 @@ public class ContratServiceTest {
         // Assert
         assertEquals(StatutContrat.REFUSE, result.statut());
         assertFalse(result.signeParEtudiant());
+    }
+
+    @Test
+    void rejeterContrat_parEmployeur_succes() throws Exception {
+        // Arrange
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        ContratDto result = contratService.rejeterContrat(1L, "bob@cgi.com");
+
+        // Assert
+        assertEquals(StatutContrat.REFUSE, result.statut());
+        assertFalse(result.signeParEmployeur());
     }
 
     @Test
