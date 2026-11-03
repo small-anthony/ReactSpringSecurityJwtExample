@@ -23,7 +23,8 @@
     "approbation_cvs": "Resume Approvals",
     "voir_offres": "View offers",
     "logout": "Logout",
-    "contrats": "My contracts"
+    "contrats": "My contracts",
+    "contrats_employeur": "My contracts"
   },
   "home": {
     "title": "Stagify",
@@ -300,6 +301,7 @@
     "title": "My internship offers",
     "subtitle": "Manage the offers published by your company.",
     "create_offer": "Create an offer",
+    "contracts_button": "Internship contracts",
     "tabs": {
       "all": "All my offers",
       "pending": "Pending",
@@ -642,6 +644,7 @@
       "EN_ATTENTE_SIGNATURE": "Pending Signatures",
       "SIGNE_PAR_EMPLOYEUR": "Signed by Employer",
       "SIGNE_PAR_ETUDIANT": "Signed by Student",
+      "SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR": "Signed by Student and Employer",
       "COMPLETE": "Completed (Fully Signed)",
       "REFUSE": "Rejected"
     },
@@ -748,5 +751,35 @@
     "refused_badge_text": "Contract refused — Manager notified",
     "banner_stage_trouve_title": "Platform status: INTERNSHIP FOUND",
     "banner_stage_trouve_desc": "Congratulations! Your internship agreement has been electronically signed. Your coordinator and employer have been notified."
+  },
+  "contrats_employeur": {
+    "title": "Internship Contracts",
+    "subtitle": "View and electronically sign internship agreements for candidates you have hired.",
+    "role_label": "The employer",
+    "tabs": {
+      "all": "All my contracts",
+      "to_sign": "To sign",
+      "signed": "Signed"
+    },
+    "alerts": {
+      "success_signed": "The internship contract was successfully signed!",
+      "success_refused": "You have refused this internship contract. The manager and student have been notified.",
+      "error_refuse": "Unable to refuse the contract.",
+      "no_contracts": "No internship contracts found",
+      "no_contracts_sub": "Your internship manager will prepare contracts once a hire is confirmed."
+    },
+    "actions": {
+      "view": "View contract",
+      "download": "Download PDF",
+      "sign": "Sign contract",
+      "refuse": "Refuse contract",
+      "already_signed": "You have signed this contract",
+      "awaiting_signature": "Awaiting your signature"
+    },
+    "refuse_modal": {
+      "title": "Refuse internship contract",
+      "desc": "Are you sure you want to refuse to sign this internship contract? This will notify your internship manager and the student.",
+      "confirm": "Confirm refusal"
+    }
   }
 }

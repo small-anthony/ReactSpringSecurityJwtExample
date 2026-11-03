@@ -23,7 +23,8 @@
     "approbation_cvs": "Approbation CVs",
     "voir_offres": "Voir offres",
     "logout": "Déconnexion",
-    "contrats": "Mes contrats"
+    "contrats": "Mes contrats",
+    "contrats_employeur": "Mes contrats"
   },
   "home": {
     "title": "Stagify",
@@ -300,6 +301,7 @@
     "title": "Mes offres de stage",
     "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
+    "contracts_button": "Contrats de stage",
     "tabs": {
       "all": "Toutes mes offres",
       "pending": "En attente",
@@ -642,6 +644,7 @@
       "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "SIGNE_PAR_EMPLOYEUR": "Signé par l'employeur",
       "SIGNE_PAR_ETUDIANT": "Signé par l'étudiant",
+      "SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR": "Signé par l'étudiant et l'employeur",
       "COMPLETE": "Complété (signé par tous)",
       "REFUSE": "Refusé"
     },
@@ -748,5 +751,35 @@
     "refused_badge_text": "Contrat refusé — Gestionnaire notifié",
     "banner_stage_trouve_title": "Statut sur la plateforme : STAGE TROUVÉ",
     "banner_stage_trouve_desc": "Félicitations ! Votre entente de stage a été signée électroniquement. Votre gestionnaire de stage et l'employeur en ont été informés."
+  },
+  "contrats_employeur": {
+    "title": "Contrats de stage",
+    "subtitle": "Consultez et signez les ententes de stage des candidats que vous avez embauchés.",
+    "role_label": "L'employeur",
+    "tabs": {
+      "all": "Tous mes contrats",
+      "to_sign": "À signer",
+      "signed": "Signés"
+    },
+    "alerts": {
+      "success_signed": "Le contrat de stage a été signé avec succès !",
+      "success_refused": "Vous avez refusé ce contrat de stage. Le gestionnaire et l'étudiant en ont été notifiés.",
+      "error_refuse": "Impossible de refuser le contrat.",
+      "no_contracts": "Aucun contrat de stage trouvé",
+      "no_contracts_sub": "Votre gestionnaire de stage préparera les contrats dès qu'une embauche est confirmée."
+    },
+    "actions": {
+      "view": "Consulter le contrat",
+      "download": "Télécharger le PDF",
+      "sign": "Signer le contrat",
+      "refuse": "Refuser le contrat",
+      "already_signed": "Vous avez signé ce contrat",
+      "awaiting_signature": "En attente de votre signature"
+    },
+    "refuse_modal": {
+      "title": "Refuser le contrat de stage",
+      "desc": "Êtes-vous certain de vouloir refuser de signer ce contrat de stage ? Cette action informera votre gestionnaire de stage et l'étudiant de votre refus.",
+      "confirm": "Confirmer le refus"
+    }
   }
 }
