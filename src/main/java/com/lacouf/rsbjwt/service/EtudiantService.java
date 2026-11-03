@@ -23,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 public class EtudiantService {
     private final UserAppRepository userAppRepository;
@@ -79,10 +78,6 @@ public class EtudiantService {
         OffreStage offre = offreStageRepository.findById(offreId)
                 .orElseThrow(() -> new Exception("Offre de stage introuvable"));
 
-        if (offre.isSupprime()) {
-            throw new Exception("Cette offre n'est plus disponible");
-        }
-
         if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
             throw new Exception("Cette offre n'est pas disponible");
         }
@@ -137,7 +132,7 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.ACCEPTE);
+        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatus(StatusAcceptation.ACCEPTE);
 
         return offresAcceptees.stream()
                 .filter(offre -> offre.getEtudiantsAutorises() == null
@@ -147,16 +142,12 @@ public class EtudiantService {
                 .toList();
     }
 
-    public OffreStageDto getOffreDetail(Long id, String email) throws Exception {
+    public OffreStageDto getOffreDetail(Long id, String email) {
         Etudiant etudiant = (Etudiant) userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
         OffreStage offre = offreStageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offre de stage introuvable"));
-
-        if (offre.isSupprime()) {
-            throw new Exception("Cette offre n'est plus disponible");
-        }
 
         if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette offre n'est pas disponible.");

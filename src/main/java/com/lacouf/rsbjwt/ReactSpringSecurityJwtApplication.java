@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
@@ -245,22 +244,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candHatim.addConvocation(convHatim);
                         candidatureRepository.save(candHatim);
                         convocationRepository.save(convHatim);
-
-
-
-                        Etudiant sophie = new Etudiant(
-                                "Sophie",
-                                "Martin",
-                                new Credentials("sophie@test.com", defaultPass, Role.ETUDIANT),
-                                7654321,
-                                "Techniques de l'informatique");
-                        sophie = etudiantRepository.save(sophie);
-                        Candidature candSophie1 = new Candidature(sophie, offre1);
-                        candSophie1.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
-                        candidatureRepository.save(candSophie1);
-                        Candidature candSophie2 = new Candidature(sophie, offre3);
-                        candSophie2.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
-                        candidatureRepository.save(candSophie2);
                 } catch (Exception e) {
                         e.printStackTrace();
                 }

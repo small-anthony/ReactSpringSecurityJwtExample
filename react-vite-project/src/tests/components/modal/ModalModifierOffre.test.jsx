@@ -85,9 +85,6 @@ describe("ModalModifierOffre", () => {
 
         await user.click(boutonEnregistrer);
 
-        const boutonConfirmer = await screen.findByRole("button", { name: /confirmer/i });
-        await user.click(boutonConfirmer);
-
         // Assert
         await waitFor(() => {
             expect(OffreStageService.updateOffreStage).toHaveBeenCalledWith(

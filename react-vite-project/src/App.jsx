@@ -16,8 +16,8 @@ import HistoriqueDecisions from "./components/page/HistoriqueDecisions.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
-import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
-import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
+import EtudiantConvocations from "./components/page/EtudiantConvocations.jsx";
+import GestionnaireConvocations from "./components/page/GestionnaireConvocations.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
@@ -43,7 +43,7 @@ function App() {
 
                     <Route
                         index
-                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify />)}
+                        element={token ? (userData ? <Navigate to={getHomePath()} replace /> : null) : (<PageAccueilStagify/>)}
                     />
 
                     <Route
@@ -129,21 +129,12 @@ function App() {
                         path="gestionnaire/approbations/cvs"
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ApprobationCvs /> : <Navigate to="/" />))}
                     />
-                    <Route
-                        path="gestionnaire/contrats"
+<Route
+                        path="gestionnaire/convocations"
                         element={
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
-                                    role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
-                                        <Navigate to="/" />
-                        }
-                    />
-                    <Route
-                        path="gestionnaire/rapports"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "GESTIONNAIRE" ? <RapportsEtudiants /> :
+                                    role === "GESTIONNAIRE" ? <GestionnaireConvocations /> :
                                         <Navigate to="/" />
                         }
                     />

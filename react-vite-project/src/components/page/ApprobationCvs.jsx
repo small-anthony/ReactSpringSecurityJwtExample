@@ -2,11 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { accepterCv, getCvsEnAttente, refuserCv, voirCvPdf } from "../../services/api/GestionnaireService.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
-import { Eye, IdCard, X } from "lucide-react";
+import { Check, Eye, IdCard, X } from "lucide-react";
 import {useTranslation} from "react-i18next";
 import ModalRefus from "../modal/ModalRefus.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
-import ModalApprobationCv from "../modal/ModalApprobationCv.jsx";
 
 const ApprobationCvs = () => {
     const { t } = useTranslation("main");
@@ -16,7 +15,6 @@ const ApprobationCvs = () => {
     const [error, setError] = useState(null);
     const [actionError, setActionError] = useState(null);
     const [cvRefuser, setCvRefuser] = useState(null);
-    const [cvApprouver, setCvApprouver] = useState(null);
     const [pdfUrlModal, setPdfUrlModal] = useState(null);
 
     useEffect(() => {
@@ -36,13 +34,12 @@ const ApprobationCvs = () => {
 
     const handleAccepter = async (id, message) => {
         setActionError(null);
+
         try {
             await accepterCv(id, authService.buildAuthHeader());
-            setCvs((prev) => prev.filter((cv) => cv.id !== id));
-            setCvApprouver(null);
+            setCvs(cvs.filter(cv => cv.id !== id));
         } catch (error) {
-            setActionError(error.message || t('approbation.cvs.errors.accept'));
-            setCvApprouver(null);
+            setActionError(t('approbation.cvs.errors.accept'));
         }
     };
 
@@ -113,38 +110,29 @@ const ApprobationCvs = () => {
                                     {t('approbation.cvs.pdf')}
                                 </button>
 
-                                {!(cvRefuser && cvRefuser.id === cv.id) && !(cvApprouver && cvApprouver.id === cv.id) && (
+                                {!(cvRefuser && cvRefuser.id === cv.id) && (
                                     <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
                                         <button
-                                            type="button"
                                             onClick={() => setCvRefuser(cv)}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm cursor-pointer"
+                                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
                                         >
                                             {t('approbation.btn_refuse')}
                                         </button>
                                         <button
-                                            type="button"
-                                            onClick={() => setCvApprouver(cv)}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm cursor-pointer"
+                                            onClick={() => handleAccepter(cv.id)}
+                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
                                         >
                                             {t('approbation.btn_accept')}
                                         </button>
                                     </div>
                                 )}
 
+
                                 {cvRefuser && cvRefuser.id === cv.id && (
                                     <ModalRefus
                                         mode="cv"
                                         onClose={() => setCvRefuser(null)}
                                         onConfirm={(message) => handleRefuser(cv.id, message)}
-                                    />
-                                )}
-
-                                {cvApprouver && cvApprouver.id === cv.id && (
-                                    <ModalApprobationCv
-                                        cv={cvApprouver}
-                                        onClose={() => setCvApprouver(null)}
-                                        onConfirm={(message) => handleAccepter(cv.id, message)}
                                     />
                                 )}
                             </article>

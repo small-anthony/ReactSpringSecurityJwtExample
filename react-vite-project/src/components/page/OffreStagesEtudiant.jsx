@@ -1,13 +1,13 @@
-import {useContext, useEffect, useMemo, useState} from "react";
-import {useTranslation} from "react-i18next";
-import {useSearchParams} from "react-router-dom";
-import {AuthServiceContext} from "../../services/AuthService.tsx";
-import {getMesCandidatures, getOffresDisponibles} from "../../services/api/EtudiantService.js";
-import {getConvocationsEtudiant} from "../../services/api/ConvocationAPI.js";
+import { useEffect, useState, useContext, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
+import { getOffresDisponibles, getMesCandidatures } from "../../services/api/EtudiantService.js";
+import { getConvocationsEtudiant } from "../../services/api/ConvocationAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
-import {DISCIPLINES} from "../../constants/disciplines";
-import {DUREES} from "../../constants/durees";
-import {AlertTriangle, Briefcase, Building2, Calendar, FileText, FilterX, Search, XCircle} from "lucide-react";
+import { DISCIPLINES } from "../../constants/disciplines";
+import { DUREES } from "../../constants/durees";
+import { Briefcase, Search, Building2, GraduationCap, Clock, DollarSign, AlertTriangle, FilterX, FileText, CheckCircle2, Calendar, XCircle } from "lucide-react";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
@@ -21,7 +21,7 @@ export default function OffreStagesEtudiant() {
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [offres, setOffres] = useState([]);
-    const [mesCandidaturesOffres, setMesCandidaturesOffres] = useState([]);
+    const [mesCandidaturesIds, setMesCandidaturesIds] = useState([]);
     const [candidaturesParOffre, setCandidaturesParOffre] = useState({});
     const [ongletActif, setOngletActif] = useState(
         tabFromUrl === "convocations" ? "convocations" : (tabFromUrl === "candidatures" ? "mes_candidatures" : "toutes")
@@ -44,7 +44,7 @@ export default function OffreStagesEtudiant() {
 
             try {
                 const mesOffres = await getMesCandidatures(authHeader);
-                setMesCandidaturesOffres(mesOffres || []);
+                setMesCandidaturesIds((mesOffres || []).map((o) => o.id));
 
                 const parOffre = {};
                 (mesOffres || []).forEach((o) => {
@@ -54,7 +54,7 @@ export default function OffreStagesEtudiant() {
                 });
                 setCandidaturesParOffre(parOffre);
             } catch {
-                setMesCandidaturesOffres([]);
+                setMesCandidaturesIds([]);
                 setCandidaturesParOffre({});
             }
 
@@ -65,7 +65,8 @@ export default function OffreStagesEtudiant() {
             } catch {
                 setCountPendingConvocations(0);
             }
-        } catch {
+        } catch (err) {
+            console.error("Erreur chargement offres:", err);
             setErreur(t("offres_etudiant.error_fetch"));
         } finally {
             setLoading(false);
@@ -98,13 +99,8 @@ export default function OffreStagesEtudiant() {
     };
 
     const handlePostulerSucces = (offreId) => {
+        setMesCandidaturesIds((prev) => (prev.includes(offreId) ? prev : [...prev, offreId]));
         setCandidaturesParOffre((prev) => ({ ...prev, [offreId]: { statut: "EN_ATTENTE" } }));
-        const offrePostulee = offres.find((o) => o.id === offreId);
-        if (offrePostulee) {
-            setMesCandidaturesOffres((prev) =>
-                prev.map((o) => o.id).includes(offreId) ? prev : [...prev, offrePostulee]
-            );
-        }
     };
 
     const entreprisesUniques = useMemo(() => {
@@ -127,12 +123,14 @@ export default function OffreStagesEtudiant() {
     }, [offres]);
 
     const offresFiltrees = useMemo(() => {
-        const listeBase = ongletActif === "mes_candidatures" ? mesCandidaturesOffres : offres;
-
-        return listeBase.filter((offre) => {
-            const aPostule = mesCandidaturesOffres.map((o) => o.id).includes(offre.id);
+        return offres.filter((offre) => {
+            const aPostule = mesCandidaturesIds.includes(offre.id);
 
             if (ongletActif === "toutes" && aPostule) {
+                return false;
+            }
+
+            if (ongletActif === "mes_candidatures" && !aPostule) {
                 return false;
             }
 
@@ -159,7 +157,7 @@ export default function OffreStagesEtudiant() {
                 correspondDuree
             );
         });
-    }, [offres, mesCandidaturesOffres, recherche, filtreEntreprise, filtreDiscipline, filtreDuree, ongletActif]);
+    }, [offres, recherche, filtreEntreprise, filtreDiscipline, filtreDuree, ongletActif, mesCandidaturesIds]);
 
     const aDesFiltresActifs = recherche || filtreEntreprise || filtreDiscipline || filtreDuree;
 
@@ -228,7 +226,7 @@ export default function OffreStagesEtudiant() {
                                 }`}
                             >
                                 <span>
-                                    {t("offres_etudiant.tab_my_applications", { defaultValue: "Mes candidatures" })} ({mesCandidaturesOffres.length})
+                                    {t("offres_etudiant.tab_my_applications", { defaultValue: "Mes candidatures" })} ({mesCandidaturesIds.length})
                                 </span>
                             </button>
                             <button
@@ -388,22 +386,20 @@ export default function OffreStagesEtudiant() {
                                                     </div>
                                                 </div>
 
-                                                {ongletActif === "mes_candidatures" && (
-                                                    <div className="pt-3 pb-3">
+                                                {(ongletActif === "mes_candidatures" || mesCandidaturesIds.includes(offre.id)) && (
+                                                    <div className="pt-3 pb-3 border-t border-[#E2E8F0]">
                                                         {candidaturesParOffre[offre.id]?.statut === "REFUSEE" && (
                                                             <p className="text-xs text-rose-600 flex items-center gap-1.5 font-medium">
                                                                 <XCircle className="w-4 h-4 shrink-0 text-rose-500" strokeWidth={1.5} />
                                                                 <span>
-                                                                    {candidaturesParOffre[offre.id]?.messageReponse === "L'offre a été supprimée par l'employeur"
-                                                                        ? t("candidature_etudiant.offer_deleted")
-                                                                        : t("candidature_etudiant.status.REFUSEE")}
+                                                                    {t("candidature_etudiant.status.REFUSEE")}
                                                                 </span>
                                                             </p>
                                                         )}
                                                     </div>
                                                 )}
 
-                                                <div className="pt-4 flex items-center justify-end">
+                                                <div className="pt-4 border-t border-[#E2E8F0] flex items-center justify-end">
                                                     <button
                                                         type="button"
                                                         onClick={() => setOffreSelectionnee(offre)}
@@ -425,7 +421,7 @@ export default function OffreStagesEtudiant() {
             <ModalDetailOffre
                 offre={offreSelectionnee}
                 onClose={() => setOffreSelectionnee(null)}
-                aPostule={offreSelectionnee ? mesCandidaturesOffres.map((o) => o.id).includes(offreSelectionnee.id) : false}
+                aPostule={offreSelectionnee ? mesCandidaturesIds.includes(offreSelectionnee.id) : false}
                 onPostulerSucces={handlePostulerSucces}
             />
         </div>

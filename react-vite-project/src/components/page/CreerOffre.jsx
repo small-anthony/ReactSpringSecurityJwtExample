@@ -4,14 +4,13 @@ import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { createOffreStage } from "../../services/api/OffreStageService.js";
 import OffreForm from "../form/OffreForm.jsx";
-import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 
 export default function CreerOffre() {
   const authService = useContext(AuthServiceContext);
   const navigate = useNavigate();
   const { t } = useTranslation("main");
   const userData = authService?.getUserData ? authService.getUserData() : null;
-  const [isSuccess, setIsSuccess] = useState(false);
+
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,7 +38,7 @@ export default function CreerOffre() {
           authHeader
       );
 
-      setIsSuccess(true);
+      navigate("/employeur");
     } catch (err) {
       setServerError(err.message || "defaultError");
     } finally {
@@ -50,6 +49,8 @@ export default function CreerOffre() {
   return (
       <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border">
         <h2 className="text-2xl font-bold mb-4">{t("creer_offre.title")}</h2>
+
+
 
         <OffreForm
             id="formCreerOffre"
@@ -73,16 +74,6 @@ export default function CreerOffre() {
               {serverError}
             </div>
         )}
-
-        <ModalConfirmation
-            isOpen={isSuccess}
-            type="success"
-            isSuccess={true}
-            title={t("creer_offre.successTitle")}
-            message={t("creer_offre.success")}
-            confirmText={t("common.confirm")}
-            onConfirm={() => navigate("/employeur")}
-        />
       </div>
   );
 }

@@ -16,8 +16,7 @@ vi.mock('react-i18next', () => ({
                 'cv_upload.loading': 'Téléversement en cours...',
                 'cv_upload.submit': 'Téléverser mon CV',
                 'cv_upload.errors.notPdf': 'Veuillez sélectionner un fichier PDF.',
-                'cv_upload.errors.default': 'Une erreur est survenue lors du téléversement.',
-                'common.confirm': 'Confirmer'
+                'cv_upload.errors.default': 'Une erreur est survenue lors du téléversement.'
             };
 
             return translations[key] || key;
@@ -139,6 +138,7 @@ describe('ModalTeleverserCv', () => {
 
     it('doit appeler le service de uploadCv et afficher le message de succes de televerser le cv', async () => {
         // Arrange
+        vi.useFakeTimers();
         const mockResponse = { message: 'Votre CV a été televersé avec succès!' };
         EtudiantCvService.uploadCv.mockResolvedValue(mockResponse);
         const { input, form } = renderModal();
@@ -155,11 +155,12 @@ describe('ModalTeleverserCv', () => {
         expect(screen.getByText('Votre CV a été televersé avec succès!')).toBeInTheDocument();
 
         // Act
-        const confirmButton = screen.getByRole('button', { name: /Confirmer/i });
-        fireEvent.click(confirmButton);
+        await act(async () => {
+            vi.advanceTimersByTime(2000);
+        });
 
         // Assert
-        expect(mockOnUploadSuccess).toHaveBeenCalledTimes(1);
+        expect(mockOnUploadSuccess).toHaveBeenCalled();
     });
 
     it('doit afficher une erreur de serveur si le uploadCv echoue', async () => {
