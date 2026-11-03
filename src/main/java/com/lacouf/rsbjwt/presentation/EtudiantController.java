@@ -100,7 +100,7 @@ public class EtudiantController {
     }
 
     @GetMapping("/offres/{id}")
-    public ResponseEntity<OffreStageDto> getOffreDetail(@PathVariable("id") Long id, Authentication authentication) {
+    public ResponseEntity<OffreStageDto> getOffreDetail(@PathVariable("id") Long id, Authentication authentication) throws Exception {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getOffreDetail(id, email));
     }
