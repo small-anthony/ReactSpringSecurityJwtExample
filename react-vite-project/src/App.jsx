@@ -18,6 +18,7 @@ import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
+import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
@@ -118,6 +119,11 @@ function App() {
                     <Route
                         path="employeur/historique"
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <HistoriqueDecisions /> : <Navigate to="/" />))}
+                    />
+
+                    <Route
+                        path="employeur/contrats"
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EmployeurContrats /> : <Navigate to="/" />))}
                     />
 
                     <Route

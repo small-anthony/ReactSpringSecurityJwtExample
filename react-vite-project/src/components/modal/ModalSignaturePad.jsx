@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { X, Check, RotateCcw, PenTool, ShieldCheck, AlertCircle } from "lucide-react";
 import { signerContrat } from "../../services/api/ContratAPI.js";
 
-export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess, authHeader }) {
+export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess, authHeader, roleLabel }) {
     const { t } = useTranslation("main");
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -212,7 +212,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                             
                             <div className="absolute bottom-6 left-6 right-6 border-b border-gray-200 pointer-events-none flex items-center justify-between">
                                 <span className="text-[10px] text-gray-300 select-none pb-0.5">✕ Signature</span>
-                                <span className="text-[10px] text-gray-300 select-none pb-0.5">L'étudiant(e)</span>
+                                <span className="text-[10px] text-gray-300 select-none pb-0.5">{roleLabel || t("signature_pad.signataire_label", { defaultValue: "L'étudiant(e)" })}</span>
                             </div>
 
                             {!hasDrawn && (

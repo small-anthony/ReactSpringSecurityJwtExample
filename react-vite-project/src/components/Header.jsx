@@ -86,6 +86,16 @@ function Header({ user }) {
                     </NavLink>
                   </>
               )}
+              {isEmployeur && (
+                  <>
+                    <NavLink to="/employeur" className={navLinkClasses} end>
+                      {t("pagename.voir_offres")}
+                    </NavLink>
+                    <NavLink to="/employeur/contrats" className={navLinkClasses}>
+                      {t("pagename.contrats_employeur", { defaultValue: "Mes contrats" })}
+                    </NavLink>
+                  </>
+              )}
             </nav>
 
             <div className="hidden md:flex items-center gap-3">
@@ -249,13 +259,23 @@ function Header({ user }) {
               )}
 
               {isEmployeur && (
-                  <NavLink
-                      to="/employeur"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={mobileNavLinkClasses}
-                  >
-                    {t("pagename.voir_offres")}
-                  </NavLink>
+                  <>
+                    <NavLink
+                        to="/employeur"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                        end
+                    >
+                      {t("pagename.voir_offres")}
+                    </NavLink>
+                    <NavLink
+                        to="/employeur/contrats"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.contrats_employeur", { defaultValue: "Mes contrats" })}
+                    </NavLink>
+                  </>
               )}
 
               {user ? (

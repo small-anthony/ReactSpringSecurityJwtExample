@@ -37,6 +37,15 @@ export async function getContratsEtudiant(authHeader) {
     return response.json();
 }
 
+export async function getContratsEmployeur(authHeader) {
+    const response = await APIHelper.get(`/contrats/employeur`, authHeader);
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de la récupération de vos contrats");
+    }
+    return response.json();
+}
+
 export async function getContratDocumentBlob(id, authHeader) {
     const response = await fetch(`${BASE_URL}/contrats/${id}/document`, {
         headers: authHeader,
