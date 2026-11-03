@@ -72,7 +72,15 @@ public class ContratService {
         Contrat contrat = contratRepository.findById(contratId)
                 .orElseThrow(() -> new Exception("Contrat introuvable"));
 
-        byte[] signatureBytes = (signatureFile != null && !signatureFile.isEmpty()) ? signatureFile.getBytes() : new byte[0];
+        if (signatureFile == null || signatureFile.isEmpty()) {
+            throw new Exception("Fichier de signature invalide ou manquant");
+        }
+
+        byte[] signatureBytes = signatureFile.getBytes();
+        if (signatureBytes == null || signatureBytes.length == 0) {
+            throw new Exception("Fichier de signature invalide ou manquant");
+        }
+
         Signature<?> signature = new Signature<>(utilisateur, signatureBytes);
         contrat.signer(signature);
 

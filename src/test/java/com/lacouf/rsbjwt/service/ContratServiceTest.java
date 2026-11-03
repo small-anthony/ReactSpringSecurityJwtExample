@@ -233,6 +233,53 @@ public class ContratServiceTest {
     }
 
     @Test
+    void signerContrat_signatureFichierNul_lanceException() {
+        // Arrange
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.signerContrat(1L, "jean@test.com", null));
+
+        assertEquals("Fichier de signature invalide ou manquant", exception.getMessage());
+    }
+
+    @Test
+    void signerContrat_signatureFichierVide_lanceException() {
+        // Arrange
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        MultipartFile fileVide = mock(MultipartFile.class);
+        when(fileVide.isEmpty()).thenReturn(true);
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.signerContrat(1L, "jean@test.com", fileVide));
+
+        assertEquals("Fichier de signature invalide ou manquant", exception.getMessage());
+    }
+
+    @Test
+    void signerContrat_signatureBytesVides_lanceException() throws Exception {
+        // Arrange
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        MultipartFile fileBytesVides = mock(MultipartFile.class);
+        when(fileBytesVides.isEmpty()).thenReturn(false);
+        when(fileBytesVides.getBytes()).thenReturn(new byte[0]);
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.signerContrat(1L, "jean@test.com", fileBytesVides));
+
+        assertEquals("Fichier de signature invalide ou manquant", exception.getMessage());
+    }
+
+    @Test
     void signerContrat_erreursValidation_lanceException() throws Exception {
         // Arrange
         Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");

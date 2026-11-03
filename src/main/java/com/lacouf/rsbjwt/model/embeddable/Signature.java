@@ -21,7 +21,7 @@ public class Signature<User extends UserApp> {
 	public Signature(User signataire, byte[] data) {
 		this.data = data;
 		this.signataire = signataire;
-		this.valid = true;
+		this.valid = signataire != null && data != null && data.length > 0;
 	}
 
 	public static <User extends UserApp> Signature<User> invalid(User signataire) {
