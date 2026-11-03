@@ -6,7 +6,8 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "not_available": "N/D",
-    "at": "à"
+    "at": "à",
+    "delete": "Supprimer"
   },
   "pagename": {
     "home": "Accueil",
@@ -366,7 +367,9 @@
     "hire": "Embaucher",
     "accepted": "Convoqué",
     "modal_convoquer_title": "Planifier une convocation:",
-    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas."
+    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas.",
+    "slot": "Créneau {{number}}",
+    "add_slot": "+ Ajouter un créneau"
   },
   "candidature_etudiant": {
     "status": {

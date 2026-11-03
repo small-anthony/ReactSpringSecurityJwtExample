@@ -6,7 +6,8 @@
     "close": "Close",
     "confirm": "Confirm",
     "not_available": "N/A",
-    "at": "at"
+    "at": "at",
+    "delete": "Delete"
   },
   "pagename": {
     "home": "Home",
@@ -366,7 +367,9 @@
     "hire": "Hire",
     "accepted": "Summoned",
     "modal_convoquer_title": "Schedule an interview:",
-    "create_rendezvous": "Create a new time slot with the button below."
+    "create_rendezvous": "Create a new time slot with the button below.",
+    "slot": "Time slot {{number}}",
+    "add_slot": "+ Add a time slot"
   },
   "candidature_etudiant": {
     "status": {
