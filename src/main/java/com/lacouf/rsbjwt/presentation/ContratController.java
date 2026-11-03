@@ -61,6 +61,12 @@ public class ContratController {
 		return ResponseEntity.ok(contratService.getContratsEtudiant(email));
 	}
 
+	@GetMapping("/employeur")
+	public ResponseEntity<List<ContratDto>> getContratsEmployeur(Authentication authentication) {
+		String email = authentication != null ? authentication.getName() : null;
+		return ResponseEntity.ok(contratService.getContratsEmployeur(email));
+	}
+
 	@PostMapping("/{id}/signer")
 	public ResponseEntity<DataTransferObject> signerContrat(@PathVariable Long id, @RequestParam(value = "signature", required = false) MultipartFile signature, Authentication authentication) {
 		try {

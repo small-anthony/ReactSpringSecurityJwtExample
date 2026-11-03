@@ -123,34 +123,30 @@ public class Contrat {
 
 	@SuppressWarnings("unchecked")
 	private void setSignature(Signature<?> signature) throws Exception {
-		switch (signature.getSignataire()) {
-			case Etudiant _ -> {
-				if (signatureEtudiant != null) {
-					throw new Exception("signature existe déjà");
-				}
-				Signature<Etudiant> sig = (Signature<Etudiant>) signature;
-				if (!sig.isSignedBy(getEtudiant())) {
-					throw new Exception("signataire est invalide");
-				}
-				signatureEtudiant = sig;
+		UserApp signataire = signature.getSignataire();
+		if (signataire instanceof Etudiant || (signataire != null && signataire.getRole() == com.lacouf.rsbjwt.model.auth.Role.ETUDIANT)) {
+			if (signatureEtudiant != null) {
+				throw new Exception("signature existe déjà");
 			}
-			case Employeur _ -> {
-				if (signatureEmployeur != null) {
-					throw new Exception("signature existe déjà");
-				}
-				Signature<Employeur> sig = (Signature<Employeur>) signature;
-				if (!sig.isSignedBy(getEmployeur())) {
-					throw new Exception("signataire est invalide");
-				}
-				signatureEmployeur = sig;
+			if (signataire == null || !java.util.Objects.equals(signataire.getId(), getEtudiant().getId())) {
+				throw new Exception("signataire est invalide");
 			}
-			case Gestionnaire _ -> {
-				if (signatureGestionnaire != null) {
-					throw new Exception("signature existe déjà");
-				}
-				signatureGestionnaire = (Signature<Gestionnaire>) signature;
+			signatureEtudiant = (Signature<Etudiant>) signature;
+		} else if (signataire instanceof Employeur || (signataire != null && signataire.getRole() == com.lacouf.rsbjwt.model.auth.Role.EMPLOYEUR)) {
+			if (signatureEmployeur != null) {
+				throw new Exception("signature existe déjà");
 			}
-			case null, default -> throw new Exception("signataire inconnu");
+			if (signataire == null || !java.util.Objects.equals(signataire.getId(), getEmployeur().getId())) {
+				throw new Exception("signataire est invalide");
+			}
+			signatureEmployeur = (Signature<Employeur>) signature;
+		} else if (signataire instanceof Gestionnaire || (signataire != null && signataire.getRole() == com.lacouf.rsbjwt.model.auth.Role.GESTIONNAIRE)) {
+			if (signatureGestionnaire != null) {
+				throw new Exception("signature existe déjà");
+			}
+			signatureGestionnaire = (Signature<Gestionnaire>) signature;
+		} else {
+			throw new Exception("signataire inconnu");
 		}
 	}
 
@@ -160,6 +156,8 @@ public class Contrat {
 		}
 		if (isSigneParEtudiant() && isSigneParEmployeur() && isSigneParGestionnaire()) {
 			this.statut = StatutContrat.COMPLETE;
+		} else if (isSigneParEtudiant() && isSigneParEmployeur()) {
+			this.statut = StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR;
 		} else if (isSigneParEmployeur() && !isSigneParEtudiant()) {
 			this.statut = StatutContrat.SIGNE_PAR_EMPLOYEUR;
 		} else if (isSigneParEtudiant() && !isSigneParEmployeur()) {
