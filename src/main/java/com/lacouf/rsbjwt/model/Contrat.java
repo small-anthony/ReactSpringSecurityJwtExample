@@ -16,7 +16,6 @@ public class Contrat {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Immutable
 	@Lob
 	@Column(name = "document_data", nullable = false)
 	private byte[] data;
@@ -100,7 +99,25 @@ public class Contrat {
 	}
 
 	public void rejeter(UserApp user) throws Exception {
-		setSignature(Signature.invalid(user));
+		if (user instanceof Etudiant etudiant) {
+			if (!java.util.Objects.equals(etudiant.getId(), getEtudiant().getId())) {
+				throw new Exception("signataire est invalide");
+			}
+			this.signatureEtudiant = com.lacouf.rsbjwt.model.embeddable.Signature.invalid(etudiant);
+		} else if (user instanceof Employeur employeur) {
+			if (!java.util.Objects.equals(employeur.getId(), getEmployeur().getId())) {
+				throw new Exception("signataire est invalide");
+			}
+			this.signatureEmployeur = com.lacouf.rsbjwt.model.embeddable.Signature.invalid(employeur);
+		} else if (user instanceof Gestionnaire gestionnaire) {
+			this.signatureGestionnaire = com.lacouf.rsbjwt.model.embeddable.Signature.invalid(gestionnaire);
+		} else if (user != null && java.util.Objects.equals(user.getId(), getEtudiant().getId())) {
+			this.signatureEtudiant = com.lacouf.rsbjwt.model.embeddable.Signature.invalid(getEtudiant());
+		} else if (user != null && java.util.Objects.equals(user.getId(), getEmployeur().getId())) {
+			this.signatureEmployeur = com.lacouf.rsbjwt.model.embeddable.Signature.invalid(getEmployeur());
+		} else {
+			this.signatureGestionnaire = com.lacouf.rsbjwt.model.embeddable.Signature.invalid(null);
+		}
 		this.statut = StatutContrat.REFUSE;
 	}
 
@@ -170,6 +187,10 @@ public class Contrat {
 
 	public byte[] getData() {
 		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 	public Candidature getCandidature() {

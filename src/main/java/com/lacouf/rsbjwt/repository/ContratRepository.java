@@ -18,6 +18,10 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     boolean existsByCandidatureId(@Param("candidatureId") Long candidatureId);
 
     List<Contrat> findAllByOrderByDateCreationDesc();
-    List<Contrat> findByCandidatureEtudiantEmail(String email);
-    List<Contrat> findByCandidatureOffreStageEmployeurEmail(String email);
+
+    @Query("SELECT c FROM Contrat c WHERE c.candidature.etudiant.credentials.email = :email")
+    List<Contrat> findByCandidatureEtudiantEmail(@Param("email") String email);
+
+    @Query("SELECT c FROM Contrat c WHERE c.candidature.offreStage.employeur.credentials.email = :email")
+    List<Contrat> findByCandidatureOffreStageEmployeurEmail(@Param("email") String email);
 }
