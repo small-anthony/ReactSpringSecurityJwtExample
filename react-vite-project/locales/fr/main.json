@@ -6,7 +6,8 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "not_available": "N/D",
-    "at": "à"
+    "at": "à",
+    "loading": "Chargement en cours..."
   },
   "pagename": {
     "home": "Accueil",
@@ -510,7 +511,12 @@
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF",
-      "accept_success": "Le CV a été approuvé avec succès."
+      "accept_success": "Le CV a été approuvé avec succès.",
+      "loading_pdf": "Chargement du PDF...",
+      "error_pdf": "Erreur de chargement du PDF",
+      "previous_page": "Précédent",
+      "page_of": "Page {{current}} sur {{total}}",
+      "next_page": "Suivant"
     },
     "offres": {
       "title": "Offres en attente d'approbation",
@@ -716,7 +722,8 @@
     "signing": "Signature en cours...",
     "confirm": "Confirmer et signer le contrat",
     "error_blob": "Impossible de capturer la signature.",
-    "error_sign": "Erreur lors de la signature du contrat."
+    "error_sign": "Erreur lors de la signature du contrat.",
+    "signataire_label": "L'étudiant(e)"
   },
   "contrats_etudiant": {
     "title": "Mes Contrats de Stage",
