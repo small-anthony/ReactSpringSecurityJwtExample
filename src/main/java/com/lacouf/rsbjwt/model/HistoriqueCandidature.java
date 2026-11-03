@@ -12,7 +12,7 @@ public class HistoriqueCandidature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     private Candidature candidature;
 
     @Enumerated(EnumType.STRING)

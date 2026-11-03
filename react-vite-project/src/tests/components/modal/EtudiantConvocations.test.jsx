@@ -119,7 +119,7 @@ describe("EtudiantConvocations", () => {
             mockConvocations[0].rendezVousPossibles[0],
             { Authorization: "Bearer token123" }
         );
-        expect(await screen.findByText(/l'entrevue a été confirmée/i)).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /accepter l'entrevue/i })).not.toBeInTheDocument();
     });
 
     it("devrait refuser une convocation avec un motif via la modale", async () => {
@@ -147,7 +147,9 @@ describe("EtudiantConvocations", () => {
             "Indisponible à ces dates",
             { Authorization: "Bearer token123" }
         );
-        expect(await screen.findByText(/la convocation a été refusée/i)).toBeInTheDocument();
+        expect(await screen.findByText(/motif du refus transmis/i)).toBeInTheDocument();
+        expect(screen.getByText(/indisponible à ces dates/i)).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /^refuser$/i })).not.toBeInTheDocument();
     });
 
     it("devrait afficher un message d'erreur si le chargement échoue", async () => {

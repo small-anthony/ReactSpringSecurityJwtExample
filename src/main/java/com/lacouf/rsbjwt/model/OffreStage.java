@@ -2,6 +2,8 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,18 +21,20 @@ public class OffreStage {
     private String duree;
     private String exigences;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     private List<Etudiant> etudiantsAutorises = new ArrayList<>();
 
     @Embedded
     private Approbation approbation = new Approbation();
 
-    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "offreStage", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final List<Candidature> candidatures = new ArrayList<>();
+
+    private LocalDate dateSuppression = null;
 
     public OffreStage() {}
 
@@ -124,6 +128,10 @@ public class OffreStage {
         return this.approbation.getStatus();
     }
 
+    public LocalDate getDateSuppression() {
+        return dateSuppression;
+    }
+
     public String getMessageReponse() {
         return this.approbation.getMessageRefus();
     }
@@ -186,6 +194,17 @@ public class OffreStage {
 
     public void setNomEntreprise(String nomEntreprise) {
         this.nomEntreprise = nomEntreprise;
+    }
+
+    public void setDateSuppression(LocalDate dateSuppression) {
+        this.dateSuppression = dateSuppression;
+    }
+
+    public boolean isSupprime() {
+        return this.dateSuppression != null;
+    }
+    public void supprimer() {
+        this.dateSuppression = LocalDate.now();
     }
 
 }

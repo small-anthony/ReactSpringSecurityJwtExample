@@ -83,14 +83,13 @@ export async function getCvCandidat(candidatureId, authHeader) {
   return response.blob();
 }
 
-export async function refuserCandidature(candidatureId, message, authHeader) {
-  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/refuser`, {
+export async function accepterCandidature(candidatureId, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/accepter`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       ...authHeader,
     },
-    body: JSON.stringify({ message }),
   });
 
   if (!response.ok) {
@@ -101,10 +100,14 @@ export async function refuserCandidature(candidatureId, message, authHeader) {
   return response.json();
 }
 
-export async function embaucherCandidature(candidatureId, authHeader) {
-  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/embaucher`, {
+export async function refuserCandidature(candidatureId, message, authHeader) {
+  const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/refuser`, {
     method: "PUT",
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+    body: JSON.stringify({ message }),
   });
 
   if (!response.ok) {

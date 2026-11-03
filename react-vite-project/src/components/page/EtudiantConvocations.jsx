@@ -24,7 +24,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
   const [convocations, setConvocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erreur, setErreur] = useState(null);
-  const [messageSucces, setMessageSucces] = useState(null);
   const [filtre, setFiltre] = useState("TOUTES");
 
   const [modalRefusOpen, setModalRefusOpen] = useState(false);
@@ -55,13 +54,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
     chargerConvocations();
   }, []);
 
-  const notifierSucces = (msg) => {
-    setMessageSucces(msg);
-    setTimeout(() => {
-      setMessageSucces(null);
-    }, 4500);
-  };
-
   const handleAccepter = async (id, selectedSlot) => {
     try {
       setActionLoadingId(id);
@@ -71,11 +63,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
 
       setConvocations((prev) =>
         prev.map((c) => (c.id === id ? updated : c))
-      );
-      notifierSucces(
-        t("convocation.success_accepted", {
-          defaultValue: "Félicitations ! L'entrevue a été confirmée et ajoutée à votre profil.",
-        })
       );
     } catch (e) {
       setErreur(e.message || "Erreur lors de l'acceptation");
@@ -106,11 +93,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
       );
       setModalRefusOpen(false);
       setConvocationRefusCible(null);
-      notifierSucces(
-        t("convocation.success_refused", {
-          defaultValue: "La convocation a été refusée. L'employeur en a été notifié.",
-        })
-      );
     } catch (e) {
       setErreur(e.message || "Erreur lors du refus de la convocation");
     } finally {
@@ -157,14 +139,6 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
           </p>
         </div>
       )}
-
-        {messageSucces && (
-          <div className="p-4 bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 rounded-xl shadow-xs flex items-center gap-3 animate-in fade-in duration-200">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span className="text-sm font-semibold">{messageSucces}</span>
-          </div>
-        )}
-
         {erreur && (
           <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center gap-3 animate-in fade-in duration-200">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
