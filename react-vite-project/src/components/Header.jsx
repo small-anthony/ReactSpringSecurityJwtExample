@@ -230,13 +230,22 @@ function Header({ user }) {
                   </>
               )}
               {isEtudiant && (
-                  <NavLink
-                      to="/etudiant"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={mobileNavLinkClasses}
-                  >
-                    {t("pagename.offres_stages")}
-                  </NavLink>
+                  <>
+                    <NavLink
+                        to="/etudiant"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.offres_stages")}
+                    </NavLink>
+                    <NavLink
+                        to="/etudiant?tab=contrats"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={mobileNavLinkClasses}
+                    >
+                      {t("pagename.contrats", { defaultValue: "Mes contrats" })}
+                    </NavLink>
+                  </>
               )}
 
               {isEmployeur && (

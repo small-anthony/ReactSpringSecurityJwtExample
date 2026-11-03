@@ -90,6 +90,16 @@ function App() {
                                         <Navigate to="/" />
                         }
                     />
+
+                    <Route
+                        path="etudiant/contrats"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "ETUDIANT" ? <Navigate to="/etudiant?tab=contrats" replace /> :
+                                        <Navigate to="/" />
+                        }
+                    />
                     <Route
                         path="employeur"
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <ProfileEmployeur /> : <Navigate to="/" />))}

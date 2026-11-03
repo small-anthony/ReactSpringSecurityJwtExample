@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FileText, PlusCircle, RefreshCw, X } from "lucide-react";
+import { FileText, PlusCircle, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
@@ -118,16 +118,7 @@ export default function GestionnaireContrats() {
             {t("contrats.title")}
           </h2>
 
-          <button
-            type="button"
-            onClick={chargerDonnees}
-            disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl border border-gray-200 shadow-sm transition disabled:opacity-50 cursor-pointer self-start sm:self-auto"
-            title={t("contrats.actions.refresh")}
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-600" : ""}`} />
-            {t("contrats.actions.refresh")}
-          </button>
+
         </div>
 
         <div className="flex border-b border-gray-200 mb-8 gap-4">

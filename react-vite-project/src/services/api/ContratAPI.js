@@ -28,6 +28,15 @@ export async function getTousLesContrats(authHeader) {
     return response.json();
 }
 
+export async function getContratsEtudiant(authHeader) {
+    const response = await APIHelper.get(`/contrats/etudiant`, authHeader);
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de la récupération de vos contrats");
+    }
+    return response.json();
+}
+
 export async function getContratDocumentBlob(id, authHeader) {
     const response = await fetch(`${BASE_URL}/contrats/${id}/document`, {
         headers: authHeader,
@@ -38,18 +47,35 @@ export async function getContratDocumentBlob(id, authHeader) {
     return response.blob();
 }
 
-export async function signerContrat(id, signatureData, authHeader) {
-    const response = await APIHelper.post_raw(`/contrats/${id}/signer`, authHeader, signatureData);
+export async function signerContrat(id, signatureFile, authHeader) {
+    const formData = new FormData();
+    formData.append("signature", signatureFile);
+    const response = await fetch(`${BASE_URL}/contrats/${id}/signer`, {
+        method: "POST",
+        headers: {
+            Authorization: authHeader.Authorization || authHeader.authorization,
+        },
+        body: formData,
+    });
     if (!response.ok) {
-        throw new Error(await response.text() || "Erreur interne");
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de la signature du contrat");
     }
     return response.json();
 }
 
 export async function rejeterContrat(id, authHeader) {
-    const response = await APIHelper.post(`/contrats/${id}/rejeter`, authHeader);
+    const token = authHeader?.Authorization || authHeader?.authorization || (typeof authHeader === "string" ? authHeader : "");
+    const response = await fetch(`${BASE_URL}/contrats/${id}/rejeter`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+        },
+    });
     if (!response.ok) {
-        throw new Error(await response.text() || "Erreur interne");
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors du refus du contrat");
     }
     return response.json();
 }

@@ -7,9 +7,11 @@ import {getConvocationsEtudiant} from "../../services/api/ConvocationAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import {DISCIPLINES} from "../../constants/disciplines";
 import {DUREES} from "../../constants/durees";
-import {AlertTriangle, Briefcase, Building2, Calendar, FileText, FilterX, Search, XCircle} from "lucide-react";
+import {AlertTriangle, Briefcase, Building2, Calendar, CheckCircle2, FileText, FilterX, Search, XCircle} from "lucide-react";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
+import EtudiantContrats from "./EtudiantContrats.jsx";
+import {getContratsEtudiant} from "../../services/api/ContratAPI.js";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 export default function OffreStagesEtudiant() {
@@ -24,9 +26,11 @@ export default function OffreStagesEtudiant() {
     const [mesCandidaturesOffres, setMesCandidaturesOffres] = useState([]);
     const [candidaturesParOffre, setCandidaturesParOffre] = useState({});
     const [ongletActif, setOngletActif] = useState(
-        tabFromUrl === "convocations" ? "convocations" : (tabFromUrl === "candidatures" ? "mes_candidatures" : "toutes")
+        tabFromUrl === "convocations" ? "convocations" : (tabFromUrl === "candidatures" ? "mes_candidatures" : (tabFromUrl === "contrats" ? "contrats" : "toutes"))
     );
     const [countPendingConvocations, setCountPendingConvocations] = useState(0);
+    const [countPendingContrats, setCountPendingContrats] = useState(0);
+    const [aTrouveStage, setATrouveStage] = useState(false);
     const [offreSelectionnee, setOffreSelectionnee] = useState(null);
     const [recherche, setRecherche] = useState("");
     const [filtreEntreprise, setFiltreEntreprise] = useState("");
@@ -65,6 +69,17 @@ export default function OffreStagesEtudiant() {
             } catch {
                 setCountPendingConvocations(0);
             }
+
+            try {
+                const mesContrats = await getContratsEtudiant(authHeader);
+                const signed = (mesContrats || []).some((c) => c.signeParEtudiant);
+                setATrouveStage(signed);
+                const pendingContrats = (mesContrats || []).filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
+                setCountPendingContrats(pendingContrats);
+            } catch {
+                setATrouveStage(false);
+                setCountPendingContrats(0);
+            }
         } catch {
             setErreur(t("offres_etudiant.error_fetch"));
         } finally {
@@ -81,6 +96,8 @@ export default function OffreStagesEtudiant() {
             setOngletActif("convocations");
         } else if (tabFromUrl === "candidatures") {
             setOngletActif("mes_candidatures");
+        } else if (tabFromUrl === "contrats") {
+            setOngletActif("contrats");
         } else if (tabFromUrl === "toutes") {
             setOngletActif("toutes");
         }
@@ -92,6 +109,8 @@ export default function OffreStagesEtudiant() {
             setSearchParams({ tab: "convocations" });
         } else if (nouvelOnglet === "mes_candidatures") {
             setSearchParams({ tab: "candidatures" });
+        } else if (nouvelOnglet === "contrats") {
+            setSearchParams({ tab: "contrats" });
         } else {
             setSearchParams({});
         }
@@ -174,9 +193,17 @@ export default function OffreStagesEtudiant() {
         <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto space-y-8">
                 <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] mb-3">
-                        <Briefcase className="w-3.5 h-3.5 text-[#2563EB]" strokeWidth={1.5} />
-                        <span>{t("offres_etudiant.badge")}</span>
+                    <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
+                            <Briefcase className="w-3.5 h-3.5 text-[#2563EB]" strokeWidth={1.5} />
+                            <span>{t("offres_etudiant.badge")}</span>
+                        </div>
+                        {aTrouveStage && (
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                <span>{t("contrats_etudiant.status_stage_trouve", { defaultValue: "STAGE TROUVÉ" })}</span>
+                            </div>
+                        )}
                     </div>
                     <h1 className="text-3xl font-bold text-[#111827] tracking-tight sm:text-4xl">
                         {t("offres_etudiant.title")}
@@ -188,15 +215,6 @@ export default function OffreStagesEtudiant() {
 
                 <ModalCvEtudiant />
 
-                {loading && (
-                    <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                        <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
-                        <p className="text-sm font-medium text-[#64748B]">
-                            {t("offres_etudiant.loading")}
-                        </p>
-                    </div>
-                )}
-
                 {erreur && !loading && (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-red-800 flex items-center gap-3">
                         <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" strokeWidth={1.5} />
@@ -204,58 +222,92 @@ export default function OffreStagesEtudiant() {
                     </div>
                 )}
 
-                {!loading && !erreur && (
-                    <div className="space-y-6">
-                        <div className="bg-[#F1F5F9] p-1 rounded-xl inline-flex flex-wrap items-center gap-1 border border-[#E2E8F0] shadow-xs">
-                            <button
-                                type="button"
-                                onClick={() => changerOnglet("toutes")}
-                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer ${
-                                    ongletActif === "toutes"
-                                        ? "bg-white text-[#111827] shadow-xs"
-                                        : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
-                                }`}
-                            >
-                                {t("offres_etudiant.tab_all_offers", { defaultValue: "Toutes les offres" })}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => changerOnglet("mes_candidatures")}
-                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer flex items-center gap-2 ${
-                                    ongletActif === "mes_candidatures"
-                                        ? "bg-white text-[#111827] shadow-xs"
-                                        : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
-                                }`}
-                            >
-                                <span>
-                                    {t("offres_etudiant.tab_my_applications", { defaultValue: "Mes candidatures" })} ({mesCandidaturesOffres.length})
+                <div className="space-y-6">
+                    <div className="bg-[#F1F5F9] p-1 rounded-xl inline-flex flex-wrap items-center gap-1 border border-[#E2E8F0] shadow-xs">
+                        <button
+                            type="button"
+                            onClick={() => changerOnglet("toutes")}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer ${
+                                ongletActif === "toutes"
+                                    ? "bg-white text-[#111827] shadow-xs"
+                                    : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
+                            }`}
+                        >
+                            {t("offres_etudiant.tab_all_offers", { defaultValue: "Toutes les offres" })}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => changerOnglet("mes_candidatures")}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer flex items-center gap-2 ${
+                                ongletActif === "mes_candidatures"
+                                    ? "bg-white text-[#111827] shadow-xs"
+                                    : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
+                            }`}
+                        >
+                            <span>
+                                {t("offres_etudiant.tab_my_applications", { defaultValue: "Mes candidatures" })} ({mesCandidaturesOffres.length})
+                            </span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => changerOnglet("convocations")}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer flex items-center gap-2 ${
+                                ongletActif === "convocations"
+                                    ? "bg-white text-[#111827] shadow-xs"
+                                    : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
+                            }`}
+                        >
+                            <Calendar className="w-4 h-4 text-[#64748B]" strokeWidth={1.5} />
+                            <span>{t("pagename.convocations", { defaultValue: "Mes convocations" })}</span>
+                            {countPendingConvocations > 0 && (
+                                <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-amber-100 text-amber-800">
+                                    {countPendingConvocations}
                                 </span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => changerOnglet("convocations")}
-                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer flex items-center gap-2 ${
-                                    ongletActif === "convocations"
-                                        ? "bg-white text-[#111827] shadow-xs"
-                                        : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
-                                }`}
-                            >
-                                <Calendar className="w-4 h-4 text-[#64748B]" strokeWidth={1.5} />
-                                <span>{t("pagename.convocations", { defaultValue: "Mes convocations" })}</span>
-                                {countPendingConvocations > 0 && (
-                                    <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-amber-100 text-amber-800">
-                                        {countPendingConvocations}
-                                    </span>
-                                )}
-                            </button>
-                        </div>
+                            )}
+                        </button>
+                        <button
+                            type="button"
+                            id="tab-contrats"
+                            onClick={() => changerOnglet("contrats")}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer flex items-center gap-2 ${
+                                ongletActif === "contrats"
+                                    ? "bg-white text-[#111827] shadow-xs"
+                                    : "text-[#64748B] hover:text-[#0F172A] hover:bg-white/60"
+                            }`}
+                        >
+                            <FileText className="w-4 h-4 text-[#64748B]" strokeWidth={1.5} />
+                            <span>{t("pagename.contrats", { defaultValue: "Mes contrats" })}</span>
+                            {countPendingContrats > 0 && (
+                                <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-blue-100 text-blue-800">
+                                    {countPendingContrats}
+                                </span>
+                            )}
+                        </button>
+                    </div>
 
-                        {ongletActif === "convocations" ? (
-                            <EtudiantConvocations
-                                embedMode={true}
-                                onPendingCountChange={setCountPendingConvocations}
-                            />
-                        ) : (
+                    {ongletActif === "convocations" ? (
+                        <EtudiantConvocations
+                            embedMode={true}
+                            onPendingCountChange={setCountPendingConvocations}
+                        />
+                    ) : ongletActif === "contrats" ? (
+                        <EtudiantContrats
+                            embedMode={true}
+                            onPendingCountChange={(restant, signed) => {
+                                setCountPendingContrats(restant);
+                                if (typeof signed === "boolean") {
+                                    setATrouveStage(signed);
+                                }
+                            }}
+                        />
+                    ) : loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                            <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+                            <p className="text-sm font-medium text-[#64748B]">
+                                {t("offres_etudiant.loading")}
+                            </p>
+                        </div>
+                    ) : (
                             <>
                                 <div className="bg-white p-5 rounded-xl border border-[#E2E8F0] shadow-xs space-y-4">
                                     <div className="relative">
@@ -419,7 +471,6 @@ export default function OffreStagesEtudiant() {
                             </>
                         )}
                     </div>
-                )}
             </div>
 
             <ModalDetailOffre
