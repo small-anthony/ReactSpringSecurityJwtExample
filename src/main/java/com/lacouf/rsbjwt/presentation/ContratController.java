@@ -55,11 +55,28 @@ public class ContratController {
 		}
 	}
 
+	@GetMapping("/etudiant")
+	public ResponseEntity<List<ContratDto>> getContratsEtudiant(Authentication authentication) {
+		String email = authentication != null ? authentication.getName() : null;
+		return ResponseEntity.ok(contratService.getContratsEtudiant(email));
+	}
+
 	@PostMapping("/{id}/signer")
-	public ResponseEntity<DataTransferObject> signerContrat(@PathVariable Long id, @RequestBody MultipartFile signature, Authentication authentication) {
+	public ResponseEntity<DataTransferObject> signerContrat(@PathVariable Long id, @RequestParam(value = "signature", required = false) MultipartFile signature, Authentication authentication) {
 		try {
 			String email = authentication != null ? authentication.getName() : null;
 			ContratDto contrat = contratService.signerContrat(id, email, signature);
+			return ResponseEntity.ok(contrat);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.create(e));
+		}
+	}
+
+	@PostMapping(value = {"/{id}/rejeter", "/{id}/refuser"})
+	public ResponseEntity<DataTransferObject> rejeterContrat(@PathVariable Long id, Authentication authentication) {
+		try {
+			String email = authentication != null ? authentication.getName() : null;
+			ContratDto contrat = contratService.rejeterContrat(id, email);
 			return ResponseEntity.ok(contrat);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.create(e));

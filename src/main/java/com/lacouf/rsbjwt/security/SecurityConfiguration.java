@@ -83,6 +83,11 @@ public class SecurityConfiguration {
                         .requestMatchers(PROFESSEUR_PATH).hasAuthority(Role.PROFESSEUR.name())
                         .requestMatchers(GESTIONNAIRE_PATH).hasAuthority(Role.GESTIONNAIRE.name())
 
+                        .requestMatchers("/contrats/**").hasAnyAuthority(
+                                Role.ETUDIANT.name(),
+                                Role.EMPLOYEUR.name(),
+                                Role.GESTIONNAIRE.name())
+
                         .anyRequest().authenticated()
 
                 )
