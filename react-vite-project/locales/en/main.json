@@ -338,7 +338,15 @@
     "title": "Received Applications",
     "subtitle": "Review students who applied to this offer",
     "loading": "Loading applications...",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "interviews": "Interviews",
+      "hired": "Hired",
+      "refused": "Refused"
+    },
     "no_candidates": "No applications received for this offer yet.",
+    "no_candidates_category": "No applications in this category.",
     "view_cv": "View Resume",
     "no_cv": "No resume available",
     "status": {

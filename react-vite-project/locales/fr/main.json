@@ -338,7 +338,15 @@
     "title": "Candidatures reçues",
     "subtitle": "Consultez les étudiants ayant postulé à cette offre",
     "loading": "Chargement des candidatures...",
+    "tabs": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "interviews": "Entrevues",
+      "hired": "Embauchés",
+      "refused": "Refusés"
+    },
     "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
+    "no_candidates_category": "Aucune candidature dans cette catégorie.",
     "view_cv": "Voir le CV",
     "no_cv": "Aucun CV disponible",
     "status": {
