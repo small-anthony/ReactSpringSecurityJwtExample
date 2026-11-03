@@ -1,13 +1,10 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
-import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
-import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import org.springframework.stereotype.Service;
@@ -21,20 +18,17 @@ public class ConvocationService {
 
     private final ConvocationRepository convocationRepository;
     private final CandidatureRepository candidatureRepository;
-    private final HistoriqueCandidatureRepository historiqueRepository;
 
     public ConvocationService(ConvocationRepository convocationRepository,
-                              CandidatureRepository candidatureRepository,
-                              HistoriqueCandidatureRepository historiqueRepository) {
+            CandidatureRepository candidatureRepository) {
         this.convocationRepository = convocationRepository;
         this.candidatureRepository = candidatureRepository;
-        this.historiqueRepository = historiqueRepository;
     }
 
-    @Transactional()
-    public void verifierEtMettreAJourStatutsPasses(Instant timestamp) {
+    @Transactional
+    public void verifierEtMettreAJourStatutsPasses() {
         convocationRepository.expireConvocations(
-                timestamp,
+                Instant.now(),
                 StatutConvocation.ANNULEE,
                 StatutConvocation.EN_ATTENTE);
     }
@@ -55,37 +49,34 @@ public class ConvocationService {
         return ConvocationDto.create(convocationRepository.findAll());
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public ConvocationDto creerConvocation(String actorEmail, Long candidatureId,
-                                           List<RendezVousDto> rendezVousPossibles,
-                                           String messageEmployeur) throws Exception {
+            List<RendezVousDto> rendezVousPossibles,
+            String messageEmployeur) throws Exception {
 
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new Exception("Candidature non trouvée"));
 
-        if (!candidature.appartientAEmployeur(actorEmail)) {
-            throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
+        if (actorEmail != null && candidature.getOffreStage() != null
+                && candidature.getOffreStage().getEmployeur() != null) {
+            if (!candidature.getOffreStage().getEmployeur().getEmail().equalsIgnoreCase(actorEmail)) {
+                throw new Exception("Vous n'êtes pas autorisé à convoquer ce candidat");
+            }
         }
 
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
-        candidature.addConvocation(convocation);
-
-        StatutCandidature ancienStatut = candidature.getStatut();
-        candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
         convocation = convocationRepository.save(convocation);
-
-        historiqueRepository.save(new HistoriqueCandidature(
-                candidature, ancienStatut, StatutCandidature.EN_ATTENTE_REPONSE, null, actorEmail));
 
         return ConvocationDto.create(convocation);
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId, RendezVousDto rendezVousSelection) throws Exception {
+    @Transactional
+    public ConvocationDto accepterConvocation(String actorEmail, Long convocationId,
+            RendezVousDto rendezVousSelection) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
-        if (!convocation.estDestineAEtudiant(actorEmail)) {
-            throw new AuthenticationException("No auth");
+        if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+            throw new Exception("No auth");
         }
 
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
@@ -95,12 +86,15 @@ public class ConvocationService {
         return ConvocationDto.create(convocation);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
-        if (!convocation.estDestineAEtudiant(actorEmail)) {
-            throw new AuthenticationException("No auth");
+        if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
+            throw new Exception("No auth");
+        }
+        if (convocation.estResolu()) {
+            throw new Exception("Convocation est immuable");
         }
 
         convocation.refuser(motif);

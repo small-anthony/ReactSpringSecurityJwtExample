@@ -19,9 +19,12 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
 
     useEffect(() => {
         setHasApplied(aPostule);
+    }, [aPostule]);
+
+    useEffect(() => {
         setErrorMessage("");
         setSuccessMessage("");
-    }, [offre, aPostule]);
+    }, [offre?.id]);
 
     if (!offre) return null;
 
@@ -89,26 +92,35 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
 
                 {estRefusee && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">
-                        <div className="flex items-center gap-2 mb-1.5 font-semibold text-red-900">
-                            <XCircle className="w-5 h-5 text-red-600 shrink-0" strokeWidth={1.5} />
-                            <span>{t("candidature_etudiant.modal_refused_title", { defaultValue: "Candidature refusée" })}</span>
-                        </div>
-                        <div className="text-red-700 pl-7 leading-relaxed">
-                            {cand?.messageReponse ? (
-                                <p>
-                                    <span className="font-semibold text-red-800">
-                                        {t("candidature_etudiant.refuse_reason", { defaultValue: "Message de l'employeur" })} :{" "}
-                                    </span>
-                                    {cand.messageReponse}
-                                </p>
-                            ) : (
-                                <p>
-                                    {t("candidature_etudiant.modal_refused_no_reason", {
-                                        defaultValue: "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
-                                    })}
-                                </p>
-                            )}
-                        </div>
+                        {cand?.messageReponse === "L'offre a été supprimée par l'employeur" ? (
+                            <div className="flex items-center gap-2 font-semibold text-red-900">
+                                <XCircle className="w-5 h-5 text-red-600 shrink-0" strokeWidth={1.5} />
+                                <span>{t("candidature_etudiant.offer_deleted")}</span>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-2 mb-1.5 font-semibold text-red-900">
+                                    <XCircle className="w-5 h-5 text-red-600 shrink-0" strokeWidth={1.5} />
+                                    <span>{t("candidature_etudiant.modal_refused_title", { defaultValue: "Candidature refusée" })}</span>
+                                </div>
+                                <div className="text-red-700 pl-7 leading-relaxed">
+                                    {cand?.messageReponse ? (
+                                        <p>
+                                            <span className="font-semibold text-red-800">
+                                                {t("candidature_etudiant.refuse_reason", { defaultValue: "Message de l'employeur" })} :{" "}
+                                            </span>
+                                            {cand.messageReponse}
+                                        </p>
+                                    ) : (
+                                        <p>
+                                            {t("candidature_etudiant.modal_refused_no_reason", {
+                                                defaultValue: "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
+                                            })}
+                                        </p>
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
 

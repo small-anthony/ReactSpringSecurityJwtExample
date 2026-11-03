@@ -277,7 +277,7 @@ public class EtudiantControllerTest {
     }
 
     @Test
-    void getConvocations_shouldReturnOk() {
+void getConvocations_shouldReturnOk() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
         when(convocationService.getConvocationsEtudiant("etudiant@test.com")).thenReturn(List.of());
@@ -351,3 +351,4 @@ public class EtudiantControllerTest {
         assertEquals(etudiantDto, response.getBody().getFirst());
     }
 }
+
