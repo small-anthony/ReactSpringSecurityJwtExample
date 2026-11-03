@@ -61,9 +61,16 @@ public class ContratController {
 		return ResponseEntity.ok(contratService.getContratsEtudiant(email));
 	}
 
-	@PostMapping("/{id}/signer")
-	public ResponseEntity<DataTransferObject> signerContrat(@PathVariable Long id, @RequestParam(value = "signature", required = false) MultipartFile signature, Authentication authentication) {
+	@PostMapping(value = "/{id}/signer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<DataTransferObject> signerContrat(
+			@PathVariable Long id,
+			@RequestParam("signature") MultipartFile signature,
+			Authentication authentication) {
 		try {
+			if (signature == null || signature.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(ErrorResponse.create(new IllegalArgumentException("Le fichier de signature est obligatoire.")));
+			}
 			String email = authentication != null ? authentication.getName() : null;
 			ContratDto contrat = contratService.signerContrat(id, email, signature);
 			return ResponseEntity.ok(contrat);
