@@ -6,7 +6,8 @@
     "close": "Close",
     "confirm": "Confirm",
     "not_available": "N/A",
-    "at": "at"
+    "at": "at",
+    "loading": "Loading..."
   },
   "pagename": {
     "home": "Home",
@@ -512,7 +513,12 @@
       "nocvs": "No resumes pending approval.",
       "close": "Close",
       "cvPdf": "PDF resume",
-      "accept_success": "The resume has been approved successfully."
+      "accept_success": "The resume has been approved successfully.",
+      "loading_pdf": "Loading PDF...",
+      "error_pdf": "Error loading PDF",
+      "previous_page": "Previous",
+      "page_of": "Page {{current}} of {{total}}",
+      "next_page": "Next"
     },
     "offres": {
       "title": "Offers pending approval",
@@ -719,7 +725,8 @@
     "signing": "Signing in progress...",
     "confirm": "Confirm and sign contract",
     "error_blob": "Unable to capture signature.",
-    "error_sign": "Error signing the contract."
+    "error_sign": "Error signing the contract.",
+    "signataire_label": "Student"
   },
   "contrats_etudiant": {
     "title": "My Internship Contracts",
