@@ -144,6 +144,9 @@ public class Contrat {
 			if (signatureGestionnaire != null) {
 				throw new Exception("signature existe déjà");
 			}
+			if (!isSigneParEtudiant() || !isSigneParEmployeur()) {
+				throw new Exception("L'étudiant et l'employeur doivent avoir signé le contrat avant le gestionnaire.");
+			}
 			signatureGestionnaire = (Signature<Gestionnaire>) signature;
 		} else {
 			throw new Exception("signataire inconnu");
