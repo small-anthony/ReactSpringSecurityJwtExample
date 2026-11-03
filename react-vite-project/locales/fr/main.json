@@ -22,7 +22,8 @@
     "approbation_offres": "Approbation Offres",
     "approbation_cvs": "Approbation CVs",
     "voir_offres": "Voir offres",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "contrats": "Mes contrats"
   },
   "home": {
     "title": "Stagify",
@@ -703,5 +704,49 @@
       "desc": "Les trois signataires (étudiant, employeur et gestionnaire) ont été notifiés. Le contrat sera automatiquement complété dès la réception des 3 signatures.",
       "progress_label": "Progression des signatures"
     }
+  },
+  "signature_pad": {
+    "title": "Signer le contrat de stage",
+    "signer": "Signataire",
+    "date": "Date de signature",
+    "draw_label": "Tracez votre signature ci-dessous :",
+    "clear": "Effacer",
+    "placeholder": "Signez avec votre doigt, souris ou pavé tactile",
+    "consent": "Je certifie sur l'honneur avoir pris connaissance de l'ensemble des conditions et des tâches du contrat de stage et j'y appose ma signature électronique légale.",
+    "signing": "Signature en cours...",
+    "confirm": "Confirmer et signer le contrat",
+    "error_blob": "Impossible de capturer la signature.",
+    "error_sign": "Erreur lors de la signature du contrat."
+  },
+  "contrats_etudiant": {
+    "title": "Mes Contrats de Stage",
+    "subtitle": "Consultez et signez électroniquement vos ententes de stage.",
+    "badge": "Ententes de stage",
+    "tab_all": "Tous mes contrats",
+    "tab_to_sign": "À signer",
+    "tab_signed": "Signés",
+    "no_contracts": "Vous n'avez aucun contrat de stage pour le moment.",
+    "no_contracts_desc": "Dès qu'une offre est acceptée et qu'un contrat est rédigé par votre gestionnaire, il apparaîtra ici pour signature.",
+    "sign_button": "Signer le contrat",
+    "view_button": "Consulter le contrat",
+    "download_button": "Télécharger le PDF",
+    "already_signed_badge": "Vous avez signé ce contrat",
+    "waiting_signature_badge": "En attente de votre signature",
+    "success_signed": "Votre contrat de stage a été signé avec succès !",
+    "responsibilities": "Tâches et responsabilités",
+    "working_conditions": "Conditions de travail",
+    "signature_status": "État de votre signature",
+    "your_signature": "Votre signature",
+    "refuse_button": "Refuser le contrat",
+    "modal_refuse_title": "Refuser l'entente de stage",
+    "modal_refuse_desc": "Êtes-vous certain de vouloir refuser de signer ce contrat de stage ? Cette décision informera votre gestionnaire de stage.",
+    "confirm_refuse": "Confirmer le refus",
+    "success_refused": "Vous avez refusé cette entente de stage. Le gestionnaire de stage a été notifié.",
+    "error_refuse": "Erreur lors du refus du contrat.",
+    "status_stage_trouve": "STAGE TROUVÉ",
+    "status_refused": "Contrat refusé",
+    "refused_badge_text": "Contrat refusé — Gestionnaire notifié",
+    "banner_stage_trouve_title": "Statut sur la plateforme : STAGE TROUVÉ",
+    "banner_stage_trouve_desc": "Félicitations ! Votre entente de stage a été signée électroniquement. Votre gestionnaire de stage et l'employeur en ont été informés."
   }
 }

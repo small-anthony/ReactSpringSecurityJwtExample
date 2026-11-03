@@ -22,7 +22,8 @@
     "approbation_offres": "Offer Approvals",
     "approbation_cvs": "Resume Approvals",
     "voir_offres": "View offers",
-    "logout": "Logout"
+    "logout": "Logout",
+    "contrats": "My contracts"
   },
   "home": {
     "title": "Stagify",
@@ -703,5 +704,49 @@
       "desc": "All three signatories (student, employer, and manager) have been notified. The contract will be automatically finalized once all 3 signatures are received.",
       "progress_label": "Signature progress"
     }
+  },
+  "signature_pad": {
+    "title": "Sign Internship Contract",
+    "signer": "Signatory",
+    "date": "Signature date",
+    "draw_label": "Draw your signature below:",
+    "clear": "Clear",
+    "placeholder": "Sign with your finger, mouse or touchpad",
+    "consent": "I hereby certify that I have read and accepted all terms and conditions of this internship contract and affix my legal electronic signature.",
+    "signing": "Signing in progress...",
+    "confirm": "Confirm and sign contract",
+    "error_blob": "Unable to capture signature.",
+    "error_sign": "Error signing the contract."
+  },
+  "contrats_etudiant": {
+    "title": "My Internship Contracts",
+    "subtitle": "Review and electronically sign your internship agreements.",
+    "badge": "Internship agreements",
+    "tab_all": "All contracts",
+    "tab_to_sign": "To sign",
+    "tab_signed": "Signed",
+    "no_contracts": "You have no internship contracts at the moment.",
+    "no_contracts_desc": "Once an offer is accepted and a contract is drafted by your internship coordinator, it will appear here for signature.",
+    "sign_button": "Sign contract",
+    "view_button": "View contract",
+    "download_button": "Download PDF",
+    "already_signed_badge": "You have signed this contract",
+    "waiting_signature_badge": "Awaiting your signature",
+    "success_signed": "Your internship contract has been successfully signed!",
+    "responsibilities": "Tasks and responsibilities",
+    "working_conditions": "Working conditions",
+    "signature_status": "Your signature status",
+    "your_signature": "Your signature",
+    "refuse_button": "Refuse contract",
+    "modal_refuse_title": "Refuse internship agreement",
+    "modal_refuse_desc": "Are you sure you want to refuse to sign this internship contract? This decision will notify your internship coordinator.",
+    "confirm_refuse": "Confirm refusal",
+    "success_refused": "You have refused this internship agreement. The internship manager has been notified.",
+    "error_refuse": "Error while refusing the contract.",
+    "status_stage_trouve": "INTERNSHIP FOUND",
+    "status_refused": "Contract refused",
+    "refused_badge_text": "Contract refused — Manager notified",
+    "banner_stage_trouve_title": "Platform status: INTERNSHIP FOUND",
+    "banner_stage_trouve_desc": "Congratulations! Your internship agreement has been electronically signed. Your coordinator and employer have been notified."
   }
 }
