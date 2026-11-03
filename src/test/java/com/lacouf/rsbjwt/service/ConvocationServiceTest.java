@@ -192,17 +192,17 @@ class ConvocationServiceTest {
         );
     }
 
-    @Test
-    void verifierEtMettreAJourStatutsPasses_shouldExpireConvocations() {
+        @Test
+        void verifierEtMettreAJourStatutsPasses_shouldExpireConvocations() {
 //        ARRANGE
-        Instant timestamp = Instant.now();
-        when(convocationRepository.expireConvocations(Instant.now(), StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
-                .thenReturn(0);
+                Instant timestamp = Instant.now();
+                when(convocationRepository.expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
+                        .thenReturn(0);
 
 //        ACT
-        convocationService.verifierEtMettreAJourStatutsPasses(timestamp);
+                convocationService.verifierEtMettreAJourStatutsPasses(timestamp);
 
 //        ASSERT
-        verify(convocationRepository).expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE);
-    }
+                verify(convocationRepository).expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE);
+        }
 }
