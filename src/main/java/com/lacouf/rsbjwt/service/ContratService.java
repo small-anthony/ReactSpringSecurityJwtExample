@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
@@ -71,9 +72,24 @@ public class ContratService {
         Contrat contrat = contratRepository.findById(contratId)
                 .orElseThrow(() -> new Exception("Contrat introuvable"));
 
-        Signature<?> signature = new Signature<>(utilisateur, signatureFile.getBytes());
+        byte[] signatureBytes = (signatureFile != null && !signatureFile.isEmpty()) ? signatureFile.getBytes() : new byte[0];
+        Signature<?> signature = new Signature<>(utilisateur, signatureBytes);
         contrat.signer(signature);
 
+        byte[] pdfMisAJour = ContratPdfGenerator.mettreAJour(contrat, getNomGestionnaire());
+        contrat.setData(pdfMisAJour);
+
+        return ContratDto.create(contratRepository.save(contrat));
+    }
+
+    public ContratDto rejeterContrat(Long contratId, String actorEmail) throws Exception {
+        UserApp utilisateur = userAppRepository.findUserAppByEmail(actorEmail)
+                .orElseThrow(() -> new Exception("Utilisateur introuvable"));
+
+        Contrat contrat = contratRepository.findById(contratId)
+                .orElseThrow(() -> new Exception("Contrat introuvable"));
+
+        contrat.rejeter(utilisateur);
         return ContratDto.create(contratRepository.save(contrat));
     }
 
@@ -119,9 +135,17 @@ public class ContratService {
 
     private String resoudreNomGestionnaire(String email) {
         if (estVide(email)) {
-            return "Gestionnaire de stage";
+            return getNomGestionnaire();
         }
         return userAppRepository.findUserAppByEmail(email)
+                .map(u -> u.getFirstName() + " " + u.getLastName())
+                .orElseGet(this::getNomGestionnaire);
+    }
+
+    private String getNomGestionnaire() {
+        return userAppRepository.findAll().stream()
+                .filter(u -> u.getRole() == Role.GESTIONNAIRE)
+                .findFirst()
                 .map(u -> u.getFirstName() + " " + u.getLastName())
                 .orElse("Gestionnaire de stage");
     }
