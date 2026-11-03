@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FileText, PlusCircle, X } from "lucide-react";
+import { FileText, PlusCircle, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import FormulaireCreationContrat from "../widget/FormulaireCreationContrat.jsx";
 import ListeContratsGestionnaire from "../widget/ListeContratsGestionnaire.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
+import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import {
   getCandidaturesAccepteesPourContrat,
   creerContrat,
   getTousLesContrats,
-  getContratDocumentBlob
+  getContratDocumentBlob,
+  rejeterContrat
 } from "../../services/api/ContratAPI.js";
 
 export default function GestionnaireContrats() {
@@ -25,6 +27,9 @@ export default function GestionnaireContrats() {
   const [erreur, setErreur] = useState(null);
   const [succes, setSucces] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
+  const [signingContrat, setSigningContrat] = useState(null);
+  const [contratARefuser, setContratARefuser] = useState(null);
+  const [refusSubmitting, setRefusSubmitting] = useState(false);
 
   const authHeader = authService.buildAuthHeader();
 
@@ -98,6 +103,56 @@ export default function GestionnaireContrats() {
       });
     } catch {
       setErreur(t("contrats.alerts.error_open"));
+    }
+  };
+
+  const handleImprimerDoc = async (contratId) => {
+    try {
+      const blob = await getContratDocumentBlob(contratId, authHeader);
+      const pdfBlob = new Blob([blob], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(pdfBlob);
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      };
+    } catch {
+      setErreur(t("contrats.alerts.error_print", { defaultValue: "Erreur lors de l'impression du contrat." }));
+    }
+  };
+
+  const handleSignatureSuccess = (updatedContrat) => {
+    setSucces(t("contrats.alerts.success_signed_manager", {
+      defaultValue: "Contrat de stage signé électroniquement avec succès ! Le contrat est désormais complété."
+    }));
+    setContrats((prev) => prev.map((c) => (c.id === updatedContrat.id ? updatedContrat : c)));
+  };
+
+  const handleConfirmRefus = async () => {
+    if (!contratARefuser) return;
+    try {
+      setRefusSubmitting(true);
+      setErreur(null);
+      await rejeterContrat(contratARefuser.id, authHeader);
+      setSucces(t("contrats.alerts.success_refused_manager", {
+        defaultValue: "Le contrat de stage a été refusé. L'employeur et l'étudiant en ont été notifiés."
+      }));
+      setContrats((prev) =>
+        prev.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c))
+      );
+      setContratARefuser(null);
+    } catch (e) {
+      setErreur(e.message || t("contrats.alerts.error_refuse", { defaultValue: "Erreur lors du refus du contrat." }));
+    } finally {
+      setRefusSubmitting(false);
     }
   };
 
@@ -200,7 +255,74 @@ export default function GestionnaireContrats() {
             contrats={contrats}
             onVoirDocument={handleVoirDocument}
             onTelechargerDocument={handleTelechargerDoc}
+            onImprimerDocument={handleImprimerDoc}
+            onSignerContrat={setSigningContrat}
+            onRefuserContrat={setContratARefuser}
           />
+        )}
+
+        {signingContrat && (
+          <ModalSignaturePad
+            isOpen={!!signingContrat}
+            onClose={() => setSigningContrat(null)}
+            contrat={signingContrat}
+            onSuccess={handleSignatureSuccess}
+            authHeader={authHeader}
+            roleLabel={t("contrats.role_label_manager", { defaultValue: "Le gestionnaire (représentant du cégep)" })}
+          />
+        )}
+
+        {contratARefuser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col p-6 space-y-4">
+              <div className="flex items-center gap-3 text-rose-600">
+                <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100">
+                  <XCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-gray-900">
+                    {t("contrats.refuse_modal.title", { defaultValue: "Refuser le contrat de stage" })}
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    {contratARefuser.etudiantPrenom} {contratARefuser.etudiantNom} — {contratARefuser.titreOffre}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {t("contrats.refuse_modal.desc", {
+                  defaultValue: "Êtes-vous certain de vouloir refuser ce contrat de stage ? Cette action marquera le contrat comme refusé et en informera l'étudiant et l'employeur.",
+                })}
+              </p>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setContratARefuser(null)}
+                  disabled={refusSubmitting}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+                >
+                  {t("contrats.actions.cancel", { defaultValue: "Annuler" })}
+                </button>
+                <button
+                  type="button"
+                  id="btn-confirm-refus-gestionnaire"
+                  onClick={handleConfirmRefus}
+                  disabled={refusSubmitting}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
+                >
+                  {refusSubmitting ? (
+                    <span>{t("contrats.actions.processing", { defaultValue: "Traitement..." })}</span>
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4" />
+                      <span>{t("contrats.refuse_modal.confirm", { defaultValue: "Confirmer le refus" })}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {previewDoc && (

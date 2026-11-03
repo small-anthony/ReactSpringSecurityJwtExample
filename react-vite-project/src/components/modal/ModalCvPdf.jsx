@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
+import { X, Printer } from "lucide-react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -20,6 +20,26 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
     const pagePrecedente = () => setPageCourante((p) => Math.max(1, p - 1));
     const pageSuivante = () => setPageCourante((p) => Math.min(nombrePages, p + 1));
 
+    const handleImprimer = () => {
+        try {
+            const iframe = document.createElement("iframe");
+            iframe.style.position = "fixed";
+            iframe.style.right = "0";
+            iframe.style.bottom = "0";
+            iframe.style.width = "0";
+            iframe.style.height = "0";
+            iframe.style.border = "0";
+            iframe.src = pdfUrl;
+            document.body.appendChild(iframe);
+            iframe.onload = () => {
+                iframe.contentWindow?.focus();
+                iframe.contentWindow?.print();
+            };
+        } catch {
+            window.print();
+        }
+    };
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
@@ -31,13 +51,24 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
             >
                 <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
                     <h3 className="text-lg font-bold text-gray-800">{titre}</h3>
-                    <button
-                        onClick={onClose}
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors"
-                        title={t("approbation.cvs.close")}
-                    >
-                        <X className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={handleImprimer}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 text-xs font-semibold shadow-xs transition cursor-pointer"
+                            title={t("contrats.actions.print", { defaultValue: "Imprimer" })}
+                        >
+                            <Printer className="w-3.5 h-3.5 text-gray-600" />
+                            <span>{t("contrats.actions.print", { defaultValue: "Imprimer" })}</span>
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                            title={t("approbation.cvs.close")}
+                        >
+                            <X className="w-4 h-4" strokeWidth={2.5} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex-grow bg-gray-100 p-2 overflow-auto flex justify-center">
