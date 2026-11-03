@@ -22,8 +22,7 @@
     "approbation_offres": "Approbation Offres",
     "approbation_cvs": "Approbation CVs",
     "voir_offres": "Voir offres",
-    "logout": "Déconnexion",
-    "gestionnaire_convocations": "Convocations"
+    "logout": "Déconnexion"
   },
   "home": {
     "title": "Stagify",
@@ -399,8 +398,7 @@
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
     "contrats": "Contrats de stage",
-    "rapports": "Rapports étudiants",
-    "convocations": "Convocations d'entrevues"
+    "rapports": "Rapports étudiants"
   },
   "rapports_etudiants": {
     "title": "Rapports des étudiants",
@@ -714,20 +712,6 @@
       "desc": "Les trois signataires (étudiant, employeur et gestionnaire) ont été notifiés. Le contrat sera automatiquement complété dès la réception des 3 signatures.",
       "progress_label": "Progression des signatures"
     }
-  },
-  "gestionnaire_convocations": {
-    "title": "Suivi des Convocations en Entrevue",
-    "subtitle": "Vue d'ensemble de tous les étudiants convoqués en entrevue par les employeurs.",
-    "total": "Total : {{count}} convocation",
-    "total_plural": "Total : {{count}} convocations",
-    "loading": "Chargement des convocations...",
-    "empty": "Aucune convocation d'entrevue enregistrée pour le moment.",
-    "th_student": "Étudiant",
-    "th_position_company": "Poste & Entreprise",
-    "th_datetime": "Date & Heure",
-    "th_location": "Lieu / Lien",
-    "th_status": "Statut",
-    "matricule": "Matricule :"
   },
   "placeholder": {
     "rendezvous": "Créez un rendez-vous...",
