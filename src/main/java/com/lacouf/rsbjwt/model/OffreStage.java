@@ -69,17 +69,11 @@ public class OffreStage {
         this.etudiantsAutorises = new ArrayList<>();
     }
 
-    public void accepter() throws Exception {
-        if (!isEnAttente()) {
-            throw new Exception("Cette offre a déjà été traitée.");
-        }
+    public void accepter() {
         this.approbation.accepter();
     }
 
-    public void refuser(String message) throws Exception {
-        if (!isEnAttente()) {
-            throw new Exception("Cette offre a déjà été traitée.");
-        }
+    public void refuser(String message) {
         this.approbation.refuser(message);
     }
 

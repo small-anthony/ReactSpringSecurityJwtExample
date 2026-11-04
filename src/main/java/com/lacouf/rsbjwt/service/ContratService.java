@@ -45,11 +45,11 @@ public class ContratService {
                 .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
         if (candidature.getStatut() != StatutCandidature.ACCEPTEE) {
-            throw new Exception("L'etudiant n'a pas ete embauche par l'employeur, impossible de creer un contrat.");
+            throw new Exception("L'étudiant n'a pas ete embauche par l'employeur, impossible de créer un contrat.");
         }
 
         if (contratRepository.existsByCandidatureId(candidature.getId())) {
-            throw new Exception("Un contrat existe dans pour cet etudiant et cet employeur.");
+            throw new Exception("Un contrat existe dans pour cet étudiant et cet employeur.");
         }
 
         byte[] documentData = ContratPdfGenerator.generer(candidature, request, resoudreNomGestionnaire(gestionnaireEmail));
@@ -140,7 +140,7 @@ public class ContratService {
             throw new Exception("Des informations obligatoires manquent dans le contrat.");
         }
         if (request.dateFin().isBefore(request.dateDebut())) {
-            throw new Exception("La date de fin ne peut pas Ãªtre antÃ©rieure Ã  la date de dÃ©but.");
+            throw new Exception("La date de fin ne peut pas être antérieure a la date de debut.");
         }
     }
 
@@ -193,7 +193,9 @@ public class ContratService {
     }
 
     private void validerSignatairePourRejet(Contrat contrat, UserApp utilisateur) throws Exception {
-        if (utilisateur instanceof Etudiant etudiant) {
+        if (contrat.getStatut() == StatutContrat.REFUSE) {
+            throw new Exception("Le contrat a deja ete refuse");
+        }        if (utilisateur instanceof Etudiant etudiant) {
             if (!Objects.equals(etudiant.getId(), contrat.getEtudiant().getId())) {
                 throw new Exception("signataire est invalide");
             }

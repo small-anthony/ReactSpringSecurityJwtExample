@@ -90,18 +90,12 @@ public class Contrat {
 	}
 
 	public void signer(Signature<?> signature) {
-		if (signature == null || !signature.isValid()) {
-			return;
-		}
-
 		setSignature(signature);
 		evaluerStatut();
 	}
 
 	public void rejeter(UserApp user) {
-		if (user != null) {
-			setSignature(Signature.invalid(user));
-		}
+		setSignature(Signature.invalid(user));
 		this.statut = StatutContrat.REFUSE;
 	}
 

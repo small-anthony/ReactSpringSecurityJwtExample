@@ -64,6 +64,7 @@ public class ConvocationService {
             }
         }
 
+        validerRendezVous(rendezVousPossibles);
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         convocation = convocationRepository.save(convocation);
 
@@ -79,7 +80,16 @@ public class ConvocationService {
             throw new Exception("No auth");
         }
 
+        if (convocation.estResolu()) {
+            throw new Exception("convocation already resolved");
+        }
+        if (rendezVousSelection == null) {
+            throw new Exception("tried to select rendezvous we don't have");
+        }
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
+        if (convocation.getRendezVousPossibles() == null || !convocation.getRendezVousPossibles().contains(rendezVous)) {
+            throw new Exception("tried to select rendezvous we don't have");
+        }
         convocation.accepter(rendezVous, null);
         convocationRepository.save(convocation);
 
@@ -94,12 +104,26 @@ public class ConvocationService {
             throw new Exception("No auth");
         }
         if (convocation.estResolu()) {
-            throw new Exception("Convocation est immuable");
+            throw new Exception("convocation already resolved");
         }
 
         convocation.refuser(motif);
         convocationRepository.save(convocation);
 
         return ConvocationDto.create(convocation);
+    }
+
+    private void validerRendezVous(List<RendezVousDto> rendezVousPossibles) throws Exception {
+        if (rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
+            throw new Exception("rendezvous must have at least one entry");
+        }
+        for (RendezVousDto dto : rendezVousPossibles) {
+            if (dto == null || dto.lieu() == null || dto.lieu().isBlank()) {
+                throw new Exception("lieu doit être spécifie");
+            }
+            if (dto.date() == null || !dto.date().isAfter(Instant.now())) {
+                throw new Exception("date doit être dans le futur");
+            }
+        }
     }
 }
