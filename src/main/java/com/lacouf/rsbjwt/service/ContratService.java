@@ -45,7 +45,7 @@ public class ContratService {
                 .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
         if (candidature.getStatut() != StatutCandidature.ACCEPTEE) {
-            throw new Exception("L'étudiant n'a pas ete embauche par l'employeur, impossible de créer un contrat.");
+            throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
         }
 
         if (contratRepository.existsByCandidatureId(candidature.getId())) {
@@ -140,7 +140,7 @@ public class ContratService {
             throw new Exception("Des informations obligatoires manquent dans le contrat.");
         }
         if (request.dateFin().isBefore(request.dateDebut())) {
-            throw new Exception("La date de fin ne peut pas être antérieure a la date de debut.");
+            throw new Exception("La date de fin ne peut pas être antérieure à la date de début.");
         }
     }
 

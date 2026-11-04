@@ -81,7 +81,7 @@ public class ConvocationService {
         }
 
         if (convocation.estResolu()) {
-            throw new Exception("convocation already resolved");
+            throw new Exception("Convocation est immuable");
         }
         if (rendezVousSelection == null) {
             throw new Exception("tried to select rendezvous we don't have");
@@ -104,7 +104,7 @@ public class ConvocationService {
             throw new Exception("No auth");
         }
         if (convocation.estResolu()) {
-            throw new Exception("convocation already resolved");
+            throw new Exception("Convocation est immuable");
         }
 
         convocation.refuser(motif);

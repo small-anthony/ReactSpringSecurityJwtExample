@@ -68,7 +68,7 @@ public class GestionnaireService {
                 .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
 
         if (!offre.isEnAttente()) {
-            throw new Exception("Cette offre a deja ete traitee.");
+            throw new Exception("Cette offre a déjà été traitée.");
         }
         offre.accepter();
 
