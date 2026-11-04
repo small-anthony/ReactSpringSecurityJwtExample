@@ -36,7 +36,7 @@ public class ContratController {
 		}
 	}
 
-	@GetMapping("/candidatures-acceptees")
+	@GetMapping(value = {"/candidatures-acceptees", "/candidatures-pour-contrat"})
 	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
 		return ResponseEntity.ok(contratService.getCandidaturesPourContrat());
 	}
@@ -67,12 +67,16 @@ public class ContratController {
 		return ResponseEntity.ok(contratService.getContratsEmployeur(email));
 	}
 
-	@PostMapping("/{id}/signer")
+	@PostMapping(value = "/{id}/signer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<DataTransferObject> signerContrat(
 			@PathVariable Long id,
 			@RequestParam("signature") MultipartFile signature,
 			Authentication authentication) {
 		try {
+			if (signature == null || signature.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(ErrorResponse.create(new Exception("Le fichier de signature est obligatoire.")));
+			}
 			String email = authentication != null ? authentication.getName() : null;
 			ContratDto contrat = contratService.signerContrat(id, email, signature);
 			return ResponseEntity.ok(contrat);
@@ -92,7 +96,7 @@ public class ContratController {
 		}
 	}
 
-	@GetMapping("/{id}/document")
+	@GetMapping(value = {"/{id}/document", "/{id}/pdf"})
 	public ResponseEntity<byte[]> getContratDocument(@PathVariable Long id) {
 		try {
 			byte[] data = contratService.getContratPdf(id);

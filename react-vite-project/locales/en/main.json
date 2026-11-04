@@ -7,6 +7,7 @@
     "confirm": "Confirm",
     "not_available": "N/A",
     "at": "at",
+    "delete": "Delete",
     "loading": "Loading..."
   },
   "pagename": {
@@ -341,18 +342,27 @@
     "title": "Received Applications",
     "subtitle": "Review students who applied to this offer",
     "loading": "Loading applications...",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "interviews": "Interviews",
+      "hired": "Hired",
+      "refused": "Refused"
+    },
     "no_candidates": "No applications received for this offer yet.",
+    "no_candidates_category": "No applications in this category.",
     "view_cv": "View Resume",
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
       "ACCEPTE": "Accepted",
-      "ACCEPTEE": "Accepted",
+      "ACCEPTEE": "Interview accepted",
       "REFUSE": "Rejected",
       "REFUSEE": "Rejected",
-      "EN_ATTENTE_REPONSE": "Awaiting response"
+      "EN_ATTENTE_REPONSE": "Interview sent",
+      "EMBAUCHEE": "Hired"
     },
-    "accept": "Accept application",
+    "accept": "Summon",
     "accept_success_title": "Application Accepted",
     "accept_success": "The student has been invited for an interview.",
     "confirm_accept": "Confirm acceptance",
@@ -362,7 +372,16 @@
     "refuse_message_placeholder": "Briefly explain the reasons for the rejection...",
     "confirm_refuse": "Confirm rejection",
     "cancel": "Cancel",
-    "response_message": "Rejection message"
+    "response_message": "Rejection message",
+    "no_offers": "No internship offer has been created yet.",
+    "motif_refus": "Reason for refusal:",
+    "convoquer": "Schedule interview",
+    "hire": "Hire",
+    "accepted": "Summoned",
+    "modal_convoquer_title": "Schedule an interview:",
+    "create_rendezvous": "Create a new time slot with the button below.",
+    "slot": "Time slot {{number}}",
+    "add_slot": "+ Add a time slot"
   },
   "candidature_etudiant": {
     "status": {
@@ -371,7 +390,8 @@
       "ACCEPTEE": "Invited to an interview",
       "REFUSE": "Application rejected. Click \"View details\" for more information.",
       "REFUSEE": "Application rejected. Click \"View details\" for more information.",
-      "EN_ATTENTE_REPONSE": "Awaiting response"
+      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EMBAUCHEE": "Congratulations, you have been hired!"
     },
     "refuse_reason": "Employer's message",
     "modal_refused_title": "Application rejected",
@@ -389,8 +409,8 @@
     "button": "Decision history"
   },
   "sidepanel": {
-    "title": "Dashboard",
-    "cvs": "CV Approvals",
+    "title": "Manager Workspace",
+    "cvs": "Resume Approvals",
     "offres": "Offer Approvals",
     "contrats": "Internship Contracts",
     "rapports": "Student Reports"
@@ -730,6 +750,12 @@
       "desc": "All three signatories (student, employer, and manager) have been notified. The contract will be automatically finalized once all 3 signatures are received.",
       "progress_label": "Signature progress"
     }
+  },
+  "placeholder": {
+    "rendezvous": "Create an interview",
+    "lieu": "Enter a location...",
+    "message": "Enter a message...",
+    "message_optionnel": "Optional message..."
   },
   "signature_pad": {
     "title": "Sign Internship Contract",

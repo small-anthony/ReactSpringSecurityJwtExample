@@ -22,12 +22,10 @@ public class ContratPdfGenerator {
         Candidature candidature = contrat.getCandidature();
         Etudiant etudiant = candidature.getEtudiant();
         Employeur employeur = candidature.getEmployeur();
-
         String nomEtudiant = etudiant.getFirstName() + " " + etudiant.getLastName();
         String nomEntreprise = employeur.getEntreprise();
         String nomEmployeur = employeur.getFirstName() + " " + employeur.getLastName() + " (" + nomEntreprise + ")";
         long nbSemaines = contrat.getNombreSemaines();
-
         byte[] page1 = construirePage1(String.valueOf(contrat.getAnneeDebut()));
         byte[] page2 = construirePage2(nomGestionnaire, nomEmployeur, nomEtudiant, nomEntreprise,
                 contrat.getDateDebut().toString(), contrat.getDateFin().toString(),
@@ -35,26 +33,21 @@ public class ContratPdfGenerator {
         byte[] page3 = construirePage3(contrat.getDescriptionTaches(), contrat.getConditions(),
                 nomEtudiant, nomEmployeur, nomGestionnaire,
                 contrat.isSigneParEtudiant(), contrat.isSigneParEmployeur(), contrat.isSigneParGestionnaire());
-
         return assemblerPdf(List.of(page1, page2, page3));
     }
-
     public static byte[] generer(Candidature candidature, CreationContratRequest request, String nomGestionnaire) {
         Etudiant etudiant = candidature.getEtudiant();
         Employeur employeur = candidature.getEmployeur();
-
         String nomEtudiant = etudiant.getFirstName() + " " + etudiant.getLastName();
         String nomEntreprise = employeur.getEntreprise();
         String nomEmployeur = employeur.getFirstName() + " " + employeur.getLastName() + " (" + nomEntreprise + ")";
         long nbSemaines = request.getNombreSemaines();
-
         byte[] page1 = construirePage1(String.valueOf(request.getAnneeDebut()));
         byte[] page2 = construirePage2(nomGestionnaire, nomEmployeur, nomEtudiant, nomEntreprise,
                 request.dateDebut().toString(), request.dateFin().toString(), request.horaire(), request.salaire(),
                 nbSemaines);
         byte[] page3 = construirePage3(request.descriptionTaches(), request.conditions(), nomEtudiant, nomEmployeur,
                 nomGestionnaire, false, false, false);
-
         return assemblerPdf(List.of(page1, page2, page3));
     }
 

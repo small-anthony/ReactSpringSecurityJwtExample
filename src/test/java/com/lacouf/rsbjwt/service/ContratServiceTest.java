@@ -185,7 +185,7 @@ public class ContratServiceTest {
         Exception exception = assertThrows(Exception.class, () ->
                 contratService.creerContrat(requestValide, "alice@college.ca"));
 
-        assertEquals("Un contrat existe déjà pour cet étudiant et cet employeur.", exception.getMessage());
+        assertEquals("Un contrat existe dans pour cet étudiant et cet employeur.", exception.getMessage());
     }
 
     @Test
@@ -302,14 +302,25 @@ public class ContratServiceTest {
         Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         Etudiant autreEtudiant = new Etudiant("Autre", "Etudiant", new Credentials("autre@test.com", "pass", Role.ETUDIANT), 7654321, "Informatique");
         autreEtudiant.setId(99L);
+        MultipartFile signatureFile = mock(MultipartFile.class);
+        when(signatureFile.isEmpty()).thenReturn(false);
+        when(signatureFile.getBytes()).thenReturn("sig".getBytes());
+
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+        when(userAppRepository.findUserAppByEmail("autre@test.com")).thenReturn(Optional.of(autreEtudiant));
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
 
         // Act & Assert
-        assertThrows(Exception.class, () -> contrat.signer(Signature.invalid(etudiant)));
-        assertThrows(Exception.class, () -> contrat.signer(new Signature<>(autreEtudiant, "sig".getBytes())));
+        Exception exInvalide = assertThrows(Exception.class, () ->
+                contratService.signerContrat(1L, "autre@test.com", signatureFile));
+        assertEquals("signataire est invalide", exInvalide.getMessage());
 
+        // Assert
         contrat.rejeter(etudiant);
         assertEquals(StatutContrat.REFUSE, contrat.getStatut());
-        assertThrows(Exception.class, () -> contrat.signer(new Signature<>(etudiant, "sig".getBytes())));
+        Exception exRefuse = assertThrows(Exception.class, () ->
+                contratService.signerContrat(1L, "jean@test.com", signatureFile));
+        assertEquals("Le contrat a été refusé", exRefuse.getMessage());
     }
 
     @Test

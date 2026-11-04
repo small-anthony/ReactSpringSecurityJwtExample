@@ -2,19 +2,33 @@ import React from "react";
 import { CheckCircle2, AlertTriangle, Info, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export default function ModalConfirmation({ isOpen,
+export default function ModalConfirmation({
+                                              isOpen,
                                               onClose,
                                               onConfirm,
                                               title,
+                                              titre,
                                               message,
                                               details,
                                               type = "warning",
                                               confirmText,
                                               cancelText,
                                               isSuccess = false,
-                                              loading = false, }) {
+                                              loading = false,
+                                          }) {
     const { t } = useTranslation("main");
     if (!isOpen) return null;
+
+    const displayTitle = title || titre;
+    const isConfirmAction = Boolean(onConfirm) && !isSuccess;
+
+    const handleConfirm = () => {
+        if (onConfirm) {
+            onConfirm();
+        } else if (onClose) {
+            onClose();
+        }
+    };
 
     const typeConfig = {
         danger: {
@@ -63,7 +77,7 @@ export default function ModalConfirmation({ isOpen,
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-900 leading-tight">
-                            {title}
+                            {displayTitle}
                         </h3>
                         {!isSuccess && message && (
                             <p className="text-sm text-gray-600 mt-1 leading-relaxed">
@@ -87,7 +101,7 @@ export default function ModalConfirmation({ isOpen,
                         isSuccess ? "justify-center" : "justify-end"
                     }`}
                 >
-                    {!isSuccess && onClose && (
+                    {isConfirmAction && onClose && (
                         <button
                             type="button"
                             onClick={onClose}
@@ -99,7 +113,7 @@ export default function ModalConfirmation({ isOpen,
                     )}
                     <button
                         type="button"
-                        onClick={() => onConfirm()}
+                        onClick={handleConfirm}
                         disabled={loading}
                         className={`${
                             isSuccess ? "w-full" : ""

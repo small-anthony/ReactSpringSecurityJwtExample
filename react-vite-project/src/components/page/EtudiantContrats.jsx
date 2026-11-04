@@ -54,7 +54,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                 onPendingCountChange(aSignerCount, hasSigned);
             }
         } catch (e) {
-            setErreur(e.message || t("contrats.alerts.error_load", { defaultValue: "Erreur lors du chargement des contrats" }));
+            setErreur(e.message || t("contrats.alerts.error_load"));
         } finally {
             setLoading(false);
         }
@@ -75,10 +75,10 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             const url = window.URL.createObjectURL(pdfBlob);
             setPreviewDoc({
                 url,
-                titre: `${t("contrats.actions.contract_number", { defaultValue: "Contrat #" })}${contratId} — ${t("contrats_etudiant.title", { defaultValue: "Entente de stage" })}`,
+                titre: `${t("contrats.actions.contract_number")}${contratId} — ${t("contrats_etudiant.title")}`,
             });
         } catch {
-            setErreur(t("contrats.alerts.error_open", { defaultValue: "Erreur lors de l'ouverture du document du contrat." }));
+            setErreur(t("contrats.alerts.error_open"));
         }
     };
 
@@ -96,12 +96,12 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
         } catch {
-            setErreur(t("contrats.alerts.error_download", { defaultValue: "Erreur lors du téléchargement du contrat." }));
+            setErreur(t("contrats.alerts.error_download"));
         }
     };
 
     const handleSignatureSuccess = (updatedContrat) => {
-        setSucces(t("contrats_etudiant.success_signed", { defaultValue: "Votre contrat de stage a été signé avec succès !" }));
+        setSucces(t("contrats_etudiant.success_signed"));
         const updated = contrats.map((c) => (c.id === updatedContrat.id ? updatedContrat : c));
         setContrats(updated);
         if (onPendingCountChange) {
@@ -118,9 +118,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             setErreur(null);
             const currentHeader = authService.buildAuthHeader();
             await rejeterContrat(contratARefuser.id, currentHeader);
-            setSucces(t("contrats_etudiant.success_refused", {
-                defaultValue: "Vous avez refusé cette entente de stage. Le gestionnaire de stage a été notifié."
-            }));
+            setSucces(t("contrats_etudiant.success_refused"));
             const updated = contrats.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c));
             setContrats(updated);
             if (onPendingCountChange) {
@@ -130,7 +128,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             }
             setContratARefuser(null);
         } catch (err) {
-            setErreur(err.message || t("contrats_etudiant.error_refuse", { defaultValue: "Erreur lors du refus du contrat." }));
+            setErreur(err.message || t("contrats_etudiant.error_refuse"));
             setContratARefuser(null);
         } finally {
             setRefusSubmitting(false);
@@ -149,7 +147,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             return (
                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1.5">
                     <XCircle className="w-3.5 h-3.5 text-rose-600" />
-                    {t("contrats_etudiant.status_refused", { defaultValue: "Contrat refusé" })}
+                    {t("contrats_etudiant.status_refused")}
                 </span>
             );
         }
@@ -157,14 +155,14 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             return (
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    {t("contrats_etudiant.status_stage_trouve", { defaultValue: "STAGE TROUVÉ" })}
+                    {t("contrats_etudiant.status_stage_trouve")}
                 </span>
             );
         }
         return (
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-600" />
-                {t("contrats_etudiant.waiting_signature_badge", { defaultValue: "En attente de votre signature" })}
+                {t("contrats_etudiant.waiting_signature_badge")}
             </span>
         );
     };
@@ -187,13 +185,13 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                 <div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] mb-3">
                         <FileText className="w-3.5 h-3.5 text-[#2563EB]" strokeWidth={1.5} />
-                        <span>{t("contrats_etudiant.badge", { defaultValue: "Ententes de stage" })}</span>
+                        <span>{t("contrats_etudiant.badge")}</span>
                     </div>
                     <h1 className="text-3xl font-bold text-[#111827] tracking-tight sm:text-4xl">
-                        {t("contrats_etudiant.title", { defaultValue: "Mes Contrats de Stage" })}
+                        {t("contrats_etudiant.title")}
                     </h1>
                     <p className="mt-2 text-base text-[#4B5563] max-w-2xl">
-                        {t("contrats_etudiant.subtitle", { defaultValue: "Consultez et signez électroniquement vos ententes de stage." })}
+                        {t("contrats_etudiant.subtitle")}
                     </p>
                 </div>
             )}
@@ -203,10 +201,10 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                     <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
                     <div>
                         <h4 className="font-bold text-emerald-900 text-sm">
-                            {t("contrats_etudiant.banner_stage_trouve_title", { defaultValue: "Statut sur la plateforme : STAGE TROUVÉ" })}
+                            {t("contrats_etudiant.banner_stage_trouve_title")}
                         </h4>
                         <p className="text-xs text-emerald-700">
-                            {t("contrats_etudiant.banner_stage_trouve_desc", { defaultValue: "Félicitations ! Votre entente de stage a été signée électroniquement. Votre gestionnaire de stage et l'employeur en ont été informés." })}
+                            {t("contrats_etudiant.banner_stage_trouve_desc")}
                         </p>
                     </div>
                 </div>
@@ -230,7 +228,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                         onClick={() => setSucces(null)}
                         className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer underline"
                     >
-                        {t("contrats.actions.close", { defaultValue: "Fermer" })}
+                        {t("contrats.actions.close")}
                     </button>
                 </div>
             )}
@@ -247,7 +245,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                         }`}
                     >
-                        {t("contrats_etudiant.tab_all", { defaultValue: "Tous mes contrats" })} ({contrats.length})
+                        {t("contrats_etudiant.tab_all")} ({contrats.length})
                     </button>
 
                     <button
@@ -261,7 +259,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                         }`}
                     >
                         <Clock className="w-3.5 h-3.5" />
-                        <span>{t("contrats_etudiant.tab_to_sign", { defaultValue: "À signer" })} ({countASigner})</span>
+                        <span>{t("contrats_etudiant.tab_to_sign")} ({countASigner})</span>
                     </button>
 
                     <button
@@ -275,7 +273,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                         }`}
                     >
                         <Check className="w-3.5 h-3.5" />
-                        <span>{t("contrats_etudiant.tab_signed", { defaultValue: "Signés" })} ({countSignes})</span>
+                        <span>{t("contrats_etudiant.tab_signed")} ({countSignes})</span>
                     </button>
 
                     {countRefuses > 0 && (
@@ -290,7 +288,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                             }`}
                         >
                             <XCircle className="w-3.5 h-3.5" />
-                            <span>{t("contrats_etudiant.status_refused", { defaultValue: "Refusés" })} ({countRefuses})</span>
+                            <span>{t("contrats_etudiant.status_refused")} ({countRefuses})</span>
                         </button>
                     )}
                 </div>
@@ -300,7 +298,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                 <div className="flex flex-col items-center justify-center py-20 space-y-4">
                     <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
                     <p className="text-sm font-medium text-gray-500">
-                        {t("offres_etudiant.loading", { defaultValue: "Chargement des contrats..." })}
+                        {t("offres_etudiant.loading")}
                     </p>
                 </div>
             )}
@@ -309,12 +307,10 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                 <div className="text-center bg-white rounded-2xl shadow-xs border border-gray-200 p-16 space-y-3">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto" />
                     <h3 className="text-lg font-bold text-gray-800">
-                        {t("contrats_etudiant.no_contracts", { defaultValue: "Vous n'avez aucun contrat de stage pour le moment." })}
+                        {t("contrats_etudiant.no_contracts")}
                     </h3>
                     <p className="text-sm text-gray-500 max-w-md mx-auto">
-                        {t("contrats_etudiant.no_contracts_desc", {
-                            defaultValue: "Dès qu'une offre est acceptée et qu'un contrat est rédigé par votre gestionnaire, il apparaîtra ici pour signature.",
-                        })}
+                        {t("contrats_etudiant.no_contracts_desc")}
                     </p>
                 </div>
             )}
@@ -356,7 +352,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                                            {t("contrats.table.dates", { defaultValue: "Période" })}
+                                            {t("contrats.table.dates")}
                                         </span>
                                         <span className="text-gray-800 text-xs font-semibold">
                                             {c.dateDebut} → {c.dateFin}
@@ -370,7 +366,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                                            {t("contrats.table.salary", { defaultValue: "Salaire" })}
+                                            {t("contrats.table.salary")}
                                         </span>
                                         <span className="text-emerald-700 text-xs font-bold">
                                             {c.salaire}
@@ -384,7 +380,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                     </div>
                                     <div>
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                                            {t("contrats.form.horaire", { defaultValue: "Horaire" })}
+                                            {t("contrats.form.horaire")}
                                         </span>
                                         <span className="text-gray-800 text-xs font-semibold">
                                             {c.horaire}
@@ -396,7 +392,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                             {c.description && (
                                 <div className="mb-5 p-3.5 bg-gray-50/50 rounded-xl border border-gray-100 text-xs text-gray-600">
                                     <span className="font-bold text-gray-700 block mb-1">
-                                        {t("contrats_etudiant.responsibilities", { defaultValue: "Tâches et responsabilités :" })}
+                                        {t("contrats_etudiant.responsibilities")}
                                     </span>
                                     <p className="line-clamp-2 leading-relaxed">{c.description}</p>
                                 </div>
@@ -411,7 +407,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                         className="inline-flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-blue-100 transition cursor-pointer"
                                     >
                                         <Eye className="w-3.5 h-3.5" />
-                                        <span>{t("contrats_etudiant.view_button", { defaultValue: "Consulter le contrat" })}</span>
+                                        <span>{t("contrats_etudiant.view_button")}</span>
                                     </button>
 
                                     <button
@@ -421,14 +417,14 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                         className="inline-flex items-center gap-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-lg text-xs font-semibold transition cursor-pointer"
                                     >
                                         <Download className="w-3.5 h-3.5" />
-                                        <span>{t("contrats_etudiant.download_button", { defaultValue: "Télécharger le PDF" })}</span>
+                                        <span>{t("contrats_etudiant.download_button")}</span>
                                     </button>
                                 </div>
 
                                 {c.statut === "REFUSE" ? (
                                     <div className="inline-flex items-center gap-1.5 text-rose-700 bg-rose-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-rose-200">
                                         <XCircle className="w-4 h-4 text-rose-600" />
-                                        <span>{t("contrats_etudiant.refused_badge_text", { defaultValue: "Contrat refusé — Gestionnaire notifié" })}</span>
+                                        <span>{t("contrats_etudiant.refused_badge_text")}</span>
                                     </div>
                                 ) : !c.signeParEtudiant ? (
                                     <div className="flex items-center gap-2">
@@ -439,7 +435,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition cursor-pointer"
                                         >
                                             <XCircle className="w-4 h-4" />
-                                            <span>{t("contrats_etudiant.refuse_button", { defaultValue: "Refuser le contrat" })}</span>
+                                            <span>{t("contrats_etudiant.refuse_button")}</span>
                                         </button>
 
                                         <button
@@ -449,13 +445,13 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-xs transition hover:shadow cursor-pointer"
                                         >
                                             <PenTool className="w-4 h-4" />
-                                            <span>{t("contrats_etudiant.sign_button", { defaultValue: "Signer le contrat" })}</span>
+                                            <span>{t("contrats_etudiant.sign_button")}</span>
                                         </button>
                                     </div>
                                 ) : (
                                     <div className="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-emerald-200">
                                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                                        <span>{t("contrats_etudiant.already_signed_badge", { defaultValue: "Vous avez signé ce contrat" })}</span>
+                                        <span>{t("contrats_etudiant.already_signed_badge")}</span>
                                     </div>
                                 )}
                             </div>
@@ -483,7 +479,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                             </div>
                             <div>
                                 <h3 className="font-bold text-lg text-gray-900">
-                                    {t("contrats_etudiant.modal_refuse_title", { defaultValue: "Refuser l'entente de stage" })}
+                                    {t("contrats_etudiant.modal_refuse_title")}
                                 </h3>
                                 <p className="text-xs text-gray-500">
                                     {contratARefuser.titreOffre} — {contratARefuser.nomEntreprise}
@@ -492,9 +488,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                         </div>
 
                         <p className="text-sm text-gray-600 leading-relaxed">
-                            {t("contrats_etudiant.modal_refuse_desc", {
-                                defaultValue: "Êtes-vous certain de vouloir refuser de signer ce contrat de stage ? Cette action informera votre gestionnaire de stage de votre refus.",
-                            })}
+                            {t("contrats_etudiant.modal_refuse_desc")}
                         </p>
 
                         <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
@@ -504,7 +498,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 disabled={refusSubmitting}
                                 className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition cursor-pointer"
                             >
-                                {t("contrats.actions.cancel", { defaultValue: "Annuler" })}
+                                {t("contrats.actions.cancel")}
                             </button>
                             <button
                                 type="button"
@@ -514,11 +508,11 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
                             >
                                 {refusSubmitting ? (
-                                    <span>{t("contrats.actions.processing", { defaultValue: "Traitement..." })}</span>
+                                    <span>{t("contrats.actions.processing")}</span>
                                 ) : (
                                     <>
                                         <XCircle className="w-4 h-4" />
-                                        <span>{t("contrats_etudiant.confirm_refuse", { defaultValue: "Confirmer le refus" })}</span>
+                                        <span>{t("contrats_etudiant.confirm_refuse")}</span>
                                     </>
                                 )}
                             </button>
