@@ -672,7 +672,8 @@
       "employer": "Employeur",
       "manager": "Gestionnaire",
       "signed": "Signé",
-      "waiting": "En attente"
+      "waiting": "En attente",
+      "refused": "Refusé"
     },
     "alerts": {
       "success_created": "Contrat de stage créé avec succès ! Les trois parties (employeur, étudiant et gestionnaire) ont été notifiées pour signature.",
