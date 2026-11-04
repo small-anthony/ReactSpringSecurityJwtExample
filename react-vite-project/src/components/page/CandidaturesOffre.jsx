@@ -20,7 +20,18 @@ const peutRefuser = (candidature) =>
 const aUnBadge = (candidature) => candidature.statut !== "EN_ATTENTE";
 
 const aConvocationRefusee = (candidat) => {
-    return candidat?.messageRefusConvocation !== null && candidat?.messageRefusConvocation !== undefined;
+    if (candidat?.messageRefusConvocation !== null && candidat?.messageRefusConvocation !== undefined) {
+        return true;
+    }
+    return Boolean(candidat?.convocations?.some((c) => c.statut === "REFUSEE"));
+};
+
+const getMotifRefusConvocation = (candidat) => {
+    if (candidat?.messageRefusConvocation !== null && candidat?.messageRefusConvocation !== undefined) {
+        return candidat.messageRefusConvocation;
+    }
+    const refusee = candidat?.convocations?.find((c) => c.statut === "REFUSEE");
+    return refusee ? (refusee.reponseEtudiant || "") : "";
 };
 
 const COULEURS_BADGE = {
@@ -310,7 +321,7 @@ export default function CandidaturesOffre() {
                                 <strong className="text-amber-950">
                                     {t("candidatures_offre.convocation_refusee", { defaultValue: "Convocation refusée par l'étudiant :" })}
                                 </strong>{" "}
-                                {candidat.messageRefusConvocation || t("candidatures_offre.aucun_motif", { defaultValue: "Aucun motif fourni." })}
+                                {getMotifRefusConvocation(candidat) || t("candidatures_offre.aucun_motif", { defaultValue: "Aucun motif fourni." })}
                             </div>
                         )}
 

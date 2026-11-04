@@ -68,10 +68,14 @@ export default function ListeContratsGestionnaire({
     }
   };
 
-  const renderSignaturePill = (label, signe) => (
+  const renderSignaturePill = (label, signe, refuse = false) => (
     <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-gray-200/80 text-xs">
       <span className="font-semibold text-gray-700">{label} :</span>
-      {signe ? (
+      {refuse ? (
+        <span className="text-red-700 font-semibold bg-red-50 px-2 py-0.5 rounded border border-red-200 flex items-center gap-1">
+          <XCircle className="w-3.5 h-3.5 text-red-600" /> {t("contrats.signatures.refused", { defaultValue: "Refusé" })}
+        </span>
+      ) : signe ? (
         <span className="text-green-700 font-semibold bg-green-50 px-2 py-0.5 rounded border border-green-200 flex items-center gap-1">
           <Check className="w-3.5 h-3.5 text-green-600" /> {t("contrats.signatures.signed")}
         </span>
@@ -181,9 +185,9 @@ export default function ListeContratsGestionnaire({
               {t("contrats.table.signatures")}
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {renderSignaturePill(t("contrats.signatures.student"), c.signeParEtudiant)}
-              {renderSignaturePill(t("contrats.signatures.employer"), c.signeParEmployeur)}
-              {renderSignaturePill(t("contrats.signatures.manager"), c.signeParGestionnaire)}
+              {renderSignaturePill(t("contrats.signatures.student"), c.signeParEtudiant, c.refuseParEtudiant)}
+              {renderSignaturePill(t("contrats.signatures.employer"), c.signeParEmployeur, c.refuseParEmployeur)}
+              {renderSignaturePill(t("contrats.signatures.manager"), c.signeParGestionnaire, c.refuseParGestionnaire)}
             </div>
           </div>
 
@@ -269,4 +273,3 @@ export default function ListeContratsGestionnaire({
     </div>
   );
 }
-

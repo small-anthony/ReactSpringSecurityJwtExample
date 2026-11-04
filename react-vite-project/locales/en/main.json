@@ -672,7 +672,8 @@
       "employer": "Employer",
       "manager": "Manager",
       "signed": "Signed",
-      "waiting": "Pending"
+      "waiting": "Pending",
+      "refused": "Refused"
     },
     "alerts": {
       "success_created": "Internship contract successfully created! All three parties (employer, student, and manager) have been notified for signature.",
