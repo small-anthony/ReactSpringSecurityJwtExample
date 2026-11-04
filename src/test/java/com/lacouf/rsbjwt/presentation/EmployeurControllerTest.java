@@ -325,44 +325,6 @@ public class EmployeurControllerTest {
         assertEquals(annees, response.getBody());
     }
 
-	@Test
-	void getHistorique_shouldReturnOkAndList() {
-//        ARRANGE
-		Authentication authentication = mock(Authentication.class);
-		when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-		List<HistoriqueCandidatureDto> historique = List.of(
-				new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
-						StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
-		when(employeurService.getHistorique("employeur@entreprise.com")).thenReturn(historique);
-
-//        ACT
-		ResponseEntity<Object> response = employeurController.getHistorique(null, authentication);
-
-//        ASSERT
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(historique, response.getBody());
-	}
-
-    @Test
-    void getHistorique_avecAnnee_shouldReturnOkAndFilteredList() {
-//        ARRANGE
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        List<HistoriqueCandidatureDto> historique = List.of(
-                new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
-                        StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
-        when(employeurService.getHistorique("employeur@entreprise.com", 2025)).thenReturn(historique);
-
-//        ACT
-        ResponseEntity<Object> response = employeurController.getHistorique(2025, authentication);
-
-//        ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(historique, response.getBody());
-    }
-
     @Test
     void deleteOffre_shouldReturnNoContent() throws Exception {
 //        ARRANGE

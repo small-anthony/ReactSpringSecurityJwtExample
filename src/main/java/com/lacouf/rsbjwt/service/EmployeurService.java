@@ -173,26 +173,6 @@ public class EmployeurService {
                 "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
     }
 
-    public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur) {
-        Map<Long, HistoriqueCandidatureDto> derniereDecisionParCandidature = new LinkedHashMap<>();
-        historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).forEach(historique -> {
-            HistoriqueCandidatureDto dto = HistoriqueCandidatureDto.create(historique);
-            derniereDecisionParCandidature.putIfAbsent(dto.candidatureId(), dto);
-        });
-        return new ArrayList<>(derniereDecisionParCandidature.values());
-    }
-
-    public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur, Integer annee) {
-        var historique = historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream();
-        if (annee != null) {
-            historique = historique.filter(h -> h.getCandidature() != null
-                    && h.getCandidature().getOffreStage() != null
-                    && h.getCandidature().getOffreStage().getAnnee() == annee);
-        }
-        return historique.map(HistoriqueCandidatureDto::create)
-                .collect(Collectors.toList());
-    }
-
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,
                                     Set<StatutCandidature> statutsAutorises,
                                     StatutCandidature nouveauStatut, String message,
