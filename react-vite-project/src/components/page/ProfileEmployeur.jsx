@@ -16,7 +16,7 @@ const STATUS_STYLES = {
 };
 
 const compterCandidatures = (offre) =>
-    (offre.candidatures ?? []).filter((c) => c.statut !== "REFUSEE").length;
+    (offre.candidatures ?? []).length;
 
 export default function ProfileEmployeur() {
     const { t } = useTranslation("main");
@@ -106,6 +106,14 @@ export default function ProfileEmployeur() {
                         onChangementAnnee={setAnneeChoisie}
                     />
                     <Link
+                        to="/employeur/contrats"
+                        id="btn-nav-contrats-employeur"
+                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 inline-flex items-center gap-2"
+                    >
+                        <FileText className="w-4 h-4 text-blue-600" />
+                        {t("employeur_home.contracts_button", { defaultValue: "Contrats de stage" })}
+                    </Link>
+                    <Link
                         to="/employeur/historique"
                         className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50"
                     >
@@ -135,17 +143,6 @@ export default function ProfileEmployeur() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setCategorie("en_attente")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
-                            categorie === "en_attente"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
-                        }`}
-                    >
-                        {t("employeur_home.tabs.pending")} ({offresEnAttente.length})
-                    </button>
-                    <button
-                        type="button"
                         onClick={() => setCategorie("accepte")}
                         className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
                             categorie === "accepte"
@@ -154,6 +151,17 @@ export default function ProfileEmployeur() {
                         }`}
                     >
                         {t("employeur_home.tabs.accepted")} ({offresAcceptees.length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setCategorie("en_attente")}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                            categorie === "en_attente"
+                                ? "bg-white text-gray-900 shadow-xs"
+                                : "text-gray-600 hover:text-gray-900"
+                        }`}
+                    >
+                        {t("employeur_home.tabs.pending")} ({offresEnAttente.length})
                     </button>
                     <button
                         type="button"

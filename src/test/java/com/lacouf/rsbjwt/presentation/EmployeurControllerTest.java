@@ -261,36 +261,6 @@ public class EmployeurControllerTest {
     }
 
     @Test
-    void accepterCandidature_shouldReturnOkAndDto() throws Exception {
-//        ARRANGE
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.ACCEPTEE, LocalDateTime.now(), null, null, LocalDateTime.now(), "Stagiaire", "CGI");
-                when(employeurService.accepterCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
-//        ACT
-        ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
-//        ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void accepterCandidature_shouldReturnBadRequestOnException() throws Exception {
-//        ARRANGE
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        when(employeurService.accepterCandidature(1L, "employeur@entreprise.com"))
-                .thenThrow(new Exception("Cette candidature a déjà reçu une réponse"));
-//        ACT
-        ResponseEntity<Object> response = employeurController.accepterCandidature(1L, authentication);
-//        ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Cette candidature a déjà reçu une réponse", response.getBody());
-    }
-
-    @Test
     void refuserCandidature_avecMessage_shouldReturnOkAndDto() throws Exception {
 //        ARRANGE
         Authentication authentication = mock(Authentication.class);
@@ -299,7 +269,7 @@ public class EmployeurControllerTest {
         Map<String, String> request = new HashMap<>();
         request.put("message", "Profil non retenu");
 
-        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, "Profil non retenu", LocalDateTime.now(), "Stagiaire", "CGI");
+        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, "Profil non retenu", LocalDateTime.now());
         when(employeurService.refuserCandidature(1L, "Profil non retenu", "employeur@entreprise.com")).thenReturn(dto);
 //        ACT
         ResponseEntity<Object> response = employeurController.refuserCandidature(1L, request, authentication);
@@ -314,7 +284,7 @@ public class EmployeurControllerTest {
 		Authentication authentication = mock(Authentication.class);
 		when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-		CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, null, LocalDateTime.now(), "Stagiaire", "CGI");
+		CandidatureDto dto = new CandidatureDto(1, StatutCandidature.REFUSEE, LocalDateTime.now(), null, null, LocalDateTime.now());
 		when(employeurService.refuserCandidature(1L, null, "employeur@entreprise.com")).thenReturn(dto);
 //        ACT
 		ResponseEntity<Object> response = employeurController.refuserCandidature(1L, null, authentication);

@@ -6,7 +6,6 @@ import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import com.lacouf.rsbjwt.service.GestionnaireService;
@@ -18,11 +17,9 @@ import java.util.List;
 @RequestMapping({ "/gestionnaire" })
 public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
-    private final ConvocationService convocationService;
 
-    public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
+    public GestionnaireController(GestionnaireService gestionnaireService) {
         this.gestionnaireService = gestionnaireService;
-        this.convocationService = convocationService;
     }
 
     @PutMapping("/cv/accepter")
@@ -150,4 +147,7 @@ public class GestionnaireController {
     public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage(@RequestParam(required = false) Integer annee) {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage(annee));
     }
+
 }
+
+    

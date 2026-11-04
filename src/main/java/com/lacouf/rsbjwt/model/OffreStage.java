@@ -20,6 +20,7 @@ public class OffreStage {
     private String salaire;
     private String duree;
     private String exigences;
+    private LocalDate dateSuppression = null;
 
     @Column(nullable = false)
     private int annee = AcademicSessionUtils.getAnneeActuelle();
@@ -28,16 +29,16 @@ public class OffreStage {
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Etudiant> etudiantsAutorises = new ArrayList<>();
 
     @Embedded
     private Approbation approbation = new Approbation();
 
-    @OneToMany(mappedBy = "offreStage", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final List<Candidature> candidatures = new ArrayList<>();
 
-    private LocalDate dateSuppression = null;
+
 
     public OffreStage() {}
 
@@ -84,17 +85,11 @@ public class OffreStage {
         this.etudiantsAutorises = new ArrayList<>();
     }
 
-    public void accepter() throws Exception {
-        if (!isEnAttente()) {
-            throw new Exception("Cette offre a déjà été traitée.");
-        }
+    public void accepter() {
         this.approbation.accepter();
     }
 
-    public void refuser(String message) throws Exception {
-        if (!isEnAttente()) {
-            throw new Exception("Cette offre a déjà été traitée.");
-        }
+    public void refuser(String message) {
         this.approbation.refuser(message);
     }
 

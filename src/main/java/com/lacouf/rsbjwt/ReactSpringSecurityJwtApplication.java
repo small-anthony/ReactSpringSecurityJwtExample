@@ -29,6 +29,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         private final EmployeurRepository employeurRepository;
         private final CandidatureRepository candidatureRepository;
         private final ConvocationRepository convocationRepository;
+        private final ContratRepository contratRepository;
         private final PasswordEncoder passwordEncoder;
 
         public ReactSpringSecurityJwtApplication(
@@ -38,12 +39,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         EmployeurRepository employeurRepository,
                         CandidatureRepository candidatureRepository,
                         ConvocationRepository convocationRepository,
+                        ContratRepository contratRepository,
                         PasswordEncoder passwordEncoder) {
                 this.gestionnaireRepository = gestionnaireRepository;
                 this.etudiantRepository = etudiantRepository;
                 this.employeurRepository = employeurRepository;
                 this.candidatureRepository = candidatureRepository;
                 this.convocationRepository = convocationRepository;
+                this.contratRepository = contratRepository;
                 this.passwordEncoder = passwordEncoder;
         }
 
@@ -211,6 +214,30 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         conv3.accepter(rv3_slot1, null);
                         candidatureRepository.save(cand3);
                         convocationRepository.save(conv3);
+                        cand3.setStatut(StatutCandidature.ACCEPTEE);
+                        candidatureRepository.save(cand3);
+
+                        CreationContratRequest reqContrat = new CreationContratRequest(
+                                cand3.getId(),
+                                LocalDate.of(2026, 5, 11),
+                                LocalDate.of(2026, 8, 21),
+                                "Du lundi au vendredi, 9h à 17h (35h/semaine)",
+                                "27.00$/h",
+                                "Participer aux audits de sécurité applicative, analyser les vulnérabilités et configurer les protocoles de chiffrement pour les services web.",
+                                "Télétravail hybride (2 jours au bureau, 3 jours à domicile). Ordinateur portable et équipement de sécurité fournis."
+                        );
+                        byte[] pdfBytes = ContratPdfGenerator.generer(cand3, reqContrat, "John Gestion");
+                        Contrat sampleContrat = new Contrat(
+                                cand3,
+                                pdfBytes,
+                                reqContrat.dateDebut(),
+                                reqContrat.dateFin(),
+                                reqContrat.horaire(),
+                                reqContrat.salaire(),
+                                reqContrat.descriptionTaches(),
+                                reqContrat.conditions()
+                        );
+                        contratRepository.save(sampleContrat);
 
                         Candidature cand4 = new Candidature(etudiant, offre5);
                         List<RendezVous> rv4 = new ArrayList<>();

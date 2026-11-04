@@ -36,6 +36,9 @@ public class GestionnaireService {
         Cv cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new Exception("CV non trouvé"));
 
+        if (cv.getStatusAcceptation() != StatusAcceptation.EN_ATTENTE) {
+            throw new Exception("Ce CV a deja ete traite.");
+        }
         cv.accepterApprobation();
         return CvDto.create(cvRepository.save(cv));
     }
@@ -44,6 +47,9 @@ public class GestionnaireService {
         Cv cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new Exception("CV non trouvé"));
 
+        if (cv.getStatusAcceptation() != StatusAcceptation.EN_ATTENTE) {
+            throw new Exception("Ce CV a deja ete traite.");
+        }
         cv.refuserApprobation(message);
         return CvDto.create(cvRepository.save(cv));
     }
@@ -65,6 +71,9 @@ public class GestionnaireService {
         OffreStage offre = offreStageRepository.findById(offreStageId)
                 .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
 
+        if (!offre.isEnAttente()) {
+            throw new Exception("Cette offre a déjà été traitée.");
+        }
         offre.accepter();
 
         if (etudiantsIds != null && !etudiantsIds.isEmpty()) {
@@ -80,6 +89,9 @@ public class GestionnaireService {
         OffreStage offre = offreStageRepository.findById(offreStageId)
                 .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
 
+        if (!offre.isEnAttente()) {
+            throw new Exception("Cette offre a deja ete traitee.");
+        }
         offre.refuser(commentaire);
 
         return OffreStageDto.create(offreStageRepository.save(offre));

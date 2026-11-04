@@ -20,29 +20,20 @@ public class RendezVous {
 		this.lieu = lieu;
 	}
 
-	public static RendezVous create(String lieu, Instant date) throws Exception {
-		if(lieu.isBlank()) {
-			throw new Exception("lieu doit être spécifié");
-		}
-		if(!date.isAfter(Instant.now())) {
-			throw new Exception("date doit être dans le futur");
-		}
-
+	public static RendezVous create(String lieu, Instant date) {
 		return new RendezVous(lieu, date);
 	}
 
-	public static RendezVous create(RendezVousDto dto) throws Exception {
+	public static RendezVous create(RendezVousDto dto) {
 		return create(dto.lieu(), dto.date());
 	}
 
-	public static List<RendezVous> create(List<RendezVousDto> dtos) throws Exception {
-		List<RendezVous> list = new ArrayList<>();
-		if (dtos != null) {
-			for (RendezVousDto dto : dtos) {
-				list.add(create(dto));
-			}
+	public static List<RendezVous> create(List<RendezVousDto> dtos) {
+		List<RendezVous> rendezVous = new ArrayList<>();
+		for (RendezVousDto dto : dtos) {
+			rendezVous.add(create(dto));
 		}
-		return list;
+		return List.copyOf(rendezVous);
 	}
 
 	public static RendezVous read(String lieu, Instant date) {

@@ -6,7 +6,9 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "not_available": "N/D",
-    "at": "à"
+    "at": "à",
+    "delete": "Supprimer",
+    "loading": "Chargement en cours..."
   },
   "pagename": {
     "home": "Accueil",
@@ -21,9 +23,10 @@
     "convocations": "Convocations",
     "approbation_offres": "Approbation Offres",
     "approbation_cvs": "Approbation CVs",
-    "gestionnaire_convocations": "Convocations",
     "voir_offres": "Voir offres",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "contrats": "Mes contrats",
+    "contrats_employeur": "Mes contrats"
   },
   "home": {
     "title": "Stagify",
@@ -300,6 +303,7 @@
     "title": "Mes offres de stage",
     "subtitle": "Gérez les offres publiées par votre entreprise.",
     "create_offer": "Créer une offre",
+    "contracts_button": "Contrats de stage",
     "tabs": {
       "all": "Toutes mes offres",
       "pending": "En attente",
@@ -338,18 +342,27 @@
     "title": "Candidatures reçues",
     "subtitle": "Consultez les étudiants ayant postulé à cette offre",
     "loading": "Chargement des candidatures...",
+    "tabs": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "interviews": "Entrevues",
+      "hired": "Embauchés",
+      "refused": "Refusés"
+    },
     "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
+    "no_candidates_category": "Aucune candidature dans cette catégorie.",
     "view_cv": "Voir le CV",
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
       "ACCEPTE": "Acceptée",
-      "ACCEPTEE": "Acceptée",
+      "ACCEPTEE": "Entrevue acceptée",
       "REFUSE": "Refusée",
       "REFUSEE": "Refusée",
-      "EN_ATTENTE_REPONSE": "En attente de réponse"
+      "EN_ATTENTE_REPONSE": "Convocation envoyée",
+      "EMBAUCHEE": "Embauché"
     },
-    "accept": "Accepter la candidature",
+    "accept": "Convoquer",
     "accept_success_title": "Candidature acceptée",
     "accept_success": "La candidature a été acceptée avec succès.",
     "confirm_accept": "Confirmer l'acceptation",
@@ -359,7 +372,16 @@
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
     "confirm_refuse": "Confirmer le refus",
     "cancel": "Annuler",
-    "response_message": "Message de refus"
+    "response_message": "Message de refus",
+    "no_offers": "Aucune offre de stage n'a encore été créée.",
+    "motif_refus": "Motif du refus :",
+    "convoquer": "Convoquer",
+    "hire": "Embaucher",
+    "accepted": "Convoqué",
+    "modal_convoquer_title": "Planifier une convocation:",
+    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas.",
+    "slot": "Créneau {{number}}",
+    "add_slot": "+ Ajouter un créneau"
   },
   "candidature_etudiant": {
     "status": {
@@ -368,7 +390,8 @@
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
       "REFUSEE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
-      "EN_ATTENTE_REPONSE": "En attente de réponse"
+      "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "EMBAUCHEE": "Félicitations, vous êtes embauché(e) !"
     },
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
@@ -389,7 +412,7 @@
     "title": "Tableau de bord",
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
-    "convocations": "Convocations d'entrevues",
+    "contrats": "Contrats de stage",
     "rapports": "Rapports étudiants"
   },
   "rapports_etudiants": {
@@ -479,20 +502,6 @@
       "error_date_past": "La date proposée doit obligatoirement être dans le futur."
     }
   },
-  "gestionnaire_convocations": {
-    "title": "Suivi des Convocations en Entrevue",
-    "subtitle": "Vue d'ensemble de tous les étudiants convoqués en entrevue par les employeurs.",
-    "total": "Total : {{count}} convocation",
-    "total_plural": "Total : {{count}} convocations",
-    "loading": "Chargement des convocations...",
-    "empty": "Aucune convocation d'entrevue enregistrée pour le moment.",
-    "th_student": "Étudiant",
-    "th_position_company": "Poste & Entreprise",
-    "th_datetime": "Date & Heure",
-    "th_location": "Lieu / Lien",
-    "th_status": "Statut",
-    "matricule": "Matricule :"
-  },
   "gestionnaire_home": {
     "title": "Bienvenue dans votre Espace Gestionnaire",
     "subtitle": "Gérez les offres de stage, supervisez les étudiants et suivez les contrats en toute simplicité. Sélectionnez une action dans le menu pour commencer."
@@ -524,7 +533,12 @@
       "nocvs": "Aucun CV en attente de validation.",
       "close": "Fermer",
       "cvPdf": "CV PDF",
-      "accept_success": "Le CV a été approuvé avec succès."
+      "accept_success": "Le CV a été approuvé avec succès.",
+      "loading_pdf": "Chargement du PDF...",
+      "error_pdf": "Erreur de chargement du PDF",
+      "previous_page": "Précédent",
+      "page_of": "Page {{current}} sur {{total}}",
+      "next_page": "Suivant"
     },
     "offres": {
       "title": "Offres en attente d'approbation",

@@ -11,7 +11,9 @@ import java.util.Optional;
 
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	List<OffreStage> findByEmployeur(Employeur employeur);
+	Optional<OffreStage> findByIdAndEmployeur(Long id, Employeur employeur);
 	Optional<OffreStage> findByIdAndEmployeurAndDateSuppressionIsNull(Long id, Employeur employeur);
+	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	List<OffreStage> findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation status);
 	Optional<OffreStage> findByIdAndEmployeur(Long id, Employeur employeur);
 	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
@@ -26,7 +28,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 		  AND offre.dateSuppression IS NULL
 	""")
 	List<OffreStage> findWithCandidaturesByEmployeur(Employeur employeur);
-
 	@Query("""
     SELECT DISTINCT offre
         FROM OffreStage offre

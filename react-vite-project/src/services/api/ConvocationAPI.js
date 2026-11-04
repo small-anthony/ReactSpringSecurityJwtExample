@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../components/config/Config";
 import { getTokenCookie } from "../AuthService.tsx";
+import APIHelper from "../../utils/APIHelper.ts";
 
 function getHeaders(authHeader) {
   const token = getTokenCookie() || localStorage.getItem("token");
@@ -35,6 +36,20 @@ export async function getConvocationsAcceptees(authHeader) {
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || "Impossible de récupérer les entrevues acceptées");
+  }
+
+  return response.json();
+}
+
+export async function proposeConvocation(candidatureId, message, rendezVousPossibles, authHeader) {
+  const response = await APIHelper.post(`/employeur/candidatures/${candidatureId}/convoquer`, authHeader,
+      {
+        messageEmployeur: message,
+        rendezVousPossibles: rendezVousPossibles,
+      });
+
+  if(!response.ok) {
+    throw new Error(await response.text() || "Unknown error");
   }
 
   return response.json();
@@ -80,20 +95,6 @@ export async function proposerAutreDate(id, nouvelleDate, motif, authHeader) {
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || "Erreur lors de la proposition d'une nouvelle date");
-  }
-
-  return response.json();
-}
-
-export async function getConvocationsGestionnaire(authHeader) {
-  const response = await fetch(`${BASE_URL}/gestionnaire/convocations`, {
-    method: "GET",
-    headers: getHeaders(authHeader),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Impossible de récupérer les convocations gestionnaire");
   }
 
   return response.json();

@@ -32,7 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
         if (StringUtils.hasText(token)) {
-        	token = token.startsWith("Bearer") ? token.substring(7) : token;
+        	if (token.startsWith("Bearer ") && token.length() > 7) {
+        		token = token.substring(7);
+        	} else if (token.startsWith("Bearer") && token.length() > 6) {
+        		token = token.substring(6).trim();
+        	}
             try {
                 tokenProvider.validateToken(token);
                 String email = tokenProvider.getEmailFromJWT(token);

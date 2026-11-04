@@ -21,7 +21,6 @@ import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
-import java.util.Comparator;
 
 @Service
 public class EmployeurService {
@@ -164,19 +163,28 @@ public class EmployeurService {
         return cv.getData();
     }
 
-    public CandidatureDto accepterCandidature(Long candidatureId, String emailEmployeur) throws Exception {
-        return repondre(candidatureId, emailEmployeur, StatutCandidature.ACCEPTEE, null);
-    }
-
     public CandidatureDto refuserCandidature(Long candidatureId, String message, String emailEmployeur) throws Exception {
         String messageNettoye = (message == null || message.trim().isEmpty()) ? null : message.trim();
-        return repondre(candidatureId, emailEmployeur, StatutCandidature.REFUSEE, messageNettoye);
+        return repondre(candidatureId, emailEmployeur,
+                EnumSet.of(StatutCandidature.EN_ATTENTE, StatutCandidature.EN_ATTENTE_REPONSE, StatutCandidature.ACCEPTEE),
+                StatutCandidature.REFUSEE, messageNettoye,
+                "Cette candidature a déjà reçu une réponse");
+    }
+
+    public CandidatureDto embaucherCandidature(Long candidatureId, String emailEmployeur) throws Exception {
+        return repondre(candidatureId, emailEmployeur,
+                EnumSet.of(StatutCandidature.ACCEPTEE),
+                StatutCandidature.EMBAUCHEE, null,
+                "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
     }
 
     public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur) {
-        return historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream()
-                .map(HistoriqueCandidatureDto::create)
-                .collect(Collectors.toList());
+        Map<Long, HistoriqueCandidatureDto> derniereDecisionParCandidature = new LinkedHashMap<>();
+        historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).forEach(historique -> {
+            HistoriqueCandidatureDto dto = HistoriqueCandidatureDto.create(historique);
+            derniereDecisionParCandidature.putIfAbsent(dto.candidatureId(), dto);
+        });
+        return new ArrayList<>(derniereDecisionParCandidature.values());
     }
 
     public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur, Integer annee) {
@@ -191,7 +199,9 @@ public class EmployeurService {
     }
 
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,
-                                    StatutCandidature nouveauStatut, String message) throws Exception {
+                                    Set<StatutCandidature> statutsAutorises,
+                                    StatutCandidature nouveauStatut, String message,
+                                    String erreurStatut) throws Exception {
         UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
 
@@ -201,27 +211,27 @@ public class EmployeurService {
         Candidature candidature = candidatureRepository.findByIdAndOffreStageEmployeur(candidatureId, employeur)
                 .orElseThrow(() -> new Exception("Candidature introuvable pour cet employeur"));
 
-        if (candidature.getStatut() != StatutCandidature.EN_ATTENTE) {
-            throw new Exception("Cette candidature a déjà reçu une réponse");
+        if (!statutsAutorises.contains(candidature.getStatut())) {
+            throw new Exception(erreurStatut);
         }
 
-		StatutCandidature ancienStatut = candidature.getStatut();
-		candidature.setStatut(nouveauStatut);
-		candidature.setMessageReponse(message);
-		candidature.setDateDecision(LocalDateTime.now());
-		Candidature sauvegardee = candidatureRepository.save(candidature);
+        StatutCandidature ancienStatut = candidature.getStatut();
+        candidature.setStatut(nouveauStatut);
+        candidature.setMessageReponse(message);
+        candidature.setDateDecision(LocalDateTime.now());
+        Candidature sauvegardee = candidatureRepository.save(candidature);
 
-		historiqueRepository.save(
-				new HistoriqueCandidature(sauvegardee, ancienStatut, nouveauStatut, message, emailEmployeur));
+        historiqueRepository.save(
+                new HistoriqueCandidature(sauvegardee, ancienStatut, nouveauStatut, message, emailEmployeur));
 
-		return CandidatureDto.create(sauvegardee);
-	}
+        return CandidatureDto.create(sauvegardee);
+    }
 
     public void deleteOffre(Long offreId, String emailEmployeur) throws Exception {
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
-        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull( offreId, employeur)
+        OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
         offre.supprimer();

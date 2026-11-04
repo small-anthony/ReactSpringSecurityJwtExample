@@ -15,11 +15,11 @@ public class Candidature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "etudiant_id")
     private Etudiant etudiant;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "offre_stage_id")
     private OffreStage offreStage;
 
@@ -33,7 +33,7 @@ public class Candidature {
 
     private LocalDateTime dateDecision;
 
-    @OneToMany(mappedBy = "candidature", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "candidature", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Convocation> convocations = new ArrayList<>();
 
     public Candidature() {}
@@ -44,7 +44,9 @@ public class Candidature {
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public Etudiant getEtudiant() { return etudiant; }
+    public Employeur getEmployeur() { return offreStage.getEmployeur(); }
     public OffreStage getOffreStage() { return offreStage; }
     public LocalDateTime getDateCandidature() { return dateCandidature; }
     public StatutCandidature getStatut() { return statut; }
@@ -65,7 +67,11 @@ public class Candidature {
         convocations.add(convocation);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public boolean appartientAEmployeur(String courriel) {
+        return getEmployeur().aPourCourriel(courriel);
+    }
+
+    public boolean appartientAEtudiant(String courriel) {
+        return etudiant.aPourCourriel(courriel);
     }
 }
