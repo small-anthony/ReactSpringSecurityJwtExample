@@ -162,23 +162,6 @@ public class EmployeurController {
         }
     }
 
-    public ResponseEntity<Object> getHistorique(Authentication authentication) {
-        return getHistorique(null, authentication);
-    }
-
-    @GetMapping("/historique")
-    public ResponseEntity<Object> getHistorique(@RequestParam(required = false) Integer annee, Authentication authentication) {
-        try {
-            if (annee != null) {
-                return ResponseEntity.ok(employeurService.getHistorique(authentication.getName(), annee));
-            }
-
-            return ResponseEntity.ok(employeurService.getHistorique(authentication.getName()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
     @PostMapping("/candidatures/{candidatureId}/convoquer")
     public ResponseEntity<Object> convoquerCandidat(
             @PathVariable Long candidatureId,

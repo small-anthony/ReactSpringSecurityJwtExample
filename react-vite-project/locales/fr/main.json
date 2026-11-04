@@ -398,16 +398,6 @@
     "modal_refused_no_reason": "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
     "offer_deleted": "L'offre a été supprimée par l'employeur."
   },
-  "historique": {
-    "back": "Retour à mes offres",
-    "title": "Historique des décisions",
-    "subtitle": "Toutes vos réponses aux candidatures, de la plus récente à la plus ancienne",
-    "loading": "Chargement de l'historique...",
-    "empty": "Vous n'avez encore pris aucune décision.",
-    "date": "Date de la décision",
-    "message": "Message",
-    "button": "Historique des décisions"
-  },
   "sidepanel": {
     "title": "Tableau de bord",
     "cvs": "Approbations des CVs",

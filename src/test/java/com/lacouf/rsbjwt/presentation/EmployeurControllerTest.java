@@ -2,15 +2,15 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
-import com.lacouf.rsbjwt.model.Employeur;
-import com.lacouf.rsbjwt.model.auth.Credentials;
-import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.presentation.RequestDto.ModifierOffreRequest;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.service.dto.EmployeurDto;
+import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -323,44 +323,6 @@ public class EmployeurControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(annees, response.getBody());
-    }
-
-	@Test
-	void getHistorique_shouldReturnOkAndList() {
-//        ARRANGE
-		Authentication authentication = mock(Authentication.class);
-		when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-		List<HistoriqueCandidatureDto> historique = List.of(
-				new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
-						StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
-		when(employeurService.getHistorique("employeur@entreprise.com")).thenReturn(historique);
-
-//        ACT
-		ResponseEntity<Object> response = employeurController.getHistorique(null, authentication);
-
-//        ASSERT
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(historique, response.getBody());
-	}
-
-    @Test
-    void getHistorique_avecAnnee_shouldReturnOkAndFilteredList() {
-//        ARRANGE
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        List<HistoriqueCandidatureDto> historique = List.of(
-                new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
-                        StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
-        when(employeurService.getHistorique("employeur@entreprise.com", 2025)).thenReturn(historique);
-
-//        ACT
-        ResponseEntity<Object> response = employeurController.getHistorique(2025, authentication);
-
-//        ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(historique, response.getBody());
     }
 
     @Test

@@ -118,32 +118,15 @@ export async function embaucherCandidature(candidatureId, authHeader) {
 }
 
 export async function getAnneesEmployeur(authHeader) {
-  const response = await fetch(`${BASE_URL}/employeur/annees`, {
-    headers: authHeader,
-  });
+    const response = await fetch(`${BASE_URL}/employeur/annees`, {
+        headers: authHeader,
+    });
 
-  if (!response.ok) {
-    return [];
-  }
+    if (!response.ok) {
+        return [];
+    }
 
-  return await response.json();
-}
-
-export async function getHistoriqueDecisions(authHeader, annee = null) {
-  const url = annee
-      ? `${BASE_URL}/employeur/historique?annee=${annee}`
-      : `${BASE_URL}/employeur/historique`;
-
-  const response = await fetch(url, {
-    headers: authHeader,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "defaultError");
-  }
-
-  return response.json();
+    return await response.json();
 }
 
 export const fetchOffresEnAttente = async (authHeader, annee = null) => {
