@@ -8,12 +8,10 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.presentation.RequestDto.ModifierOffreRequest;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.EmployeurService;
 import com.lacouf.rsbjwt.service.UserAppService;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.EmployeurDto;
-import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
-import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,10 +34,7 @@ public class EmployeurControllerTest {
     private EmployeurService employeurService;
 
     @Mock
-    private UserAppRepository userAppRepository;
-
-    @Mock
-    private OffreStageRepository offreStageRepository;
+    private ConvocationService convocationService;
 
     @InjectMocks
     private EmployeurController employeurController;
@@ -163,7 +158,27 @@ public class EmployeurControllerTest {
         when(employeurService.getOffres("employeur@entreprise.com")).thenReturn(offres);
 
 //        ACT
-        ResponseEntity<Object> response = employeurController.getOffres(authentication);
+        ResponseEntity<Object> response = employeurController.getOffres(null, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offres, response.getBody());
+    }
+
+    @Test
+    void testGetOffres_avecAnnee_succes() throws Exception {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        List<OffreStageDto> offres = List.of(
+                new OffreStageDto(1, "Titre 2025", "Desc", "Ent", StatusAcceptation.ACCEPTE, "",
+                        "info", "25$/h", "15 semaines", "Java", List.of(), 2025));
+
+        when(employeurService.getOffres("employeur@entreprise.com", 2025)).thenReturn(offres);
+
+//        ACT
+        ResponseEntity<Object> response = employeurController.getOffres(2025, authentication);
 
 //        ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -180,7 +195,7 @@ public class EmployeurControllerTest {
                 .thenThrow(new Exception("Utilisateur non trouvé"));
 
 //        ACT
-        ResponseEntity<Object> response = employeurController.getOffres(authentication);
+        ResponseEntity<Object> response = employeurController.getOffres(null, authentication);
 
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -294,31 +309,20 @@ public class EmployeurControllerTest {
 	}
 
     @Test
-    void embaucherCandidature_shouldReturnOkAndDto() throws Exception {
+    void getAnnees_shouldReturnOkAndList() throws Exception {
+//        ARRANGE
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-        CandidatureDto dto = new CandidatureDto(1, StatutCandidature.EMBAUCHEE, LocalDateTime.now(), null, null, LocalDateTime.now());
-        when(employeurService.embaucherCandidature(1L, "employeur@entreprise.com")).thenReturn(dto);
+        List<Integer> annees = List.of(2026, 2025);
+        when(employeurService.getAnnees("employeur@entreprise.com")).thenReturn(annees);
 
-        ResponseEntity<Object> response = employeurController.embaucherCandidature(1L, authentication);
+//        ACT
+        ResponseEntity<Object> response = employeurController.getAnnees(authentication);
 
+//        ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void embaucherCandidature_shouldReturnBadRequestOnException() throws Exception {
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("employeur@entreprise.com");
-
-        when(employeurService.embaucherCandidature(1L, "employeur@entreprise.com"))
-                .thenThrow(new Exception("L'entrevue doit être confirmée par l'étudiant avant l'embauche"));
-
-        ResponseEntity<Object> response = employeurController.embaucherCandidature(1L, authentication);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("L'entrevue doit être confirmée par l'étudiant avant l'embauche", response.getBody());
+        assertEquals(annees, response.getBody());
     }
 
 	@Test
@@ -331,12 +335,33 @@ public class EmployeurControllerTest {
 				new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
 						StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
 		when(employeurService.getHistorique("employeur@entreprise.com")).thenReturn(historique);
+
 //        ACT
-		ResponseEntity<Object> response = employeurController.getHistorique(authentication);
+		ResponseEntity<Object> response = employeurController.getHistorique(null, authentication);
+
 //        ASSERT
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(historique, response.getBody());
 	}
+
+    @Test
+    void getHistorique_avecAnnee_shouldReturnOkAndFilteredList() {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        List<HistoriqueCandidatureDto> historique = List.of(
+                new HistoriqueCandidatureDto(1L, "Sophie Martin", "Stagiaire en informatique",
+                        StatutCandidature.EN_ATTENTE, StatutCandidature.ACCEPTEE, null, LocalDateTime.now()));
+        when(employeurService.getHistorique("employeur@entreprise.com", 2025)).thenReturn(historique);
+
+//        ACT
+        ResponseEntity<Object> response = employeurController.getHistorique(2025, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(historique, response.getBody());
+    }
 
     @Test
     void deleteOffre_shouldReturnNoContent() throws Exception {
@@ -414,5 +439,23 @@ public class EmployeurControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Le titre est obligatoire", response.getBody());
+    }
+
+    @Test
+    void getConvocationsEmployeur_avecAnnee_shouldReturnOk() {
+//        ARRANGE
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        List<ConvocationDto> convocations = List.of();
+        when(convocationService.getConvocationsEmployeur("employeur@entreprise.com", 2025))
+                .thenReturn(convocations);
+
+//        ACT
+        ResponseEntity<Object> response = employeurController.getConvocationsEmployeur(2025, authentication);
+
+//        ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(convocations, response.getBody());
     }
 }

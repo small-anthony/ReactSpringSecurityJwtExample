@@ -2,20 +2,36 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import { getHistoriqueDecisions } from "../../services/api/OffreStageService.js";
+import { getHistoriqueDecisions, getAnneesEmployeur } from "../../services/api/OffreStageService.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 export default function HistoriqueDecisions() {
     const authService = useContext(AuthServiceContext);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation("main");
     const [decisions, setDecisions] = useState([]);
+    const [annees, setAnnees] = useState([]);
+    const [anneeChoisie, setAnneeChoisie] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        let actif = true;
+        getAnneesEmployeur(authService.buildAuthHeader())
+            .then((data) => {
+                setAnnees(data);
 
-        getHistoriqueDecisions(authService.buildAuthHeader())
+                if (data && data.length > 0) {
+                    setAnneeChoisie(data[0]);
+                }
+            })
+            .catch(() => setAnnees([]));
+    }, [authService]);
+
+    useEffect(() => {
+        let actif = true;
+        setIsLoading(true);
+
+        getHistoriqueDecisions(authService.buildAuthHeader(), anneeChoisie)
             .then((data) => {
                 if (actif) setDecisions(data);
             })
@@ -29,7 +45,7 @@ export default function HistoriqueDecisions() {
         return () => {
             actif = false;
         };
-    }, [authService]);
+    }, [authService, anneeChoisie]);
 
     const statutClasses = (statut) => {
         if (statut === "EMBAUCHEE") return "bg-green-100 text-green-800 border-green-200";
@@ -48,8 +64,17 @@ export default function HistoriqueDecisions() {
                 >
                     {t("historique.back")}
                 </button>
-                <h1 className="text-3xl font-bold text-gray-800 mt-4">{t("historique.title")}</h1>
-                <p className="text-gray-500 mt-1">{t("historique.subtitle")}</p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-800">{t("historique.title")}</h1>
+                        <p className="text-gray-500 mt-1">{t("historique.subtitle")}</p>
+                    </div>
+                    <SelecteurSession
+                        annees={annees}
+                        anneeSelectionnee={anneeChoisie}
+                        onChangementAnnee={setAnneeChoisie}
+                    />
+                </div>
             </div>
 
             {isLoading && <p className="text-gray-500">{t("historique.loading")}</p>}

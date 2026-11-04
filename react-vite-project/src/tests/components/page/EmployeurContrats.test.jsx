@@ -8,6 +8,15 @@ import * as ContratAPI from "../../../services/api/ContratAPI.js";
 
 vi.mock("../../../services/api/ContratAPI.js");
 
+vi.mock("../../../components/modal/ModalCvPdf.jsx", () => ({
+    default: ({ titre, onClose }) => (
+        <div data-testid="mock-modal-cv-pdf">
+            <span>{titre}</span>
+            <button type="button" onClick={onClose}>Fermer</button>
+        </div>
+    ),
+}));
+
 const mockAuth = {
     buildAuthHeader: vi.fn(() => ({ Authorization: "Bearer token123" })),
     getUserData: vi.fn(() => ({ id: 1, role: "ROLE_EMPLOYEUR" }))

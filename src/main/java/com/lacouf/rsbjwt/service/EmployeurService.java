@@ -7,7 +7,9 @@ import com.lacouf.rsbjwt.repository.EmployeurRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,12 +40,18 @@ public class EmployeurService {
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur);
+        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur, null);
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
                                           String emailEmployeur) throws Exception {
+        return createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences, emailEmployeur, null);
+    }
+
+    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
+                                          String discipline, String duree, String salaire, String exigences,
+                                          String emailEmployeur, Integer annee) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
         }
@@ -76,22 +84,50 @@ public class EmployeurService {
                 exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
         );
 
+        if (annee != null && annee > 0) {
+            offreStage.setAnnee(annee);
+        }
+
         employeur.ajouterOffre(offreStage);
 
         return OffreStageDto.create(offreStageRepository.save(offreStage));
     }
 
     public List<OffreStageDto> getOffres(String emailEmployeur) throws Exception {
+        return getOffres(emailEmployeur, null);
+    }
+
+    public List<OffreStageDto> getOffres(String emailEmployeur, Integer annee) throws Exception {
         UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
 
         Employeur employeur = employeurRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
 
-        List<OffreStageDto> offres = new ArrayList<>(
-                OffreStageDto.create(offreStageRepository.findWithCandidaturesByEmployeur(employeur)));
-        offres.sort(Comparator.comparing(OffreStageDto::id, Comparator.reverseOrder()));
-        return offres;
+        List<OffreStage> offres = (annee != null)
+                ? offreStageRepository.findWithCandidaturesByEmployeurAndAnnee(employeur, annee)
+                : offreStageRepository.findWithCandidaturesByEmployeur(employeur);
+
+        List<OffreStageDto> dtos = new ArrayList<>(OffreStageDto.create(offres));
+        dtos.sort((a, b) -> Integer.compare(b.id(), a.id()));
+
+        return dtos;
+    }
+
+    public List<Integer> getAnnees(String emailEmployeur) throws Exception {
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
+
+        annees.add(AcademicSessionUtils.getAnneeActuelle());
+
+        annees.addAll(offreStageRepository.findDistinctAnneesByEmployeur(employeur));
+
+        return new ArrayList<>(annees);
     }
 
     public List<CandidatureDto> getCandidatures(Long offreId, String emailEmployeur) throws Exception {
@@ -149,6 +185,17 @@ public class EmployeurService {
             derniereDecisionParCandidature.putIfAbsent(dto.candidatureId(), dto);
         });
         return new ArrayList<>(derniereDecisionParCandidature.values());
+    }
+
+    public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur, Integer annee) {
+        var historique = historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).stream();
+        if (annee != null) {
+            historique = historique.filter(h -> h.getCandidature() != null
+                    && h.getCandidature().getOffreStage() != null
+                    && h.getCandidature().getOffreStage().getAnnee() == annee);
+        }
+        return historique.map(HistoriqueCandidatureDto::create)
+                .collect(Collectors.toList());
     }
 
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,

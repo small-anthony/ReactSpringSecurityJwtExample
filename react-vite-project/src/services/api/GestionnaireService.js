@@ -64,32 +64,39 @@ export async function getEtudiantsInscrits(authHeader) {
     if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants inscrits");
     return response.json();
 }
-export async function getEtudiantsSansConvocation(authHeader) {
-    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-sans-convocation`, {
-        headers: authHeader,
-    });
+
+export async function getEtudiantsSansConvocation(authHeader, annee = null) {
+    const url = annee
+        ? `${BASE_URL}/gestionnaire/rapports/etudiants-sans-convocation?annee=${annee}`
+        : `${BASE_URL}/gestionnaire/rapports/etudiants-sans-convocation`;
+    const response = await fetch(url, { headers: authHeader });
     if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants sans convocation");
     return response.json();
 }
-export async function getEtudiantsAttenteEntrevue(authHeader) {
-    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-attente-entrevue`, {
-        headers: authHeader,
-    });
+
+export async function getEtudiantsAttenteEntrevue(authHeader, annee = null) {
+    const url = annee
+        ? `${BASE_URL}/gestionnaire/rapports/etudiants-attente-entrevue?annee=${annee}`
+        : `${BASE_URL}/gestionnaire/rapports/etudiants-attente-entrevue`;
+    const response = await fetch(url, { headers: authHeader });
     if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants en attente d'entrevue");
     return response.json();
 }
-export async function getEtudiantsAttenteReponse(authHeader) {
-    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-attente-reponse`, {
-        headers: authHeader,
-    });
+
+export async function getEtudiantsAttenteReponse(authHeader, annee = null) {
+    const url = annee
+        ? `${BASE_URL}/gestionnaire/rapports/etudiants-attente-reponse?annee=${annee}`
+        : `${BASE_URL}/gestionnaire/rapports/etudiants-attente-reponse`;
+    const response = await fetch(url, { headers: authHeader });
     if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants en attente de réponse");
     return response.json();
 }
-export async function getEtudiantsTrouveStage(authHeader) {
-    const response = await fetch(`${BASE_URL}/gestionnaire/rapports/etudiants-trouve-stage`, {
-        headers: authHeader,
-    });
+
+export async function getEtudiantsTrouveStage(authHeader, annee = null) {
+    const url = annee
+        ? `${BASE_URL}/gestionnaire/rapports/etudiants-trouve-stage?annee=${annee}`
+        : `${BASE_URL}/gestionnaire/rapports/etudiants-trouve-stage`;
+    const response = await fetch(url, { headers: authHeader });
     if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants ayant trouvé un stage");
     return response.json();
 }
-

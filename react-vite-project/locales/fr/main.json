@@ -831,5 +831,9 @@
       "desc": "Êtes-vous certain de vouloir refuser de signer ce contrat de stage ? Cette action informera votre gestionnaire de stage et l'étudiant de votre refus.",
       "confirm": "Confirmer le refus"
     }
+  },
+  "session": {
+    "toutes": "Toutes les sessions",
+    "libelle": "Hiver {{annee}}"
   }
 }

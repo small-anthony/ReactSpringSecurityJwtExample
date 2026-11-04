@@ -14,15 +14,15 @@ import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.StatutCvDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 public class EtudiantService {
@@ -96,6 +96,12 @@ public class EtudiantService {
             throw new Exception("Vous avez déjà postulé à cette offre");
         }
 
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+
+        if (offre.getAnnee() != anneeActuelle) {
+            throw new Exception("Cette offre n'est plus disponible pour l'année en cours");
+        }
+
         offre.addCandidature(new Candidature(etudiant, offre));
         offreStageRepository.save(offre);
 
@@ -109,7 +115,9 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new Exception("Etudiant non trouvé"));
 
-        List<OffreStage> offre = offreStageRepository.findByEtudiant(etudiant);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+
+        List<OffreStage> offre = offreStageRepository.findByEtudiantAndAnnee(etudiant, anneeActuelle);
 
         return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
@@ -137,7 +145,9 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.ACCEPTE);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+
+        List<OffreStage> offresAcceptees = offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.ACCEPTE, anneeActuelle);
 
         return offresAcceptees.stream()
                 .filter(offre -> offre.getEtudiantsAutorises() == null

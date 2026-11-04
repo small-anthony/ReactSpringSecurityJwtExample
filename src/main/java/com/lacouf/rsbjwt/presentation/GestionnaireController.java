@@ -3,22 +3,25 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
+import com.lacouf.rsbjwt.service.ConvocationService;
+import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping({ "/gestionnaire" })
 public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
+    private final ConvocationService convocationService;
 
-    public GestionnaireController(GestionnaireService gestionnaireService) {
+    public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
         this.gestionnaireService = gestionnaireService;
+        this.convocationService = convocationService;
     }
 
     @PutMapping("/cv/accepter")
@@ -81,11 +84,44 @@ public class GestionnaireController {
     }
 
     @GetMapping("/offre/pending")
-    public ResponseEntity<List<OffreStageDto>> getOffresEnAttente() {
+    public ResponseEntity<Object> getOffresEnAttente(@RequestParam(required = false) Integer annee) {
         try {
+            if (annee != null) {
+                return ResponseEntity.ok(gestionnaireService.getOffresEnAttente(annee));
+            }
             return ResponseEntity.ok(gestionnaireService.getOffresEnAttente());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/offres")
+    public ResponseEntity<Object> getToutesOffres(@RequestParam(required = false) Integer annee) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getToutesOffres(annee));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/annees")
+    public ResponseEntity<Object> getAnneesDisponibles() {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getAnneesDisponibles());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/convocations")
+    public ResponseEntity<Object> getToutesConvocations(@RequestParam(required = false) Integer annee) {
+        try {
+            if (annee != null) {
+                return ResponseEntity.ok(convocationService.getToutesConvocations(annee));
+            }
+            return ResponseEntity.ok(convocationService.getToutesConvocations());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -95,23 +131,23 @@ public class GestionnaireController {
     }
 
     @GetMapping("/rapports/etudiants-sans-convocation")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsSansConvocation() {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsSansConvocation());
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsSansConvocation(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsSansConvocation(annee));
     }
 
     @GetMapping("/rapports/etudiants-attente-entrevue")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteEntrevue() {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteEntrevue());
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteEntrevue(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteEntrevue(annee));
     }
 
     @GetMapping("/rapports/etudiants-attente-reponse")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteReponse() {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteReponse());
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteReponse(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteReponse(annee));
     }
 
     @GetMapping("/rapports/etudiants-trouve-stage")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage() {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage());
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage(annee));
     }
 
 }
