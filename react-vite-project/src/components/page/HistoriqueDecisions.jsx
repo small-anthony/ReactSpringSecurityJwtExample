@@ -31,10 +31,12 @@ export default function HistoriqueDecisions() {
         };
     }, [authService]);
 
-    const statutClasses = (statut) =>
-        statut === "ACCEPTEE"
-            ? "bg-green-100 text-green-800 border-green-200"
-            : "bg-red-100 text-red-800 border-red-200";
+    const statutClasses = (statut) => {
+        if (statut === "EMBAUCHEE") return "bg-green-100 text-green-800 border-green-200";
+        if (statut === "EN_ATTENTE_REPONSE") return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        if (statut === "ACCEPTEE") return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-red-100 text-red-800 border-red-200";
+    };
 
     return (
         <main className="max-w-7xl mx-auto my-10 px-4">

@@ -1,12 +1,13 @@
 package com.lacouf.rsbjwt.repository;
 
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     boolean existsByMatricule(int matricule);
@@ -56,5 +57,4 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         WHERE c.statut = StatutCandidature.ACCEPTEE
     """)
     List<Etudiant> findEtudiantsTrouveStage();
-
 }
