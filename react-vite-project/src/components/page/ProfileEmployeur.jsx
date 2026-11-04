@@ -10,6 +10,7 @@ import {
     ClipboardList,
     AlignLeft,
     Briefcase,
+    FileText,
 } from "lucide-react";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
@@ -91,6 +92,14 @@ export default function ProfileEmployeur() {
                     <p className="text-gray-500 mt-1">{t("employeur_home.subtitle")}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                    <Link
+                        to="/employeur/contrats"
+                        id="btn-nav-contrats-employeur"
+                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 inline-flex items-center gap-2"
+                    >
+                        <FileText className="w-4 h-4 text-blue-600" />
+                        {t("employeur_home.contracts_button", { defaultValue: "Contrats de stage" })}
+                    </Link>
                     <Link
                         to="/employeur/historique"
                         className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50"

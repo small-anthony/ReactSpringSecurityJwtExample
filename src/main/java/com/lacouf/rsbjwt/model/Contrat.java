@@ -102,6 +102,7 @@ public class Contrat {
 	public int getAnneeDebut() {
 		return dateDebut != null ? dateDebut.getYear() : 0;
 	}
+
 	public long getNombreSemaines() {
 		if (dateDebut == null || dateFin == null) return 1;
 		return Math.max(1, java.time.temporal.ChronoUnit.WEEKS.between(dateDebut, dateFin));
@@ -126,6 +127,8 @@ public class Contrat {
 		}
 		if (isSigneParEtudiant() && isSigneParEmployeur() && isSigneParGestionnaire()) {
 			this.statut = StatutContrat.COMPLETE;
+		} else if (isSigneParEtudiant() && isSigneParEmployeur()) {
+			this.statut = StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR;
 		} else if (isSigneParEmployeur() && !isSigneParEtudiant()) {
 			this.statut = StatutContrat.SIGNE_PAR_EMPLOYEUR;
 		} else if (isSigneParEtudiant() && !isSigneParEmployeur()) {

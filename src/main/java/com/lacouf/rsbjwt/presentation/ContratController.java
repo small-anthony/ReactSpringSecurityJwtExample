@@ -36,7 +36,7 @@ public class ContratController {
 		}
 	}
 
-	@GetMapping("/candidatures-acceptees")
+	@GetMapping(value = {"/candidatures-acceptees", "/candidatures-pour-contrat"})
 	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
 		return ResponseEntity.ok(contratService.getCandidaturesPourContrat());
 	}
@@ -59,6 +59,12 @@ public class ContratController {
 	public ResponseEntity<List<ContratDto>> getContratsEtudiant(Authentication authentication) {
 		String email = authentication != null ? authentication.getName() : null;
 		return ResponseEntity.ok(contratService.getContratsEtudiant(email));
+	}
+
+	@GetMapping("/employeur")
+	public ResponseEntity<List<ContratDto>> getContratsEmployeur(Authentication authentication) {
+		String email = authentication != null ? authentication.getName() : null;
+		return ResponseEntity.ok(contratService.getContratsEmployeur(email));
 	}
 
 	@PostMapping(value = "/{id}/signer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -90,7 +96,7 @@ public class ContratController {
 		}
 	}
 
-	@GetMapping("/{id}/document")
+	@GetMapping(value = {"/{id}/document", "/{id}/pdf"})
 	public ResponseEntity<byte[]> getContratDocument(@PathVariable Long id) {
 		try {
 			byte[] data = contratService.getContratPdf(id);
