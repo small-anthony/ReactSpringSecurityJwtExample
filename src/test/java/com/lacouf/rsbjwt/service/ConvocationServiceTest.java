@@ -37,7 +37,6 @@ class ConvocationServiceTest {
     @Mock
     private CandidatureRepository candidatureRepository;
 
-
     @InjectMocks
     private ConvocationService convocationService;
 
@@ -201,7 +200,7 @@ class ConvocationServiceTest {
 
         @Test
         void reconvoquerApresRefus_succes() throws Exception {
-                // Étudiant refuse la 1ère convocation
+//        ARRANGE
                 when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
                                 .thenReturn(Optional.of(convocation));
                 when(convocationRepository.save(any(Convocation.class)))
@@ -213,17 +212,18 @@ class ConvocationServiceTest {
                                         return c;
                                 });
 
+//                ACT
                 convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "Pas dispo le matin");
 
                 assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
                 assertEquals("Pas dispo le matin", candidature.getConvocations().get(0).getReponseEtudiant());
 
-                // Employeur reconvoque avec nouveaux créneaux
                 when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
 
                 List<RendezVousDto> nouveauxRdv = List.of(RendezVousDto.create(RendezVous.create("En ligne", Instant.MAX)));
                 ConvocationDto nouvelleDto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), nouveauxRdv, "Nouveaux créneaux");
 
+//                ASSERT
                 assertNotNull(nouvelleDto);
                 assertEquals(StatutConvocation.EN_ATTENTE, nouvelleDto.statut());
                 assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
