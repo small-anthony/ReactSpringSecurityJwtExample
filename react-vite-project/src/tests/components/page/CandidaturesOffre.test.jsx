@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -320,5 +320,40 @@ describe("CandidaturesOffre", () => {
 
         expect(screen.queryByText("Sophie Martin - CV")).not.toBeInTheDocument();
         expect(revokeObjectURLMock).toHaveBeenCalled();
+    });
+
+    it("affiche le message de refus de convocation de l'étudiant et le bouton Reconvoquer", async () => {
+        const candidatureAvecRefus = {
+            ...candidatureEnAttente,
+            convocations: [{ id: 1, statut: "REFUSEE", reponseEtudiant: "Pas disponible le matin, préférez l'après-midi" }],
+        };
+        getCandidatures.mockResolvedValue([candidatureAvecRefus]);
+
+        afficherPage();
+
+        expect(await screen.findByText("candidatures_offre.reconvoquer")).toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.convocation_refusee")).toBeInTheDocument();
+        expect(screen.getByText("Pas disponible le matin, préférez l'après-midi")).toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
+    });
+
+    it("permet de reconvoquer un étudiant ayant refusé une convocation", async () => {
+        const user = userEvent.setup();
+        const candidatureAvecRefus = {
+            ...candidatureEnAttente,
+            convocations: [{ id: 1, statut: "REFUSEE", reponseEtudiant: "Non disponible" }],
+        };
+        getCandidatures
+            .mockResolvedValueOnce([candidatureAvecRefus])
+            .mockResolvedValueOnce([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+        proposeConvocation.mockResolvedValue({ statut: "EN_ATTENTE" });
+
+        afficherPage();
+
+        await user.click(await screen.findByText("candidatures_offre.reconvoquer"));
+        expect(screen.getByTestId("modal-convocation")).toBeInTheDocument();
+
+        await user.click(screen.getByText("confirmer-convocation"));
+        expect(proposeConvocation).toHaveBeenCalledWith(1, null, expect.any(Array), {});
     });
 });

@@ -48,7 +48,10 @@ export async function getOffresStages(authHeader, annee = null) {
       : `${BASE_URL}/employeur/offres`;
 
   const response = await fetch(url, {
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
   });
 
   if (!response.ok) {
@@ -61,7 +64,10 @@ export async function getOffresStages(authHeader, annee = null) {
 
 export async function getCandidatures(offreId, authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}/candidatures`, {
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
   });
 
   if (!response.ok) {
@@ -74,7 +80,10 @@ export async function getCandidatures(offreId, authHeader) {
 
 export async function getCvCandidat(candidatureId, authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/cv`, {
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
   });
 
   if (!response.ok) {
@@ -106,7 +115,10 @@ export async function refuserCandidature(candidatureId, message, authHeader) {
 export async function embaucherCandidature(candidatureId, authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/candidatures/${candidatureId}/embaucher`, {
     method: "PUT",
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
   });
 
   if (!response.ok) {
@@ -119,7 +131,10 @@ export async function embaucherCandidature(candidatureId, authHeader) {
 
 export async function getAnneesEmployeur(authHeader) {
     const response = await fetch(`${BASE_URL}/employeur/annees`, {
-        headers: authHeader,
+        headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
     });
 
     if (!response.ok) {
@@ -192,7 +207,10 @@ export async function postuler(authHeader, offreId) {
 export async function deleteOffreStage(offreId, authHeader) {
   const response = await fetch(`${BASE_URL}/employeur/offres/${offreId}`, {
     method: "DELETE",
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
   });
   if (!response.ok) {
     const errorText = await response.text();
@@ -219,7 +237,10 @@ export async function updateOffreStage(offreData, authHeader) {
 
 export async function getAnneesGestionnaire(authHeader) {
   const response = await fetch(`${BASE_URL}/gestionnaire/annees`, {
-    headers: authHeader,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
   });
 
   if (!response.ok) {

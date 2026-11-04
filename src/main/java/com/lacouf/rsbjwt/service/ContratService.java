@@ -13,6 +13,7 @@ import com.lacouf.rsbjwt.service.dto.ContratDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
@@ -33,7 +34,11 @@ public class ContratService {
     }
 
     public List<CandidaturePourContratDto> getCandidaturesPourContrat() {
-        return candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE).stream()
+        List<Candidature> candidatures = new ArrayList<>();
+        candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE));
+        candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE));
+        return candidatures.stream()
+                .distinct()
                 .map(c -> CandidaturePourContratDto.create(c, contratRepository.findByCandidatureId(c.getId())))
                 .toList();
     }
@@ -44,7 +49,7 @@ public class ContratService {
         Candidature candidature = candidatureRepository.findById(request.candidatureId())
                 .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
-        if (candidature.getStatut() != StatutCandidature.ACCEPTEE) {
+        if (candidature.getStatut() != StatutCandidature.EMBAUCHEE && candidature.getStatut() != StatutCandidature.ACCEPTEE) {
             throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
         }
 

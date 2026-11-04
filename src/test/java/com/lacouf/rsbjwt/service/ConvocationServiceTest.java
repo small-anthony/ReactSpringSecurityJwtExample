@@ -37,7 +37,6 @@ class ConvocationServiceTest {
     @Mock
     private CandidatureRepository candidatureRepository;
 
-
     @InjectMocks
     private ConvocationService convocationService;
 
@@ -125,6 +124,7 @@ class ConvocationServiceTest {
         assertNotNull(dto);
         assertEquals(StatutConvocation.REFUSEE, dto.statut());
         assertEquals(raison, convocation.getReponseEtudiant());
+        assertEquals(StatutCandidature.EN_ATTENTE, convocation.getCandidature().getStatut());
 
         verify(convocationRepository).save(convocation);
     }
@@ -196,5 +196,37 @@ class ConvocationServiceTest {
 
 //        ASSERT
                 verify(convocationRepository).expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE);
+        }
+
+        @Test
+        void reconvoquerApresRefus_succes() throws Exception {
+//        ARRANGE
+                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                                .thenReturn(Optional.of(convocation));
+                when(convocationRepository.save(any(Convocation.class)))
+                                .thenAnswer(invocation -> {
+                                        Convocation c = invocation.getArgument(0);
+                                        if (c.getId() == null) {
+                                                ReflectionTestUtils.setField(c, "id", 2L);
+                                        }
+                                        return c;
+                                });
+
+//                ACT
+                convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "Pas dispo le matin");
+
+                assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
+                assertEquals("Pas dispo le matin", candidature.getConvocations().get(0).getReponseEtudiant());
+
+                when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+
+                List<RendezVousDto> nouveauxRdv = List.of(RendezVousDto.create(RendezVous.create("En ligne", Instant.MAX)));
+                ConvocationDto nouvelleDto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), nouveauxRdv, "Nouveaux créneaux");
+
+//                ASSERT
+                assertNotNull(nouvelleDto);
+                assertEquals(StatutConvocation.EN_ATTENTE, nouvelleDto.statut());
+                assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
+                assertEquals(2, candidature.getConvocations().size());
         }
 }

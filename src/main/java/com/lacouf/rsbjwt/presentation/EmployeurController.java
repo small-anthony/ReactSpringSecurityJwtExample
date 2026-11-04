@@ -153,6 +153,16 @@ public class EmployeurController {
         }
     }
 
+    @PutMapping("/candidatures/{candidatureId}/embaucher")
+    public ResponseEntity<Object> embaucherCandidature(@PathVariable Long candidatureId,
+                                                       Authentication authentication) {
+        try {
+            return ResponseEntity.ok(employeurService.embaucherCandidature(candidatureId, authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/annees")
     public ResponseEntity<Object> getAnnees(Authentication authentication) {
         try {

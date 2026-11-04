@@ -19,6 +19,21 @@ const peutRefuser = (candidature) =>
     ["EN_ATTENTE", "EN_ATTENTE_REPONSE", "ACCEPTEE"].includes(candidature.statut);
 const aUnBadge = (candidature) => candidature.statut !== "EN_ATTENTE";
 
+const aConvocationRefusee = (candidat) => {
+    if (candidat?.messageRefusConvocation !== null && candidat?.messageRefusConvocation !== undefined) {
+        return true;
+    }
+    return Boolean(candidat?.convocations?.some((c) => c.statut === "REFUSEE"));
+};
+
+const getMotifRefusConvocation = (candidat) => {
+    if (candidat?.messageRefusConvocation !== null && candidat?.messageRefusConvocation !== undefined) {
+        return candidat.messageRefusConvocation;
+    }
+    const refusee = candidat?.convocations?.find((c) => c.statut === "REFUSEE");
+    return refusee ? (refusee.reponseEtudiant || "") : "";
+};
+
 const COULEURS_BADGE = {
     EN_ATTENTE_REPONSE: "bg-yellow-100 text-yellow-800",
     ACCEPTEE: "bg-blue-100 text-blue-800",
@@ -301,6 +316,15 @@ export default function CandidaturesOffre() {
                             </div>
                         )}
 
+                        {aConvocationRefusee(candidat) && (
+                            <div className="mt-4 p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-900 text-sm rounded-lg">
+                                <strong className="text-amber-950">
+                                    {t("candidatures_offre.convocation_refusee", { defaultValue: "Convocation refusée par l'étudiant :" })}
+                                </strong>{" "}
+                                {getMotifRefusConvocation(candidat) || t("candidatures_offre.aucun_motif", { defaultValue: "Aucun motif fourni." })}
+                            </div>
+                        )}
+
                         {peutRefuser(candidat) && refusId !== candidat.id && (
                             <div className="mt-auto pt-4 flex flex-wrap justify-between gap-3 border-t border-gray-100">
                                 {peutConvoquer(candidat) && (
@@ -310,7 +334,9 @@ export default function CandidaturesOffre() {
                                         onClick={() => setCandidatureAConvoquer(candidat)}
                                         className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                                     >
-                                        {t("candidatures_offre.convoquer")}
+                                        {aConvocationRefusee(candidat)
+                                            ? t("candidatures_offre.reconvoquer", { defaultValue: "Reconvoquer" })
+                                            : t("candidatures_offre.convoquer")}
                                     </button>
                                 )}
                                 {peutEmbaucher(candidat) && (

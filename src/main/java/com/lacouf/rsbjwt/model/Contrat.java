@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
+import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
@@ -110,14 +111,16 @@ public class Contrat {
 
 	@SuppressWarnings("unchecked")
 	private void setSignature(Signature<?> signature) {
-		if (signature == null) {
+		if (signature == null || signature.getSignataire() == null) {
 			return;
 		}
-		switch (signature.getSignataire()) {
-			case Etudiant _ -> signatureEtudiant = (Signature<Etudiant>) signature;
-			case Employeur _ -> signatureEmployeur = (Signature<Employeur>) signature;
-			case Gestionnaire _ -> signatureGestionnaire = (Signature<Gestionnaire>) signature;
-			case null, default -> {}
+		Role role = signature.getSignataire().getRole();
+		if (role == Role.ETUDIANT) {
+			signatureEtudiant = (Signature<Etudiant>) signature;
+		} else if (role == Role.EMPLOYEUR) {
+			signatureEmployeur = (Signature<Employeur>) signature;
+		} else if (role == Role.GESTIONNAIRE) {
+			signatureGestionnaire = (Signature<Gestionnaire>) signature;
 		}
 	}
 
@@ -148,6 +151,18 @@ public class Contrat {
 
 	public boolean isSigneParGestionnaire() {
 		return signatureGestionnaire != null && signatureGestionnaire.isValid();
+	}
+
+	public boolean isRefuseParEtudiant() {
+		return signatureEtudiant != null && !signatureEtudiant.isValid();
+	}
+
+	public boolean isRefuseParEmployeur() {
+		return signatureEmployeur != null && !signatureEmployeur.isValid();
+	}
+
+	public boolean isRefuseParGestionnaire() {
+		return signatureGestionnaire != null && !signatureGestionnaire.isValid();
 	}
 
 	public Long getId() {

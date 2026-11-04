@@ -33,7 +33,43 @@ public record ContratDto(
         Instant dateCreation,
         boolean signeParEtudiant,
         boolean signeParEmployeur,
-        boolean signeParGestionnaire) implements DataTransferObject {
+        boolean signeParGestionnaire,
+        boolean refuseParEtudiant,
+        boolean refuseParEmployeur,
+        boolean refuseParGestionnaire) implements DataTransferObject {
+
+    public ContratDto(
+            Long id,
+            Long candidatureId,
+            Long offreId,
+            String titreOffre,
+            String nomEntreprise,
+            String employeurNom,
+            String employeurEmail,
+            String etudiantNom,
+            String etudiantPrenom,
+            String etudiantEmail,
+            int etudiantMatricule,
+            LocalDate dateDebut,
+            LocalDate dateFin,
+            String horaire,
+            String salaire,
+            String descriptionTaches,
+            String conditions,
+            StatutContrat statut,
+            Instant dateCreation,
+            boolean signeParEtudiant,
+            boolean signeParEmployeur,
+            boolean signeParGestionnaire) {
+        this(
+                id, candidatureId, offreId, titreOffre, nomEntreprise,
+                employeurNom, employeurEmail, etudiantNom, etudiantPrenom,
+                etudiantEmail, etudiantMatricule, dateDebut, dateFin,
+                horaire, salaire, descriptionTaches, conditions,
+                statut, dateCreation,
+                signeParEtudiant, signeParEmployeur, signeParGestionnaire,
+                false, false, false);
+    }
 
     public static ContratDto create(Contrat c) {
         Etudiant etudiant = c.getEtudiant();
@@ -62,7 +98,10 @@ public record ContratDto(
                 c.getDateCreation(),
                 c.isSigneParEtudiant(),
                 c.isSigneParEmployeur(),
-                c.isSigneParGestionnaire());
+                c.isSigneParGestionnaire(),
+                c.isRefuseParEtudiant(),
+                c.isRefuseParEmployeur(),
+                c.isRefuseParGestionnaire());
     }
 
     public static List<ContratDto> create(List<Contrat> contrats) {

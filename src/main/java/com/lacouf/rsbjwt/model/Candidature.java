@@ -34,6 +34,7 @@ public class Candidature {
     private LocalDateTime dateDecision;
 
     @OneToMany(mappedBy = "candidature", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<Convocation> convocations = new ArrayList<>();
 
     public Candidature() {}

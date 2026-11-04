@@ -376,6 +376,9 @@
     "no_offers": "No internship offer has been created yet.",
     "motif_refus": "Reason for refusal:",
     "convoquer": "Schedule interview",
+    "reconvoquer": "Re-invite to interview",
+    "convocation_refusee": "Interview invitation refused by student:",
+    "aucun_motif": "No reason provided.",
     "hire": "Hire",
     "accepted": "Summoned",
     "modal_convoquer_title": "Schedule an interview:",
@@ -669,7 +672,8 @@
       "employer": "Employer",
       "manager": "Manager",
       "signed": "Signed",
-      "waiting": "Pending"
+      "waiting": "Pending",
+      "refused": "Refused"
     },
     "alerts": {
       "success_created": "Internship contract successfully created! All three parties (employer, student, and manager) have been notified for signature.",
