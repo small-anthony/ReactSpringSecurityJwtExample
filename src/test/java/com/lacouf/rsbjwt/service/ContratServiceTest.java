@@ -293,12 +293,12 @@ public class ContratServiceTest {
         when(userAppRepository.findUserAppByEmail("autre@test.com")).thenReturn(Optional.of(autreEtudiant));
         when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
 
-        // Act & Assert - signataire invalide
+        // Act & Assert
         Exception exInvalide = assertThrows(Exception.class, () ->
                 contratService.signerContrat(1L, "autre@test.com", signatureFile));
         assertEquals("signataire est invalide", exInvalide.getMessage());
 
-        // Contrat refuse
+        // Assert
         contrat.rejeter(etudiant);
         assertEquals(StatutContrat.REFUSE, contrat.getStatut());
         Exception exRefuse = assertThrows(Exception.class, () ->
