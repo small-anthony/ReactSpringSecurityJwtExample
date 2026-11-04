@@ -691,12 +691,29 @@
       "error_not_hired": "The student was not hired by the employer, cannot create a contract.",
       "error_already_exists": "A contract already exists for this student and employer.",
       "no_accepted_candidates": "No accepted candidates waiting for a contract at this time.",
-      "no_contracts": "No contracts created yet."
+      "no_contracts": "No contracts created yet.",
+      "waiting_student_employer": "Awaiting signatures from student and employer",
+      "success_signed_manager": "Internship contract electronically signed successfully! The contract is now completed.",
+      "success_refused_manager": "The internship contract was refused. The employer and student have been notified.",
+      "error_print": "Error while printing the contract.",
+      "error_refuse": "Error while refusing the contract."
+    },
+    "role_label_manager": "The internship manager (college representative)",
+    "refuse_modal": {
+      "title": "Refuse internship contract",
+      "desc": "Are you sure you want to refuse this internship contract? This action will mark the contract as refused and notify the student and employer.",
+      "confirm": "Confirm refusal"
     },
     "actions": {
       "refresh": "Refresh",
       "close": "Close",
-      "contract_number": "Contract #"
+      "contract_number": "Contract #",
+      "print": "Print",
+      "sign": "Sign contract",
+      "refuse": "Refuse contract",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "already_signed_manager": "You have signed this contract"
     },
     "table": {
       "id": "#",

@@ -187,6 +187,9 @@ public class ContratService {
             if (contrat.isSigneParGestionnaire()) {
                 throw new Exception("signature existe déjà");
             }
+            if (!contrat.isSigneParEtudiant() || !contrat.isSigneParEmployeur()) {
+                throw new Exception("L'étudiant et l'employeur doivent avoir signé le contrat avant le gestionnaire.");
+            }
         } else {
             throw new Exception("signataire inconnu");
         }

@@ -234,6 +234,22 @@ public class ContratServiceTest {
     }
 
     @Test
+    void signerContrat_gestionnaireAvantEtudiantOuEmployeur_lanceException() throws Exception {
+        // Arrange
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.getBytes()).thenReturn("sig".getBytes());
+        when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
+        when(userAppRepository.findUserAppByEmail("alice@college.ca")).thenReturn(Optional.of(gestionnaire));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.signerContrat(1L, "alice@college.ca", file));
+
+        assertEquals("L'étudiant et l'employeur doivent avoir signé le contrat avant le gestionnaire.", exception.getMessage());
+    }
+
+    @Test
     void signerContrat_signatureFichierNul_lanceException() {
         // Arrange
         Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");

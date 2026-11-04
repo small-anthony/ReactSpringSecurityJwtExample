@@ -7,14 +7,21 @@ import {
   Calendar,
   DollarSign,
   Eye,
-  Check
+  Check,
+  Printer,
+  PenTool,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function ListeContratsGestionnaire({
   contrats,
   onVoirDocument,
-  onTelechargerDocument
+  onTelechargerDocument,
+  onImprimerDocument,
+  onSignerContrat,
+  onRefuserContrat
 }) {
   const { t } = useTranslation("main");
 
@@ -36,6 +43,12 @@ export default function ListeContratsGestionnaire({
         return (
           <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
             {t("contrats.status.SIGNE_PAR_ETUDIANT")}
+          </span>
+        );
+      case "SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR":
+        return (
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+            {t("contrats.status.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR", { defaultValue: "Signé par l'étudiant et l'employeur" })}
           </span>
         );
       case "REFUSE":
@@ -174,24 +187,82 @@ export default function ListeContratsGestionnaire({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-5 border-t border-gray-100">
-            <button
-              onClick={() => onVoirDocument(c.id)}
-              className="inline-flex items-center gap-2 text-blue-600 bg-blue-50 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors cursor-pointer"
-              title={t("contrats.table.view")}
-            >
-              <Eye className="w-4 h-4" strokeWidth={2} />
-              {t("contrats.table.view")}
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 border-t border-gray-100">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => onVoirDocument(c.id)}
+                className="inline-flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-blue-100 transition-colors cursor-pointer"
+                title={t("contrats.table.view")}
+              >
+                <Eye className="w-3.5 h-3.5" strokeWidth={2} />
+                {t("contrats.table.view")}
+              </button>
 
-            <button
-              onClick={() => onTelechargerDocument(c.id)}
-              className="inline-flex items-center gap-2 text-gray-700 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
-              title={t("contrats.table.download")}
-            >
-              <Download className="w-4 h-4" strokeWidth={2} />
-              {t("contrats.table.download")}
-            </button>
+              <button
+                type="button"
+                onClick={() => onTelechargerDocument(c.id)}
+                className="inline-flex items-center gap-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                title={t("contrats.table.download")}
+              >
+                <Download className="w-3.5 h-3.5" strokeWidth={2} />
+                {t("contrats.table.download")}
+              </button>
+
+              {onImprimerDocument && (
+                <button
+                  type="button"
+                  id={`btn-imprimer-contrat-${c.id}`}
+                  onClick={() => onImprimerDocument(c.id)}
+                  className="inline-flex items-center gap-1.5 text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                  title={t("contrats.actions.print", { defaultValue: "Imprimer" })}
+                >
+                  <Printer className="w-3.5 h-3.5 text-gray-600" />
+                  {t("contrats.actions.print", { defaultValue: "Imprimer" })}
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {!c.signeParGestionnaire && c.statut !== "REFUSE" ? (
+                c.signeParEtudiant && c.signeParEmployeur ? (
+                  <>
+                    {onRefuserContrat && (
+                      <button
+                        type="button"
+                        id={`btn-refuser-contrat-${c.id}`}
+                        onClick={() => onRefuserContrat(c)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 transition-colors cursor-pointer"
+                      >
+                        <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                        <span>{t("contrats.actions.refuse", { defaultValue: "Refuser le contrat" })}</span>
+                      </button>
+                    )}
+                    {onSignerContrat && (
+                      <button
+                        type="button"
+                        id={`btn-signer-contrat-${c.id}`}
+                        onClick={() => onSignerContrat(c)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer shadow-xs"
+                      >
+                        <PenTool className="w-3.5 h-3.5" />
+                        <span>{t("contrats.actions.sign", { defaultValue: "Signer le contrat" })}</span>
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+                    <Clock className="w-3.5 h-3.5 text-amber-600" />
+                    <span>{t("contrats.alerts.waiting_student_employer", { defaultValue: "En attente des signatures de l'étudiant et de l'employeur" })}</span>
+                  </span>
+                )
+              ) : c.signeParGestionnaire ? (
+                <div className="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-emerald-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>{t("contrats.actions.already_signed_manager", { defaultValue: "Vous avez signé ce contrat" })}</span>
+                </div>
+              ) : null}
+            </div>
           </div>
         </article>
       ))}

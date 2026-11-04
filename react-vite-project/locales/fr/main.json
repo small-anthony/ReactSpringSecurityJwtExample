@@ -691,12 +691,29 @@
       "error_not_hired": "L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.",
       "error_already_exists": "Un contrat existe déjà pour cet étudiant et cet employeur.",
       "no_accepted_candidates": "Aucune candidature acceptée en attente de contrat pour le moment.",
-      "no_contracts": "Aucun contrat créé pour le moment."
+      "no_contracts": "Aucun contrat créé pour le moment.",
+      "waiting_student_employer": "En attente des signatures de l'étudiant et de l'employeur",
+      "success_signed_manager": "Contrat de stage signé électroniquement avec succès ! Le contrat est désormais complété.",
+      "success_refused_manager": "Le contrat de stage a été refusé. L'employeur et l'étudiant en ont été notifiés.",
+      "error_print": "Erreur lors de l'impression du contrat.",
+      "error_refuse": "Erreur lors du refus du contrat."
+    },
+    "role_label_manager": "Le gestionnaire (représentant du cégep)",
+    "refuse_modal": {
+      "title": "Refuser le contrat de stage",
+      "desc": "Êtes-vous certain de vouloir refuser ce contrat de stage ? Cette action marquera le contrat comme refusé et en informera l'étudiant et l'employeur.",
+      "confirm": "Confirmer le refus"
     },
     "actions": {
       "refresh": "Actualiser",
       "close": "Fermer",
-      "contract_number": "Contrat #"
+      "contract_number": "Contrat #",
+      "print": "Imprimer",
+      "sign": "Signer le contrat",
+      "refuse": "Refuser le contrat",
+      "cancel": "Annuler",
+      "processing": "Traitement...",
+      "already_signed_manager": "Vous avez signé ce contrat"
     },
     "table": {
       "id": "#",
