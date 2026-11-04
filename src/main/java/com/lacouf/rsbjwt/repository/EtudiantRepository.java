@@ -68,10 +68,10 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE
+        WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
         AND e.id NOT IN (
             SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+            WHERE c2.statut = StatutCandidature.ACCEPTEE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse();
@@ -92,7 +92,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+        WHERE c.statut = StatutCandidature.ACCEPTEE
     """)
     List<Etudiant> findEtudiantsTrouveStage();
 
