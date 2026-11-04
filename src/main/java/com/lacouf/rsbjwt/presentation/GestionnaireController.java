@@ -17,9 +17,11 @@ import java.util.List;
 @RequestMapping({ "/gestionnaire" })
 public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
+    private final ConvocationService convocationService;
 
-    public GestionnaireController(GestionnaireService gestionnaireService) {
+    public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
         this.gestionnaireService = gestionnaireService;
+        this.convocationService = convocationService;
     }
 
     @PutMapping("/cv/accepter")

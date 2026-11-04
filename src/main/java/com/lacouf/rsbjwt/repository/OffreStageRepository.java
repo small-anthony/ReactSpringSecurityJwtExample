@@ -15,8 +15,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	Optional<OffreStage> findByIdAndEmployeurAndDateSuppressionIsNull(Long id, Employeur employeur);
 	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	List<OffreStage> findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation status);
-	Optional<OffreStage> findByIdAndEmployeur(Long id, Employeur employeur);
-	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	List<OffreStage> findByApprobationStatusAndAnnee(StatusAcceptation status, int annee);
 	List<OffreStage> findAllByAnnee(int annee);
 

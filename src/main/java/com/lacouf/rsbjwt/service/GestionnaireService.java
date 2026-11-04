@@ -135,7 +135,7 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsSansConvocation() {
-        return getEtudiantsSansConvocation(null);
+        return getEtudiantsSansConvocation(AcademicSessionUtils.getAnneeActuelle());
     }
 
     public List<RapportEtudiantDto> getEtudiantsSansConvocation(Integer annee) {
@@ -153,7 +153,7 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue() {
-        return getEtudiantsEnAttenteEntrevue(null);
+        return getEtudiantsEnAttenteEntrevue(AcademicSessionUtils.getAnneeActuelle());
     }
 
     public List<RapportEtudiantDto> getEtudiantsEnAttenteEntrevue(Integer annee) {
@@ -171,7 +171,7 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse() {
-        return getEtudiantsEnAttenteReponse(null);
+        return getEtudiantsEnAttenteReponse(AcademicSessionUtils.getAnneeActuelle());
     }
 
     public List<RapportEtudiantDto> getEtudiantsEnAttenteReponse(Integer annee) {
@@ -189,7 +189,7 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsTrouveStage() {
-        return getEtudiantsTrouveStage(null);
+        return getEtudiantsTrouveStage(AcademicSessionUtils.getAnneeActuelle());
     }
 
     public List<RapportEtudiantDto> getEtudiantsTrouveStage(Integer annee) {
