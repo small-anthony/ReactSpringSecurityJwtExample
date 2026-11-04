@@ -16,6 +16,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
 
     const cand = candidature || offre?.candidature || (offre?.candidatures && offre.candidatures[0]);
     const estRefusee = cand?.statut === "REFUSEE" || cand?.status === "REFUSEE";
+    const estEmbauchee = cand?.statut === "EMBAUCHEE" || cand?.status === "EMBAUCHEE";
 
     useEffect(() => {
         setHasApplied(aPostule);
@@ -89,6 +90,13 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         <X className="w-5 h-5" strokeWidth={1.5} />
                     </button>
                 </div>
+
+                {estEmbauchee && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" strokeWidth={1.5} />
+                        <span className="font-semibold">{t("candidature_etudiant.status.EMBAUCHEE")}</span>
+                    </div>
+                )}
 
                 {estRefusee && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">
@@ -201,7 +209,7 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                         {t("offres_etudiant.modal.close", { defaultValue: "Fermer" })}
                     </button>
 
-                    {!hasApplied && !estRefusee && (
+                    {!hasApplied && !estRefusee && !estEmbauchee && (
                         <button
                             type="button"
                             onClick={handlePostuler}

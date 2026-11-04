@@ -73,7 +73,7 @@ public class Convocation {
 
     public void refuser(String motif) {
         this.statut = StatutConvocation.REFUSEE;
-        this.candidature.setStatut(StatutCandidature.REFUSEE);
+        this.candidature.setStatut(StatutCandidature.EN_ATTENTE);
         this.reponseEtudiant = motif;
     }
 

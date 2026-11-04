@@ -326,6 +326,7 @@ public class ContratServiceTest {
     @Test
     void getCandidaturesPourContrat_succes() {
         // Arrange
+        when(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE)).thenReturn(List.of());
         when(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE)).thenReturn(List.of(candidature));
         when(contratRepository.findByCandidatureId(1L)).thenReturn(Optional.empty());
 

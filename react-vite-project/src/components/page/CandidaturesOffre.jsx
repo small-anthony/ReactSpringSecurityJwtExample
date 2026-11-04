@@ -301,6 +301,15 @@ export default function CandidaturesOffre() {
                             </div>
                         )}
 
+                        {candidat.messageRefusConvocation !== null && candidat.messageRefusConvocation !== undefined && (
+                            <div className="mt-4 p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-900 text-sm rounded-lg">
+                                <strong className="text-amber-950">
+                                    {t("candidatures_offre.convocation_refusee", { defaultValue: "Convocation refusée par l'étudiant :" })}
+                                </strong>{" "}
+                                {candidat.messageRefusConvocation || t("candidatures_offre.aucun_motif", { defaultValue: "Aucun motif fourni." })}
+                            </div>
+                        )}
+
                         {peutRefuser(candidat) && refusId !== candidat.id && (
                             <div className="mt-auto pt-4 flex flex-wrap justify-between gap-3 border-t border-gray-100">
                                 {peutConvoquer(candidat) && (
@@ -310,7 +319,9 @@ export default function CandidaturesOffre() {
                                         onClick={() => setCandidatureAConvoquer(candidat)}
                                         className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                                     >
-                                        {t("candidatures_offre.convoquer")}
+                                        {candidat.messageRefusConvocation !== null && candidat.messageRefusConvocation !== undefined
+                                            ? t("candidatures_offre.reconvoquer", { defaultValue: "Reconvoquer" })
+                                            : t("candidatures_offre.convoquer")}
                                     </button>
                                 )}
                                 {peutEmbaucher(candidat) && (
