@@ -189,6 +189,15 @@ public class Contrat {
 		return dateDebut;
 	}
 
+	public int getAnneeDebut() {
+		return dateDebut != null ? dateDebut.getYear() : 0;
+	}
+
+	public long getNombreSemaines() {
+		if (dateDebut == null || dateFin == null) return 1;
+		return Math.max(1, java.time.temporal.ChronoUnit.WEEKS.between(dateDebut, dateFin));
+	}
+
 	public LocalDate getDateFin() {
 		return dateFin;
 	}

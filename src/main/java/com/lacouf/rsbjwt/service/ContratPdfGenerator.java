@@ -26,9 +26,9 @@ public class ContratPdfGenerator {
         String nomEtudiant = etudiant.getFirstName() + " " + etudiant.getLastName();
         String nomEntreprise = employeur.getEntreprise();
         String nomEmployeur = employeur.getFirstName() + " " + employeur.getLastName() + " (" + nomEntreprise + ")";
-        long nbSemaines = Math.max(1, ChronoUnit.WEEKS.between(contrat.getDateDebut(), contrat.getDateFin()));
+        long nbSemaines = contrat.getNombreSemaines();
 
-        byte[] page1 = construirePage1(String.valueOf(contrat.getDateDebut().getYear()));
+        byte[] page1 = construirePage1(String.valueOf(contrat.getAnneeDebut()));
         byte[] page2 = construirePage2(nomGestionnaire, nomEmployeur, nomEtudiant, nomEntreprise,
                 contrat.getDateDebut().toString(), contrat.getDateFin().toString(),
                 contrat.getHoraire(), contrat.getSalaire(), nbSemaines);
@@ -46,9 +46,9 @@ public class ContratPdfGenerator {
         String nomEtudiant = etudiant.getFirstName() + " " + etudiant.getLastName();
         String nomEntreprise = employeur.getEntreprise();
         String nomEmployeur = employeur.getFirstName() + " " + employeur.getLastName() + " (" + nomEntreprise + ")";
-        long nbSemaines = Math.max(1, ChronoUnit.WEEKS.between(request.dateDebut(), request.dateFin()));
+        long nbSemaines = request.getNombreSemaines();
 
-        byte[] page1 = construirePage1(String.valueOf(request.dateDebut().getYear()));
+        byte[] page1 = construirePage1(String.valueOf(request.getAnneeDebut()));
         byte[] page2 = construirePage2(nomGestionnaire, nomEmployeur, nomEtudiant, nomEntreprise,
                 request.dateDebut().toString(), request.dateFin().toString(), request.horaire(), request.salaire(),
                 nbSemaines);
