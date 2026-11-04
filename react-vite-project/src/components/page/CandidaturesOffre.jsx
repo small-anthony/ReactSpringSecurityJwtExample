@@ -186,7 +186,7 @@ export default function CandidaturesOffre() {
     if (categorie === "refusees") candidaturesAffichees = candidaturesRefusees;
 
     return (
-        <main className="max-w-7xl mx-auto my-10 px-4">
+        <main className="w-full max-w-7xl mx-auto my-10 px-4">
             <div className="mb-8">
                 <button
                     type="button"
@@ -251,12 +251,12 @@ export default function CandidaturesOffre() {
             {isLoading && <p className="text-gray-500">{t("candidatures_offre.loading")}</p>}
             {error && <p className="p-4 mb-4 rounded-lg bg-red-50 text-red-700">{error}</p>}
             {!isLoading && !error && candidatures.length === 0 && (
-                <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                <p className="w-full p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
                     {t("candidatures_offre.no_candidates")}
                 </p>
             )}
             {!isLoading && !error && candidatures.length > 0 && candidaturesAffichees.length === 0 && (
-                <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                <p className="w-full p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
                     {t("candidatures_offre.no_candidates_category")}
                 </p>
             )}
