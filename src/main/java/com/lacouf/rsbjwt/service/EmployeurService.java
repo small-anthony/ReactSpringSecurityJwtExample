@@ -13,12 +13,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Candidature;
-import com.lacouf.rsbjwt.model.HistoriqueCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
-import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
 
 @Service
 public class EmployeurService {
@@ -26,15 +23,15 @@ public class EmployeurService {
     private final EmployeurRepository employeurRepository;
     private final OffreStageRepository offreStageRepository;
     private final CandidatureRepository candidatureRepository;
-    private final HistoriqueCandidatureRepository historiqueRepository;
+
 
     public EmployeurService(UserAppRepository userAppRepository, EmployeurRepository employeurRepository, OffreStageRepository offreStageRepository,
-                            CandidatureRepository candidatureRepository, HistoriqueCandidatureRepository historiqueRepository) {
+                            CandidatureRepository candidatureRepository) {
         this.userAppRepository = userAppRepository;
         this.employeurRepository = employeurRepository;
         this.offreStageRepository = offreStageRepository;
         this.candidatureRepository = candidatureRepository;
-        this.historiqueRepository = historiqueRepository;
+
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
@@ -142,15 +139,6 @@ public class EmployeurService {
                 "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
     }
 
-    public List<HistoriqueCandidatureDto> getHistorique(String emailEmployeur) {
-        Map<Long, HistoriqueCandidatureDto> derniereDecisionParCandidature = new LinkedHashMap<>();
-        historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(emailEmployeur).forEach(historique -> {
-            HistoriqueCandidatureDto dto = HistoriqueCandidatureDto.create(historique);
-            derniereDecisionParCandidature.putIfAbsent(dto.candidatureId(), dto);
-        });
-        return new ArrayList<>(derniereDecisionParCandidature.values());
-    }
-
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,
                                     Set<StatutCandidature> statutsAutorises,
                                     StatutCandidature nouveauStatut, String message,
@@ -173,9 +161,6 @@ public class EmployeurService {
         candidature.setMessageReponse(message);
         candidature.setDateDecision(LocalDateTime.now());
         Candidature sauvegardee = candidatureRepository.save(candidature);
-
-        historiqueRepository.save(
-                new HistoriqueCandidature(sauvegardee, ancienStatut, nouveauStatut, message, emailEmployeur));
 
         return CandidatureDto.create(sauvegardee);
     }

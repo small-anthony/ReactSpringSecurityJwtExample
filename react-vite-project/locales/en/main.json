@@ -398,16 +398,6 @@
     "modal_refused_no_reason": "Your application was not selected by the employer for this internship offer.",
     "offer_deleted": "This offer has been deleted by the employer."
   },
-  "historique": {
-    "back": "Back to my offers",
-    "title": "Decision history",
-    "subtitle": "All your responses to applications, most recent first",
-    "loading": "Loading history...",
-    "empty": "You have not made any decision yet.",
-    "date": "Decision date",
-    "message": "Message",
-    "button": "Decision history"
-  },
   "sidepanel": {
     "title": "Manager Workspace",
     "cvs": "Resume Approvals",

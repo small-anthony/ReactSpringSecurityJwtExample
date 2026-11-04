@@ -138,10 +138,6 @@ public class EmployeurController {
         }
     }
 
-    @GetMapping("/historique")
-    public ResponseEntity<Object> getHistorique(Authentication authentication) {
-        return ResponseEntity.ok(employeurService.getHistorique(authentication.getName()));
-    }
 
     @PostMapping("/candidatures/{candidatureId}/convoquer")
     public ResponseEntity<Object> convoquerCandidat(
