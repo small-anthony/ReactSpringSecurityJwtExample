@@ -20,21 +20,22 @@ public class OffreStage {
     private String salaire;
     private String duree;
     private String exigences;
+    private LocalDate dateSuppression = null;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Etudiant> etudiantsAutorises = new ArrayList<>();
 
     @Embedded
     private Approbation approbation = new Approbation();
 
-    @OneToMany(mappedBy = "offreStage", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final List<Candidature> candidatures = new ArrayList<>();
 
-    private LocalDate dateSuppression = null;
+
 
     public OffreStage() {}
 
