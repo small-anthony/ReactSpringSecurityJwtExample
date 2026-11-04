@@ -7,6 +7,7 @@
     "confirm": "Confirmer",
     "not_available": "N/D",
     "at": "à",
+    "delete": "Supprimer",
     "loading": "Chargement en cours..."
   },
   "pagename": {
@@ -341,18 +342,27 @@
     "title": "Candidatures reçues",
     "subtitle": "Consultez les étudiants ayant postulé à cette offre",
     "loading": "Chargement des candidatures...",
+    "tabs": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "interviews": "Entrevues",
+      "hired": "Embauchés",
+      "refused": "Refusés"
+    },
     "no_candidates": "Aucune candidature reçue pour cette offre pour le moment.",
+    "no_candidates_category": "Aucune candidature dans cette catégorie.",
     "view_cv": "Voir le CV",
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
       "ACCEPTE": "Acceptée",
-      "ACCEPTEE": "Acceptée",
+      "ACCEPTEE": "Entrevue acceptée",
       "REFUSE": "Refusée",
       "REFUSEE": "Refusée",
-      "EN_ATTENTE_REPONSE": "En attente de réponse"
+      "EN_ATTENTE_REPONSE": "Convocation envoyée",
+      "EMBAUCHEE": "Embauché"
     },
-    "accept": "Accepter la candidature",
+    "accept": "Convoquer",
     "accept_success_title": "Candidature acceptée",
     "accept_success": "La candidature a été acceptée avec succès.",
     "confirm_accept": "Confirmer l'acceptation",
@@ -362,7 +372,16 @@
     "refuse_message_placeholder": "Expliquez brièvement les raisons du refus...",
     "confirm_refuse": "Confirmer le refus",
     "cancel": "Annuler",
-    "response_message": "Message de refus"
+    "response_message": "Message de refus",
+    "no_offers": "Aucune offre de stage n'a encore été créée.",
+    "motif_refus": "Motif du refus :",
+    "convoquer": "Convoquer",
+    "hire": "Embaucher",
+    "accepted": "Convoqué",
+    "modal_convoquer_title": "Planifier une convocation:",
+    "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas.",
+    "slot": "Créneau {{number}}",
+    "add_slot": "+ Ajouter un créneau"
   },
   "candidature_etudiant": {
     "status": {
@@ -371,7 +390,8 @@
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
       "REFUSEE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
-      "EN_ATTENTE_REPONSE": "En attente de réponse"
+      "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "EMBAUCHEE": "Félicitations, vous êtes embauché(e) !"
     },
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
@@ -713,6 +733,12 @@
       "desc": "Les trois signataires (étudiant, employeur et gestionnaire) ont été notifiés. Le contrat sera automatiquement complété dès la réception des 3 signatures.",
       "progress_label": "Progression des signatures"
     }
+  },
+  "placeholder": {
+    "rendezvous": "Créez un rendez-vous...",
+    "lieu": "Choisissez un lieu...",
+    "message": "Entrez une message...",
+    "message_optionnel": "Message optionnel..."
   },
   "signature_pad": {
     "title": "Signer le contrat de stage",

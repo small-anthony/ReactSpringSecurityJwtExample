@@ -40,17 +40,14 @@ public class Convocation {
     @Column(length = 1000)
     private String reponseEtudiant = null;
 
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Candidature candidature;
 
-    public Convocation(List<RendezVous> rendezVousPossibles) throws Exception {
-        if(rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
-            throw new Exception("rendezvous must have at least one entry");
-        }
+    public Convocation(List<RendezVous> rendezVousPossibles) {
         this.rendezVousPossibles = rendezVousPossibles;
     }
 
-    public Convocation(List<RendezVous> rendezVousPossibles, String messageEmployeur) throws Exception {
+    public Convocation(List<RendezVous> rendezVousPossibles, String messageEmployeur) {
         this(rendezVousPossibles);
         this.messageEmployeur = messageEmployeur;
     }
@@ -63,43 +60,28 @@ public class Convocation {
         return getStatut() != StatutConvocation.EN_ATTENTE;
     }
 
-    public void accepter(RendezVous rendezVous, String message) throws Exception {
-        if(estResolu()) {
-            throw new Exception("convocation already resolved");
-        }
-        if(!rendezVousPossibles.contains(rendezVous)) {
-            throw new Exception("tried to select rendezvous we don't have");
-        }
+    public boolean estDestineAEtudiant(String courriel) {
+        return candidature.appartientAEtudiant(courriel);
+    }
 
+    public void accepter(RendezVous rendezVous, String message) {
         this.statut = StatutConvocation.ACCEPTEE;
         this.candidature.setStatut(StatutCandidature.ACCEPTEE);
         this.rendezVousSelection = rendezVous;
         this.reponseEtudiant = message;
     }
 
-    public void refuser(String motif) throws Exception {
-        if(estResolu()) {
-            throw new Exception("convocation already resolved");
-        }
+    public void refuser(String motif) {
         this.statut = StatutConvocation.REFUSEE;
         this.candidature.setStatut(StatutCandidature.REFUSEE);
         this.reponseEtudiant = motif;
     }
 
-    public void annuler() throws Exception {
-        if(estResolu()) {
-            throw new Exception("convocation already resolved");
-        }
+    public void annuler() {
         this.statut = StatutConvocation.ANNULEE;
     }
 
-    public void updateDetails(List<RendezVous> rendezVousPossibles, String messageEmployeur) throws Exception {
-        if(estResolu()) {
-            throw new Exception("convocation already resolved");
-        }
-        if(rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
-            throw new Exception("rendezvous must have at least one entry");
-        }
+    public void updateDetails(List<RendezVous> rendezVousPossibles, String messageEmployeur) {
         this.rendezVousPossibles = rendezVousPossibles;
         this.messageEmployeur = messageEmployeur;
     }
@@ -152,6 +134,6 @@ public class Convocation {
     }
 
     public Employeur getEmployeur() {
-        return candidature.getOffreStage().getEmployeur();
+        return candidature.getEmployeur();
     }
 }

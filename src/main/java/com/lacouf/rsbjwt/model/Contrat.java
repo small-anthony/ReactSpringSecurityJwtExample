@@ -89,46 +89,35 @@ public class Contrat {
 		this.conditions = conditions;
 	}
 
-	public void signer(Signature<?> signature) throws Exception {
-		if (!signature.isValid()) {
-			throw new Exception("signature est invalide");
-		}
-
+	public void signer(Signature<?> signature) {
 		setSignature(signature);
 		evaluerStatut();
 	}
 
-	public void rejeter(UserApp user) throws Exception {
+	public void rejeter(UserApp user) {
 		setSignature(Signature.invalid(user));
 		this.statut = StatutContrat.REFUSE;
 	}
 
+	public int getAnneeDebut() {
+		return dateDebut != null ? dateDebut.getYear() : 0;
+	}
+
+	public long getNombreSemaines() {
+		if (dateDebut == null || dateFin == null) return 1;
+		return Math.max(1, java.time.temporal.ChronoUnit.WEEKS.between(dateDebut, dateFin));
+	}
+
 	@SuppressWarnings("unchecked")
-	private void setSignature(Signature<?> signature) throws Exception {
-		UserApp signataire = signature.getSignataire();
-		if (signataire instanceof Etudiant || (signataire != null && signataire.getRole() == com.lacouf.rsbjwt.model.auth.Role.ETUDIANT)) {
-			if (signatureEtudiant != null) {
-				throw new Exception("signature existe déjà");
-			}
-			if (signataire == null || !java.util.Objects.equals(signataire.getId(), getEtudiant().getId())) {
-				throw new Exception("signataire est invalide");
-			}
-			signatureEtudiant = (Signature<Etudiant>) signature;
-		} else if (signataire instanceof Employeur || (signataire != null && signataire.getRole() == com.lacouf.rsbjwt.model.auth.Role.EMPLOYEUR)) {
-			if (signatureEmployeur != null) {
-				throw new Exception("signature existe déjà");
-			}
-			if (signataire == null || !java.util.Objects.equals(signataire.getId(), getEmployeur().getId())) {
-				throw new Exception("signataire est invalide");
-			}
-			signatureEmployeur = (Signature<Employeur>) signature;
-		} else if (signataire instanceof Gestionnaire || (signataire != null && signataire.getRole() == com.lacouf.rsbjwt.model.auth.Role.GESTIONNAIRE)) {
-			if (signatureGestionnaire != null) {
-				throw new Exception("signature existe déjà");
-			}
-			signatureGestionnaire = (Signature<Gestionnaire>) signature;
-		} else {
-			throw new Exception("signataire inconnu");
+	private void setSignature(Signature<?> signature) {
+		if (signature == null) {
+			return;
+		}
+		switch (signature.getSignataire()) {
+			case Etudiant _ -> signatureEtudiant = (Signature<Etudiant>) signature;
+			case Employeur _ -> signatureEmployeur = (Signature<Employeur>) signature;
+			case Gestionnaire _ -> signatureGestionnaire = (Signature<Gestionnaire>) signature;
+			case null, default -> {}
 		}
 	}
 
@@ -187,15 +176,6 @@ public class Contrat {
 
 	public LocalDate getDateDebut() {
 		return dateDebut;
-	}
-
-	public int getAnneeDebut() {
-		return dateDebut != null ? dateDebut.getYear() : 0;
-	}
-
-	public long getNombreSemaines() {
-		if (dateDebut == null || dateFin == null) return 1;
-		return Math.max(1, java.time.temporal.ChronoUnit.WEEKS.between(dateDebut, dateFin));
 	}
 
 	public LocalDate getDateFin() {

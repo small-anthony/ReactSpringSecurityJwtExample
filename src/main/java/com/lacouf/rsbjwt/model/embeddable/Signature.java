@@ -21,12 +21,6 @@ public class Signature<User extends UserApp> {
 	public Signature(User signataire, byte[] data) {
 		this.data = data;
 		this.signataire = signataire;
-		if (signataire == null) {
-			throw new IllegalArgumentException("Le signataire ne peut pas être null.");
-		}
-		if (data == null || data.length == 0) {
-			throw new IllegalArgumentException("Les données de signature ne peuvent pas être vides.");
-		}
 		this.valid = true;
 	}
 

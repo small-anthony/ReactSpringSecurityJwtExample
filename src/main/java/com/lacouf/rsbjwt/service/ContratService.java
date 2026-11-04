@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
+import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 
 @Service
 public class ContratService {
@@ -47,7 +49,7 @@ public class ContratService {
         }
 
         if (contratRepository.existsByCandidatureId(candidature.getId())) {
-            throw new Exception("Un contrat existe déjà pour cet étudiant et cet employeur.");
+            throw new Exception("Un contrat existe dans pour cet étudiant et cet employeur.");
         }
 
         byte[] documentData = ContratPdfGenerator.generer(candidature, request, resoudreNomGestionnaire(gestionnaireEmail));
@@ -82,6 +84,10 @@ public class ContratService {
         }
 
         Signature<?> signature = new Signature<>(utilisateur, signatureBytes);
+        if (!signature.isValid()) {
+            throw new Exception("signature est invalide");
+        }
+        validerSignatairePourContrat(contrat, utilisateur);
         contrat.signer(signature);
 
         byte[] pdfMisAJour = ContratPdfGenerator.mettreAJour(contrat, getNomGestionnaire());
@@ -97,6 +103,7 @@ public class ContratService {
         Contrat contrat = contratRepository.findById(contratId)
                 .orElseThrow(() -> new Exception("Contrat introuvable"));
 
+        validerSignatairePourRejet(contrat, utilisateur);
         contrat.rejeter(utilisateur);
         return ContratDto.create(contratRepository.save(contrat));
     }
@@ -156,5 +163,48 @@ public class ContratService {
                 .findFirst()
                 .map(u -> u.getFirstName() + " " + u.getLastName())
                 .orElse("Gestionnaire de stage");
+    }
+
+    private void validerSignatairePourContrat(Contrat contrat, UserApp utilisateur) throws Exception {
+        if (contrat.getStatut() == StatutContrat.REFUSE) {
+            throw new Exception("Le contrat a été refusé");
+        }
+        if (utilisateur instanceof Etudiant etudiant) {
+            if (!Objects.equals(etudiant.getId(), contrat.getEtudiant().getId())) {
+                throw new Exception("signataire est invalide");
+            }
+            if (contrat.isSigneParEtudiant()) {
+                throw new Exception("signature existe déjà");
+            }
+        } else if (utilisateur instanceof Employeur employeur) {
+            if (!Objects.equals(employeur.getId(), contrat.getEmployeur().getId())) {
+                throw new Exception("signataire est invalide");
+            }
+            if (contrat.isSigneParEmployeur()) {
+                throw new Exception("signature existe déjà");
+            }
+        } else if (utilisateur instanceof Gestionnaire) {
+            if (contrat.isSigneParGestionnaire()) {
+                throw new Exception("signature existe déjà");
+            }
+        } else {
+            throw new Exception("signataire inconnu");
+        }
+    }
+
+    private void validerSignatairePourRejet(Contrat contrat, UserApp utilisateur) throws Exception {
+        if (contrat.getStatut() == StatutContrat.REFUSE) {
+            throw new Exception("Le contrat a deja ete refuse");
+        }        if (utilisateur instanceof Etudiant etudiant) {
+            if (!Objects.equals(etudiant.getId(), contrat.getEtudiant().getId())) {
+                throw new Exception("signataire est invalide");
+            }
+        } else if (utilisateur instanceof Employeur employeur) {
+            if (!Objects.equals(employeur.getId(), contrat.getEmployeur().getId())) {
+                throw new Exception("signataire est invalide");
+            }
+        } else if (!(utilisateur instanceof Gestionnaire)) {
+            throw new Exception("signataire inconnu");
+        }
     }
 }
