@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {deleteOffreStage, getOffresStages, getAnneesEmployeur} from "../../services/api/OffreStageService.js";
 import {useTranslation} from "react-i18next";
-import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase } from "lucide-react";
+import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText } from "lucide-react";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
@@ -35,15 +35,15 @@ export default function ProfileEmployeur() {
     const [categorie, setCategorie] = useState("toutes");
 
     useEffect(() => {
-        getAnneesEmployeur(authService.buildAuthHeader())
-            .then((data) => {
+        getAnneesEmployeur?.(authService.buildAuthHeader())
+            ?.then((data) => {
                 setAnnees(data);
 
                 if (data && data.length > 0) {
                     setAnneeChoisie(data[0]);
                 }
             })
-            .catch(() => setAnnees([]));
+            ?.catch(() => setAnnees([]));
     }, [authService]);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export default function ProfileEmployeur() {
         setIsLoading(true);
 
         getOffresStages(authService.buildAuthHeader(), anneeChoisie)
-            .then((data) => {
+            ?.then((data) => {
                 if (offresChargees) setOffres(data);
             })
             .catch((err) => {

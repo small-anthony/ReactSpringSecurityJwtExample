@@ -33,20 +33,20 @@ const ApprobationOffres = () => {
     }
 
     useEffect(() => {
-        getAnneesGestionnaire(authService.buildAuthHeader())
-            .then((data) => {
+        getAnneesGestionnaire?.(authService.buildAuthHeader())
+            ?.then((data) => {
                 setAnnees(data);
 
                 if (data && data.length > 0) {
                     setAnneeChoisie(data[0]);
                 }
             })
-            .catch(() => setAnnees([]));
+            ?.catch(() => setAnnees([]));
     }, [authService]);
 
     useEffect(() => {
         fetchOffresEnAttente(authService.buildAuthHeader(), anneeChoisie)
-            .then((data) => {
+            ?.then((data) => {
                 setOffres(data);
                 setErrorMessage("")
             })
