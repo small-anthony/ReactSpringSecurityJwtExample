@@ -325,7 +325,7 @@ describe("CandidaturesOffre", () => {
     it("affiche le message de refus de convocation de l'étudiant et le bouton Reconvoquer", async () => {
         const candidatureAvecRefus = {
             ...candidatureEnAttente,
-            messageRefusConvocation: "Pas disponible le matin, préférez l'après-midi",
+            convocations: [{ id: 1, statut: "REFUSEE", reponseEtudiant: "Pas disponible le matin, préférez l'après-midi" }],
         };
         getCandidatures.mockResolvedValue([candidatureAvecRefus]);
 
@@ -341,7 +341,7 @@ describe("CandidaturesOffre", () => {
         const user = userEvent.setup();
         const candidatureAvecRefus = {
             ...candidatureEnAttente,
-            messageRefusConvocation: "Non disponible",
+            convocations: [{ id: 1, statut: "REFUSEE", reponseEtudiant: "Non disponible" }],
         };
         getCandidatures
             .mockResolvedValueOnce([candidatureAvecRefus])

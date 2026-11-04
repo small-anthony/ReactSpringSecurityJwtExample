@@ -216,7 +216,7 @@ class ConvocationServiceTest {
                 convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "Pas dispo le matin");
 
                 assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
-                assertEquals("Pas dispo le matin", candidature.getMessageRefusConvocation());
+                assertEquals("Pas dispo le matin", candidature.getConvocations().get(0).getReponseEtudiant());
 
                 // Employeur reconvoque avec nouveaux créneaux
                 when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
@@ -227,6 +227,6 @@ class ConvocationServiceTest {
                 assertNotNull(nouvelleDto);
                 assertEquals(StatutConvocation.EN_ATTENTE, nouvelleDto.statut());
                 assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
-                assertNull(candidature.getMessageRefusConvocation());
+                assertEquals(2, candidature.getConvocations().size());
         }
 }

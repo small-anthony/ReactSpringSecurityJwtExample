@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.Convocation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 
@@ -41,6 +43,16 @@ public record CandidatureDto(int id,
     public static CandidatureDto create(Candidature candidature) {
         Etudiant etudiant = candidature.getEtudiant();
         OffreStage offre = candidature.getOffreStage();
+
+        String messageRefus = null;
+        if (candidature.getConvocations() != null) {
+            for (Convocation conv : candidature.getConvocations()) {
+                if (conv.getStatut() == StatutConvocation.REFUSEE) {
+                    messageRefus = conv.getReponseEtudiant();
+                }
+            }
+        }
+
         return new CandidatureDto(
                 candidature.getId().intValue(),
                 candidature.getStatut(),
@@ -50,7 +62,7 @@ public record CandidatureDto(int id,
                 candidature.getDateDecision(),
                 offre != null ? offre.getTitre() : null,
                 offre != null ? offre.getNomEntreprise() : null,
-                candidature.getMessageRefusConvocation()
+                messageRefus
         );
     }
 

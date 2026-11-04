@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
-import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -75,24 +74,5 @@ public class Candidature {
 
     public boolean appartientAEtudiant(String courriel) {
         return etudiant.aPourCourriel(courriel);
-    }
-
-    public Convocation getDerniereConvocation() {
-        try {
-            if (convocations == null || convocations.isEmpty()) {
-                return null;
-            }
-            return convocations.get(convocations.size() - 1);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public String getMessageRefusConvocation() {
-        Convocation derniere = getDerniereConvocation();
-        if (derniere != null && derniere.getStatut() == StatutConvocation.REFUSEE) {
-            return derniere.getReponseEtudiant() != null ? derniere.getReponseEtudiant() : "";
-        }
-        return null;
     }
 }
