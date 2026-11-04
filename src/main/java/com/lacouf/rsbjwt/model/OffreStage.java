@@ -1,8 +1,8 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,10 @@ public class OffreStage {
     private String exigences;
     private LocalDate dateSuppression = null;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private int annee = AcademicSessionUtils.getAnneeActuelle();
+
+    @ManyToOne
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
@@ -58,6 +61,18 @@ public class OffreStage {
         this.etudiantsAutorises = new ArrayList<>();
     }
 
+    public OffreStage(String titre, String description, String nomEntreprise,String discipline, String salaire,
+                      String duree, String exigences, int annee) {
+        this.titre = titre;
+        this.description = description;
+        this.nomEntreprise = nomEntreprise;
+        this.discipline = discipline;
+        this.salaire = salaire;
+        this.duree = duree;
+        this.exigences = exigences;
+        this.annee = annee;
+    }
+
     public OffreStage(String titre, String description, Employeur employeur,
             String discipline, String salaire, String duree, String exigences) {
         this.titre = titre;
@@ -91,6 +106,14 @@ public class OffreStage {
         this.approbation.setMessageRefus(null);
     }
 
+    public void addCandidature(Candidature candidature) {
+        candidatures.add(candidature);
+    }
+
+    public boolean isEnAttente() {
+        return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
+    }
+
     public Long getId() {
         return id;
     }
@@ -115,10 +138,6 @@ public class OffreStage {
         return etudiantsAutorises;
     }
 
-    public boolean isEnAttente() {
-        return this.approbation.getStatus() == StatusAcceptation.EN_ATTENTE;
-    }
-
     public StatusAcceptation getStatus() {
         return this.approbation.getStatus();
     }
@@ -131,12 +150,28 @@ public class OffreStage {
         return this.approbation.getMessageRefus();
     }
 
-    public void addCandidature(Candidature candidature) {
-        candidatures.add(candidature);
-    }
-
     public Employeur getEmployeur() {
         return employeur;
+    }
+
+    public String getDiscipline() {
+        return discipline;
+    }
+
+    public String getSalaire() {
+        return salaire;
+    }
+
+    public String getDuree() {
+        return duree;
+    }
+
+    public String getExigences() {
+        return exigences;
+    }
+
+    public int getAnnee() {
+        return annee;
     }
 
     public void setEmployeur(Employeur employeur) {
@@ -147,32 +182,16 @@ public class OffreStage {
         this.id = id;
     }
 
-    public String getDiscipline() {
-        return discipline;
-    }
-
     public void setDiscipline(String discipline) {
         this.discipline = discipline;
-    }
-
-    public String getSalaire() {
-        return salaire;
     }
 
     public void setSalaire(String salaire) {
         this.salaire = salaire;
     }
 
-    public String getDuree() {
-        return duree;
-    }
-
     public void setDuree(String duree) {
         this.duree = duree;
-    }
-
-    public String getExigences() {
-        return exigences;
     }
 
     public void setExigences(String exigences) {
@@ -191,6 +210,9 @@ public class OffreStage {
         this.nomEntreprise = nomEntreprise;
     }
 
+    public void setAnnee(int annee) {
+        this.annee = annee;
+    }
     public void setDateSuppression(LocalDate dateSuppression) {
         this.dateSuppression = dateSuppression;
     }
@@ -201,5 +223,4 @@ public class OffreStage {
     public void supprimer() {
         this.dateSuppression = LocalDate.now();
     }
-
 }

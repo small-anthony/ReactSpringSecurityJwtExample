@@ -11,14 +11,17 @@ import {
 } from "../../services/api/GestionnaireService.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
+import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
 
 export default function RapportsEtudiants() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline } = useOffreFormater();
-
     const [typeRapport, setTypeRapport] = useState("inscrits");
     const [etudiants, setEtudiants] = useState([]);
+    const [annees, setAnnees] = useState([]);
+    const [anneeChoisie, setAnneeChoisie] = useState(null);
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
 
@@ -37,13 +40,13 @@ export default function RapportsEtudiants() {
             if (typeRapport === "inscrits") {
                 data = await getEtudiantsInscrits(authHeader);
             } else if (typeRapport === "sans-convocation") {
-                data = await getEtudiantsSansConvocation(authHeader);
+                data = await getEtudiantsSansConvocation(authHeader, anneeChoisie);
             } else if (typeRapport === "attente-entrevue") {
-                data = await getEtudiantsAttenteEntrevue(authHeader);
+                data = await getEtudiantsAttenteEntrevue(authHeader, anneeChoisie);
             } else if (typeRapport === "attente-reponse") {
-                data = await getEtudiantsAttenteReponse(authHeader);
+                data = await getEtudiantsAttenteReponse(authHeader, anneeChoisie);
             } else if (typeRapport === "trouve-stage") {
-                data = await getEtudiantsTrouveStage(authHeader);
+                data = await getEtudiantsTrouveStage(authHeader, anneeChoisie);
             }
 
             setEtudiants(data || []);
@@ -56,7 +59,18 @@ export default function RapportsEtudiants() {
 
     useEffect(() => {
         void chargerRapport();
-    }, [typeRapport, authService]);
+    }, [typeRapport, authService, anneeChoisie]);
+
+    useEffect(() => {
+        getAnneesGestionnaire(authService.buildAuthHeader())
+            .then((data) => {
+                setAnnees(data);
+                if (data && data.length > 0) {
+                    setAnneeChoisie(data[0]);
+                }
+            })
+            .catch(() => setAnnees([]));
+    }, [authService]);
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-gray-50/40">
@@ -90,6 +104,13 @@ export default function RapportsEtudiants() {
                             <option value="attente-reponse">{t("rapports_etudiants.types.etudiants-attente-reponse")}</option>
                             <option value="trouve-stage">{t("rapports_etudiants.types.etudiants-trouve-stage")}</option>
                         </select>
+                        {typeRapport !== "inscrits" && (
+                            <SelecteurSession
+                                annees={annees}
+                                anneeSelectionnee={anneeChoisie}
+                                onChangementAnnee={setAnneeChoisie}
+                            />
+                        )}
                     </div>
 
                     <span className="text-xs font-bold uppercase text-gray-500">

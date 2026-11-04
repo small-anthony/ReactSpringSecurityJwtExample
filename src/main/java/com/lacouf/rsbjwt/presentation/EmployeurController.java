@@ -58,8 +58,27 @@ public class EmployeurController {
             String salaire = request.get("salaire");
             String exigences = request.get("exigences");
 
+            Integer annee = null;
+            if (request.get("annee") != null && !request.get("annee").trim().isEmpty()) {
+                try {
+                    annee = Integer.parseInt(request.get("annee").trim());
+                } catch (Exception ignored) {}
+            }
+
             OffreStageDto offreCree;
-            if (discipline != null || duree != null || salaire != null || exigences != null) {
+            if (annee != null) {
+                offreCree = employeurService.createOffreStage(
+                        request.get("titre"),
+                        request.get("nomEntreprise"),
+                        request.get("description"),
+                        discipline,
+                        duree,
+                        salaire,
+                        exigences,
+                        email,
+                        annee
+                );
+            } else if (discipline != null || duree != null || salaire != null || exigences != null) {
                 offreCree = employeurService.createOffreStage(
                         request.get("titre"),
                         request.get("nomEntreprise"),
@@ -84,10 +103,16 @@ public class EmployeurController {
         }
     }
 
-    @GetMapping("/offres")
     public ResponseEntity<Object> getOffres(Authentication authentication) {
+        return getOffres(null, authentication);
+    }
+
+    @GetMapping("/offres")
+    public ResponseEntity<Object> getOffres(@RequestParam(required = false) Integer annee, Authentication authentication) {
         try {
-            List<OffreStageDto> offres = employeurService.getOffres(authentication.getName());
+            List<OffreStageDto> offres = (annee != null)
+                    ? employeurService.getOffres(authentication.getName(), annee)
+                    : employeurService.getOffres(authentication.getName());
             return ResponseEntity.ok(offres);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -128,16 +153,31 @@ public class EmployeurController {
         }
     }
 
-    @PutMapping("/candidatures/{candidatureId}/embaucher")
-    public ResponseEntity<Object> embaucherCandidature(@PathVariable Long candidatureId,
-                                                       Authentication authentication) {
+    @GetMapping("/annees")
+    public ResponseEntity<Object> getAnnees(Authentication authentication) {
         try {
-            return ResponseEntity.ok(employeurService.embaucherCandidature(candidatureId, authentication.getName()));
+            return ResponseEntity.ok(employeurService.getAnnees(authentication.getName()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+    public ResponseEntity<Object> getHistorique(Authentication authentication) {
+        return getHistorique(null, authentication);
+    }
+
+    @GetMapping("/historique")
+    public ResponseEntity<Object> getHistorique(@RequestParam(required = false) Integer annee, Authentication authentication) {
+        try {
+            if (annee != null) {
+                return ResponseEntity.ok(employeurService.getHistorique(authentication.getName(), annee));
+            }
+
+            return ResponseEntity.ok(employeurService.getHistorique(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
     @PostMapping("/candidatures/{candidatureId}/convoquer")
     public ResponseEntity<Object> convoquerCandidat(
@@ -158,8 +198,17 @@ public class EmployeurController {
     }
 
     @GetMapping("/convocations")
-    public ResponseEntity<List<ConvocationDto>> getConvocationsEmployeur(Authentication authentication) {
-        return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
+    public ResponseEntity<Object> getConvocationsEmployeur(
+            @RequestParam(required = false) Integer annee,
+            Authentication authentication) {
+        try {
+            if (annee != null) {
+                return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName(), annee));
+            }
+            return ResponseEntity.ok(convocationService.getConvocationsEmployeur(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/offres/{offreId}")

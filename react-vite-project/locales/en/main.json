@@ -821,5 +821,9 @@
       "desc": "Are you sure you want to refuse to sign this internship contract? This will notify your internship manager and the student.",
       "confirm": "Confirm refusal"
     }
+  },
+  "session": {
+    "toutes": "All sessions",
+    "libelle": "Winter {{annee}}"
   }
 }

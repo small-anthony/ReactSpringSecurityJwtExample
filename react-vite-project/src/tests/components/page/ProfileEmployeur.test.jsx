@@ -54,6 +54,7 @@ const mockOffres = [
 describe("ProfileEmployeur - Modifier et Supprimer une offre d'emploi", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        OffreStageService.getAnneesEmployeur?.mockResolvedValue?.(["2026"]);
         i18n.changeLanguage("fr");
     });
 
