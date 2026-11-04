@@ -12,7 +12,6 @@ import ProfileGestionnaire from "./components/page/ProfileGestionnaire.jsx";
 import ProfileEmployeur from "./components/page/ProfileEmployeur.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
-import HistoriqueDecisions from "./components/page/HistoriqueDecisions.jsx";
 import ApprobationOffres from "./components/page/ApprobationOffres.jsx";
 import ApprobationCvs from "./components/page/ApprobationCvs.jsx";
 import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
@@ -105,10 +104,7 @@ function App() {
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <CandidaturesOffre /> : <Navigate to="/" />))}
                     />
 
-                    <Route
-                        path="employeur/historique"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <HistoriqueDecisions /> : <Navigate to="/" />))}
-                    />
+
 
                     <Route
                         path="professeur"

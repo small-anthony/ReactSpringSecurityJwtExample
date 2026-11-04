@@ -8,24 +8,18 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ConvocationRepository;
-import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
-import com.lacouf.rsbjwt.service.schedulers.ConvocationScheduler;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +36,6 @@ class ConvocationServiceTest {
 
     @Mock
     private CandidatureRepository candidatureRepository;
-
-    @Mock
-    private HistoriqueCandidatureRepository historiqueRepository;
 
     @InjectMocks
     private ConvocationService convocationService;
@@ -175,7 +166,7 @@ class ConvocationServiceTest {
         assertEquals(99L, dto.id());
         assertEquals("Virtuel", dto.rendezVousPossibles().getFirst().lieu());
         assertEquals(StatutConvocation.EN_ATTENTE, dto.statut());
-        verify(historiqueRepository).save(any(HistoriqueCandidature.class));
+
     }
 
     @Test

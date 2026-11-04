@@ -92,12 +92,6 @@ export default function ProfileEmployeur() {
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                     <Link
-                        to="/employeur/historique"
-                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50"
-                    >
-                        {t("historique.button")}
-                    </Link>
-                    <Link
                         to="/employeur/creer-offre"
                         className="shrink-0 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
                     >

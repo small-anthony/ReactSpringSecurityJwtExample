@@ -5,22 +5,18 @@ import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
-import com.lacouf.rsbjwt.model.HistoriqueCandidature;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.EmployeurRepository;
-import com.lacouf.rsbjwt.repository.HistoriqueCandidatureRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.HistoriqueCandidatureDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,32 +39,31 @@ public class EmployeurServiceTest {
     private OffreStageRepository offreStageRepository;
     @Mock
     private CandidatureRepository candidatureRepository;
-    @Mock
-    private HistoriqueCandidatureRepository historiqueRepository;
+
     @InjectMocks
     private EmployeurService employeurService;
 
-	private Employeur preparerEmployeur(String email) {
-		UserApp userMock = mock(UserApp.class);
-		when(userMock.getId()).thenReturn(1L);
-		when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
+    private Employeur preparerEmployeur(String email) {
+        UserApp userMock = mock(UserApp.class);
+        when(userMock.getId()).thenReturn(1L);
+        when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(userMock));
 
-		Credentials credentials = new Credentials(email, "password123", Role.EMPLOYEUR);
-		Employeur employeur = new Employeur("Jean", "Tremblay", credentials, "CGI", "514-555-1234");
-		employeur.setId(1L);
-		when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
-		return employeur;
-	}
+        Credentials credentials = new Credentials(email, "password123", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur("Jean", "Tremblay", credentials, "CGI", "514-555-1234");
+        employeur.setId(1L);
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+        return employeur;
+    }
 
-	private Candidature creerCandidature(Long id) {
-		Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
-		Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "info");
-		etudiant.setId(2L);
-		OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
-		Candidature candidature = new Candidature(etudiant, offre);
-		ReflectionTestUtils.setField(candidature, "id", id);
-		return candidature;
-	}
+    private Candidature creerCandidature(Long id) {
+        Credentials credentialsEtudiant = new Credentials("etudiant@test.com", "password123", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", credentialsEtudiant, 123456, "info");
+        etudiant.setId(2L);
+        OffreStage offre = new OffreStage("Stagiaire en informatique", "Description", "CGI");
+        Candidature candidature = new Candidature(etudiant, offre);
+        ReflectionTestUtils.setField(candidature, "id", id);
+        return candidature;
+    }
 
     @Test
     void testCreerOffre_succes() throws Exception {
@@ -332,11 +327,6 @@ public class EmployeurServiceTest {
         //ASSERT
         assertEquals(StatutCandidature.REFUSEE, resultat.statut());
         assertEquals("Profil non retenu", resultat.messageReponse());
-
-        ArgumentCaptor<HistoriqueCandidature> captor = ArgumentCaptor.forClass(HistoriqueCandidature.class);
-        verify(historiqueRepository).save(captor.capture());
-        assertEquals(StatutCandidature.REFUSEE, captor.getValue().getNouveauStatut());
-        assertEquals("Profil non retenu", captor.getValue().getMessage());
     }
 
     @Test
@@ -386,11 +376,11 @@ public class EmployeurServiceTest {
 
         //ASSERT
         assertEquals("Candidature introuvable pour cet employeur", exception.getMessage());
-        verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
+        verify(candidatureRepository, never()).save(any(Candidature.class));
     }
 
     @Test
-    void refuserCandidature_conventionEnAttenteReponse_refuseEtEnregistreLHistorique() throws Exception {
+    void refuserCandidature_conventionEnAttenteReponse_refuseLaCandidature() throws Exception {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
@@ -401,9 +391,7 @@ public class EmployeurServiceTest {
         CandidatureDto resultat = employeurService.refuserCandidature(100L, "Désistement", email);
 
         assertEquals(StatutCandidature.REFUSEE, resultat.statut());
-        ArgumentCaptor<HistoriqueCandidature> captor = ArgumentCaptor.forClass(HistoriqueCandidature.class);
-        verify(historiqueRepository).save(captor.capture());
-        assertEquals(StatutCandidature.REFUSEE, captor.getValue().getNouveauStatut());
+        assertEquals("Désistement", resultat.messageReponse());
     }
 
     @Test
@@ -419,7 +407,6 @@ public class EmployeurServiceTest {
 
         assertEquals(StatutCandidature.REFUSEE, resultat.statut());
         assertEquals("Profil non retenu après l'entrevue", resultat.messageReponse());
-        verify(historiqueRepository).save(any(HistoriqueCandidature.class));
     }
 
     @Test
@@ -435,11 +422,10 @@ public class EmployeurServiceTest {
 
         assertEquals("Cette candidature a déjà reçu une réponse", exception.getMessage());
         verify(candidatureRepository, never()).save(any(Candidature.class));
-        verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
     }
 
     @Test
-    void embaucherCandidature_entrevueAcceptee_embaucheEtEnregistreLHistorique() throws Exception {
+    void embaucherCandidature_entrevueAcceptee_embaucheLaCandidature() throws Exception {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
@@ -451,11 +437,6 @@ public class EmployeurServiceTest {
 
         assertEquals(StatutCandidature.EMBAUCHEE, resultat.statut());
         assertNull(resultat.messageReponse());
-
-        ArgumentCaptor<HistoriqueCandidature> captor = ArgumentCaptor.forClass(HistoriqueCandidature.class);
-        verify(historiqueRepository).save(captor.capture());
-        assertEquals(StatutCandidature.EMBAUCHEE, captor.getValue().getNouveauStatut());
-        assertNull(captor.getValue().getMessage());
     }
 
     @Test
@@ -471,7 +452,6 @@ public class EmployeurServiceTest {
 
         assertEquals("L'entrevue doit être confirmée par l'étudiant avant l'embauche", exception.getMessage());
         verify(candidatureRepository, never()).save(any(Candidature.class));
-        verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
     }
 
     @Test
@@ -499,7 +479,7 @@ public class EmployeurServiceTest {
                 employeurService.embaucherCandidature(100L, email));
 
         assertEquals("L'entrevue doit être confirmée par l'étudiant avant l'embauche", exception.getMessage());
-        verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
+        verify(candidatureRepository, never()).save(any(Candidature.class));
     }
 
     @Test
@@ -512,77 +492,7 @@ public class EmployeurServiceTest {
                 employeurService.embaucherCandidature(99L, email));
 
         assertEquals("Candidature introuvable pour cet employeur", exception.getMessage());
-        verify(historiqueRepository, never()).save(any(HistoriqueCandidature.class));
-    }
-
-    @Test
-    void getHistorique_avecDecisions_retourneLaListe() {
-        //ARRANGE
-        String email = "employeur@entreprise.com";
-        Candidature candidature = creerCandidature(100L);
-        HistoriqueCandidature historique = new HistoriqueCandidature(
-                candidature, StatutCandidature.EN_ATTENTE, StatutCandidature.REFUSEE, "Profil non retenu", email);
-        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email)).thenReturn(List.of(historique));
-
-        //ACT
-        List<HistoriqueCandidatureDto> resultat = employeurService.getHistorique(email);
-
-        //ASSERT
-        assertEquals(1, resultat.size());
-        HistoriqueCandidatureDto dto = resultat.get(0);
-        assertEquals(100L, dto.candidatureId());
-        assertEquals("Sophie Martin", dto.etudiantNom());
-        assertEquals("Stagiaire en informatique", dto.titreOffre());
-        assertEquals(StatutCandidature.EN_ATTENTE, dto.ancienStatut());
-        assertEquals(StatutCandidature.REFUSEE, dto.nouveauStatut());
-        assertEquals("Profil non retenu", dto.message());
-    }
-
-    @Test
-    void getHistorique_sansDecision_retourneUneListeVide() {
-        //ARRANGE
-        String email = "employeur@entreprise.com";
-        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email)).thenReturn(List.of());
-
-        //ACT
-        List<HistoriqueCandidatureDto> resultat = employeurService.getHistorique(email);
-
-        //ASSERT
-        assertTrue(resultat.isEmpty());
-    }
-
-    @Test
-    void getHistorique_plusieursDecisionsPourUneCandidature_retourneSeulementLaPlusRecente() {
-        String email = "employeur@entreprise.com";
-        Candidature candidature = creerCandidature(100L);
-        HistoriqueCandidature convocation = new HistoriqueCandidature(
-                candidature, StatutCandidature.EN_ATTENTE, StatutCandidature.EN_ATTENTE_REPONSE, null, email);
-        HistoriqueCandidature embauche = new HistoriqueCandidature(
-                candidature, StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE, null, email);
-        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email))
-                .thenReturn(List.of(embauche, convocation));
-
-        List<HistoriqueCandidatureDto> resultat = employeurService.getHistorique(email);
-
-        assertEquals(1, resultat.size());
-        assertEquals(StatutCandidature.EMBAUCHEE, resultat.get(0).nouveauStatut());
-    }
-
-    @Test
-    void getHistorique_candidaturesDifferentes_gardeUneDecisionParCandidature() {
-        String email = "employeur@entreprise.com";
-        HistoriqueCandidature premiere = new HistoriqueCandidature(
-                creerCandidature(100L), StatutCandidature.EN_ATTENTE, StatutCandidature.REFUSEE, null, email);
-        HistoriqueCandidature deuxieme = new HistoriqueCandidature(
-                creerCandidature(101L), StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE, null, email);
-        when(historiqueRepository.findByAuteurEmailOrderByDateDecisionDesc(email))
-                .thenReturn(List.of(deuxieme, premiere));
-
-        List<HistoriqueCandidatureDto> resultat = employeurService.getHistorique(email);
-
-        assertEquals(2, resultat.size());
-        assertEquals(101L, resultat.get(0).candidatureId());
-        assertEquals(100L, resultat.get(1).candidatureId());
+        verify(candidatureRepository, never()).save(any(Candidature.class));
     }
 
     @Test
@@ -691,6 +601,7 @@ public class EmployeurServiceTest {
         //ASSERT
         assertEquals("Le titre est obligatoire", exception.getMessage());
     }
+
     @Test
     void updateOffreStage_nomEntrepriseVide_lanceException() {
         //ACT
