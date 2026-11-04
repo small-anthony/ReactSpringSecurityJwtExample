@@ -23,6 +23,9 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.core.io.ClassPathResource;
+import java.io.IOException;
+import java.io.InputStream;
 
 @SpringBootApplication
 @EnableScheduling
@@ -53,6 +56,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 this.passwordEncoder = passwordEncoder;
         }
 
+        private byte[] chargerCvDemo() throws IOException {
+                try (InputStream in = new ClassPathResource("cv-demo.pdf").getInputStream()) {
+                        return in.readAllBytes();
+                }
+        }
+
         public static void main(String[] args) {
                 SpringApplication.run(ReactSpringSecurityJwtApplication.class, args);
         }
@@ -79,14 +88,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         new Credentials("etudiant@test.com", defaultPass, Role.ETUDIANT),
                                         1234567,
                                         "Techniques de l'informatique");
-                        etudiant.setCv(new byte[] { 1, 2, 3 });
+                        etudiant.setCv(chargerCvDemo());
                         etudiant.getCv().accepterApprobation();
                         etudiantRepository.save(etudiant);
 
                         Etudiant hatim = new Etudiant("Hatim", "Fakhour",
                                         new Credentials("hatim@test.com", defaultPass, Role.ETUDIANT),
                                         1234567, "Techniques de l'informatique");
-                        hatim.setCv(new byte[] { 1, 2, 3 });
+                        hatim.setCv(chargerCvDemo());
                         hatim.getCv().accepterApprobation();
                         hatim = etudiantRepository.save(hatim);
 
