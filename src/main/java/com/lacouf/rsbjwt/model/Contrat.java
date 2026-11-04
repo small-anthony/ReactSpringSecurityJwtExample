@@ -89,17 +89,19 @@ public class Contrat {
 		this.conditions = conditions;
 	}
 
-	public void signer(Signature<?> signature) throws Exception {
-		if (!signature.isValid()) {
-			throw new Exception("signature est invalide");
+	public void signer(Signature<?> signature) {
+		if (signature == null || !signature.isValid()) {
+			return;
 		}
 
 		setSignature(signature);
 		evaluerStatut();
 	}
 
-	public void rejeter(UserApp user) throws Exception {
-		setSignature(Signature.invalid(user));
+	public void rejeter(UserApp user) {
+		if (user != null) {
+			setSignature(Signature.invalid(user));
+		}
 		this.statut = StatutContrat.REFUSE;
 	}
 
@@ -112,35 +114,15 @@ public class Contrat {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setSignature(Signature<?> signature) throws Exception {
+	private void setSignature(Signature<?> signature) {
+		if (signature == null) {
+			return;
+		}
 		switch (signature.getSignataire()) {
-			case Etudiant _ -> {
-				if (signatureEtudiant != null) {
-					throw new Exception("signature existe déjà");
-				}
-				Signature<Etudiant> sig = (Signature<Etudiant>) signature;
-				if (!sig.isSignedBy(getEtudiant())) {
-					throw new Exception("signataire est invalide");
-				}
-				signatureEtudiant = sig;
-			}
-			case Employeur _ -> {
-				if (signatureEmployeur != null) {
-					throw new Exception("signature existe déjà");
-				}
-				Signature<Employeur> sig = (Signature<Employeur>) signature;
-				if (!sig.isSignedBy(getEmployeur())) {
-					throw new Exception("signataire est invalide");
-				}
-				signatureEmployeur = sig;
-			}
-			case Gestionnaire _ -> {
-				if (signatureGestionnaire != null) {
-					throw new Exception("signature existe déjà");
-				}
-				signatureGestionnaire = (Signature<Gestionnaire>) signature;
-			}
-			case null, default -> throw new Exception("signataire inconnu");
+			case Etudiant _ -> signatureEtudiant = (Signature<Etudiant>) signature;
+			case Employeur _ -> signatureEmployeur = (Signature<Employeur>) signature;
+			case Gestionnaire _ -> signatureGestionnaire = (Signature<Gestionnaire>) signature;
+			case null, default -> {}
 		}
 	}
 

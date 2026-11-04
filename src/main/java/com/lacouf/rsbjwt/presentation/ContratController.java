@@ -69,7 +69,7 @@ public class ContratController {
 		try {
 			if (signature == null || signature.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body(ErrorResponse.create(new IllegalArgumentException("Le fichier de signature est obligatoire.")));
+						.body(ErrorResponse.create(new Exception("Le fichier de signature est obligatoire.")));
 			}
 			String email = authentication != null ? authentication.getName() : null;
 			ContratDto contrat = contratService.signerContrat(id, email, signature);

@@ -19,22 +19,15 @@ public class Signature<User extends UserApp> {
 	private User signataire;
 
 	public Signature(User signataire, byte[] data) {
-		if (signataire == null) {
-			throw new IllegalArgumentException("Le signataire est obligatoire pour une signature valide.");
-		}
-		if (data == null || data.length == 0) {
-			throw new IllegalArgumentException("Les données de signature sont obligatoires.");
-		}
-		this.signataire = signataire;
 		this.data = data;
-		this.valid = true;
+		this.signataire = signataire;
+		this.valid = signataire != null && data != null && data.length > 0;
 	}
 
 	public static <User extends UserApp> Signature<User> invalid(User signataire) {
 		Signature<User> ret = new Signature<>();
+
 		ret.signataire = signataire;
-		ret.data = null;
-		ret.valid = false;
 		return ret;
 	}
 
@@ -61,8 +54,8 @@ public class Signature<User extends UserApp> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof Signature<?> that)) return false;
+		if(this == obj) { return true; }
+		if(!(obj instanceof Signature<?> that)) return false;
 
 		return Arrays.equals(this.data, that.data);
 	}
