@@ -218,7 +218,8 @@
     "successTitle": "Internship Offer Created",
     "success": "Your internship offer has been created successfully!",
     "submit": "Create Offer",
-    "submitting": "Creating..."
+    "submitting": "Creating...",
+    "defaultError": "An error occurred while creating the offer."
   },
   "signup_professeur": {
     "title": "Teacher Registration",
@@ -318,7 +319,7 @@
       "EN_ATTENTE": "Awaiting coordinator approval",
       "ACCEPTE": "Offer approved",
       "ACCEPTEE": "Accepted",
-      "REFUSE": " Offer rejected",
+      "REFUSE": "Offer rejected",
       "REFUSEE": "Refused"
     },
     "view_candidates": "View candidates",
@@ -763,7 +764,8 @@
     "confirm": "Confirm and sign contract",
     "error_blob": "Unable to capture signature.",
     "error_sign": "Error signing the contract.",
-    "signataire_label": "Student"
+    "signataire_label": "Student",
+    "watermark": "✕ Signature"
   },
   "contrats_etudiant": {
     "title": "My Internship Contracts",
@@ -829,5 +831,23 @@
   "session": {
     "toutes": "All sessions",
     "libelle": "Winter {{annee}}"
+  },
+  "calendar": {
+    "clear": "Clear date",
+    "calendar": "Calendar",
+    "prev_month": "Previous month",
+    "next_month": "Next month"
+  },
+  "quick_login": {
+    "valentin_desc": "Interview scheduling, hiring, contract signing and archives",
+    "john_desc": "Student reports, contract creation, signing and printing",
+    "hatim_desc": "Internship contract signing, interview accepted",
+    "sophie_desc": "Refused interview (reschedule), signed contract",
+    "luc_desc": "Candidate to interview, signed contract ready for coordinator",
+    "emma_desc": "Hired student ready for contract, completed contract",
+    "daniil_desc": "No interview / No resume (coordinator reports)",
+    "company_cegep": "College",
+    "company_student_m": "Student",
+    "company_student_f": "Student"
   }
 }

@@ -218,7 +218,8 @@
     "successTitle": "Offre créée avec succès",
     "success": "Votre offre de stage a été créée avec succès !",
     "submit": "Créer l'offre",
-    "submitting": "Création en cours..."
+    "submitting": "Création en cours...",
+    "defaultError": "Une erreur est survenue lors de la création de l'offre."
   },
   "signup_professeur": {
     "title": "Inscription Professeur",
@@ -748,7 +749,7 @@
   "placeholder": {
     "rendezvous": "Créez un rendez-vous...",
     "lieu": "Choisissez un lieu...",
-    "message": "Entrez une message...",
+    "message": "Entrez un message...",
     "message_optionnel": "Message optionnel..."
   },
   "signature_pad": {
@@ -763,7 +764,8 @@
     "confirm": "Confirmer et signer le contrat",
     "error_blob": "Impossible de capturer la signature.",
     "error_sign": "Erreur lors de la signature du contrat.",
-    "signataire_label": "L'étudiant(e)"
+    "signataire_label": "L'étudiant(e)",
+    "watermark": "✕ Signature"
   },
   "contrats_etudiant": {
     "title": "Mes Contrats de Stage",
@@ -829,5 +831,23 @@
   "session": {
     "toutes": "Toutes les sessions",
     "libelle": "Hiver {{annee}}"
+  },
+  "calendar": {
+    "clear": "Effacer la date",
+    "calendar": "Calendrier",
+    "prev_month": "Mois précédent",
+    "next_month": "Mois suivant"
+  },
+  "quick_login": {
+    "valentin_desc": "Planification d'entrevue, embauche, signature de contrat et archives",
+    "john_desc": "Rapports d'étudiants, création de contrat, signature et impression",
+    "hatim_desc": "Signature de contrat de stage, entrevue acceptée",
+    "sophie_desc": "Convocation refusée (reconvoquer), contrat signé",
+    "luc_desc": "Candidature à convoquer, contrat signé prêt pour gestionnaire",
+    "emma_desc": "Étudiante embauchée prête pour contrat, contrat complété",
+    "daniil_desc": "Sans convocation / Sans CV (rapports gestionnaire)",
+    "company_cegep": "Cégep",
+    "company_student_m": "Étudiant",
+    "company_student_f": "Étudiante"
   }
 }

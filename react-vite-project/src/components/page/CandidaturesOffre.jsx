@@ -12,6 +12,7 @@ import {
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
 import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
+import { DISCIPLINES } from "../../constants/disciplines.js";
 
 const peutConvoquer = (candidature) => candidature.statut === "EN_ATTENTE";
 const peutEmbaucher = (candidature) => candidature.statut === "ACCEPTEE";
@@ -46,6 +47,11 @@ export default function CandidaturesOffre() {
     const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
     const { t } = useTranslation("main");
+    const getDisciplineLabel = (valeur) => {
+        if (!valeur) return "";
+        const disc = DISCIPLINES.find((d) => d.value === valeur || d.labelKey === valeur);
+        return disc ? t(`signup_etudiant.disciplines.${disc.labelKey}`) : valeur;
+    };
 
     const [candidatures, setCandidatures] = useState([]);
     const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
@@ -276,9 +282,7 @@ export default function CandidaturesOffre() {
                                     {candidat.etudiant.email}
                                 </p>
                                 <p className="text-xs font-medium text-blue-600 mt-0.5">
-                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                        defaultValue: candidat.etudiant.discipline,
-                                    })}
+                                    {getDisciplineLabel(candidat.etudiant.discipline)}
                                 </p>
                             </div>
 

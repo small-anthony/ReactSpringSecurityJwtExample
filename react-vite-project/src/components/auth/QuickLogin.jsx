@@ -12,67 +12,67 @@ const DEMO_USERS = [
         role: "employeur",
         email: "employeur@test.com",
         password: "password",
-        description: "Planification d'entrevue, embauche, signature de contrat et archives",
+        descKey: "valentin_desc",
         icon: Briefcase,
         color: "emerald"
     },
     {
         name: "John Gestion",
-        company: "Cégep",
+        companyKey: "company_cegep",
         role: "gestionnaire",
         email: "gestionnaire@test.com",
         password: "bib",
-        description: "Rapports d'étudiants, création de contrat, signature et impression",
+        descKey: "john_desc",
         icon: ShieldCheck,
         color: "purple"
     },
     {
         name: "Hatim Fakhour",
-        company: "Étudiant",
+        companyKey: "company_student_m",
         role: "etudiant",
         email: "etudiant@test.com",
         password: "password",
-        description: "Signature de contrat de stage, entrevue acceptée",
+        descKey: "hatim_desc",
         icon: GraduationCap,
         color: "blue"
     },
     {
         name: "Sophie Martin",
-        company: "Étudiante",
+        companyKey: "company_student_f",
         role: "etudiant",
         email: "sophie@test.com",
         password: "password",
-        description: "Convocation refusée (reconvoquer), contrat signé",
+        descKey: "sophie_desc",
         icon: GraduationCap,
         color: "amber"
     },
     {
         name: "Luc Bélanger",
-        company: "Étudiant",
+        companyKey: "company_student_m",
         role: "etudiant",
         email: "luc@test.com",
         password: "password",
-        description: "Candidature à convoquer, contrat signé prêt pour gestionnaire",
+        descKey: "luc_desc",
         icon: GraduationCap,
         color: "indigo"
     },
     {
         name: "Emma Roy",
-        company: "Étudiante",
+        companyKey: "company_student_f",
         role: "etudiant",
         email: "emma@test.com",
         password: "password",
-        description: "Étudiante embauchée prête pour contrat, contrat complété",
+        descKey: "emma_desc",
         icon: GraduationCap,
         color: "rose"
     },
     {
         name: "Daniil Dimov",
-        company: "Étudiant",
+        companyKey: "company_student_m",
         role: "etudiant",
         email: "daniil@test.com",
         password: "password",
-        description: "Sans convocation / Sans CV (rapports gestionnaire)",
+        descKey: "daniil_desc",
         icon: GraduationCap,
         color: "slate"
     }
@@ -166,14 +166,14 @@ export default function QuickLogin() {
                                         <div className="flex items-center gap-2 mt-0.5">
                                             <span className="text-[11px] text-gray-500">{user.email}</span>
                                             <span className="text-[10px] font-medium text-gray-400">•</span>
-                                            <span className="text-[11px] font-semibold text-gray-600">{user.company}</span>
+                                            <span className="text-[11px] font-semibold text-gray-600">{user.companyKey ? t(`quick_login.${user.companyKey}`) : user.company}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-relaxed">
-                                {user.description}
+                                {t(`quick_login.${user.descKey}`)}
                             </p>
                         </button>
                     );

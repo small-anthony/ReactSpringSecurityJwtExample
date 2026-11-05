@@ -4,7 +4,7 @@ import { X, Check, RotateCcw, PenTool, ShieldCheck, AlertCircle } from "lucide-r
 import { signerContrat } from "../../services/api/ContratAPI.js";
 
 export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess, authHeader, roleLabel }) {
-    const { t } = useTranslation("main");
+    const { t, i18n } = useTranslation("main");
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasDrawn, setHasDrawn] = useState(false);
@@ -119,7 +119,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
     if (!isOpen || !contrat) return null;
 
     const nomCompletEtudiant = `${contrat.etudiantPrenom || ""} ${contrat.etudiantNom || ""}`.trim();
-    const dateAujourdhui = new Date().toLocaleDateString("fr-CA");
+    const dateAujourdhui = new Date().toLocaleDateString(i18n.language?.startsWith("en") ? "en-US" : "fr-CA");
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
@@ -211,7 +211,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
 
                             
                             <div className="absolute bottom-6 left-6 right-6 border-b border-gray-200 pointer-events-none flex items-center justify-between">
-                                <span className="text-[10px] text-gray-300 select-none pb-0.5">✕ Signature</span>
+                                <span className="text-[10px] text-gray-300 select-none pb-0.5">{t("signature_pad.watermark", { defaultValue: "✕ Signature" })}</span>
                                 <span className="text-[10px] text-gray-300 select-none pb-0.5">{roleLabel || t("signature_pad.signataire_label", { defaultValue: "L'étudiant(e)" })}</span>
                             </div>
 

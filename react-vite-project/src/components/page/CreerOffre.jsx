@@ -70,7 +70,7 @@ export default function CreerOffre() {
         {serverError && (
             <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
               <strong>{t("creer_offre.errorPrefix")} </strong>
-              {serverError}
+              {serverError === "defaultError" ? t("creer_offre.defaultError") : serverError}
             </div>
         )}
 
