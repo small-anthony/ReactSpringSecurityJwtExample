@@ -384,7 +384,11 @@
     "modal_convoquer_title": "Schedule an interview:",
     "create_rendezvous": "Create a new time slot with the button below.",
     "slot": "Time slot {{number}}",
-    "add_slot": "+ Add a time slot"
+    "add_slot": "+ Add a time slot",
+    "entrevue": {
+      "confirmee": "Interview confirmed:",
+      "en_attente": "Convocation sent. Waiting for the student to choose among these time slots:"
+    }
   },
   "candidature_etudiant": {
     "status": {

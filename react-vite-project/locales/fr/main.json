@@ -384,8 +384,13 @@
     "modal_convoquer_title": "Planifier une convocation:",
     "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas.",
     "slot": "Créneau {{number}}",
-    "add_slot": "+ Ajouter un créneau"
+    "add_slot": "+ Ajouter un créneau",
+    "entrevue": {
+      "confirmee": "Entrevue confirmée :",
+      "en_attente": "Convocation envoyée. En attente de la réponse de l'étudiant parmi ces créneaux :"
+    }
   },
+
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "En attente de réponse de l'employeur",

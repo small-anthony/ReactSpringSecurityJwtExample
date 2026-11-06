@@ -34,6 +34,17 @@ const getMotifRefusConvocation = (candidat) => {
     return refusee ? (refusee.reponseEtudiant || "") : "";
 };
 
+const aEntrevueConfirmee = (candidat) =>
+    ["ACCEPTEE", "EMBAUCHEE"].includes(candidat.statut) &&
+    candidat.convocation?.statut === "ACCEPTEE" &&
+    Boolean(candidat.convocation?.rendezVousSelection);
+
+const aConvocationEnAttente = (candidat) =>
+    candidat.statut === "EN_ATTENTE_REPONSE" && candidat.convocation?.statut === "EN_ATTENTE";
+
+const formaterDateHeure = (date, langue) =>
+    new Date(date).toLocaleString(langue, { dateStyle: "full", timeStyle: "short" });
+
 const COULEURS_BADGE = {
     EN_ATTENTE_REPONSE: "bg-yellow-100 text-yellow-800",
     ACCEPTEE: "bg-blue-100 text-blue-800",
@@ -45,7 +56,8 @@ export default function CandidaturesOffre() {
     const { offreId } = useParams();
     const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
-    const { t } = useTranslation("main");
+    const { t, i18n } = useTranslation("main");
+    const langue = i18n?.language;
 
     const [candidatures, setCandidatures] = useState([]);
     const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
@@ -308,6 +320,31 @@ export default function CandidaturesOffre() {
                                 )}
                             </div>
                         </div>
+
+                        {aEntrevueConfirmee(candidat) && (
+                            <div className="mt-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-900 text-sm rounded-lg">
+                                <strong className="text-green-950">{t("candidatures_offre.entrevue.confirmee")}</strong>
+                                <p className="mt-1 font-semibold">
+                                    {formaterDateHeure(candidat.convocation.rendezVousSelection.date, langue)}
+                                </p>
+                                <p className="text-green-800">{candidat.convocation.rendezVousSelection.lieu}</p>
+                            </div>
+                        )}
+
+                        {aConvocationEnAttente(candidat) && (
+                            <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-900 text-sm rounded-lg">
+                                <strong className="text-yellow-950">{t("candidatures_offre.entrevue.en_attente")}</strong>
+                                <ul className="mt-1 space-y-1">
+                                    {(candidat.convocation.rendezVousPossibles || []).map((rendezVous) => (
+                                        <li key={`${rendezVous.date}-${rendezVous.lieu}`}>
+                                            <span className="font-semibold">{formaterDateHeure(rendezVous.date, langue)}</span>
+                                            {" - "}
+                                            {rendezVous.lieu}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                         {candidat.messageReponse && (
                             <div className="mt-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-800 text-sm rounded-lg">
