@@ -36,6 +36,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         private final CandidatureRepository candidatureRepository;
         private final ConvocationRepository convocationRepository;
         private final ContratRepository contratRepository;
+        private final ProfesseurRepository professeurRepository;
         private final PasswordEncoder passwordEncoder;
 
         public ReactSpringSecurityJwtApplication(
@@ -46,6 +47,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         CandidatureRepository candidatureRepository,
                         ConvocationRepository convocationRepository,
                         ContratRepository contratRepository,
+                        ProfesseurRepository professeurRepository,
                         PasswordEncoder passwordEncoder) {
                 this.gestionnaireRepository = gestionnaireRepository;
                 this.etudiantRepository = etudiantRepository;
@@ -53,6 +55,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 this.candidatureRepository = candidatureRepository;
                 this.convocationRepository = convocationRepository;
                 this.contratRepository = contratRepository;
+                this.professeurRepository = professeurRepository;
                 this.passwordEncoder = passwordEncoder;
         }
 
@@ -90,6 +93,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Larry", "Page",
                                         new Credentials("valentin@test.com", defaultPass, Role.EMPLOYEUR),
                                         "Google", "514-111-1111");
+                        Professeur profMartin = new Professeur("Martin", "Tremblay",
+                                        new Credentials("professeur@test.com", defaultPass, Role.PROFESSEUR));
+                        professeurRepository.save(profMartin);
+
+                        Professeur profChantal = new Professeur("Chantal", "Gagnon",
+                                        new Credentials("chantal@test.com", defaultPass, Role.PROFESSEUR));
+                        professeurRepository.save(profChantal);
 
                         // Étudiants
                         Etudiant hatim = new Etudiant("Hatim", "Fakhour",
