@@ -1,5 +1,7 @@
 /// Le type de notification qu'on reçoit. Aucune implication de fonctionalité.
 import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import {AuthServiceContext, UserRole} from "../AuthService";
 
 export enum NotificationType {
     Informative = "INFORMATIVE",
@@ -52,11 +54,47 @@ export default class Notification {
 
 type _notificationActionHandler = (notification: Notification, payload: any) => Promise<void>;
 const _notificationActionToHandler: Record<NotificationActionType, _notificationActionHandler> = {
-    [NotificationActionType.ViewResource]: async (notification, payload) => {
-
+    [NotificationActionType.ViewResource]: async (notification, payload: {type: NotificationResourceType}) => {
+        const authService = useContext(AuthServiceContext);
+        const navigate = useNavigate();
+        const { type } = payload;
+        switch(type) {
+            case NotificationResourceType.OffreStage: {
+                switch(authService.getUserData().role) {
+                    case UserRole.Etudiant: return navigate("/etudiant");
+                    case UserRole.Employeur: return navigate("/employeur");
+                    case UserRole.Gestionnaire: return navigate("/gestionnaire/approbations/offres");
+                }
+                break;
+            }
+            case NotificationResourceType.Cv: {
+                switch(authService.getUserData().role) {
+                    case UserRole.Etudiant: return navigate("/etudiant");
+                    case UserRole.Gestionnaire: return navigate("gestionnaire/approbations/cv");
+                }
+                break;
+            }
+        }
     },
 
-    [NotificationActionType.SendResource]: async (notification, any) => {
-
+    [NotificationActionType.SendResource]: async (notification, payload) => {
+        const authService = useContext(AuthServiceContext);
+        const navigate = useNavigate();
+        const { type } = payload;
+        switch(type) {
+            case NotificationResourceType.OffreStage: {
+                switch(authService.getUserData().role) {
+                    case UserRole.Etudiant: return navigate("/etudiant");
+                    case UserRole.Employeur: return navigate("/employeur");
+                }
+                break;
+            }
+            case NotificationResourceType.Cv: {
+                switch(authService.getUserData().role) {
+                    case UserRole.Etudiant: return navigate("/etudiant");
+                }
+                break;
+            }
+        }
     }
 }
