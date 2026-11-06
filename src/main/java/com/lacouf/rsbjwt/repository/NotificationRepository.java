@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 	@Query("""
@@ -16,4 +17,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 		ORDER BY notif.id DESC
 		""")
 	List<Notification> findAllByOwner(UserApp owner);
+
+	@Query("SELECT notif FROM Notification notif LEFT JOIN FETCH notif.owner WHERE notif.id = :id")
+	Optional<Notification> findByIdWithOwner(Long id);
 }

@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.model.embeddable.notifications;
 
-import com.lacouf.rsbjwt.model.ENUM.NotificationActionType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationActionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import org.hibernate.annotations.Immutable;

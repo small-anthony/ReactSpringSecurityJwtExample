@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.repository.NotificationRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,5 +26,23 @@ public class NotificationService {
 
 		List<Notification> notifications = notificationRepository.findAllByOwner(user);
 		return NotificationDTO.create(notifications);
+	}
+
+	public void pushNotification(Notification notification, Long ownerId) {
+		UserApp userReference = userAppRepository.getReferenceById(ownerId);
+		notification.setOwner(userReference);
+		notificationRepository.save(notification);
+	}
+
+	public void dismissNotification(Long notificationId, String actorEmail) throws Exception {
+		Notification notification = notificationRepository.findByIdWithOwner(notificationId)
+				.orElseThrow(Exception::new);
+
+		if(!notification.getOwner().getEmail().equalsIgnoreCase(actorEmail)) {
+			throw new Exception("impossible d'ignorer un notification qu'on ne possede pas");
+		}
+
+		notification.dismiss();
+		notificationRepository.save(notification);
 	}
 }

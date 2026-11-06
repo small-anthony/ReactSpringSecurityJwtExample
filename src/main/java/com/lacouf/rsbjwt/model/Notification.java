@@ -1,15 +1,15 @@
 package com.lacouf.rsbjwt.model;
 
-import com.lacouf.rsbjwt.model.ENUM.NotificationActionType;
-import com.lacouf.rsbjwt.model.ENUM.NotificationType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationActionType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationResourceType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.embeddable.notifications.NotificationAction;
+import com.lacouf.rsbjwt.util.NotificationPayload;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 import org.jspecify.annotations.NonNull;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 public class Notification {
@@ -36,11 +36,11 @@ public class Notification {
 
 	@Immutable
 	private Instant dateCreation = Instant.now();
-	/// L
 	private Instant dateDismissed = null;
-
 	private Instant dateDeleted = null;
 
+	/// Créé une entité Notification.
+	/// Ceux qui veulent créer une notification devront plutôt utiliser un des méthodes Factory
 	protected Notification(@NonNull NotificationType type, @NonNull NotificationAction action, @NonNull String message) {
 		this.type = type;
 		this.action = action;
@@ -87,12 +87,25 @@ public class Notification {
 		return dateDismissed;
 	}
 
-	public static Notification cvSubmitted() {
-		Map<String, Object> map = new HashMap<>();
+	public static Notification cvAccepted() {
 		return new Notification(
-			NotificationType.ActionRequired,
-				new NotificationAction(NotificationActionType.ViewCv, map),
-			"gestionnaire.cv_submitted"
+				NotificationType.SUCCESS,
+				new NotificationAction(
+						NotificationActionType.VIEW_RESOURCE,
+						NotificationPayload.ViewResource(NotificationResourceType.OFFRE_STAGE, null)
+				),
+				"etudiant.cv_accepted"
+		);
+	}
+
+	public static Notification cvRejected() {
+		return new Notification(
+				NotificationType.FAILED,
+				new NotificationAction(
+						NotificationActionType.SEND_RESOURCE,
+						NotificationPayload.SendResource(NotificationResourceType.CV)
+				),
+				"etudiant.cv_rejected"
 		);
 	}
 }

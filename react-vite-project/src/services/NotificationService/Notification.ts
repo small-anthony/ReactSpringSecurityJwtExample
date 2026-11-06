@@ -2,16 +2,24 @@
 import {useNavigate} from "react-router-dom";
 
 export enum NotificationType {
-    Informative = "Informative",
-    Success = "Success",
-    Failed = "Failed",
-    ActionRequired = "ActionRequired",
+    Informative = "INFORMATIVE",
+    Success = "SUCCESS",
+    Failed = "FAILED",
+    ActionRequired = "ACTION_REQUIRED",
 }
 
 /// Le type d'action que cette notification permet. Modifie la fonctionalité.
 export enum NotificationActionType {
-    ViewCv = "ViewCv",
-    SubmitCv = "SubmitCv",
+    ViewResource = "VIEW_RESOURCE",
+    SendResource = "SEND_RESOURCE",
+}
+
+export enum NotificationResourceType {
+    Cv = "CV",
+    OffreStage = "OFFRE_STAGE",
+    Candidature = "CANDIDATURE",
+    Convocation = "CONVOCATION",
+    Contrat = "CONTRAT",
 }
 
 export default class Notification {
@@ -44,13 +52,11 @@ export default class Notification {
 
 type _notificationActionHandler = (notification: Notification, payload: any) => Promise<void>;
 const _notificationActionToHandler: Record<NotificationActionType, _notificationActionHandler> = {
-    [NotificationActionType.ViewCv]: async (notification, payload) => {
-        const { id } = payload;
-        const navigate = useNavigate();
-        navigate("/gestionnaire/approbations/cvs");
+    [NotificationActionType.ViewResource]: async (notification, payload) => {
+
     },
 
-    [NotificationActionType.SubmitCv]: async (notification, any) => {
+    [NotificationActionType.SendResource]: async (notification, any) => {
 
     }
 }

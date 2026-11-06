@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.lacouf.rsbjwt.model.ENUM.NotificationType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 

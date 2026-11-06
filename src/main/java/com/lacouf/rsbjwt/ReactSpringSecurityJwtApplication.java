@@ -78,7 +78,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // 1. ACTEURS (Gestionnaire, Employeurs, Étudiants)
                         // =========================================================================
                         Gestionnaire john = new Gestionnaire("John", "Gestion", new Credentials("gestionnaire@test.com", bibPass, Role.GESTIONNAIRE));
-                        john.addNotification(Notification.cvSubmitted());
                         john = gestionnaireRepository.save(john);
 
                         Employeur cgi = new Employeur(
