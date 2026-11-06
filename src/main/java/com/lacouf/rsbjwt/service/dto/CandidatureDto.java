@@ -57,14 +57,10 @@ public record CandidatureDto(int id,
         Etudiant etudiant = candidature.getEtudiant();
         OffreStage offre = candidature.getOffreStage();
 
-        String messageRefus = null;
-        if (candidature.getConvocations() != null) {
-            for (Convocation conv : candidature.getConvocations()) {
-                if (conv.getStatut() == StatutConvocation.REFUSEE) {
-                    messageRefus = conv.getReponseEtudiant();
-                }
-            }
-        }
+        String messageRefus = candidature.derniereConvocation()
+                .filter(conv -> conv.getStatut() == StatutConvocation.REFUSEE)
+                .map(Convocation::getReponseEtudiant)
+                .orElse(null);
 
         ConvocationResumeDto convocation = candidature.derniereConvocation()
                 .map(ConvocationResumeDto::create)

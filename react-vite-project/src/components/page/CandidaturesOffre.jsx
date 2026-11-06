@@ -35,7 +35,7 @@ const getMotifRefusConvocation = (candidat) => {
 };
 
 const aEntrevueConfirmee = (candidat) =>
-    ["ACCEPTEE", "EMBAUCHEE"].includes(candidat.statut) &&
+    candidat.statut === "ACCEPTEE" &&
     candidat.convocation?.statut === "ACCEPTEE" &&
     Boolean(candidat.convocation?.rendezVousSelection);
 
