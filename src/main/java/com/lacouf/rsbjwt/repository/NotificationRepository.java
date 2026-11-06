@@ -13,8 +13,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 		SELECT DISTINCT notif
 		FROM Notification notif
 			LEFT JOIN FETCH notif.owner
-		WHERE notif.owner = :owner
-		ORDER BY notif.dateCreation DESC
+		ORDER BY notif.id DESC
 		""")
 	List<Notification> findAllByOwner(UserApp owner);
 }

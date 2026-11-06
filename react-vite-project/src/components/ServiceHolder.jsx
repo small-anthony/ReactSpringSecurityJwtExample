@@ -1,5 +1,5 @@
 import AuthService from "../services/AuthService.tsx";
-import NotificationService from "../services/NotificationService.tsx";
+import NotificationService from "../services/NotificationService";
 
 const ServiceHolder = ({children}) => {
     return (

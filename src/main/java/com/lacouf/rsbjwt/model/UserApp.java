@@ -22,7 +22,7 @@ public abstract class UserApp  {
     @Embedded
     private Credentials credentials;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notification> notifications = new ArrayList<>();
 
     protected UserApp() {
@@ -69,5 +69,6 @@ public abstract class UserApp  {
 
     public void addNotification(Notification notification) {
         notifications.add(notification);
+        notification.setOwner(this);
     }
 }

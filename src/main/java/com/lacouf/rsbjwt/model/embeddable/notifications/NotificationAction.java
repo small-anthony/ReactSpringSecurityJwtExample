@@ -21,7 +21,7 @@ public class NotificationAction {
 
 	@Immutable
 	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "action_payload", columnDefinition = "jsonb")
+	@Column(name = "action_payload")
 	private Map<String, Object> payload;
 
 	public NotificationAction(@NonNull NotificationActionType type, @NonNull Map<String, Object> payload) {
