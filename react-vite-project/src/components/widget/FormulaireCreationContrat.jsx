@@ -82,8 +82,8 @@ export default function FormulaireCreationContrat({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-7 md:p-8">
-      <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+    <div className="ds-card p-6 sm:p-8">
+      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
         <PlusCircle className="w-5 h-5 text-blue-600" />
         {t("contrats.tabs.create")}
       </h3>
@@ -92,7 +92,7 @@ export default function FormulaireCreationContrat({
         <div>
           <label
             htmlFor="select-candidature"
-            className="block text-sm font-semibold text-gray-700 mb-2"
+            className="ds-label"
           >
             {t("contrats.candidature_select.label")} *
           </label>
@@ -100,7 +100,7 @@ export default function FormulaireCreationContrat({
             id="select-candidature"
             value={selectedCandidatureId}
             onChange={(e) => setSelectedCandidatureId(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+            className="ds-input"
             required
           >
             <option value="">
@@ -113,7 +113,7 @@ export default function FormulaireCreationContrat({
               </option>
             ))}
           </select>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1.5 text-xs text-slate-500">
             {t("contrats.candidature_select.help")}
           </p>
         </div>
@@ -129,36 +129,36 @@ export default function FormulaireCreationContrat({
           >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs md:text-sm">
               <div>
-                <span className="font-semibold text-gray-500 block text-xs">
+                <span className="font-semibold text-slate-500 block text-xs">
                   {t("contrats.candidature_select.student")} :
                 </span>
-                <span className="text-gray-900 font-bold flex items-center gap-1.5 mt-1">
+                <span className="text-slate-900 font-bold flex items-center gap-1.5 mt-1">
                   <User className="w-4 h-4 text-blue-600" />
                   {selectedCandidature.etudiantPrenom} {selectedCandidature.etudiantNom}
                 </span>
-                <span className="text-gray-500 text-xs font-mono block mt-0.5">
+                <span className="text-slate-500 text-xs font-mono block mt-0.5">
                   {t("contrats.candidature_select.matricule")} : {selectedCandidature.etudiantMatricule}
                 </span>
               </div>
 
               <div>
-                <span className="font-semibold text-gray-500 block text-xs">
+                <span className="font-semibold text-slate-500 block text-xs">
                   {t("contrats.candidature_select.company")} :
                 </span>
-                <span className="text-gray-900 font-bold flex items-center gap-1.5 mt-1">
+                <span className="text-slate-900 font-bold flex items-center gap-1.5 mt-1">
                   <Building className="w-4 h-4 text-blue-600" />
                   {selectedCandidature.nomEntreprise}
                 </span>
-                <span className="text-gray-500 text-xs block mt-0.5">
+                <span className="text-slate-500 text-xs block mt-0.5">
                   {selectedCandidature.employeurEmail}
                 </span>
               </div>
 
               <div>
-                <span className="font-semibold text-gray-500 block text-xs">
+                <span className="font-semibold text-slate-500 block text-xs">
                   {t("contrats.candidature_select.offer")} :
                 </span>
-                <span className="text-gray-900 font-bold flex items-center gap-1.5 mt-1">
+                <span className="text-slate-900 font-bold flex items-center gap-1.5 mt-1">
                   <Briefcase className="w-4 h-4 text-blue-600" />
                   {selectedCandidature.titreOffre}
                 </span>
@@ -178,7 +178,7 @@ export default function FormulaireCreationContrat({
           <div>
             <label
               htmlFor="contrat-date-debut"
-              className="block text-sm font-semibold text-gray-700 mb-1"
+              className="ds-label"
             >
               {t("contrats.form.dateDebut")} *
             </label>
@@ -187,7 +187,7 @@ export default function FormulaireCreationContrat({
               type="date"
               value={dateDebut}
               onChange={(e) => setDateDebut(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="ds-input"
               required
             />
           </div>
@@ -195,7 +195,7 @@ export default function FormulaireCreationContrat({
           <div>
             <label
               htmlFor="contrat-date-fin"
-              className="block text-sm font-semibold text-gray-700 mb-1"
+              className="ds-label"
             >
               {t("contrats.form.dateFin")} *
             </label>
@@ -204,7 +204,7 @@ export default function FormulaireCreationContrat({
               type="date"
               value={dateFin}
               onChange={(e) => setDateFin(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="ds-input"
               required
             />
           </div>
@@ -214,7 +214,7 @@ export default function FormulaireCreationContrat({
           <div>
             <label
               htmlFor="contrat-horaire"
-              className="block text-sm font-semibold text-gray-700 mb-1"
+              className="ds-label"
             >
               {t("contrats.form.horaire")} *
             </label>
@@ -224,7 +224,7 @@ export default function FormulaireCreationContrat({
               value={horaire}
               onChange={(e) => setHoraire(e.target.value)}
               placeholder={t("contrats.form.horaire_placeholder")}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="ds-input"
               required
             />
           </div>
@@ -232,7 +232,7 @@ export default function FormulaireCreationContrat({
           <div>
             <label
               htmlFor="contrat-salaire"
-              className="block text-sm font-semibold text-gray-700 mb-1"
+              className="ds-label"
             >
               {t("contrats.form.salaire")} *
             </label>
@@ -242,7 +242,7 @@ export default function FormulaireCreationContrat({
               value={salaire}
               onChange={(e) => setSalaire(e.target.value)}
               placeholder={t("contrats.form.salaire_placeholder")}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="ds-input"
               required
             />
           </div>
@@ -251,7 +251,7 @@ export default function FormulaireCreationContrat({
         <div>
           <label
             htmlFor="contrat-taches"
-            className="block text-sm font-semibold text-gray-700 mb-1"
+            className="ds-label"
           >
             {t("contrats.form.taches")} *
           </label>
@@ -261,7 +261,7 @@ export default function FormulaireCreationContrat({
             value={descriptionTaches}
             onChange={(e) => setDescriptionTaches(e.target.value)}
             placeholder={t("contrats.form.taches_placeholder")}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="ds-input"
             required
           />
         </div>
@@ -269,7 +269,7 @@ export default function FormulaireCreationContrat({
         <div>
           <label
             htmlFor="contrat-conditions"
-            className="block text-sm font-semibold text-gray-700 mb-1"
+            className="ds-label"
           >
             {t("contrats.form.conditions")} *
           </label>
@@ -279,7 +279,7 @@ export default function FormulaireCreationContrat({
             value={conditions}
             onChange={(e) => setConditions(e.target.value)}
             placeholder={t("contrats.form.conditions_placeholder")}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="ds-input"
             required
           />
         </div>
@@ -289,7 +289,7 @@ export default function FormulaireCreationContrat({
             id="contrat-submit-btn"
             type="submit"
             disabled={submitting || (selectedCandidature && selectedCandidature.contratExiste)}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+            className="btn-primary px-6 py-3"
           >
             {submitting ? (
               <>

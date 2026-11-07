@@ -75,57 +75,57 @@ const ApprobationCvs = () => {
     };
 
     return(
-        <main className="flex flex-col md:flex-row w-full bg-gray-50/30 overflow-hidden">
-            <SidePanelGestionnaire activeTab="approbations" />
-            <div className="flex-1 p-8 md:p-12 animate-in fade-in duration-300">
-                <h2 className="text-2xl font-bold mb-8 text-gray-800">{t('approbation.cvs.title')}</h2>
+        <main className="flex flex-col md:flex-row w-full min-h-[calc(100vh-4rem)] overflow-hidden">
+            <SidePanelGestionnaire activeTab="approbationsCvs" />
+            <div className="flex-1 p-6 sm:p-8 md:p-10">
+                <h2 className="text-2xl font-bold mb-8 text-slate-900 tracking-tight">{t('approbation.cvs.title')}</h2>
                 {actionError && (
-                    <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md font-medium shadow-sm">
+                    <div className="mb-6 ds-alert-error" role="alert">
                         {actionError}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md font-medium shadow-sm">
+                    <div className="mb-6 ds-alert-error" role="alert">
                         {error}
                     </div>
                 )}
                 {loading ? (
-                    <div className="text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-16">
-                        <p className="text-gray-500 font-medium">{t('approbation.cvs.loading')}</p>
+                    <div className="text-center ds-card p-16">
+                        <p className="text-slate-500 font-medium">{t('approbation.cvs.loading')}</p>
                     </div>
                 ) : (
                     <div className="grid gap-6">
                         {cvs.map(cv => (
-                            <article key={cv.id} className="relative p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                            <article key={cv.id} className="relative p-6 sm:p-7 ds-card hover:shadow-md transition-shadow">
 
-                                <h3 className="text-xl font-bold text-gray-900 pr-20 mb-1">
+                                <h3 className="text-xl font-bold text-slate-900 pr-20 mb-1">
                                     {cv.etudiantFirstName} {cv.etudiantLastName}
                                 </h3>
-                                <p className="text-gray-600 font-medium mb-4 flex items-center gap-1.5">
-                                    <IdCard className="w-4 h-4" strokeWidth={2} />
+                                <p className="text-slate-600 text-sm font-medium mb-4 flex items-center gap-1.5">
+                                    <IdCard className="w-4 h-4 text-slate-400" strokeWidth={2} />
                                     {t('approbation.cvs.matricule')} : {cv.etudiantMatricule}
                                 </p>
                                 <button
                                     onClick={() => handleVoirPdf(cv.id)}
-                                    className="inline-flex items-center gap-2 text-blue-600 bg-blue-50 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors"
+                                    className="btn-outline"
                                 >
                                     <Eye className="w-4 h-4" strokeWidth={2} />
                                     {t('approbation.cvs.pdf')}
                                 </button>
 
                                 {!(cvRefuser && cvRefuser.id === cv.id) && !(cvApprouver && cvApprouver.id === cv.id) && (
-                                    <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100">
+                                    <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
                                         <button
                                             type="button"
                                             onClick={() => setCvRefuser(cv)}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm cursor-pointer"
+                                            className="btn-danger"
                                         >
                                             {t('approbation.btn_refuse')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setCvApprouver(cv)}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm cursor-pointer"
+                                            className="btn-success"
                                         >
                                             {t('approbation.btn_accept')}
                                         </button>
@@ -150,8 +150,8 @@ const ApprobationCvs = () => {
                             </article>
                         ))}
                         {cvs.length === 0 && !error && (
-                            <div className="text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-16">
-                                <p className="text-gray-500 font-medium">{t('approbation.cvs.nocvs')}</p>
+                            <div className="text-center ds-card p-16">
+                                <p className="text-slate-500 font-medium">{t('approbation.cvs.nocvs')}</p>
                             </div>
                         )}
                     </div>
