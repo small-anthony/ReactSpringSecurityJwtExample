@@ -6,9 +6,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
-import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
@@ -16,7 +14,6 @@ import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
-import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,9 +40,6 @@ public class GestionnaireServiceTest {
 
     @InjectMocks
     private GestionnaireService gestionnaireService;
-
-    @Mock
-    private CandidatureRepository candidatureRepository;
 
     @Test
     void getCvEnAttente_shouldReturnListCvEnAttente() {
@@ -182,7 +175,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void accepterOffreStage_offreDejaTraitee_lanceException() throws Exception {
+    void accepterOffreStage_offreDejaTraitee_lanceException() {
         // ARRANGE
         OffreStage offre = new OffreStage("Titre", "Desc", "CGI");
         offre.setId(1L);
@@ -280,7 +273,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void getTousLesEtudiants_succes() {
+    void getRapportEtudiants_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
@@ -289,128 +282,62 @@ public class GestionnaireServiceTest {
         when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
 
         // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getTousLesEtudiants();
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants();
 
         // ASSERT
         assertEquals(1, resultat.size());
         assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("AUCUNE_CANDIDATURE", resultat.getFirst().statutStage());
         assertTrue(resultat.getFirst().candidatures().isEmpty());
     }
 
     @Test
-    void getEtudiantsSansConvocation_succes() {
+    void getRapportEtudiants_avecAnneeSpecifique() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
-        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
-        when(etudiantRepository.findEtudiantsSansConvocation(anneeActuelle)).thenReturn(List.of(etudiant));
+        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2025);
+        Candidature candidature = new Candidature(etudiant, offre2025);
+        candidature.setId(10L);
+        candidature.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(candidature));
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
 
         // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsSansConvocation();
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2025);
 
         // ASSERT
         assertEquals(1, resultat.size());
         assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("STAGE_TROUVE", resultat.getFirst().statutStage());
+        assertEquals(1, resultat.getFirst().candidatures().size());
+        assertEquals("Stage 2025", resultat.getFirst().candidatures().getFirst().titreOffre());
+    }
+
+    @Test
+    void getRapportEtudiants_avecAnneeDifferente_filtreCandidatures() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        OffreStage offre2024 = new OffreStage("Stage 2024", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2024);
+        Candidature candidature = new Candidature(etudiant, offre2024);
+        candidature.setId(10L);
+        candidature.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(candidature));
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
+
+        // ACT
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2025);
+
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("AUCUNE_CANDIDATURE", resultat.getFirst().statutStage());
         assertTrue(resultat.getFirst().candidatures().isEmpty());
-    }
-
-    @Test
-    void getEtudiantsEnAttenteEntrevue_succes() {
-        // ARRANGE
-        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
-        etudiant.setId(1L);
-        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
-
-        OffreStage offre = new OffreStage("Dev Java", "Description", "CGI");
-        offre.setAnnee(anneeActuelle);
-
-        Candidature candidature = new Candidature(etudiant, offre);
-        candidature.setId(100L);
-
-        etudiant.setCandidatures(List.of(candidature));
-
-        when(etudiantRepository.findEtudiantsEnAttenteEntrevue(anneeActuelle)).thenReturn(List.of(etudiant));
-
-        // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsEnAttenteEntrevue();
-
-        // ASSERT
-        assertEquals(1, resultat.size());
-        assertEquals("Jean", resultat.getFirst().firstName());
-        assertEquals("Dev Java", resultat.getFirst().candidatures().getFirst().titreOffre());
-        assertEquals("CGI", resultat.getFirst().candidatures().getFirst().nomEntreprise());
-    }
-
-    @Test
-    void getEtudiantsEnAttenteReponse_succes() {
-        // ARRANGE
-        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
-        etudiant.setId(1L);
-        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
-
-        OffreStage offre = new OffreStage("Dev Web", "Description", "Desjardins");
-        offre.setAnnee(anneeActuelle);
-
-        Candidature candidature = new Candidature(etudiant, offre);
-        candidature.setId(101L);
-        etudiant.setCandidatures(List.of(candidature));
-
-        when(etudiantRepository.findEtudiantsEnAttenteReponse(anneeActuelle)).thenReturn(List.of(etudiant));
-
-        // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsEnAttenteReponse();
-
-        // ASSERT
-        assertEquals(1, resultat.size());
-        assertEquals("Jean", resultat.getFirst().firstName());
-        assertEquals("Dev Web", resultat.getFirst().candidatures().getFirst().titreOffre());
-        assertEquals("Desjardins", resultat.getFirst().candidatures().getFirst().nomEntreprise());
-    }
-
-    @Test
-    void getEtudiantsTrouveStage_succes() {
-        // ARRANGE
-        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
-        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
-        etudiant.setId(1L);
-        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
-
-        OffreStage offre = new OffreStage("Dev Fullstack", "Description", "Hydro-Québec");
-        offre.setAnnee(anneeActuelle);
-
-        Candidature candidature = new Candidature(etudiant, offre);
-        candidature.setId(102L);
-
-        etudiant.setCandidatures(List.of(candidature));
-
-        when(etudiantRepository.findEtudiantsTrouveStage(anneeActuelle)).thenReturn(List.of(etudiant));
-
-        // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsTrouveStage();
-
-        // ASSERT
-        assertEquals(1, resultat.size());
-        assertEquals("Jean", resultat.getFirst().firstName());
-        assertEquals("Dev Fullstack", resultat.getFirst().candidatures().getFirst().titreOffre());
-        assertEquals("Hydro-Québec", resultat.getFirst().candidatures().getFirst().nomEntreprise());
-    }
-
-    @Test
-    void getEtudiantsTrouveStage_avecAnneeSpecifique() {
-        // ARRANGE
-        int anneeArchive = 2025;
-        when(etudiantRepository.findEtudiantsTrouveStage(anneeArchive)).thenReturn(List.of());
-
-        // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsTrouveStage(anneeArchive);
-
-        // ASSERT
-        assertNotNull(resultat);
-        assertTrue(resultat.isEmpty());
-        verify(etudiantRepository).findEtudiantsTrouveStage(anneeArchive);
     }
 }
