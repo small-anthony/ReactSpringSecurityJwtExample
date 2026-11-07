@@ -359,12 +359,12 @@ export default function EmployeurContrats() {
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-gray-100">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-slate-100">
                                     <div className="flex items-center gap-2">
                                         <button
                                             type="button"
                                             onClick={() => handleVoirDocument(c.id)}
-                                            className="px-3.5 py-2 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition cursor-pointer inline-flex items-center gap-1.5"
+                                            className="btn-outline py-2 px-3.5 text-xs"
                                         >
                                             <Eye className="w-3.5 h-3.5" />
                                             <span>{t("contrats_employeur.actions.view", { defaultValue: "Consulter le contrat" })}</span>
@@ -372,7 +372,7 @@ export default function EmployeurContrats() {
                                         <button
                                             type="button"
                                             onClick={() => handleTelechargerDocument(c.id)}
-                                            className="px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition cursor-pointer inline-flex items-center gap-1.5"
+                                            className="btn-secondary py-2 px-3.5 text-xs"
                                         >
                                             <Download className="w-3.5 h-3.5" />
                                             <span>{t("contrats_employeur.actions.download", { defaultValue: "Télécharger le PDF" })}</span>
@@ -384,15 +384,15 @@ export default function EmployeurContrats() {
                                             <button
                                                 type="button"
                                                 onClick={() => setContratARefuser(c)}
-                                                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 transition cursor-pointer inline-flex items-center gap-1.5"
+                                                className="btn-danger-soft py-2 px-3.5 text-xs"
                                             >
-                                                <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                                                <XCircle className="w-3.5 h-3.5 text-red-600" />
                                                 <span>{t("contrats_employeur.actions.refuse", { defaultValue: "Refuser le contrat" })}</span>
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setSigningContrat(c)}
-                                                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
+                                                className="btn-primary py-2 px-4 text-xs"
                                             >
                                                 <PenTool className="w-3.5 h-3.5" />
                                                 <span>{t("contrats_employeur.actions.sign", { defaultValue: "Signer le contrat" })}</span>
