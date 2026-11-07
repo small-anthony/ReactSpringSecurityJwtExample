@@ -101,18 +101,18 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
         if (!convocation.estDestineAEtudiant(actorEmail)) {
-            throw new AuthenticationException("No auth");
+            throw new AuthenticationException("Non autorise");
         }
 
         if (convocation.estResolu()) {
-            throw new Exception("convocation already resolved");
+            throw new Exception("La convocation est deja resolue");
         }
         if (rendezVousSelection == null) {
-            throw new Exception("tried to select rendezvous we don't have");
+            throw new Exception("Le rendez-vous selectionne n'est pas disponible");
         }
         RendezVous rendezVous = RendezVous.read(rendezVousSelection);
         if (convocation.getRendezVousPossibles() == null || !convocation.getRendezVousPossibles().contains(rendezVous)) {
-            throw new Exception("tried to select rendezvous we don't have");
+            throw new Exception("Le rendez-vous selectionne n'est pas disponible");
         }
         convocation.accepter(rendezVous, null);
         convocationRepository.save(convocation);
@@ -125,13 +125,13 @@ public class ConvocationService {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
         if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new Exception("No auth");
+            throw new Exception("Non autorise");
         }
         if (convocation.estResolu()) {
-            throw new Exception("convocation already resolved");
+            throw new Exception("La convocation est deja resolue");
 		}
         if (!convocation.estDestineAEtudiant(actorEmail)) {
-            throw new AuthenticationException("No auth");
+            throw new AuthenticationException("Non autorise");
         }
 
         convocation.refuser(motif);
@@ -142,7 +142,7 @@ public class ConvocationService {
 
     private void validerRendezVous(List<RendezVousDto> rendezVousPossibles) throws Exception {
         if (rendezVousPossibles == null || rendezVousPossibles.isEmpty()) {
-            throw new Exception("rendezvous must have at least one entry");
+            throw new Exception("La liste des rendez-vous doit contenir au moins un element");
         }
         for (RendezVousDto dto : rendezVousPossibles) {
             if (dto == null || dto.lieu() == null || dto.lieu().isBlank()) {

@@ -229,4 +229,246 @@ class ConvocationServiceTest {
                 assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
                 assertEquals(2, candidature.getConvocations().size());
         }
+
+    @Test
+    void getConvocationsEtudiant_succes() {
+        // Arrange
+        when(convocationRepository.findByEtudiantEmail("etudiant@test.com")).thenReturn(List.of(convocation));
+
+        // Act
+        List<ConvocationDto> dtos = convocationService.getConvocationsEtudiant("etudiant@test.com");
+
+        // Assert
+        assertEquals(1, dtos.size());
+        verify(convocationRepository).findByEtudiantEmail("etudiant@test.com");
+    }
+
+    @Test
+    void getConvocationsAccepteesEtudiant_succes() {
+        // Arrange
+        when(convocationRepository.findByEtudiantEmail("etudiant@test.com")).thenReturn(List.of(convocation));
+
+        // Act
+        List<ConvocationDto> dtos = convocationService.getConvocationsAccepteesEtudiant("etudiant@test.com");
+
+        // Assert
+        assertEquals(1, dtos.size());
+        verify(convocationRepository).findByEtudiantEmail("etudiant@test.com");
+    }
+
+    @Test
+    void getConvocationsEmployeur_sansAnnee() {
+        // Arrange
+        when(convocationRepository.findByEmployeurEmail("employeur@test.com")).thenReturn(List.of(convocation));
+
+        // Act
+        List<ConvocationDto> dtos = convocationService.getConvocationsEmployeur("employeur@test.com");
+
+        // Assert
+        assertEquals(1, dtos.size());
+        verify(convocationRepository).findByEmployeurEmail("employeur@test.com");
+    }
+
+    @Test
+    void getConvocationsEmployeur_avecAnnee_filtreCorrectement() {
+        // Arrange
+        offreStage.setAnnee(2026);
+        when(convocationRepository.findByEmployeurEmail("employeur@test.com")).thenReturn(List.of(convocation));
+
+        // Act
+        List<ConvocationDto> dtos2026 = convocationService.getConvocationsEmployeur("employeur@test.com", 2026);
+        List<ConvocationDto> dtos2025 = convocationService.getConvocationsEmployeur("employeur@test.com", 2025);
+
+        // Assert
+        assertEquals(1, dtos2026.size());
+        assertTrue(dtos2025.isEmpty());
+    }
+
+    @Test
+    void getToutesConvocations_sansAnnee() {
+        // Arrange
+        when(convocationRepository.findAll()).thenReturn(List.of(convocation));
+
+        // Act
+        List<ConvocationDto> dtos = convocationService.getToutesConvocations();
+
+        // Assert
+        assertEquals(1, dtos.size());
+        verify(convocationRepository).findAll();
+    }
+
+    @Test
+    void getToutesConvocations_avecAnnee_filtreCorrectement() {
+        // Arrange
+        offreStage.setAnnee(2026);
+        when(convocationRepository.findAll()).thenReturn(List.of(convocation));
+
+        // Act
+        List<ConvocationDto> dtos2026 = convocationService.getToutesConvocations(2026);
+        List<ConvocationDto> dtos2025 = convocationService.getToutesConvocations(2025);
+
+        // Assert
+        assertEquals(1, dtos2026.size());
+        assertTrue(dtos2025.isEmpty());
+    }
+
+    @Test
+    void creerConvocation_candidatureNonTrouvee_lanceException() {
+        // Arrange
+        when(candidatureRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.creerConvocation("employeur@test.com", 99L, List.of(), "msg")
+        );
+        assertTrue(e.getMessage().contains("Candidature non trouvee"));
+    }
+
+    @Test
+    void creerConvocation_listeRendezVousVide_lanceException() {
+        // Arrange
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), List.of(), "msg")
+        );
+        assertTrue(e.getMessage().contains("La liste des rendez-vous doit contenir au moins un element"));
+    }
+
+    @Test
+    void creerConvocation_listeRendezVousNulle_lanceException() {
+        // Arrange
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), null, "msg")
+        );
+        assertTrue(e.getMessage().contains("La liste des rendez-vous doit contenir au moins un element"));
+    }
+
+    @Test
+    void creerConvocation_lieuInvalide_lanceException() {
+        // Arrange
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+        List<RendezVousDto> dtos = List.of(new RendezVousDto(Instant.MAX, ""));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "msg")
+        );
+        assertTrue(e.getMessage().contains("Le lieu doit etre specifie"));
+    }
+
+    @Test
+    void creerConvocation_datePassee_lanceException() {
+        // Arrange
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+        List<RendezVousDto> dtos = List.of(new RendezVousDto(Instant.MIN, "Bureau"));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "msg")
+        );
+        assertTrue(e.getMessage().contains("La date doit etre dans le futur"));
+    }
+
+    @Test
+    void accepterConvocation_convocationNonTrouvee_lanceException() {
+        // Arrange
+        when(convocationRepository.findWithEmployeurAndEtudiantById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.accepterConvocation("etudiant@test.com", 99L, RendezVousDto.create(goodRendezVous))
+        );
+        assertTrue(e.getMessage().contains("Convocation non trouvee"));
+    }
+
+    @Test
+    void accepterConvocation_nonDestineeAEtudiant_lanceException() {
+        // Arrange
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId())).thenReturn(Optional.of(convocation));
+
+        // Act & Assert
+        assertThrows(AuthenticationException.class, () ->
+                convocationService.accepterConvocation("autre@test.com", convocation.getId(), RendezVousDto.create(goodRendezVous))
+        );
+    }
+
+    @Test
+    void accepterConvocation_dejaResolue_lanceException() {
+        // Arrange
+        ReflectionTestUtils.setField(convocation, "statut", StatutConvocation.ACCEPTEE);
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId())).thenReturn(Optional.of(convocation));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), RendezVousDto.create(goodRendezVous))
+        );
+        assertTrue(e.getMessage().contains("La convocation est deja resolue"));
+    }
+
+    @Test
+    void accepterConvocation_rendezVousNul_lanceException() {
+        // Arrange
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId())).thenReturn(Optional.of(convocation));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), null)
+        );
+        assertTrue(e.getMessage().contains("Le rendez-vous selectionne n'est pas disponible"));
+    }
+
+    @Test
+    void accepterConvocation_rendezVousNonDansListe_lanceException() {
+        // Arrange
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId())).thenReturn(Optional.of(convocation));
+        RendezVousDto inconnu = new RendezVousDto(Instant.MAX, "Mars");
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.accepterConvocation(etudiant.getEmail(), convocation.getId(), inconnu)
+        );
+        assertTrue(e.getMessage().contains("Le rendez-vous selectionne n'est pas disponible"));
+    }
+
+    @Test
+    void refuserConvocation_convocationNonTrouvee_lanceException() {
+        // Arrange
+        when(convocationRepository.findWithEmployeurAndEtudiantById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.refuserConvocation("etudiant@test.com", 99L, "motif")
+        );
+        assertTrue(e.getMessage().contains("Convocation non trouvee"));
+    }
+
+    @Test
+    void refuserConvocation_nonDestineeAEtudiant_lanceException() {
+        // Arrange
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId())).thenReturn(Optional.of(convocation));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.refuserConvocation("autre@test.com", convocation.getId(), "motif")
+        );
+        assertTrue(e.getMessage().contains("Non autorise"));
+    }
+
+    @Test
+    void refuserConvocation_dejaResolue_lanceException() {
+        // Arrange
+        ReflectionTestUtils.setField(convocation, "statut", StatutConvocation.REFUSEE);
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId())).thenReturn(Optional.of(convocation));
+
+        // Act & Assert
+        Exception e = assertThrows(Exception.class, () ->
+                convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "motif")
+        );
+        assertTrue(e.getMessage().contains("La convocation est deja resolue"));
+    }
 }
