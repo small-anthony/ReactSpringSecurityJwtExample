@@ -134,15 +134,15 @@ export default function ModalCreerConvocation({
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl flex flex-col gap-4 max-h-[90vh]">
-                <h2 className="text-xl font-bold text-gray-900">
+        <div className="ds-modal-backdrop">
+            <div className="ds-modal-panel max-w-lg p-6 flex flex-col gap-4 max-h-[90vh]">
+                <h2 className="text-xl font-bold text-slate-900">
                     {t("candidatures_offre.modal_convoquer_title")}
                 </h2>
 
-                <div className="bg-gray-100 rounded-xl p-3 flex flex-col gap-3 max-h-72 overflow-y-auto">
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 flex flex-col gap-3 max-h-72 overflow-y-auto">
                     {finalRendezVous.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-6 text-gray-400 gap-2">
+                        <div className="flex flex-col items-center justify-center py-6 text-slate-400 gap-2">
                             <Clock className="w-6 h-6" />
                             <p className="text-sm">{t('candidatures_offre.create_rendezvous')}</p>
                         </div>
@@ -162,26 +162,26 @@ export default function ModalCreerConvocation({
                     <button
                         type="button"
                         onClick={onInsert}
-                        className="w-full py-2 bg-blue-50 border border-blue-200 text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-100 cursor-pointer"
+                        className="btn-outline w-full py-2"
                     >
                         {t("candidatures_offre.add_slot")}
                     </button>
                 </div>
 
-                <div className="relative flex items-start bg-gray-100 rounded-xl p-3">
-                    <Mail className="w-4 h-4 text-gray-400 mt-1 pointer-events-none" />
+                <div className="relative flex items-start bg-slate-50 border border-slate-200/80 rounded-xl p-3">
+                    <Mail className="w-4 h-4 text-slate-400 mt-1 pointer-events-none" />
                     <textarea
                         ref={messageRef}
-                        className="w-full pl-2 text-sm bg-transparent focus:outline-none resize-none h-16 placeholder:text-gray-400"
+                        className="w-full pl-2 text-sm bg-transparent focus:outline-none resize-none h-16 placeholder:text-slate-400 text-slate-900"
                         placeholder={t('placeholder.message')}
                     />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-gray-100">
+                <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer"
+                        className="btn-secondary"
                     >
                         {t("common.cancel")}
                     </button>
@@ -189,7 +189,7 @@ export default function ModalCreerConvocation({
                         type="button"
                         onClick={onSubmit}
                         disabled={!peutConfirmer}
-                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                        className="btn-success"
                     >
                         {t("common.confirm")}
                     </button>
