@@ -72,8 +72,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         @Override
         public void run(String... args) throws Exception {
                 try {
-                        String bibPass = passwordEncoder != null ? passwordEncoder.encode("bib") : "bib";
-                        String defaultPass = passwordEncoder != null ? passwordEncoder.encode("password") : "password";
+                        String bibPass = "bib";
+                        String defaultPass = "password";
+                        if (passwordEncoder != null) {
+                                String encBib = passwordEncoder.encode("bib");
+                                if (encBib != null) bibPass = encBib;
+                                String encDefault = passwordEncoder.encode("password");
+                                if (encDefault != null) defaultPass = encDefault;
+                        }
 
                         byte[] cvBytes = chargerCvDemo();
 

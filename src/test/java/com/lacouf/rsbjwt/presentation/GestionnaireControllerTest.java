@@ -10,6 +10,13 @@ import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.AssignationProfesseurRequest;
+import com.lacouf.rsbjwt.service.dto.AssignationProfesseurResponseDto;
+import com.lacouf.rsbjwt.service.dto.EtudiantPourAssignationDto;
+import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
+import com.lacouf.rsbjwt.service.dto.ProfesseurPourAssignationDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,11 +41,48 @@ public class GestionnaireControllerTest {
     @InjectMocks
     private GestionnaireController gestionnaireController;
 
+    private CvDto createDummyCvDto() {
+        return new CvDto(1L, StatusAcceptation.EN_ATTENTE, null, 1L, "Sophie", "Martin", 123456);
+    }
+
+    private OffreStageDto createDummyOffreStageDto() {
+        return new OffreStageDto(
+                1, "Dev Web", "Description", "CGI",
+                StatusAcceptation.EN_ATTENTE, null,
+                "informatique", "25$/h", "15 sem", "Java",
+                List.of(), 2026
+        );
+    }
+
+    private RapportEtudiantDto createDummyRapportEtudiantDto() {
+        return new RapportEtudiantDto(
+                1, "Sophie", "Martin", "sophie@test.com", 123456, "informatique", List.of()
+        );
+    }
+
+    private EtudiantPourAssignationDto createDummyEtudiantDto() {
+        return new EtudiantPourAssignationDto(
+                1L, "Sophie", "Martin", "sophie@test.com", 123456, "informatique",
+                true, "Dev Web", "CGI", null, false, List.of()
+        );
+    }
+
+    private ProfesseurPourAssignationDto createDummyProfesseurDto() {
+        return new ProfesseurPourAssignationDto(
+                10L, "Martin", "Tremblay", "martin@test.com", 2L, false, 5
+        );
+    }
+
+    private AssignationProfesseurResponseDto createDummyAssignationResponseDto() {
+        ProfesseurDto profDto = new ProfesseurDto(10, "Martin", "Tremblay", "martin@test.com", Role.PROFESSEUR);
+        return AssignationProfesseurResponseDto.succes(createDummyEtudiantDto(), profDto, "Succes", null);
+    }
+
     @Test
     void accepterCv_shouldReturnCreatedCv() throws Exception {
 //        ARRANGE
         DecisionCvRequest request = new DecisionCvRequest(1L, null);
-        CvDto cvDto = mock(CvDto.class);
+        CvDto cvDto = createDummyCvDto();
 
         when(gestionnaireService.accepterCv(request.id())).thenReturn(cvDto);
 
@@ -54,7 +98,7 @@ public class GestionnaireControllerTest {
     void refuseCv_shouldReturnCreatedCv() throws Exception {
 //        ARRANGE
         DecisionCvRequest request = new DecisionCvRequest(1L, "Refusé pour des raisons spécifiques");
-        CvDto cvDto = mock(CvDto.class);
+        CvDto cvDto = createDummyCvDto();
 
         when(gestionnaireService.refuserCv(request.id(), request.message())).thenReturn(cvDto);
 
@@ -85,7 +129,7 @@ public class GestionnaireControllerTest {
     @Test
     void getCvEnAttente_shouldReturnOk() {
 //        ARRANGE
-        List<CvDto> cvList = List.of(mock(CvDto.class), mock(CvDto.class));
+        List<CvDto> cvList = List.of(createDummyCvDto(), createDummyCvDto());
 
         when(gestionnaireService.getCvEnAttente()).thenReturn(cvList);
 
@@ -132,7 +176,7 @@ public class GestionnaireControllerTest {
     void accepterOffreStage_shouldReturnOk() throws Exception {
 //        ARRANGE
         AcceptationOffreDto request = new AcceptationOffreDto(1L, List.of(2L));
-        OffreStageDto offreDto = mock(OffreStageDto.class);
+        OffreStageDto offreDto = createDummyOffreStageDto();
 
         when(gestionnaireService.accepterOffreStage(1L, List.of(2L))).thenReturn(offreDto);
 
@@ -163,7 +207,7 @@ public class GestionnaireControllerTest {
     @Test
     void getOffresEnAttente_shouldReturnOk() throws Exception {
 //        ARRANGE
-        List<OffreStageDto> liste = List.of(mock(OffreStageDto.class));
+        List<OffreStageDto> liste = List.of(createDummyOffreStageDto());
 
         when(gestionnaireService.getOffresEnAttente()).thenReturn(liste);
 
@@ -178,7 +222,7 @@ public class GestionnaireControllerTest {
     @Test
     void getOffresEnAttente_avecAnnee_shouldReturnOk() {
 //        ARRANGE
-        List<OffreStageDto> liste = List.of(mock(OffreStageDto.class));
+        List<OffreStageDto> liste = List.of(createDummyOffreStageDto());
         when(gestionnaireService.getOffresEnAttente(2025)).thenReturn(liste);
 
 //        ACT
@@ -192,7 +236,7 @@ public class GestionnaireControllerTest {
     @Test
     void getToutesOffres_avecAnnee_shouldReturnOk() {
 //        ARRANGE
-        List<OffreStageDto> liste = List.of(mock(OffreStageDto.class));
+        List<OffreStageDto> liste = List.of(createDummyOffreStageDto());
         when(gestionnaireService.getToutesOffres(2025)).thenReturn(liste);
 
 //        ACT
@@ -221,7 +265,7 @@ public class GestionnaireControllerTest {
     void refuserOffreStage_shouldReturnOk() throws Exception {
 //        ARRANGE
         RejetOffreDto request = new RejetOffreDto(1L, "Refusé");
-        OffreStageDto offreDto = mock(OffreStageDto.class);
+        OffreStageDto offreDto = createDummyOffreStageDto();
 
         when(gestionnaireService.refuserOffreStage(1L, "Refusé")).thenReturn(offreDto);
 
@@ -266,7 +310,7 @@ public class GestionnaireControllerTest {
     @Test
     void getTousLesEtudiants_shouldReturnOk() {
         // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
 
         when(gestionnaireService.getTousLesEtudiants()).thenReturn(liste);
 
@@ -281,7 +325,7 @@ public class GestionnaireControllerTest {
     @Test
     void getEtudiantsSansConvocation_shouldReturnOk() {
         // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
 
         when(gestionnaireService.getEtudiantsSansConvocation(null)).thenReturn(liste);
 
@@ -296,7 +340,7 @@ public class GestionnaireControllerTest {
     @Test
     void getEtudiantsEnAttenteEntrevue_shouldReturnOk() {
         // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
 
         when(gestionnaireService.getEtudiantsEnAttenteEntrevue(null)).thenReturn(liste);
 
@@ -311,7 +355,7 @@ public class GestionnaireControllerTest {
     @Test
     void getEtudiantsEnAttenteReponse_shouldReturnOk() {
         // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
 
         when(gestionnaireService.getEtudiantsEnAttenteReponse(null)).thenReturn(liste);
 
@@ -326,7 +370,7 @@ public class GestionnaireControllerTest {
     @Test
     void getEtudiantsTrouveStage_shouldReturnOk() {
         // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
 
         when(gestionnaireService.getEtudiantsTrouveStage(null)).thenReturn(liste);
 
@@ -339,10 +383,108 @@ public class GestionnaireControllerTest {
     }
 
     @Test
+    void getEtudiantsPourAssignation_shouldReturnOk() {
+        // Arrange
+        List<EtudiantPourAssignationDto> liste = List.of(createDummyEtudiantDto());
+        when(gestionnaireService.getEtudiantsPourAssignation(2026)).thenReturn(liste);
+
+        // Act
+        ResponseEntity<List<EtudiantPourAssignationDto>> response = gestionnaireController.getEtudiantsPourAssignation(2026);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getProfesseursPourAssignation_shouldReturnOk() {
+        // Arrange
+        List<ProfesseurPourAssignationDto> liste = List.of(createDummyProfesseurDto());
+        when(gestionnaireService.getProfesseursPourAssignation("Martin")).thenReturn(liste);
+
+        // Act
+        ResponseEntity<List<ProfesseurPourAssignationDto>> response = gestionnaireController.getProfesseursPourAssignation("Martin");
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void assignerProfesseur_succes_shouldReturnOk() throws Exception {
+        // Arrange
+        AssignationProfesseurRequest request = new AssignationProfesseurRequest(1L, 10L, null);
+        AssignationProfesseurResponseDto dto = createDummyAssignationResponseDto();
+        when(gestionnaireService.assignerProfesseur(1L, 10L, null)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<?> response = gestionnaireController.assignerProfesseur(request);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void assignerProfesseur_erreur_shouldReturnBadRequest() throws Exception {
+        // Arrange
+        AssignationProfesseurRequest request = new AssignationProfesseurRequest(1L, 10L, null);
+        when(gestionnaireService.assignerProfesseur(1L, 10L, null)).thenThrow(new Exception("Erreur assignation"));
+
+        // Act
+        ResponseEntity<?> response = gestionnaireController.assignerProfesseur(request);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur assignation", response.getBody());
+    }
+
+    @Test
+    void modifierAssignationProfesseur_succes_shouldReturnOk() throws Exception {
+        // Arrange
+        AssignationProfesseurRequest request = new AssignationProfesseurRequest(1L, 20L, null);
+        AssignationProfesseurResponseDto dto = createDummyAssignationResponseDto();
+        when(gestionnaireService.assignerProfesseur(1L, 20L, null)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<?> response = gestionnaireController.modifierAssignationProfesseur(request);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void desassignerProfesseur_succes_shouldReturnOk() throws Exception {
+        // Arrange
+        EtudiantPourAssignationDto dto = createDummyEtudiantDto();
+        when(gestionnaireService.desassignerProfesseur(1L)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<?> response = gestionnaireController.desassignerProfesseur(1L);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void desassignerProfesseur_erreur_shouldReturnBadRequest() throws Exception {
+        // Arrange
+        when(gestionnaireService.desassignerProfesseur(1L)).thenThrow(new Exception("Étudiant non trouvé"));
+
+        // Act
+        ResponseEntity<?> response = gestionnaireController.desassignerProfesseur(1L);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Étudiant non trouvé", response.getBody());
+    }
+    @Test
     void getEtudiantsTrouveStage_avecAnnee_shouldReturnOk() {
         // ARRANGE
         int annee = 2026;
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
 
         when(gestionnaireService.getEtudiantsTrouveStage(annee)).thenReturn(liste);
 

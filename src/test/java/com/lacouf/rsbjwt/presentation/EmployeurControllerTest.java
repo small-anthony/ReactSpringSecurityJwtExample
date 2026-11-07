@@ -1,5 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.model.auth.Role;
+
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.presentation.RequestDto.ModifierOffreRequest;
@@ -39,6 +41,10 @@ public class EmployeurControllerTest {
     @InjectMocks
     private EmployeurController employeurController;
 
+    private EmployeurDto createDummyEmployeurDto() {
+        return new EmployeurDto(1, "Valentin", "Dimitrov", "employeur@test.com", Role.EMPLOYEUR, "CGI Inc.", "514-555-1234");
+    }
+
     @Test
     void signUpEmployeur_shouldReturnCreated() throws Exception {
 //        ARRANGE
@@ -51,7 +57,7 @@ public class EmployeurControllerTest {
         request.put("password", "password");
         request.put("passwordConfirmation", "password");
 
-        EmployeurDto employeurDto = mock(EmployeurDto.class);
+        EmployeurDto employeurDto = createDummyEmployeurDto();
 
         when(userAppService.registerEmployeur(
                 "Jimmy",
