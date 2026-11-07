@@ -12,17 +12,15 @@ export default function SignupTabs({ activeTab = "employeur" }) {
   ];
 
   return (
-    <div className="flex rounded-lg bg-gray-100 p-1 mb-6 border border-gray-200">
+    <div className="ds-tabs-bar mb-6">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.key;
         return (
           <Link
             key={tab.key}
             to={tab.to}
-            className={`flex-1 text-center py-2 px-2 sm:px-3 text-xs sm:text-sm font-semibold rounded-md transition duration-150 select-none ${
-              isActive
-                ? "bg-blue-600 text-white shadow"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+            className={`ds-tab ${
+              isActive ? "ds-tab-active" : "ds-tab-inactive"
             }`}
           >
             {t(`signup_tabs.${tab.key}`)}
