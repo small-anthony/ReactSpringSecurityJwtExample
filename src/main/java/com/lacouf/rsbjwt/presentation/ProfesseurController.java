@@ -113,9 +113,6 @@ public class ProfesseurController {
             Authentication authentication,
             @RequestParam(required = false) Integer annee) {
         try {
-            if (professeurService == null) {
-                return ResponseEntity.ok(List.of());
-            }
             String email = authentication != null ? authentication.getName() : null;
             return ResponseEntity.ok(professeurService.getEtudiantsAssignes(email, annee));
         } catch (Exception e) {
@@ -128,9 +125,6 @@ public class ProfesseurController {
             @PathVariable Long id,
             Authentication authentication) {
         try {
-            if (professeurService == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
             String email = authentication != null ? authentication.getName() : null;
             return ResponseEntity.ok(professeurService.getEtudiantDetail(id, email));
         } catch (Exception e) {

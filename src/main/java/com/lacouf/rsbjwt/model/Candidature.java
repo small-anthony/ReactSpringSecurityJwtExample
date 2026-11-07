@@ -68,6 +68,18 @@ public class Candidature {
         convocations.add(convocation);
     }
 
+    public String getTitreOffre() {
+        return offreStage != null ? offreStage.getTitre() : null;
+    }
+
+    public String getNomEntreprise() {
+        return offreStage != null ? offreStage.getNomEntreprise() : null;
+    }
+
+    public Integer getAnneeOffre() {
+        return offreStage != null ? offreStage.getAnnee() : null;
+    }
+
     public boolean appartientAEmployeur(String courriel) {
         return getEmployeur().aPourCourriel(courriel);
     }

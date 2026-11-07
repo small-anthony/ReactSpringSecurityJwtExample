@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
@@ -229,7 +230,7 @@ public class GestionnaireService {
                 : etudiantRepository.findEtudiantsTrouveStage();
 
         return etudiants.stream()
-                .map(EtudiantPourAssignationDto::create)
+                .map(this::toEtudiantPourAssignationDto)
                 .toList();
     }
 
@@ -308,7 +309,7 @@ public class GestionnaireService {
                 : "Le professeur a été assigné avec succès à l'étudiant.";
 
         return AssignationProfesseurResponseDto.succes(
-                EtudiantPourAssignationDto.create(etudiantSauvegarde),
+                toEtudiantPourAssignationDto(etudiantSauvegarde),
                 ProfesseurDto.create(professeur),
                 message,
                 avertissement
@@ -324,6 +325,37 @@ public class GestionnaireService {
                 .orElseThrow(() -> new Exception("Étudiant non trouvé avec l'id : " + etudiantId));
 
         etudiant.setProfesseur(null);
-        return EtudiantPourAssignationDto.create(etudiantRepository.save(etudiant));
+        return toEtudiantPourAssignationDto(etudiantRepository.save(etudiant));
+    }
+
+    private EtudiantPourAssignationDto toEtudiantPourAssignationDto(Etudiant etudiant) {
+        List<Candidature> candidatures = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
+        Candidature stage = null;
+        for (Candidature c : candidatures) {
+            if (c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE) {
+                stage = c;
+                break;
+            }
+        }
+
+        boolean aTrouve = stage != null;
+        String titre = stage != null ? stage.getTitreOffre() : null;
+        String entreprise = stage != null ? stage.getNomEntreprise() : null;
+        ProfesseurDto profDto = etudiant.getProfesseur() != null ? ProfesseurDto.create(etudiant.getProfesseur()) : null;
+
+        return new EtudiantPourAssignationDto(
+                etudiant.getId(),
+                etudiant.getFirstName(),
+                etudiant.getLastName(),
+                etudiant.getEmail(),
+                etudiant.getMatricule(),
+                etudiant.getDiscipline(),
+                aTrouve,
+                titre,
+                entreprise,
+                profDto,
+                profDto != null,
+                CandidatureDto.create(candidatures)
+        );
     }
 }
