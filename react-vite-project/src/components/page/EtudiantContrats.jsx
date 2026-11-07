@@ -24,7 +24,7 @@ import {
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
-export default function EtudiantContrats({ embedMode = false, onPendingCountChange }) {
+export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
 
@@ -398,13 +398,13 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 </div>
                             )}
 
-                            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
                                         id={`btn-voir-contrat-${c.id}`}
                                         onClick={() => handleVoirDocument(c.id)}
-                                        className="inline-flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-blue-100 transition cursor-pointer"
+                                        className="btn-outline py-2 px-3.5 text-xs"
                                     >
                                         <Eye className="w-3.5 h-3.5" />
                                         <span>{t("contrats_etudiant.view_button")}</span>
@@ -414,7 +414,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                         type="button"
                                         id={`btn-telecharger-contrat-${c.id}`}
                                         onClick={() => handleTelechargerDocument(c.id)}
-                                        className="inline-flex items-center gap-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-lg text-xs font-semibold transition cursor-pointer"
+                                        className="btn-secondary py-2 px-3.5 text-xs"
                                     >
                                         <Download className="w-3.5 h-3.5" />
                                         <span>{t("contrats_etudiant.download_button")}</span>
@@ -422,8 +422,8 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 </div>
 
                                 {c.statut === "REFUSE" ? (
-                                    <div className="inline-flex items-center gap-1.5 text-rose-700 bg-rose-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-rose-200">
-                                        <XCircle className="w-4 h-4 text-rose-600" />
+                                    <div className="inline-flex items-center gap-1.5 text-red-700 bg-red-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-red-200">
+                                        <XCircle className="w-4 h-4 text-red-600" />
                                         <span>{t("contrats_etudiant.refused_badge_text")}</span>
                                     </div>
                                 ) : !c.signeParEtudiant ? (
@@ -432,7 +432,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                             type="button"
                                             id={`btn-refuser-contrat-${c.id}`}
                                             onClick={() => setContratARefuser(c)}
-                                            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition cursor-pointer"
+                                            className="btn-danger-soft py-2 px-4 text-xs"
                                         >
                                             <XCircle className="w-4 h-4" />
                                             <span>{t("contrats_etudiant.refuse_button")}</span>
@@ -442,7 +442,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                             type="button"
                                             id={`btn-signer-contrat-${c.id}`}
                                             onClick={() => setSigningContrat(c)}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-xs transition hover:shadow cursor-pointer"
+                                            className="btn-primary py-2.5 px-5"
                                         >
                                             <PenTool className="w-4 h-4" />
                                             <span>{t("contrats_etudiant.sign_button")}</span>
