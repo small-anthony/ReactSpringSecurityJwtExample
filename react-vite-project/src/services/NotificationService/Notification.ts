@@ -2,7 +2,6 @@
 import {useNavigate} from "react-router-dom";
 import {useCallback, useContext} from "react";
 import {AuthServiceContext, UserRole} from "../AuthService";
-import notificationService, {NotificationServiceContext} from "./index";
 
 export enum NotificationType {
     Informative = "INFORMATIVE",
