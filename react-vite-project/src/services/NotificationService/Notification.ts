@@ -1,6 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useCallback, useContext} from "react";
 import {AuthServiceContext, UserRole} from "../AuthService";
+import {NotificationServiceContext} from "./index";
 
 /// Le type de notification qu'on reçoit. Aucune implication de fonctionnalité.
 export enum NotificationType {
@@ -50,7 +51,7 @@ export default class Notification {
     }
 }
 
-type _notificationActionHandler = (notification: Notification, payload: any) => (() => any);
+type _notificationActionHandler = (notification: Notification, payload: any) => (() => any | Promise<void>);
 /**
  * Table de fonctions pour générer un handler pour les notifications.
  *
@@ -92,12 +93,14 @@ const _notificationActionToHandler: Record<NotificationActionType, _notification
     [NotificationActionType.SendResource]: (notification, payload) => {
         // Hooks
         const authService = useContext(AuthServiceContext);
+        const notificationService = useContext(NotificationServiceContext);
         const navigate = useNavigate();
         const userData = authService.getUserData();
 
         // Callback
         const { type } = payload;
-        return () => {
+        return async () => {
+            await notificationService.dismissNotification()
             switch (type) {
                 case NotificationResourceType.OffreStage: {
                     switch (userData.role) {

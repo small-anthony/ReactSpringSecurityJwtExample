@@ -42,7 +42,7 @@ const NotificationService = ({ children }) => {
 
             const response = await APIHelper.post("/notifications/dismiss", authService.buildAuthHeader(), {id: id});
             if(!response.ok) {
-                return;
+                throw new Error(await response.text())
             }
         }
     }
