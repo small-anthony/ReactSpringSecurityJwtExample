@@ -21,7 +21,7 @@ public record NotificationDTO(
 				notification.getType(),
 				notification.getMessage(),
 				NotificationActionDTO.create(notification.getAction()),
-				notification.getDateDismissed(),
+				notification.getDateCreation(),
 				notification.isDismissed()
 		);
 	}
