@@ -3,6 +3,8 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../services/AuthService.tsx";
 import { useTranslation } from "react-i18next";
 import "./Header.css";
+import {BellIcon} from "lucide-react";
+import {NotificationButton} from "./modal/NotificationPopover.jsx";
 
 function Header({ user }) {
   const authService = useContext(AuthServiceContext);
@@ -126,18 +128,15 @@ function Header({ user }) {
 
               {user ? (
                   <div className="flex items-center gap-3 pl-2">
+                    <NotificationButton/>
                     <div className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs shadow-xs">
                       <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
                         {initials || "U"}
                       </div>
-                      <span className="font-semibold text-gray-800">
-                    {user.firstName} {user.lastName}
-                  </span>
                       <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                    {formatRole(user?.role?.toString())}
-                  </span>
+                        {formatRole(user?.role?.toString())}
+                      </span>
                     </div>
-
                     <button
                         type="button"
                         onClick={logOut}
@@ -281,12 +280,12 @@ function Header({ user }) {
               {user ? (
                   <div className="pt-3 border-t border-gray-100 space-y-3">
                     <div className="flex items-center gap-2 text-sm text-gray-800">
-                <span className="font-semibold">
-                  {user.firstName} {user.lastName}
-                </span>
+                      <span className="font-semibold">
+                        {user.firstName} {user.lastName}
+                      </span>
                       <span className="px-2 py-0.5 text-xs font-bold uppercase rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                  {formatRole(user?.role?.toString())}
-                </span>
+                        {formatRole(user?.role?.toString())}
+                      </span>
                     </div>
                     <button
                         type="button"

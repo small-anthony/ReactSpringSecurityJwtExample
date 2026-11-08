@@ -829,5 +829,8 @@
   "session": {
     "toutes": "Toutes les sessions",
     "libelle": "Hiver {{annee}}"
+  },
+  "notifications": {
+    "titre": "Mes notifications"
   }
 }

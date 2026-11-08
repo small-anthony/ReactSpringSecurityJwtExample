@@ -3,7 +3,7 @@ import {AuthServiceContext, IAuthService} from "../AuthService";
 import APIHelper from "../../utils/APIHelper";
 import Notification from "./Notification";
 
-interface INotificationService {
+export interface INotificationService {
     refreshNotifications(): Promise<true>;
     getNotifications(): Notification[];
     dismissNotification(id: number): Promise<void>;
