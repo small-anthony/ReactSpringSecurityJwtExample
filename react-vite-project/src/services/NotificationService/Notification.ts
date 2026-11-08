@@ -1,8 +1,8 @@
-/// Le type de notification qu'on reçoit. Aucune implication de fonctionalité.
 import {useNavigate} from "react-router-dom";
 import {useCallback, useContext} from "react";
 import {AuthServiceContext, UserRole} from "../AuthService";
 
+/// Le type de notification qu'on reçoit. Aucune implication de fonctionnalité.
 export enum NotificationType {
     Informative = "INFORMATIVE",
     Success = "SUCCESS",
@@ -10,7 +10,7 @@ export enum NotificationType {
     ActionRequired = "ACTION_REQUIRED",
 }
 
-/// Le type d'action que cette notification permet. Modifie la fonctionalité.
+/// Le type d'action que cette notification permet. Modifie la fonctionnalité.
 export enum NotificationActionType {
     ViewResource = "VIEW_RESOURCE",
     SendResource = "SEND_RESOURCE",
