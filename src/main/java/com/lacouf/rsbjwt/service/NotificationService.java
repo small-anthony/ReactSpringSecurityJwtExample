@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class NotificationService {
 		this.notificationRepository = notificationRepository;
 	}
 
+	@Transactional(readOnly = true)
 	public List<NotificationDTO> getNotificationsForEmail(String email) throws Exception {
 		UserApp user = userAppRepository.findUserAppByEmail(email)
 				.orElseThrow(Exception::new);
@@ -28,13 +30,15 @@ public class NotificationService {
 		return NotificationDTO.create(notifications);
 	}
 
+	@Transactional
 	public void pushNotification(Notification notification, Long ownerId) {
 		UserApp userReference = userAppRepository.getReferenceById(ownerId);
 		notification.setOwner(userReference);
 		notificationRepository.save(notification);
 	}
 
-	public void dismissNotification(Long notificationId, String actorEmail) throws Exception {
+	@Transactional
+	public NotificationDTO dismissNotification(Long notificationId, String actorEmail) throws Exception {
 		Notification notification = notificationRepository.findByIdWithOwner(notificationId)
 				.orElseThrow(Exception::new);
 
@@ -43,6 +47,6 @@ public class NotificationService {
 		}
 
 		notification.dismiss();
-		notificationRepository.save(notification);
+		return NotificationDTO.create(notificationRepository.save(notification));
 	}
 }
