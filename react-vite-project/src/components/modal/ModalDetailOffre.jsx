@@ -31,7 +31,14 @@ function extraireStatutCandidature(candidature) {
     return candidature.statut || candidature.status || null;
 }
 
-export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerSucces, candidature }) {
+export default function ModalDetailOffre({
+    offre,
+    onClose,
+    aPostule,
+    onPostulerSucces,
+    candidature,
+    contrats = []
+}) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
@@ -44,8 +51,15 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
     const statutCand = extraireStatutCandidature(cand);
     const messageReponse = cand ? cand.messageReponse : null;
     const estRefusee = statutCand === "REFUSEE";
-    const estEmbauchee = statutCand === "EMBAUCHEE";
     const idOffre = offre ? offre.id : null;
+    const contratAssocie = contrats.find(
+        (c) => c.offreId === idOffre || String(c.offreId) === String(idOffre)
+    );
+    const aRefuseContrat = contratAssocie && contratAssocie.statut === "REFUSE";
+    const aSigneContrat =
+        contratAssocie &&
+        (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE");
+    const estEmbauchee = statutCand === "EMBAUCHEE" && !aRefuseContrat;
 
     useEffect(() => {
         setHasApplied(aPostule);
@@ -123,7 +137,21 @@ export default function ModalDetailOffre({ offre, onClose, aPostule, onPostulerS
                     </button>
                 </div>
 
-                {estEmbauchee && (
+                {aRefuseContrat && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm flex items-center gap-2.5">
+                        <XCircle className="w-5 h-5 text-slate-500 shrink-0" strokeWidth={1.5} />
+                        <span className="font-semibold">{t("contrats_etudiant.refused_badge_text")}</span>
+                    </div>
+                )}
+
+                {aSigneContrat && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" strokeWidth={1.5} />
+                        <span className="font-semibold">{t("contrats_etudiant.status_stage_trouve")}</span>
+                    </div>
+                )}
+
+                {estEmbauchee && !aSigneContrat && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" strokeWidth={1.5} />
                         <span className="font-semibold">{t("candidature_etudiant.status.EMBAUCHEE")}</span>

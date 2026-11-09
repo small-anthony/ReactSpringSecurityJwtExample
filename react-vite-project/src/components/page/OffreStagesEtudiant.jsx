@@ -12,6 +12,7 @@ import EtudiantContrats from "./EtudiantContrats.jsx";
 import TableauDeBordEtudiant, {
     construireActionsPrioritaires,
     construireStatutParcours,
+    estConvocationActive,
     extrairePremiereCandidature,
     obtenirStatutCandidature,
     trouverContratSigneActif
@@ -214,18 +215,26 @@ export default function OffreStagesEtudiant() {
     }, [contrats, contratsASigner]);
 
     const convocationsEnAttente = useMemo(() => {
-        return convocations.filter((c) => c.statut === "EN_ATTENTE");
-    }, [convocations]);
+        return convocations.filter(
+            (c) => c.statut === "EN_ATTENTE" && estConvocationActive(c, contrats, candidaturesParOffre)
+        );
+    }, [convocations, contrats, candidaturesParOffre]);
 
     const convocationsConfirmees = useMemo(() => {
-        return convocations.filter((c) => c.statut === "ACCEPTEE");
-    }, [convocations]);
+        return convocations.filter(
+            (c) => c.statut === "ACCEPTEE" && estConvocationActive(c, contrats, candidaturesParOffre)
+        );
+    }, [convocations, contrats, candidaturesParOffre]);
+
+    const contratsRefuses = useMemo(() => {
+        return contrats.filter((c) => c.statut === "REFUSE");
+    }, [contrats]);
 
     const candidaturesEmbauchees = useMemo(() => {
         return mesCandidaturesOffres.filter(
-            (offre) => obtenirStatutCandidature(offre, candidaturesParOffre) === "EMBAUCHEE"
+            (offre) => obtenirStatutCandidature(offre, candidaturesParOffre, contrats) === "EMBAUCHEE"
         );
-    }, [mesCandidaturesOffres, candidaturesParOffre]);
+    }, [mesCandidaturesOffres, candidaturesParOffre, contrats]);
 
     const journeyStatus = useMemo(() => {
         return construireStatutParcours({
@@ -236,6 +245,8 @@ export default function OffreStagesEtudiant() {
             convocationsConfirmees,
             cvState,
             mesCandidaturesOffres,
+            candidaturesParOffre,
+            contrats,
             t
         });
     }, [
@@ -246,6 +257,8 @@ export default function OffreStagesEtudiant() {
         convocationsConfirmees,
         cvState,
         mesCandidaturesOffres,
+        candidaturesParOffre,
+        contrats,
         t
     ]);
 
@@ -349,6 +362,18 @@ export default function OffreStagesEtudiant() {
     };
 
     const getCandidatureBadge = (offreId) => {
+        const contratAssocie = contrats.find(
+            (c) => c.offreId === offreId || String(c.offreId) === String(offreId)
+        );
+        if (contratAssocie && contratAssocie.statut === "REFUSE") {
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                    <XCircle className="w-3 h-3 text-slate-500" />
+                    {t("etudiant_dashboard.applications.status_contract_refused")}
+                </span>
+            );
+        }
+
         const cand = candidaturesParOffre[offreId];
         const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE";
 
@@ -519,10 +544,15 @@ export default function OffreStagesEtudiant() {
                 ) : ongletActif === "contrats" ? (
                     <EtudiantContrats
                         embedMode={true}
-                        onPendingCountChange={(restant, signed) => {
+                        onPendingCountChange={(restant, signed, updatedContrat) => {
                             setCountPendingContrats(restant);
                             if (typeof signed === "boolean") {
                                 setATrouveStage(signed);
+                            }
+                            if (updatedContrat) {
+                                setContrats((prev) =>
+                                    prev.map((c) => (c.id === updatedContrat.id ? updatedContrat : c))
+                                );
                             }
                         }}
                     />
@@ -539,6 +569,7 @@ export default function OffreStagesEtudiant() {
                         mesCandidaturesOffres={mesCandidaturesOffres}
                         offresDisponiblesNonPostulees={offresDisponiblesNonPostulees}
                         candidaturesParOffre={candidaturesParOffre}
+                        contrats={contrats}
                         contratSigneActif={contratSigneActif}
                         convocationsConfirmees={convocationsConfirmees}
                         convocationsEnAttente={convocationsEnAttente}
@@ -738,6 +769,22 @@ export default function OffreStagesEtudiant() {
                                                     </div>
                                                 )}
 
+                                            {ongletActif === "mes_candidatures" &&
+                                                contrats.some(
+                                                    (c) =>
+                                                        (c.offreId === id || String(c.offreId) === String(id)) &&
+                                                        c.statut === "REFUSE"
+                                                ) && (
+                                                    <div className="pb-3">
+                                                        <p className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
+                                                            <XCircle className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                                                            <span className="line-clamp-1">
+                                                                {t("contrats_etudiant.refused_badge_text")}
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                )}
+
                                             <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
                                                 <button
                                                     type="button"
@@ -766,6 +813,7 @@ export default function OffreStagesEtudiant() {
                 aPostule={aPostuleOffreSelectionnee}
                 candidature={candidatureOffreSelectionnee}
                 onPostulerSucces={handlePostulerSucces}
+                contrats={contrats}
             />
         </div>
     );
