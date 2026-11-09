@@ -27,6 +27,16 @@ const DEMO_USERS = [
         color: "purple"
     },
     {
+        name: "Martin Tremblay",
+        company: "Professeur",
+        role: "professeur",
+        email: "professeur@test.com",
+        password: "password",
+        description: "Supervision des étudiants assignés et suivi des demandes de stage",
+        icon: GraduationCap,
+        color: "teal"
+    },
+    {
         name: "Hatim Fakhour",
         company: "Étudiant",
         role: "etudiant",
