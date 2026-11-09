@@ -16,3 +16,36 @@ export async function registerProfesseur(professeurData) {
 
   return response.json();
 }
+
+export async function getEtudiantsAssignes(authHeader, annee = null) {
+  const url = annee
+    ? `${BASE_URL}/professeur/etudiants-assignes?annee=${annee}`
+    : `${BASE_URL}/professeur/etudiants-assignes`;
+  const response = await fetch(url, { headers: authHeader });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la récupération des étudiants assignés");
+  }
+  return response.json();
+}
+
+export async function getEtudiantDetail(etudiantId, authHeader) {
+  const response = await fetch(`${BASE_URL}/professeur/etudiants-assignes/${etudiantId}`, {
+    headers: authHeader,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la récupération des détails de l'étudiant");
+  }
+  return response.json();
+}
+
+export async function getAnneesProfesseur(authHeader) {
+  const response = await fetch(`${BASE_URL}/professeur/annees`, {
+    headers: authHeader,
+  });
+  if (!response.ok) {
+    return [];
+  }
+  return response.json();
+}
