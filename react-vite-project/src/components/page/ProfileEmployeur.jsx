@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {deleteOffreStage, getOffresStages, getAnneesEmployeur} from "../../services/api/OffreStageService.js";
 import {useTranslation} from "react-i18next";
-import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText } from "lucide-react";
+import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText,Users } from "lucide-react";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
@@ -94,7 +94,7 @@ export default function ProfileEmployeur() {
 
     return (
         <main className="w-full max-w-5xl mx-auto my-10 px-4">
-            <div className="flex items-center justify-between gap-4 mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">{t("employeur_home.title")}</h1>
                     <p className="text-gray-500 mt-1">{t("employeur_home.subtitle")}</p>
@@ -112,6 +112,14 @@ export default function ProfileEmployeur() {
                     >
                         <FileText className="w-4 h-4 text-blue-600" />
                         {t("employeur_home.contracts_button", { defaultValue: "Contrats de stage" })}
+                    </Link>
+                    <Link
+                        to="/employeur/stagiaires"
+                        id="btn-nav-stagiaires-employeur"
+                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 inline-flex items-center gap-2"
+                    >
+                        <Users className="w-4 h-4 text-blue-600" />
+                        {t("pagename.stagiaires", { defaultValue: "Mes stagiaires" })}
                     </Link>
                     <Link
                         to="/employeur/creer-offre"
