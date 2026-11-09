@@ -4,7 +4,7 @@ import { X, Check, RotateCcw, PenTool, ShieldCheck, AlertCircle } from "lucide-r
 import { signerContrat } from "../../services/api/ContratAPI.js";
 
 export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess, authHeader, roleLabel }) {
-    const { t } = useTranslation("main");
+    const { t, i18n } = useTranslation("main");
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasDrawn, setHasDrawn] = useState(false);
@@ -96,7 +96,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
 
         canvas.toBlob(async (blob) => {
             if (!blob) {
-                setErreur(t("signature_pad.error_blob", { defaultValue: "Impossible de capturer la signature." }));
+                setErreur(t("signature_pad.error_blob"));
                 setSubmitting(false);
                 return;
             }
@@ -109,7 +109,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                 }
                 onClose();
             } catch (err) {
-                setErreur(err.message || t("signature_pad.error_sign", { defaultValue: "Erreur lors de la signature." }));
+                setErreur(err.message || t("signature_pad.error_sign"));
             } finally {
                 setSubmitting(false);
             }
@@ -119,7 +119,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
     if (!isOpen || !contrat) return null;
 
     const nomCompletEtudiant = `${contrat.etudiantPrenom || ""} ${contrat.etudiantNom || ""}`.trim();
-    const dateAujourdhui = new Date().toLocaleDateString("fr-CA");
+    const dateAujourdhui = new Date().toLocaleDateString(i18n.language?.startsWith("en") ? "en-US" : "fr-CA");
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
@@ -132,7 +132,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                         </div>
                         <div>
                             <h2 className="font-bold text-lg text-gray-900">
-                                {t("signature_pad.title", { defaultValue: "Signer le contrat de stage" })}
+                                {t("signature_pad.title")}
                             </h2>
                             <p className="text-xs text-gray-500">
                                 {contrat.titreOffre} — {contrat.nomEntreprise}
@@ -162,13 +162,13 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                     <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-3.5 flex items-center justify-between text-xs text-gray-700">
                         <div>
                             <p className="font-medium text-gray-500">
-                                {t("signature_pad.signer", { defaultValue: "Signataire" })}
+                                {t("signature_pad.signer")}
                             </p>
                             <p className="font-bold text-gray-900 text-sm">{nomCompletEtudiant}</p>
                         </div>
                         <div className="text-right">
                             <p className="font-medium text-gray-500">
-                                {t("signature_pad.date", { defaultValue: "Date de signature" })}
+                                {t("signature_pad.date")}
                             </p>
                             <p className="font-semibold text-gray-900">{dateAujourdhui}</p>
                         </div>
@@ -178,7 +178,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                {t("signature_pad.draw_label", { defaultValue: "Tracez votre signature ci-dessous :" })}
+                                {t("signature_pad.draw_label")}
                             </label>
                             {hasDrawn && (
                                 <button
@@ -188,7 +188,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                                     className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium transition cursor-pointer"
                                 >
                                     <RotateCcw className="w-3.5 h-3.5" />
-                                    <span>{t("signature_pad.clear", { defaultValue: "Effacer" })}</span>
+                                    <span>{t("signature_pad.clear")}</span>
                                 </button>
                             )}
                         </div>
@@ -211,13 +211,13 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
 
                             
                             <div className="absolute bottom-6 left-6 right-6 border-b border-gray-200 pointer-events-none flex items-center justify-between">
-                                <span className="text-[10px] text-gray-300 select-none pb-0.5">✕ Signature</span>
-                                <span className="text-[10px] text-gray-300 select-none pb-0.5">{roleLabel || t("signature_pad.signataire_label", { defaultValue: "L'étudiant(e)" })}</span>
+                                <span className="text-[10px] text-gray-300 select-none pb-0.5">{t("signature_pad.watermark")}</span>
+                                <span className="text-[10px] text-gray-300 select-none pb-0.5">{roleLabel || t("signature_pad.signataire_label")}</span>
                             </div>
 
                             {!hasDrawn && (
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-300 text-xs">
-                                    <p>{t("signature_pad.placeholder", { defaultValue: "Signez avec votre souris, pavé tactile ou doigt" })}</p>
+                                    <p>{t("signature_pad.placeholder")}</p>
                                 </div>
                             )}
                         </div>
@@ -235,41 +235,38 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                                 className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                             />
                             <span>
-                                {t("signature_pad.consent", {
-                                    defaultValue:
-                                        "Je certifie sur l'honneur avoir pris connaissance de l'ensemble des conditions et des tâches du contrat de stage et j'y appose ma signature électronique légale.",
-                                })}
+                                {t("signature_pad.consent")}
                             </span>
                         </label>
                     </div>
                 </div>
 
                 
-                <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50/80 border-t border-gray-100">
+                <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50/80 border-t border-slate-100">
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={submitting}
-                        className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded-xl transition cursor-pointer"
+                        className="btn-secondary"
                     >
-                        {t("common.cancel", { defaultValue: "Annuler" })}
+                        {t("common.cancel")}
                     </button>
                     <button
                         type="button"
                         id="btn-confirmer-signature"
                         onClick={handleConfirm}
                         disabled={!hasDrawn || !acceptConditions || submitting}
-                        className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+                        className="btn-primary"
                     >
                         {submitting ? (
                             <>
                                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                <span>{t("signature_pad.signing", { defaultValue: "Signature en cours..." })}</span>
+                                <span>{t("signature_pad.signing")}</span>
                             </>
                         ) : (
                             <>
                                 <ShieldCheck className="w-4 h-4" />
-                                <span>{t("signature_pad.confirm", { defaultValue: "Confirmer la signature" })}</span>
+                                <span>{t("signature_pad.confirm")}</span>
                             </>
                         )}
                     </button>

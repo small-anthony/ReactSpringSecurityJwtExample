@@ -24,7 +24,7 @@ import {
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
-export default function EtudiantContrats({ embedMode = false, onPendingCountChange }) {
+export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
 
@@ -32,6 +32,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [succes, setSucces] = useState(null);
+    const [messageRefus, setMessageRefus] = useState(null);
     const [filtre, setFiltre] = useState("TOUS");
     const [signingContrat, setSigningContrat] = useState(null);
     const [contratARefuser, setContratARefuser] = useState(null);
@@ -102,12 +103,13 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
 
     const handleSignatureSuccess = (updatedContrat) => {
         setSucces(t("contrats_etudiant.success_signed"));
+        setMessageRefus(null);
         const updated = contrats.map((c) => (c.id === updatedContrat.id ? updatedContrat : c));
         setContrats(updated);
         if (onPendingCountChange) {
             const restant = updated.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
             const hasSigned = updated.some((c) => c.signeParEtudiant);
-            onPendingCountChange(restant, hasSigned);
+            onPendingCountChange(restant, hasSigned, updatedContrat);
         }
     };
 
@@ -118,13 +120,15 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
             setErreur(null);
             const currentHeader = authService.buildAuthHeader();
             await rejeterContrat(contratARefuser.id, currentHeader);
-            setSucces(t("contrats_etudiant.success_refused"));
+            setMessageRefus(t("contrats_etudiant.success_refused"));
+            setSucces(null);
             const updated = contrats.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c));
             setContrats(updated);
             if (onPendingCountChange) {
                 const restant = updated.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
                 const hasSigned = updated.some((c) => c.signeParEtudiant);
-                onPendingCountChange(restant, hasSigned);
+                const contratRefuse = updated.find((c) => c.id === contratARefuser.id);
+                onPendingCountChange(restant, hasSigned, contratRefuse);
             }
             setContratARefuser(null);
         } catch (err) {
@@ -177,7 +181,6 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
     const countASigner = contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
     const countSignes = contrats.filter((c) => c.signeParEtudiant).length;
     const countRefuses = contrats.filter((c) => c.statut === "REFUSE").length;
-    const aTrouveStage = contrats.some((c) => c.signeParEtudiant);
 
     const content = (
         <div className={embedMode ? "space-y-6" : "max-w-6xl mx-auto space-y-6"}>
@@ -193,20 +196,6 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                     <p className="mt-2 text-base text-[#4B5563] max-w-2xl">
                         {t("contrats_etudiant.subtitle")}
                     </p>
-                </div>
-            )}
-
-            {aTrouveStage && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 shadow-xs">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
-                    <div>
-                        <h4 className="font-bold text-emerald-900 text-sm">
-                            {t("contrats_etudiant.banner_stage_trouve_title")}
-                        </h4>
-                        <p className="text-xs text-emerald-700">
-                            {t("contrats_etudiant.banner_stage_trouve_desc")}
-                        </p>
-                    </div>
                 </div>
             )}
 
@@ -227,6 +216,22 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                         type="button"
                         onClick={() => setSucces(null)}
                         className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer underline"
+                    >
+                        {t("contrats.actions.close")}
+                    </button>
+                </div>
+            )}
+
+            {messageRefus && (
+                <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                        <span className="text-sm font-semibold">{messageRefus}</span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setMessageRefus(null)}
+                        className="text-xs text-rose-700 hover:text-rose-900 font-semibold cursor-pointer underline"
                     >
                         {t("contrats.actions.close")}
                     </button>
@@ -398,13 +403,13 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 </div>
                             )}
 
-                            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
                                         id={`btn-voir-contrat-${c.id}`}
                                         onClick={() => handleVoirDocument(c.id)}
-                                        className="inline-flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-blue-100 transition cursor-pointer"
+                                        className="btn-outline py-2 px-3.5 text-xs"
                                     >
                                         <Eye className="w-3.5 h-3.5" />
                                         <span>{t("contrats_etudiant.view_button")}</span>
@@ -414,7 +419,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                         type="button"
                                         id={`btn-telecharger-contrat-${c.id}`}
                                         onClick={() => handleTelechargerDocument(c.id)}
-                                        className="inline-flex items-center gap-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-lg text-xs font-semibold transition cursor-pointer"
+                                        className="btn-secondary py-2 px-3.5 text-xs"
                                     >
                                         <Download className="w-3.5 h-3.5" />
                                         <span>{t("contrats_etudiant.download_button")}</span>
@@ -422,8 +427,8 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                 </div>
 
                                 {c.statut === "REFUSE" ? (
-                                    <div className="inline-flex items-center gap-1.5 text-rose-700 bg-rose-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-rose-200">
-                                        <XCircle className="w-4 h-4 text-rose-600" />
+                                    <div className="inline-flex items-center gap-1.5 text-red-700 bg-red-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-red-200">
+                                        <XCircle className="w-4 h-4 text-red-600" />
                                         <span>{t("contrats_etudiant.refused_badge_text")}</span>
                                     </div>
                                 ) : !c.signeParEtudiant ? (
@@ -432,7 +437,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                             type="button"
                                             id={`btn-refuser-contrat-${c.id}`}
                                             onClick={() => setContratARefuser(c)}
-                                            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition cursor-pointer"
+                                            className="btn-danger-soft py-2 px-4 text-xs"
                                         >
                                             <XCircle className="w-4 h-4" />
                                             <span>{t("contrats_etudiant.refuse_button")}</span>
@@ -442,7 +447,7 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                             type="button"
                                             id={`btn-signer-contrat-${c.id}`}
                                             onClick={() => setSigningContrat(c)}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-xs transition hover:shadow cursor-pointer"
+                                            className="btn-primary py-2.5 px-5"
                                         >
                                             <PenTool className="w-4 h-4" />
                                             <span>{t("contrats_etudiant.sign_button")}</span>

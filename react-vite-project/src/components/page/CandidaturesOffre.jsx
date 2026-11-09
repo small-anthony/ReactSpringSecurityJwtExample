@@ -12,6 +12,7 @@ import {
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
 import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
+import { DISCIPLINES } from "../../constants/disciplines.js";
 
 const peutConvoquer = (candidature) => candidature.statut === "EN_ATTENTE";
 const peutEmbaucher = (candidature) => candidature.statut === "ACCEPTEE";
@@ -35,10 +36,10 @@ const getMotifRefusConvocation = (candidat) => {
 };
 
 const COULEURS_BADGE = {
-    EN_ATTENTE_REPONSE: "bg-yellow-100 text-yellow-800",
-    ACCEPTEE: "bg-blue-100 text-blue-800",
-    EMBAUCHEE: "bg-green-100 text-green-800",
-    REFUSEE: "bg-red-100 text-red-800",
+    EN_ATTENTE_REPONSE: "bg-amber-50 text-amber-800 border border-amber-200",
+    ACCEPTEE: "bg-blue-50 text-blue-800 border border-blue-200",
+    EMBAUCHEE: "bg-emerald-50 text-emerald-800 border border-emerald-200",
+    REFUSEE: "bg-red-50 text-red-800 border border-red-200",
 };
 
 export default function CandidaturesOffre() {
@@ -46,6 +47,11 @@ export default function CandidaturesOffre() {
     const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
     const { t } = useTranslation("main");
+    const getDisciplineLabel = (valeur) => {
+        if (!valeur) return "";
+        const disc = DISCIPLINES.find((d) => d.value === valeur || d.labelKey === valeur);
+        return disc ? t(`signup_etudiant.disciplines.${disc.labelKey}`) : valeur;
+    };
 
     const [candidatures, setCandidatures] = useState([]);
     const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
@@ -186,28 +192,28 @@ export default function CandidaturesOffre() {
     if (categorie === "refusees") candidaturesAffichees = candidaturesRefusees;
 
     return (
-        <main className="w-full max-w-7xl mx-auto my-10 px-4">
+        <main className="w-full max-w-7xl mx-auto my-8 sm:my-10 px-4">
             <div className="mb-8">
                 <button
                     type="button"
                     onClick={() => navigate("/employeur")}
-                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer"
+                    className="btn-secondary"
                 >
                     {t("candidatures_offre.back")}
                 </button>
-                <h1 className="text-3xl font-bold text-gray-800 mt-4">{t("candidatures_offre.title")}</h1>
-                <p className="text-gray-500 mt-1">{t("candidatures_offre.subtitle")}</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-4">{t("candidatures_offre.title")}</h1>
+                <p className="text-slate-500 text-sm sm:text-base mt-1">{t("candidatures_offre.subtitle")}</p>
             </div>
 
             {!isLoading && !error && candidatures.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-gray-100 rounded-xl mb-6 w-fit">
+                <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100 border border-slate-200/80 rounded-xl mb-6 w-fit">
                     <button
                         type="button"
                         onClick={() => setCategorie("en_attente")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "en_attente"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("candidatures_offre.tabs.pending")} ({candidaturesEnAttente.length})
@@ -215,10 +221,10 @@ export default function CandidaturesOffre() {
                     <button
                         type="button"
                         onClick={() => setCategorie("entrevues")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "entrevues"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("candidatures_offre.tabs.interviews")} ({candidaturesEntrevues.length})
@@ -226,10 +232,10 @@ export default function CandidaturesOffre() {
                     <button
                         type="button"
                         onClick={() => setCategorie("embauchees")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "embauchees"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("candidatures_offre.tabs.hired")} ({candidaturesEmbauchees.length})
@@ -237,10 +243,10 @@ export default function CandidaturesOffre() {
                     <button
                         type="button"
                         onClick={() => setCategorie("refusees")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "refusees"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("candidatures_offre.tabs.refused")} ({candidaturesRefusees.length})
@@ -248,15 +254,15 @@ export default function CandidaturesOffre() {
                 </div>
             )}
 
-            {isLoading && <p className="text-gray-500">{t("candidatures_offre.loading")}</p>}
-            {error && <p className="p-4 mb-4 rounded-lg bg-red-50 text-red-700">{error}</p>}
+            {isLoading && <p className="text-slate-500 font-medium">{t("candidatures_offre.loading")}</p>}
+            {error && <p className="ds-alert-error mb-4" role="alert">{error}</p>}
             {!isLoading && !error && candidatures.length === 0 && (
-                <p className="w-full p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                <p className="w-full p-8 text-center rounded-2xl border border-dashed border-slate-300 bg-white text-slate-500 font-medium">
                     {t("candidatures_offre.no_candidates")}
                 </p>
             )}
             {!isLoading && !error && candidatures.length > 0 && candidaturesAffichees.length === 0 && (
-                <p className="w-full p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                <p className="w-full p-8 text-center rounded-2xl border border-dashed border-slate-300 bg-white text-slate-500 font-medium">
                     {t("candidatures_offre.no_candidates_category")}
                 </p>
             )}
@@ -265,20 +271,18 @@ export default function CandidaturesOffre() {
                 {candidaturesAffichees.map((candidat) => (
                     <article
                         key={candidat.id}
-                        className="flex flex-col h-full p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
+                        className="flex flex-col h-full p-5 sm:p-6 ds-card hover:shadow-md transition-shadow"
                     >
                         <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
-                                <h2 className="text-lg font-bold text-gray-900 break-words">
+                                <h2 className="text-lg font-bold text-slate-900 break-words">
                                     {candidat.etudiant.firstName} {candidat.etudiant.lastName}
                                 </h2>
-                                <p className="text-sm text-gray-500 break-all mt-0.5">
+                                <p className="text-sm text-slate-500 break-all mt-0.5">
                                     {candidat.etudiant.email}
                                 </p>
-                                <p className="text-xs font-medium text-blue-600 mt-0.5">
-                                    {t(`signup_etudiant.disciplines.${candidat.etudiant.discipline}`, {
-                                        defaultValue: candidat.etudiant.discipline,
-                                    })}
+                                <p className="text-xs font-semibold text-blue-600 mt-1">
+                                    {getDisciplineLabel(candidat.etudiant.discipline)}
                                 </p>
                             </div>
 
@@ -287,20 +291,20 @@ export default function CandidaturesOffre() {
                                     <button
                                         type="button"
                                         onClick={() => handleVoirCv(candidat)}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-colors cursor-pointer"
+                                        className="btn-outline py-1.5 px-3 text-xs"
                                     >
                                         <FileText className="w-3.5 h-3.5" />
                                         {t("candidatures_offre.view_cv")}
                                     </button>
                                 ) : (
-                                    <span className="text-xs text-gray-400 italic py-1">
+                                    <span className="text-xs text-slate-400 italic py-1">
                                         {t("candidatures_offre.no_cv")}
                                     </span>
                                 )}
                                 {aUnBadge(candidat) && (
                                     <span
                                         className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${
-                                            COULEURS_BADGE[candidat.statut] || "bg-gray-100 text-gray-700"
+                                            COULEURS_BADGE[candidat.statut] || "bg-slate-100 text-slate-700"
                                         }`}
                                     >
                                         {t(`candidatures_offre.status.${candidat.statut}`)}
@@ -310,32 +314,32 @@ export default function CandidaturesOffre() {
                         </div>
 
                         {candidat.messageReponse && (
-                            <div className="mt-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-800 text-sm rounded-lg">
+                            <div className="mt-4 ds-alert-error p-3">
                                 <strong className="text-red-900">{t("candidatures_offre.motif_refus")} </strong>
                                 {candidat.messageReponse}
                             </div>
                         )}
 
                         {aConvocationRefusee(candidat) && (
-                            <div className="mt-4 p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-900 text-sm rounded-lg">
+                            <div className="mt-4 ds-alert-warning p-3">
                                 <strong className="text-amber-950">
-                                    {t("candidatures_offre.convocation_refusee", { defaultValue: "Convocation refusée par l'étudiant :" })}
+                                    {t("candidatures_offre.convocation_refusee")}
                                 </strong>{" "}
-                                {getMotifRefusConvocation(candidat) || t("candidatures_offre.aucun_motif", { defaultValue: "Aucun motif fourni." })}
+                                {getMotifRefusConvocation(candidat) || t("candidatures_offre.aucun_motif")}
                             </div>
                         )}
 
                         {peutRefuser(candidat) && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap justify-between gap-3 border-t border-gray-100">
+                            <div className="mt-auto pt-4 flex flex-wrap justify-between gap-2.5 border-t border-slate-100">
                                 {peutConvoquer(candidat) && (
                                     <button
                                         type="button"
                                         disabled={enCours}
                                         onClick={() => setCandidatureAConvoquer(candidat)}
-                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                        className="btn-success"
                                     >
                                         {aConvocationRefusee(candidat)
-                                            ? t("candidatures_offre.reconvoquer", { defaultValue: "Reconvoquer" })
+                                            ? t("candidatures_offre.reconvoquer")
                                             : t("candidatures_offre.convoquer")}
                                     </button>
                                 )}
@@ -344,7 +348,7 @@ export default function CandidaturesOffre() {
                                         type="button"
                                         disabled={enCours}
                                         onClick={() => handleEmbaucher(candidat.id)}
-                                        className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+                                        className="btn-success"
                                     >
                                         {t("candidatures_offre.hire")}
                                     </button>
@@ -353,7 +357,7 @@ export default function CandidaturesOffre() {
                                     type="button"
                                     disabled={enCours}
                                     onClick={() => setRefusId(candidat.id)}
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
+                                    className="btn-danger-soft"
                                 >
                                     {t("candidatures_offre.refuse")}
                                 </button>
@@ -361,8 +365,8 @@ export default function CandidaturesOffre() {
                         )}
 
                         {refusId === candidat.id && (
-                            <div className="mt-auto pt-4 border-t border-gray-100">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            <div className="mt-auto pt-4 border-t border-slate-100">
+                                <label className="ds-label">
                                     {t("candidatures_offre.refuse_message_label")}
                                 </label>
                                 <textarea
@@ -371,14 +375,14 @@ export default function CandidaturesOffre() {
                                     maxLength={1000}
                                     rows={3}
                                     placeholder={t("candidatures_offre.refuse_message_placeholder")}
-                                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                    className="ds-input"
                                 />
-                                <div className="mt-2 flex flex-wrap gap-3">
+                                <div className="mt-3 flex flex-wrap gap-2.5">
                                     <button
                                         type="button"
                                         disabled={enCours}
                                         onClick={() => handleConfirmerRefus(candidat.id)}
-                                        className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
+                                        className="btn-danger"
                                     >
                                         {t("candidatures_offre.confirm_refuse")}
                                     </button>
@@ -386,7 +390,7 @@ export default function CandidaturesOffre() {
                                         type="button"
                                         disabled={enCours}
                                         onClick={annulerRefus}
-                                        className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer"
+                                        className="btn-secondary"
                                     >
                                         {t("candidatures_offre.cancel")}
                                     </button>
