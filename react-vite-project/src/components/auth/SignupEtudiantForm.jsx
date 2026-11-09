@@ -132,24 +132,24 @@ export default function SignupEtudiantForm() {
   };
 
   return (
-    <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-200">
+    <div className="max-w-xl mx-auto my-8 sm:my-12 p-6 sm:p-8 ds-card">
       <SignupTabs activeTab="etudiant" />
 
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+      <h2 className="text-2xl font-bold text-center text-slate-900 tracking-tight mb-1.5">
         {t("signup_etudiant.title")}
       </h2>
-      <p className="text-center text-gray-500 text-sm mb-6">
+      <p className="text-center text-slate-500 text-sm mb-6">
         {t("signup_etudiant.subtitle")}
       </p>
 
       {serverError && (
-        <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
+        <div className="mb-5 ds-alert-error" role="alert">
           <strong>{t("signup_etudiant.errorPrefix")}</strong>{serverError}
         </div>
       )}
 
       {successMessage && (
-        <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-800 text-sm rounded">
+        <div className="mb-5 ds-alert-success" role="status">
           <strong>{t("signup_etudiant.successPrefix")}</strong>{successMessage}
         </div>
       )}
@@ -157,7 +157,7 @@ export default function SignupEtudiantForm() {
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="ds-label">
               {t("signup_etudiant.firstName")} <span className="text-red-500">*</span>
             </label>
             <input
@@ -166,16 +166,15 @@ export default function SignupEtudiantForm() {
               value={formData.firstName}
               onChange={handleChange}
               placeholder={t("signup_etudiant.placeholders.firstName")}
-              className={`w-full p-2.5 border rounded-lg ${errors.firstName ? "border-red-500 bg-red-50" : "border-gray-300"
-                }`}
+              className={`ds-input ${errors.firstName ? "ds-input-error" : ""}`}
             />
             {errors.firstName && (
-              <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.firstName}`)}</p>
+              <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.firstName}`)}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="ds-label">
               {t("signup_etudiant.lastName")} <span className="text-red-500">*</span>
             </label>
             <input
@@ -184,17 +183,16 @@ export default function SignupEtudiantForm() {
               value={formData.lastName}
               onChange={handleChange}
               placeholder={t("signup_etudiant.placeholders.lastName")}
-              className={`w-full p-2.5 border rounded-lg ${errors.lastName ? "border-red-500 bg-red-50" : "border-gray-300"
-                }`}
+              className={`ds-input ${errors.lastName ? "ds-input-error" : ""}`}
             />
             {errors.lastName && (
-              <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.lastName}`)}</p>
+              <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.lastName}`)}</p>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="ds-label">
             {t("signup_etudiant.matricule")} <span className="text-red-500">*</span>
           </label>
           <input
@@ -204,16 +202,15 @@ export default function SignupEtudiantForm() {
             onChange={handleChange}
             placeholder={t("signup_etudiant.placeholders.matricule")}
             maxLength={7}
-            className={`w-full p-2.5 border rounded-lg ${errors.matricule ? "border-red-500 bg-red-50" : "border-gray-300"
-              }`}
+            className={`ds-input ${errors.matricule ? "ds-input-error" : ""}`}
           />
           {errors.matricule && (
-            <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.matricule}`)}</p>
+            <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.matricule}`)}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="ds-label">
             {t("signup_etudiant.email")} <span className="text-red-500">*</span>
           </label>
           <input
@@ -222,24 +219,22 @@ export default function SignupEtudiantForm() {
             value={formData.email}
             onChange={handleChange}
             placeholder={t("signup_etudiant.placeholders.email")}
-            className={`w-full p-2.5 border rounded-lg ${errors.email ? "border-red-500 bg-red-50" : "border-gray-300"
-              }`}
+            className={`ds-input ${errors.email ? "ds-input-error" : ""}`}
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.email}`)}</p>
+            <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.email}`)}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="ds-label">
             {t("signup_etudiant.discipline")} <span className="text-red-500">*</span>
           </label>
           <select
             name="discipline"
             value={formData.discipline}
             onChange={handleChange}
-            className={`w-full p-2.5 border rounded-lg bg-white ${errors.discipline ? "border-red-500 bg-red-50" : "border-gray-300"
-              }`}
+            className={`ds-input ${errors.discipline ? "ds-input-error" : ""}`}
           >
             <option value="">{t("signup_etudiant.disciplines.placeholder")}</option>
             {DISCIPLINES.map((disc) => (
@@ -249,13 +244,13 @@ export default function SignupEtudiantForm() {
             ))}
           </select>
           {errors.discipline && (
-            <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.discipline}`)}</p>
+            <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.discipline}`)}</p>
           )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="ds-label">
               {t("signup_etudiant.password")} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -265,24 +260,23 @@ export default function SignupEtudiantForm() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder={t("signup_etudiant.placeholders.password")}
-                className={`w-full p-2.5 pr-20 border rounded-lg ${errors.password ? "border-red-500 bg-red-50" : "border-gray-300"
-                  }`}
+                className={`ds-input pr-20 ${errors.password ? "ds-input-error" : ""}`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer select-none"
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer select-none transition-colors"
               >
                 {showPassword ? t("signup_etudiant.hide") : t("signup_etudiant.show")}
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.password}`)}</p>
+              <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.password}`)}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="ds-label">
               {t("signup_etudiant.confirmPassword")} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -292,39 +286,35 @@ export default function SignupEtudiantForm() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder={t("signup_etudiant.placeholders.confirmPassword")}
-                className={`w-full p-2.5 pr-20 border rounded-lg ${errors.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300"
-                  }`}
+                className={`ds-input pr-20 ${errors.confirmPassword ? "ds-input-error" : ""}`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer select-none"
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer select-none transition-colors"
               >
                 {showConfirmPassword ? t("signup_etudiant.hide") : t("signup_etudiant.show")}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">{t(`signup_etudiant.errors.${errors.confirmPassword}`)}</p>
+              <p className="ds-error-text">{t(`signup_etudiant.errors.${errors.confirmPassword}`)}</p>
             )}
           </div>
         </div>
 
-        <div className="pt-4">
+        <div className="pt-3">
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 px-4 font-bold rounded-lg text-white transition ${isLoading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 cursor-pointer shadow"
-              }`}
+            className="btn-primary w-full py-3"
           >
             {isLoading ? t("signup_etudiant.submitting") : t("signup_etudiant.submit")}
           </button>
         </div>
 
-        <div className="text-center text-sm text-gray-600 pt-4 border-t border-gray-100">
+        <div className="text-center text-sm text-slate-600 pt-4 border-t border-slate-100">
           {t("signup_etudiant.hasAccount")}{" "}
-          <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+          <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700 hover:underline">
             {t("signup_etudiant.login")}
           </Link>
         </div>
