@@ -1,4 +1,4 @@
-import { Shield, Briefcase, FileCheck2, FileSignature, BarChart3, ArrowRight } from "lucide-react";
+import { Shield, Briefcase, FileCheck2, FileSignature, BarChart3, GraduationCap, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import {useTranslation} from "react-i18next";
@@ -11,6 +11,7 @@ const ProfileGestionnaire = () => {
         { to: "/gestionnaire/approbations/cvs", labelKey: "sidepanel.cvs", icon: FileCheck2, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
         { to: "/gestionnaire/contrats", labelKey: "sidepanel.contrats", icon: FileSignature, color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
         { to: "/gestionnaire/rapports", labelKey: "sidepanel.rapports", icon: BarChart3, color: "bg-amber-50 text-amber-600 border-amber-100" },
+        { to: "/gestionnaire/assignation-professeurs", labelKey: "sidepanel.assignation_professeurs", icon: GraduationCap, color: "bg-purple-50 text-purple-600 border-purple-100" },
     ];
 
     return (
