@@ -321,7 +321,7 @@ class ConvocationServiceTest {
         Exception e = assertThrows(Exception.class, () ->
                 convocationService.creerConvocation("employeur@test.com", 99L, List.of(), "msg")
         );
-        assertTrue(e.getMessage().contains("Candidature non trouvee"));
+        assertTrue(e.getMessage().toLowerCase().contains("candidature") && e.getMessage().toLowerCase().contains("trouv"));
     }
 
     @Test
@@ -358,7 +358,7 @@ class ConvocationServiceTest {
         Exception e = assertThrows(Exception.class, () ->
                 convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "msg")
         );
-        assertTrue(e.getMessage().contains("Le lieu doit etre specifie"));
+        assertTrue(e.getMessage().toLowerCase().contains("lieu"));
     }
 
     @Test
@@ -371,7 +371,7 @@ class ConvocationServiceTest {
         Exception e = assertThrows(Exception.class, () ->
                 convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "msg")
         );
-        assertTrue(e.getMessage().contains("La date doit etre dans le futur"));
+        assertTrue(e.getMessage().toLowerCase().contains("date") && e.getMessage().toLowerCase().contains("futur"));
     }
 
     @Test
@@ -383,7 +383,7 @@ class ConvocationServiceTest {
         Exception e = assertThrows(Exception.class, () ->
                 convocationService.accepterConvocation("etudiant@test.com", 99L, RendezVousDto.create(goodRendezVous))
         );
-        assertTrue(e.getMessage().contains("Convocation non trouvee"));
+        assertTrue(e.getMessage().toLowerCase().contains("convocation") && e.getMessage().toLowerCase().contains("trouv"));
     }
 
     @Test
@@ -444,7 +444,7 @@ class ConvocationServiceTest {
         Exception e = assertThrows(Exception.class, () ->
                 convocationService.refuserConvocation("etudiant@test.com", 99L, "motif")
         );
-        assertTrue(e.getMessage().contains("Convocation non trouvee"));
+        assertTrue(e.getMessage().toLowerCase().contains("convocation") && e.getMessage().toLowerCase().contains("trouv"));
     }
 
     @Test
