@@ -42,7 +42,7 @@ public class NotificationService {
 		Notification notification = notificationRepository.findByIdWithOwner(notificationId)
 				.orElseThrow(Exception::new);
 
-		if(!notification.getOwner().getEmail().equalsIgnoreCase(actorEmail)) {
+		if(!notification.isOwnedBy(actorEmail)) {
 			throw new Exception("impossible d'ignorer un notification qu'on ne possede pas");
 		}
 

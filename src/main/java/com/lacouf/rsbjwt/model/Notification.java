@@ -51,6 +51,10 @@ public class Notification {
 		return dateDismissed != null || dateDeleted != null;
 	}
 
+	public boolean isOwnedBy(String email) {
+		return owner.aPourCourriel(email);
+	}
+
 	public void dismiss() {
 		dateDismissed = Instant.now();
 	}
