@@ -218,7 +218,8 @@
     "successTitle": "Offre créée avec succès",
     "success": "Votre offre de stage a été créée avec succès !",
     "submit": "Créer l'offre",
-    "submitting": "Création en cours..."
+    "submitting": "Création en cours...",
+    "defaultError": "Une erreur est survenue lors de la création de l'offre."
   },
   "signup_professeur": {
     "title": "Inscription Professeur",
@@ -463,6 +464,9 @@
     "success_accepted": "Félicitations ! L'entrevue a été confirmée et ajoutée à votre profil.",
     "success_refused": "La convocation a été refusée. L'employeur en a été notifié.",
     "success_conflict": "Votre proposition de nouvelle date a été envoyée avec succès à l'employeur !",
+    "error_load": "Erreur lors du chargement des convocations",
+    "error_accept": "Erreur lors de l'acceptation",
+    "error_refuse": "Erreur lors du refus de la convocation",
     "status": {
       "en_attente": "En attente de votre réponse",
       "acceptee": "Acceptée",
@@ -749,7 +753,7 @@
   "placeholder": {
     "rendezvous": "Créez un rendez-vous...",
     "lieu": "Choisissez un lieu...",
-    "message": "Entrez une message...",
+    "message": "Entrez un message...",
     "message_optionnel": "Message optionnel..."
   },
   "signature_pad": {
@@ -764,7 +768,8 @@
     "confirm": "Confirmer et signer le contrat",
     "error_blob": "Impossible de capturer la signature.",
     "error_sign": "Erreur lors de la signature du contrat.",
-    "signataire_label": "L'étudiant(e)"
+    "signataire_label": "L'étudiant(e)",
+    "watermark": "✕ Signature"
   },
   "contrats_etudiant": {
     "title": "Mes Contrats de Stage",
@@ -793,9 +798,7 @@
     "error_refuse": "Erreur lors du refus du contrat.",
     "status_stage_trouve": "STAGE TROUVÉ",
     "status_refused": "Contrat refusé",
-    "refused_badge_text": "Contrat refusé — Gestionnaire notifié",
-    "banner_stage_trouve_title": "Statut sur la plateforme : STAGE TROUVÉ",
-    "banner_stage_trouve_desc": "Félicitations ! Votre entente de stage a été signée électroniquement. Votre gestionnaire de stage et l'employeur en ont été informés."
+    "refused_badge_text": "Contrat refusé — Gestionnaire notifié"
   },
   "contrats_employeur": {
     "title": "Contrats de stage",
@@ -899,5 +902,114 @@
   "session": {
     "toutes": "Toutes les sessions",
     "libelle": "Hiver {{annee}}"
+  },
+  "calendar": {
+    "clear": "Effacer la date",
+    "calendar": "Calendrier",
+    "prev_month": "Mois précédent",
+    "next_month": "Mois suivant"
+  },
+  "quick_login": {
+    "valentin_desc": "Planification d'entrevue, embauche, signature de contrat et archives",
+    "john_desc": "Rapports d'étudiants, création de contrat, signature et impression",
+    "hatim_desc": "Signature de contrat de stage, entrevue acceptée",
+    "sophie_desc": "Convocation refusée (reconvoquer), contrat signé",
+    "luc_desc": "Candidature à convoquer, contrat signé prêt pour gestionnaire",
+    "emma_desc": "Étudiante embauchée prête pour contrat, contrat complété",
+    "daniil_desc": "Sans convocation / Sans CV (rapports gestionnaire)",
+    "company_cegep": "Cégep",
+    "company_student_m": "Étudiant",
+    "company_student_f": "Étudiante"
+  },
+  "etudiant_dashboard": {
+    "greeting": "Bonjour, {{name}}",
+    "greeting_default": "Mon espace étudiant",
+    "subtitle_question": "Voici l'état actuel de votre parcours et vos priorités du jour.",
+    "tabs": {
+      "dashboard": "Tableau de bord",
+      "explore": "Explorer les stages",
+      "applications": "Mes candidatures",
+      "interviews": "Convocations",
+      "stage": "Mon stage & Contrats"
+    },
+    "journey_status": {
+      "contract_validated": "Stage confirmé • Contrat validé",
+      "stage_found": "Stage trouvé • Contrat signé",
+      "contract_to_sign": "Action requise • Contrat à signer",
+      "contract_refused": "Contrat refusé • En attente du gestionnaire",
+      "hired_waiting_contract": "Candidature retenue • Contrat en préparation",
+      "interview_pending": "Action requise • Convocation d'entrevue",
+      "interview_confirmed": "Entrevue programmée",
+      "applications_in_progress": "Candidatures en cours d'évaluation",
+      "cv_required": "Action requise • CV à déposer ou corriger",
+      "searching": "En recherche active de stage"
+    },
+    "todo": {
+      "title": "À faire en priorité",
+      "urgent_badge": "Urgent",
+      "important_badge": "Prioritaire",
+      "refused_badge": "Contrat refusé",
+      "action_badge": "Recommandé",
+      "all_caught_up_title": "Aucune action urgente requise",
+      "all_caught_up_desc": "Votre dossier est à jour. Nous vous notifierons dès qu'une réponse ou convocation arrivera.",
+      "cv_missing_title": "Déposer votre CV pour pouvoir postuler",
+      "cv_missing_desc": "Votre profil ne contient aucun CV. Déposez-le en format PDF pour qu'il soit validé par votre gestionnaire.",
+      "cv_refused_title": "Corriger et remplacer votre CV refusé",
+      "cv_pending_info": "Votre CV est en cours de validation par le gestionnaire.",
+      "contract_to_sign_title": "Signer votre contrat de stage — {{poste}}",
+      "contract_to_sign_desc": "L'entente de stage avec {{entreprise}} est prête et attend votre signature électronique.",
+      "contract_sign_cta": "Examiner et signer",
+      "contract_refused_title": "Entente de stage refusée — {{poste}}",
+      "contract_refused_desc": "Vous avez refusé cette entente chez {{entreprise}}. Votre gestionnaire de stage a été notifié pour faire le suivi.",
+      "contract_refused_cta": "Consulter le contrat",
+      "interview_to_respond_title": "Répondre à la convocation — {{poste}}",
+      "interview_to_respond_desc": "{{entreprise}} vous invite en entrevue. Confirmez ou refusez le créneau proposé.",
+      "interview_respond_cta": "Répondre à l'invitation",
+      "hired_notice_title": "Candidature retenue chez {{entreprise}} ({{poste}})",
+      "hired_notice_desc": "L'employeur a retenu votre candidature. Votre contrat de stage sera généré par le gestionnaire.",
+      "first_application_title": "Explorer les {{count}} offres disponibles et postuler",
+      "first_application_desc": "Votre CV est prêt. Consultez les stages disponibles pour envoyer vos premières candidatures.",
+      "explore_cta": "Explorer les stages"
+    },
+    "next_step": {
+      "label": "Prochaine étape",
+      "stage_confirmed_title": "Mon stage confirmé",
+      "stage_confirmed_complete": "Entente signée par les 3 parties (Étudiant, Employeur, Gestionnaire)",
+      "stage_confirmed_waiting_others": "Signé par vous • En attente des autres signatures officielles",
+      "contract_refused_title": "Poursuivre vos démarches de stage",
+      "contract_refused_status": "Entente chez {{entreprise}} refusée",
+      "contract_refused_desc": "Votre gestionnaire de stage a été notifié pour faire le suivi de votre dossier. Continuez à explorer les offres pour trouver votre stage.",
+      "view_contract_cta": "Consulter mon contrat",
+      "upcoming_interview_title": "Prochaine entrevue programmée",
+      "manage_interviews_cta": "Voir les détails de la convocation",
+      "no_application_title": "Lancez vos candidatures",
+      "no_application_desc": "{{count}} offres de stage validées sont actuellement ouvertes aux candidatures.",
+      "in_progress_title": "Suivi de vos {{count}} candidature(s)",
+      "in_progress_desc": "Vos candidatures ont été transmises aux employeurs. Continuez à postuler pour maximiser vos chances.",
+      "view_applications_cta": "Voir mes candidatures"
+    },
+    "applications": {
+      "title": "Mes candidatures récentes",
+      "view_all": "Voir tout ({{count}})",
+      "empty_title": "Aucune candidature envoyée pour le moment",
+      "empty_desc": "Parcourez les offres disponibles pour soumettre votre première candidature.",
+      "status_hired": "Embauché(e)",
+      "status_contract_refused": "Contrat refusé",
+      "status_interview": "Convoqué(e)",
+      "status_pending": "En attente",
+      "status_refused": "Non retenue"
+    },
+    "discover": {
+      "title": "Offres de stage à découvrir",
+      "view_all": "Explorer les {{count}} offres"
+    },
+    "cv_pill": {
+      "validated": "CV validé",
+      "pending": "CV en révision",
+      "refused": "CV refusé",
+      "missing": "Aucun CV",
+      "replace": "Remplacer",
+      "upload": "Déposer"
+    }
   }
 }

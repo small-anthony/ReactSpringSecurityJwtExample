@@ -73,30 +73,30 @@ export default function RapportsEtudiants() {
     }, [authService]);
 
     return (
-        <div className="flex flex-col md:flex-row min-h-screen bg-gray-50/40">
+        <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
             <SidePanelGestionnaire activeTab="rapports" />
 
             <main className="flex-1 p-6 sm:p-10 space-y-6">
                 <div>
-                    <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2.5">
+                    <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
                         <FileText className="w-7 h-7 text-blue-600" />
                         <span>{t("rapports_etudiants.title")}</span>
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-slate-500 mt-1">
                         {t("rapports_etudiants.subtitle")}
                     </p>
                 </div>
 
-                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="ds-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                        <label htmlFor="select-rapport" className="text-sm font-semibold text-gray-700 shrink-0">
+                        <label htmlFor="select-rapport" className="text-sm font-semibold text-slate-700 shrink-0">
                             {t("rapports_etudiants.select_label")}
                         </label>
                         <select
                             id="select-rapport"
                             value={typeRapport}
                             onChange={(e) => setTypeRapport(e.target.value)}
-                            className="w-full sm:w-96 px-3.5 py-2.5 text-sm font-medium bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-800"
+                            className="w-full sm:w-96 ds-input"
                         >
                             <option value="inscrits">{t("rapports_etudiants.types.etudiants-inscrits")}</option>
                             <option value="sans-convocation">{t("rapports_etudiants.types.etudiants-sans-convocation")}</option>
@@ -113,7 +113,7 @@ export default function RapportsEtudiants() {
                         )}
                     </div>
 
-                    <span className="text-xs font-bold uppercase text-gray-500">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200/80 self-start sm:self-auto">
                         {t(etudiants.length > 1 ? "rapports_etudiants.total_plural" : "rapports_etudiants.total", {
                             count: etudiants.length
                         })}
@@ -121,24 +121,24 @@ export default function RapportsEtudiants() {
                 </div>
 
                 {erreur && (
-                    <div className="p-4 bg-red-50 text-red-700 border-l-4 border-red-500 rounded-xl text-sm">
+                    <div className="ds-alert-error" role="alert">
                         {erreur}
                     </div>
                 )}
 
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+                <div className="ds-card overflow-hidden">
                     {loading ? (
-                        <div className="p-12 text-center text-sm text-gray-500">
+                        <div className="p-12 text-center text-sm text-slate-500 font-medium">
                             {t("rapports_etudiants.loading")}
                         </div>
                     ) : etudiants.length === 0 ? (
-                        <div className="p-12 text-center text-sm text-gray-500">
+                        <div className="p-12 text-center text-sm text-slate-500 font-medium">
                             {t("rapports_etudiants.empty")}
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm text-gray-600">
-                                <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-500 border-b border-gray-200">
+                            <table className="w-full text-left text-sm text-slate-600">
+                                <thead className="bg-slate-50/90 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                                 <tr>
                                     <th className="px-6 py-4">{t("rapports_etudiants.th_student")}</th>
                                     <th className="px-6 py-4">{t("rapports_etudiants.th_matricule")}</th>
@@ -149,30 +149,30 @@ export default function RapportsEtudiants() {
                                     )}
                                 </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-slate-100">
                                 {etudiants.map((etudiant) => (
-                                    <tr key={etudiant.id} className="hover:bg-gray-50/60 transition">
-                                        <td className="px-6 py-4 font-bold text-gray-900">
+                                    <tr key={etudiant.id} className="hover:bg-slate-50/70 transition-colors">
+                                        <td className="px-6 py-4 font-bold text-slate-900">
                                             {etudiant.firstName} {etudiant.lastName}
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-700">
+                                        <td className="px-6 py-4 font-mono text-xs font-medium text-slate-700">
                                             {etudiant.matricule}
                                         </td>
-                                        <td className="px-6 py-4 text-gray-600">
+                                        <td className="px-6 py-4 text-slate-600">
                                             {etudiant.email}
                                         </td>
                                         <td className="px-6 py-4">
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
                                                     {traduireDiscipline(etudiant.discipline)}
                                                 </span>
                                         </td>
                                         {afficheOffres && (
                                             <td className="px-6 py-4">
                                                 <details className="text-xs cursor-pointer">
-                                                    <summary className="font-semibold text-blue-600 hover:underline">
+                                                    <summary className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
                                                         ({etudiant.candidatures?.length || 0}) {t("offres_etudiant.btn_see_details")}
                                                     </summary>
-                                                    <div className="mt-2 space-y-1">
+                                                    <div className="mt-2 space-y-1 text-slate-700 pl-2 border-l-2 border-blue-200">
                                                         {(etudiant.candidatures || []).map((cand) => (
                                                             <div key={cand.id}>
                                                                 {cand.titreOffre} - {cand.nomEntreprise}

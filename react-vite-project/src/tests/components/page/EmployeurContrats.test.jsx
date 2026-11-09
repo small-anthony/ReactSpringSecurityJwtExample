@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import EmployeurContrats from "../../../components/page/EmployeurContrats.jsx";
 import { AuthServiceContext } from "../../../services/AuthService.tsx";
 import * as ContratAPI from "../../../services/api/ContratAPI.js";
+import i18n from "../../../../i18n.config.js";
 
 vi.mock("../../../services/api/ContratAPI.js");
 
@@ -72,6 +73,7 @@ const mockContrats = [
 describe("EmployeurContrats", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        i18n.changeLanguage("fr");
         globalThis.URL.createObjectURL = vi.fn(() => "blob:http://localhost/test");
         globalThis.URL.revokeObjectURL = vi.fn();
     });
