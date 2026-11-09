@@ -87,7 +87,7 @@ class CandidatureDtoTest {
     }
 
     @Test
-    void create_plusieursConvocations_exposeLaPlusRecente() throws Exception {
+    void create_plusieursConvocations_exposeLaPlusRecenteSansAncienRefus() throws Exception {
         Convocation premiere = creerConvocation(1L,
                 List.of(RendezVous.create("En ligne - Teams", DATE_UN)), "Première");
         candidature.addConvocation(premiere);
@@ -101,6 +101,18 @@ class CandidatureDtoTest {
         assertEquals(2L, dto.convocation().id());
         assertEquals("Deuxième", dto.convocation().messageEmployeur());
         assertEquals(StatutConvocation.EN_ATTENTE, dto.convocation().statut());
-        assertEquals("Indisponible", dto.messageRefusConvocation());
+        assertNull(dto.messageRefusConvocation());
+    }
+
+    @Test
+    void create_derniereConvocationRefusee_exposeLeMotifDeRefus() throws Exception {
+        Convocation convocation = creerConvocation(1L,
+                List.of(RendezVous.create("Bureau CGI", DATE_UN)), "Première");
+        candidature.addConvocation(convocation);
+        convocation.refuser("Pas disponible");
+
+        CandidatureDto dto = CandidatureDto.create(candidature);
+
+        assertEquals("Pas disponible", dto.messageRefusConvocation());
     }
 }
