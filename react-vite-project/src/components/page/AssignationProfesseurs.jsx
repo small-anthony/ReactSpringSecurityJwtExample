@@ -3,7 +3,7 @@ import {
     GraduationCap,
     Search,
     X,
-    AlertCircle
+    CheckCircle2
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -20,6 +20,7 @@ import SelecteurSession from "../widget/SelecteurSession.jsx";
 import StatsAssignationProfesseurs from "../widget/StatsAssignationProfesseurs.jsx";
 import TableEtudiantsAssignation from "../widget/TableEtudiantsAssignation.jsx";
 import ModalAssignerProfesseur from "../modal/ModalAssignerProfesseur.jsx";
+import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 
 export default function AssignationProfesseurs() {
     const { t } = useTranslation("main");
@@ -32,6 +33,7 @@ export default function AssignationProfesseurs() {
 
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
+    const [messageSucces, setMessageSucces] = useState(null);
 
     const [rechercheEtudiant, setRechercheEtudiant] = useState("");
     const [filtreStatut, setFiltreStatut] = useState("tous");
@@ -42,6 +44,8 @@ export default function AssignationProfesseurs() {
     const [rechercheProfesseur, setRechercheProfesseur] = useState("");
     const [soumissionEnCours, setSoumissionEnCours] = useState(false);
     const [chargementProfs, setChargementProfs] = useState(false);
+
+    const [etudiantADesassigner, setEtudiantADesassigner] = useState(null);
 
     const chargerDonnees = async () => {
         try {
@@ -161,6 +165,7 @@ export default function AssignationProfesseurs() {
             );
 
             fermerModalAssignation();
+            setMessageSucces(t("assignation_professeurs.succes_assignation"));
             await chargerDonnees();
         } catch (err) {
             setErreur(err.message || t("assignation_professeurs.erreur_assignation"));
@@ -169,39 +174,43 @@ export default function AssignationProfesseurs() {
         }
     };
 
-    const handleDesassigner = async (etudiant) => {
-        if (!etudiant) return;
+    const demanderConfirmationDesassigner = (etudiant) => {
+        setEtudiantADesassigner(etudiant);
+    };
+
+    const executerDesassignation = async () => {
+        if (!etudiantADesassigner) return;
 
         try {
             setErreur(null);
             const authHeader = authService.buildAuthHeader();
-            await desassignerProfesseur(etudiant.id, authHeader);
+            await desassignerProfesseur(etudiantADesassigner.id, authHeader);
+            setEtudiantADesassigner(null);
+            setMessageSucces(t("assignation_professeurs.succes_desassignation"));
             await chargerDonnees();
         } catch (err) {
             setErreur(err.message || t("assignation_professeurs.erreur_desassignation"));
+            setEtudiantADesassigner(null);
         }
     };
 
     return (
-        <div className="flex flex-col md:flex-row min-h-screen bg-gray-50/40">
+        <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
             <SidePanelGestionnaire activeTab="assignationProfesseurs" />
 
-            <main className="flex-1 p-6 sm:p-10 space-y-6 max-w-7xl mx-auto w-full">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-gray-200">
+            <main className="flex-1 p-6 sm:p-10 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-2">
-                            <GraduationCap className="w-3.5 h-3.5" />
-                            {t("assignation_professeurs.badge_section")}
-                        </div>
-                        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                            {t("assignation_professeurs.titre")}
+                        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+                            <GraduationCap className="w-7 h-7 text-blue-600" />
+                            <span>{t("assignation_professeurs.titre")}</span>
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1 max-w-2xl">
+                        <p className="text-sm text-slate-500 mt-1">
                             {t("assignation_professeurs.description")}
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 shrink-0">
                         <SelecteurSession
                             annees={annees}
                             anneeSelectionnee={anneeChoisie}
@@ -210,67 +219,79 @@ export default function AssignationProfesseurs() {
                     </div>
                 </div>
 
+                {messageSucces && (
+                    <div className="ds-alert-success flex items-center justify-between gap-2.5" role="status">
+                        <div className="flex items-center gap-2.5">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                            <span>{messageSucces}</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setMessageSucces(null)}
+                            className="text-emerald-700 hover:text-emerald-900 cursor-pointer p-1 rounded-lg hover:bg-emerald-100/60"
+                            aria-label={t("common.close")}
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
+
                 {erreur && (
-                    <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center gap-3">
-                        <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                    <div className="ds-alert-error flex items-center justify-between gap-2.5" role="alert">
                         <span>{erreur}</span>
+                        <button
+                            type="button"
+                            onClick={() => setErreur(null)}
+                            className="text-rose-700 hover:text-rose-900 cursor-pointer p-1 rounded-lg hover:bg-rose-100/60"
+                            aria-label={t("common.close")}
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
                     </div>
                 )}
 
                 <StatsAssignationProfesseurs stats={stats} />
 
-                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div className="ds-card p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="relative flex-1">
-                        <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                         <input
                             type="text"
                             value={rechercheEtudiant}
                             onChange={(e) => setRechercheEtudiant(e.target.value)}
                             placeholder={t("assignation_professeurs.recherche_placeholder")}
-                            className="w-full pl-10 pr-4 py-2 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-400 focus:bg-white transition"
+                            className="ds-input pl-10 pr-10"
                         />
                         {rechercheEtudiant && (
                             <button
                                 type="button"
                                 onClick={() => setRechercheEtudiant("")}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                             >
                                 <X className="w-4 h-4" />
                             </button>
                         )}
                     </div>
 
-                    <div className="inline-flex p-1 bg-gray-100 rounded-xl border border-gray-200 text-xs font-semibold shrink-0">
+                    <div className="ds-tabs-bar shrink-0">
                         <button
                             type="button"
                             onClick={() => setFiltreStatut("tous")}
-                            className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                                filtreStatut === "tous"
-                                    ? "bg-white text-blue-600 shadow-xs font-bold"
-                                    : "text-gray-600 hover:text-gray-900"
-                            }`}
+                            className={`ds-tab ${filtreStatut === "tous" ? "ds-tab-active" : "ds-tab-inactive"}`}
                         >
                             {t("assignation_professeurs.filtre_tous")} ({stats.total})
                         </button>
                         <button
                             type="button"
                             onClick={() => setFiltreStatut("non_assignes")}
-                            className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                                filtreStatut === "non_assignes"
-                                    ? "bg-white text-amber-700 shadow-xs font-bold"
-                                    : "text-gray-600 hover:text-gray-900"
-                            }`}
+                            className={`ds-tab ${filtreStatut === "non_assignes" ? "ds-tab-active !text-amber-700" : "ds-tab-inactive"}`}
                         >
                             {t("assignation_professeurs.filtre_non_assignes")} ({stats.nonAssignes})
                         </button>
                         <button
                             type="button"
                             onClick={() => setFiltreStatut("assignes")}
-                            className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                                filtreStatut === "assignes"
-                                    ? "bg-white text-emerald-700 shadow-xs font-bold"
-                                    : "text-gray-600 hover:text-gray-900"
-                            }`}
+                            className={`ds-tab ${filtreStatut === "assignes" ? "ds-tab-active !text-emerald-700" : "ds-tab-inactive"}`}
                         >
                             {t("assignation_professeurs.filtre_assignes")} ({stats.assignes})
                         </button>
@@ -283,7 +304,7 @@ export default function AssignationProfesseurs() {
                     rechercheEtudiant={rechercheEtudiant}
                     filtreStatut={filtreStatut}
                     onAssigner={ouvrirModalAssignation}
-                    onDesassigner={handleDesassigner}
+                    onDesassigner={demanderConfirmationDesassigner}
                 />
 
                 <ModalAssignerProfesseur
@@ -298,6 +319,19 @@ export default function AssignationProfesseurs() {
                     chargementProfs={chargementProfs}
                     onConfirmer={confirmerAssignation}
                     soumissionEnCours={soumissionEnCours}
+                />
+
+                <ModalConfirmation
+                    isOpen={Boolean(etudiantADesassigner)}
+                    onClose={() => setEtudiantADesassigner(null)}
+                    onConfirm={executerDesassignation}
+                    type="danger"
+                    title={t("assignation_professeurs.titre_modal_desassigner")}
+                    message={t("assignation_professeurs.confirmation_desassigner", {
+                        etudiant: etudiantADesassigner ? `${etudiantADesassigner.firstName} ${etudiantADesassigner.lastName}` : ""
+                    })}
+                    confirmText={t("assignation_professeurs.btn_retirer")}
+                    cancelText={t("common.cancel")}
                 />
             </main>
         </div>

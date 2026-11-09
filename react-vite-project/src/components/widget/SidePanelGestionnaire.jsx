@@ -9,7 +9,7 @@ export default function SidePanelGestionnaire({ activeTab = "none" }) {
         { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
         { key: "contrats", label: t('sidepanel.contrats'), to: "/gestionnaire/contrats" },
         { key: "rapports", label: t('sidepanel.rapports'), to: "/gestionnaire/rapports" },
-        { key: "assignationProfesseurs", label: t('sidepanel.assignation_professeurs', { defaultValue: "Assignation des professeurs" }), to: "/gestionnaire/assignation-professeurs" },
+        { key: "assignationProfesseurs", label: t('sidepanel.assignation_professeurs'), to: "/gestionnaire/assignation-professeurs" },
     ];
 
     return (

@@ -12,7 +12,8 @@ const COLOR_STYLES = {
     amber: "bg-amber-50 text-amber-700 border-amber-200 group-hover:bg-amber-600 group-hover:text-white",
     indigo: "bg-indigo-50 text-indigo-700 border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white",
     rose: "bg-rose-50 text-rose-700 border-rose-200 group-hover:bg-rose-600 group-hover:text-white",
-    slate: "bg-slate-100 text-slate-700 border-slate-200 group-hover:bg-slate-700 group-hover:text-white"
+    slate: "bg-slate-100 text-slate-700 border-slate-200 group-hover:bg-slate-700 group-hover:text-white",
+    teal: "bg-teal-50 text-teal-700 border-teal-200 group-hover:bg-teal-600 group-hover:text-white"
 };
 
 const DEMO_USERS = [
@@ -38,11 +39,11 @@ const DEMO_USERS = [
     },
     {
         name: "Martin Tremblay",
-        company: "Professeur",
+        companyKey: "company_professeur",
         role: "professeur",
         email: "professeur@test.com",
         password: "password",
-        description: "Supervision des étudiants assignés et suivi des demandes de stage",
+        descKey: "martin_desc",
         icon: GraduationCap,
         color: "teal"
     },

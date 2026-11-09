@@ -126,14 +126,14 @@ export default function SignupProfesseurForm() {
       {serverError && (
         <div className="mb-5 ds-alert-error" role="alert">
           <strong>{t("signup_professeur.errorPrefix")}</strong>
-          {t(`signup_professeur.${serverError}`, { defaultValue: t("signup_professeur.defaultError") })}
+          {t(`signup_professeur.${serverError}`) || t("signup_professeur.defaultError")}
         </div>
       )}
 
       {successMessage && (
         <div className="mb-5 ds-alert-success" role="status">
           <strong>{t("signup_professeur.successPrefix")}</strong>
-          {t(`signup_professeur.${successMessage}`, { defaultValue: t("signup_professeur.success") })}
+          {t(`signup_professeur.${successMessage}`) || t("signup_professeur.success")}
         </div>
       )}
 

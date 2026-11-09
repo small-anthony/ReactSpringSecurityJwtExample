@@ -7,10 +7,10 @@ const ProfileGestionnaire = () => {
     const { t } = useTranslation("main");
 
     const shortcuts = [
-        { to: "/gestionnaire/approbations/offres", labelKey: "sidePanel.approbationsOffres", icon: Briefcase, color: "bg-blue-50 text-blue-600 border-blue-100" },
-        { to: "/gestionnaire/approbations/cvs", labelKey: "sidePanel.approbationsCvs", icon: FileCheck2, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-        { to: "/gestionnaire/contrats", labelKey: "sidePanel.contrats", icon: FileSignature, color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
-        { to: "/gestionnaire/rapports", labelKey: "sidePanel.rapports", icon: BarChart3, color: "bg-amber-50 text-amber-600 border-amber-100" },
+        { to: "/gestionnaire/approbations/offres", labelKey: "sidepanel.offres", icon: Briefcase, color: "bg-blue-50 text-blue-600 border-blue-100" },
+        { to: "/gestionnaire/approbations/cvs", labelKey: "sidepanel.cvs", icon: FileCheck2, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+        { to: "/gestionnaire/contrats", labelKey: "sidepanel.contrats", icon: FileSignature, color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
+        { to: "/gestionnaire/rapports", labelKey: "sidepanel.rapports", icon: BarChart3, color: "bg-amber-50 text-amber-600 border-amber-100" },
     ];
 
     return (
