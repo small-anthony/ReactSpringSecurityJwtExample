@@ -230,7 +230,7 @@ public class GestionnaireService {
                 : etudiantRepository.findEtudiantsTrouveStage();
 
         return etudiants.stream()
-                .map(this::toEtudiantPourAssignationDto)
+                .map(e -> toEtudiantPourAssignationDto(e, annee))
                 .toList();
     }
 
@@ -329,14 +329,22 @@ public class GestionnaireService {
     }
 
     private EtudiantPourAssignationDto toEtudiantPourAssignationDto(Etudiant etudiant) {
+        return toEtudiantPourAssignationDto(etudiant, null);
+    }
+
+    private EtudiantPourAssignationDto toEtudiantPourAssignationDto(Etudiant etudiant, Integer annee) {
         List<Candidature> candidatures = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
-        Candidature stage = null;
-        for (Candidature c : candidatures) {
-            if (c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE) {
-                stage = c;
-                break;
-            }
-        }
+        List<Candidature> candidaturesFiltrees = (annee != null)
+                ? candidatures.stream().filter(c -> annee.equals(c.getAnneeOffre())).toList()
+                : candidatures;
+
+        Candidature stage = candidaturesFiltrees.stream()
+                .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
+                .findFirst()
+                .orElseGet(() -> candidaturesFiltrees.stream()
+                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
+                        .findFirst()
+                        .orElse(null));
 
         boolean aTrouve = stage != null;
         String titre = stage != null ? stage.getTitreOffre() : null;
@@ -355,7 +363,7 @@ public class GestionnaireService {
                 entreprise,
                 profDto,
                 profDto != null,
-                CandidatureDto.create(candidatures)
+                CandidatureDto.create(candidaturesFiltrees)
         );
     }
 }

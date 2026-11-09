@@ -66,13 +66,13 @@ public class ProfesseurService {
                 ? candidatures.stream().filter(c -> annee.equals(c.getAnneeOffre())).toList()
                 : candidatures;
 
-        Candidature stage = null;
-        for (Candidature c : candidaturesFiltrees) {
-            if (c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE) {
-                stage = c;
-                break;
-            }
-        }
+        Candidature stage = candidaturesFiltrees.stream()
+                .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
+                .findFirst()
+                .orElseGet(() -> candidaturesFiltrees.stream()
+                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
+                        .findFirst()
+                        .orElse(null));
 
         String statut = stage != null ? stage.getStatut().name() : "EN_RECHERCHE";
         String titre = stage != null ? stage.getTitreOffre() : "Aucun stage";
