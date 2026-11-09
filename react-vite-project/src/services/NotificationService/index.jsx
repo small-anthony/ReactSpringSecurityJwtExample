@@ -1,20 +1,14 @@
 import React, { createContext, useContext, useState} from "react";
-import {AuthServiceContext, IAuthService} from "../AuthService";
+import {AuthServiceContext} from "../AuthService";
 import APIHelper from "../../utils/APIHelper";
-import Notification from "./Notification";
+import Notification from "./Notification.js";
 
-export interface INotificationService {
-    refreshNotifications(): Promise<true>;
-    getNotifications(): Notification[];
-    dismissNotification(id: number): Promise<void>;
-}
-
-export const NotificationServiceContext = createContext<INotificationService>(undefined);
+export const NotificationServiceContext = createContext(undefined);
 const NotificationService = ({ children }) => {
-    const authService: IAuthService = useContext(AuthServiceContext);
-    const [notifications, setNotifications] = useState<Notification[]>(undefined);
+    const authService = useContext(AuthServiceContext);
+    const [notifications, setNotifications] = useState(undefined);
 
-    const notificationService: INotificationService = {
+    const notificationService = {
         async refreshNotifications() {
             if(!authService.isAuthed()) {
                 setNotifications(undefined);
@@ -26,8 +20,8 @@ const NotificationService = ({ children }) => {
                 throw new Error(await response.text());
             }
 
-            const rawData: Record<string, any>[] = await response.json();
-            setNotifications(rawData.map((data) => new Notification(data as any)))
+            const rawData = await response.json();
+            setNotifications(rawData.map((data) => new Notification(data)))
             return true;
         },
 

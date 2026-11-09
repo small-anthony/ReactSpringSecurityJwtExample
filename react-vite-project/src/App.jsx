@@ -18,7 +18,7 @@ import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
-import { NotificationServiceContext } from "./services/NotificationService";
+import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);

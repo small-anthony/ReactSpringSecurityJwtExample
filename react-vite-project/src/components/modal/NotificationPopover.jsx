@@ -7,9 +7,9 @@ import {
     InfoIcon,
 } from "lucide-react";
 import React, {useContext, useRef, useState} from "react";
-import {NotificationServiceContext} from "../../services/NotificationService/index.tsx";
+import {NotificationServiceContext} from "../../services/NotificationService/index.jsx";
 import {useTranslation} from "react-i18next";
-import Notification, {NotificationType} from "../../services/NotificationService/Notification.ts";
+import Notification, {NotificationType} from "../../services/NotificationService/Notification.js";
 import i18n from "i18next";
 
 export function NotificationButton() {

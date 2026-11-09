@@ -4,36 +4,36 @@ import {AuthServiceContext, UserRole} from "../AuthService";
 import {NotificationServiceContext} from "./index";
 
 /// Le type de notification qu'on reçoit. Aucune implication de fonctionnalité.
-export enum NotificationType {
-    Informative = "INFORMATIVE",
-    Success = "SUCCESS",
-    Failed = "FAILED",
-    ActionRequired = "ACTION_REQUIRED",
-}
+export const NotificationType = Object.freeze({
+    Informative: "INFORMATIVE",
+    Success: "SUCCESS",
+    Failed: "FAILED",
+    ActionRequired: "ACTION_REQUIRED",
+})
 
 /// Le type d'action que cette notification permet. Modifie la fonctionnalité.
-export enum NotificationActionType {
-    ViewResource = "VIEW_RESOURCE",
-    SendResource = "SEND_RESOURCE",
-}
+export const NotificationActionType = Object.freeze({
+    ViewResource: "VIEW_RESOURCE",
+    SendResource: "SEND_RESOURCE",
+})
 
-export enum NotificationResourceType {
-    Cv = "CV",
-    OffreStage = "OFFRE_STAGE",
-    Candidature = "CANDIDATURE",
-    Convocation = "CONVOCATION",
-    Contrat = "CONTRAT",
-}
+export const NotificationResourceType = Object.freeze({
+    Cv: "CV",
+    OffreStage: "OFFRE_STAGE",
+    Candidature: "CANDIDATURE",
+    Convocation: "CONVOCATION",
+    Contrat: "CONTRAT",
+})
 
 export default class Notification {
-    public readonly id: number;
-    public readonly type: NotificationType;
-    public readonly action: NotificationActionType;
-    public readonly message: string;
-    public readonly dismissed: boolean;
-    public readonly dateCreation: Date;
+    id; // number
+    type; // NotificationType
+    action; // NotificationActionType
+    message; // string
+    dismissed; // boolean
+    dateCreation; // Date
 
-    private readonly _actionData: any;
+    _actionData; // any
 
     constructor({id, type, message, action, dateCreation, dismissed}) {
         this.id = id;
@@ -51,7 +51,6 @@ export default class Notification {
     }
 }
 
-type _notificationActionHandler = (notification: Notification, payload: any) => (() => any | Promise<void>);
 /**
  * Table de fonctions pour générer un handler pour les notifications.
  *
@@ -60,16 +59,18 @@ type _notificationActionHandler = (notification: Notification, payload: any) => 
  * Ce pattern permet d'implémenter diverses façons de générer des actions pout les notifications
  * tout en respectant le Rule of Hooks de React.
  */
-const _notificationActionToHandler: Record<NotificationActionType, _notificationActionHandler> = {
+const _notificationActionToHandler = {
     [NotificationActionType.ViewResource]: (notification, payload) => {
         // Hooks
         const authService = useContext(AuthServiceContext);
+        const notificationService = useContext(NotificationServiceContext);
         const navigate = useNavigate();
         const userData = authService.getUserData();
 
         // Callback
         const { type } = payload;
-        return () => {
+        return async () => {
+            await notificationService.dismissNotification(notification.id);
             switch (type) {
                 case NotificationResourceType.OffreStage: {
                     switch (userData.role) {
@@ -100,7 +101,7 @@ const _notificationActionToHandler: Record<NotificationActionType, _notification
         // Callback
         const { type } = payload;
         return async () => {
-            await notificationService.dismissNotification()
+            await notificationService.dismissNotification(notification.id);
             switch (type) {
                 case NotificationResourceType.OffreStage: {
                     switch (userData.role) {
