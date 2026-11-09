@@ -32,6 +32,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [succes, setSucces] = useState(null);
+    const [messageRefus, setMessageRefus] = useState(null);
     const [filtre, setFiltre] = useState("TOUS");
     const [signingContrat, setSigningContrat] = useState(null);
     const [contratARefuser, setContratARefuser] = useState(null);
@@ -102,12 +103,13 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
 
     const handleSignatureSuccess = (updatedContrat) => {
         setSucces(t("contrats_etudiant.success_signed"));
+        setMessageRefus(null);
         const updated = contrats.map((c) => (c.id === updatedContrat.id ? updatedContrat : c));
         setContrats(updated);
         if (onPendingCountChange) {
             const restant = updated.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
             const hasSigned = updated.some((c) => c.signeParEtudiant);
-            onPendingCountChange(restant, hasSigned);
+            onPendingCountChange(restant, hasSigned, updatedContrat);
         }
     };
 
@@ -118,13 +120,15 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             setErreur(null);
             const currentHeader = authService.buildAuthHeader();
             await rejeterContrat(contratARefuser.id, currentHeader);
-            setSucces(t("contrats_etudiant.success_refused"));
+            setMessageRefus(t("contrats_etudiant.success_refused"));
+            setSucces(null);
             const updated = contrats.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c));
             setContrats(updated);
             if (onPendingCountChange) {
                 const restant = updated.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
                 const hasSigned = updated.some((c) => c.signeParEtudiant);
-                onPendingCountChange(restant, hasSigned);
+                const contratRefuse = updated.find((c) => c.id === contratARefuser.id);
+                onPendingCountChange(restant, hasSigned, contratRefuse);
             }
             setContratARefuser(null);
         } catch (err) {
@@ -177,7 +181,6 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const countASigner = contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
     const countSignes = contrats.filter((c) => c.signeParEtudiant).length;
     const countRefuses = contrats.filter((c) => c.statut === "REFUSE").length;
-    const aTrouveStage = contrats.some((c) => c.signeParEtudiant);
 
     const content = (
         <div className={embedMode ? "space-y-6" : "max-w-6xl mx-auto space-y-6"}>
@@ -193,20 +196,6 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                     <p className="mt-2 text-base text-[#4B5563] max-w-2xl">
                         {t("contrats_etudiant.subtitle")}
                     </p>
-                </div>
-            )}
-
-            {aTrouveStage && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 shadow-xs">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
-                    <div>
-                        <h4 className="font-bold text-emerald-900 text-sm">
-                            {t("contrats_etudiant.banner_stage_trouve_title")}
-                        </h4>
-                        <p className="text-xs text-emerald-700">
-                            {t("contrats_etudiant.banner_stage_trouve_desc")}
-                        </p>
-                    </div>
                 </div>
             )}
 
@@ -227,6 +216,22 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                         type="button"
                         onClick={() => setSucces(null)}
                         className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer underline"
+                    >
+                        {t("contrats.actions.close")}
+                    </button>
+                </div>
+            )}
+
+            {messageRefus && (
+                <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                        <span className="text-sm font-semibold">{messageRefus}</span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setMessageRefus(null)}
+                        className="text-xs text-rose-700 hover:text-rose-900 font-semibold cursor-pointer underline"
                     >
                         {t("contrats.actions.close")}
                     </button>

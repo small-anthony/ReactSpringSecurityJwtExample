@@ -26,6 +26,7 @@ export default function GestionnaireContrats() {
   const [submitting, setSubmitting] = useState(false);
   const [erreur, setErreur] = useState(null);
   const [succes, setSucces] = useState(null);
+  const [messageRefus, setMessageRefus] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
   const [signingContrat, setSigningContrat] = useState(null);
   const [contratARefuser, setContratARefuser] = useState(null);
@@ -131,6 +132,7 @@ export default function GestionnaireContrats() {
 
   const handleSignatureSuccess = (updatedContrat) => {
     setSucces(t("contrats.alerts.success_signed_manager"));
+    setMessageRefus(null);
     setContrats((prev) => prev.map((c) => (c.id === updatedContrat.id ? updatedContrat : c)));
   };
 
@@ -140,7 +142,8 @@ export default function GestionnaireContrats() {
       setRefusSubmitting(true);
       setErreur(null);
       await rejeterContrat(contratARefuser.id, authHeader);
-      setSucces(t("contrats.alerts.success_refused_manager"));
+      setMessageRefus(t("contrats.alerts.success_refused_manager"));
+      setSucces(null);
       setContrats((prev) =>
         prev.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c))
       );
@@ -228,6 +231,22 @@ export default function GestionnaireContrats() {
             <button
               onClick={() => setSucces(null)}
               className="text-emerald-600 hover:text-emerald-800 p-1 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {messageRefus && (
+          <div
+            id="contrat-refus-alert"
+            className="mb-6 ds-alert-error flex items-center justify-between"
+            role="status"
+          >
+            <span>{messageRefus}</span>
+            <button
+              onClick={() => setMessageRefus(null)}
+              className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
