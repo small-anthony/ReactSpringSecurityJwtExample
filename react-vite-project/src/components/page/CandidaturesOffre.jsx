@@ -60,6 +60,12 @@ export default function CandidaturesOffre() {
     const { t, i18n } = useTranslation("main");
     const langue = i18n?.language;
 
+    const getDisciplineLabel = (valeur) => {
+        if (!valeur) return "";
+        const disc = DISCIPLINES.find((d) => d.value === valeur || d.labelKey === valeur);
+        return disc ? t(`signup_etudiant.disciplines.${disc.labelKey}`) : valeur;
+    };
+
     const [candidatures, setCandidatures] = useState([]);
     const [candidatureAConvoquer, setCandidatureAConvoquer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
