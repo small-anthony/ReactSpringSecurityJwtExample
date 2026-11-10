@@ -70,20 +70,7 @@ public class Evaluation {
                       AccueilProchainStage accueilProchainStage,
                       String formationTechnique,
                       String nomSignataire,
-                      String fonctionSignataire) throws Exception {
-        if (contrat == null || !contrat.estComplete()) {
-            throw new Exception("Le contrat doit être complété avant d'évaluer le stagiaire");
-        }
-        verifierReponsesCompletes(reponses);
-        if (appreciationGlobale == null) {
-            throw new Exception("L'appréciation globale est obligatoire");
-        }
-        if (accueilProchainStage == null) {
-            throw new Exception("Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage");
-        }
-        if (heuresEncadrementParSemaine < 0) {
-            throw new Exception("Le nombre d'heures d'encadrement ne peut pas être négatif");
-        }
+                      String fonctionSignataire) {
         this.contrat = contrat;
         this.reponses.putAll(reponses);
         for (SectionEvaluation section : SectionEvaluation.values()) {
@@ -95,28 +82,12 @@ public class Evaluation {
         this.heuresEncadrementParSemaine = heuresEncadrementParSemaine;
         this.accueilProchainStage = accueilProchainStage;
         this.formationTechnique = nettoyer(formationTechnique);
-        this.nomSignataire = exigerTexte(nomSignataire, "Le nom du signataire est obligatoire");
-        this.fonctionSignataire = exigerTexte(fonctionSignataire, "La fonction du signataire est obligatoire");
-    }
-
-    private void verifierReponsesCompletes(Map<CritereEvaluation, NiveauAccord> reponsesRecues) throws Exception {
-        for (CritereEvaluation critere : CritereEvaluation.values()) {
-            if (reponsesRecues == null || reponsesRecues.get(critere) == null) {
-                throw new Exception("Tous les critères doivent être évalués");
-            }
-        }
+        this.nomSignataire = nettoyer(nomSignataire);
+        this.fonctionSignataire = nettoyer(fonctionSignataire);
     }
 
     private String nettoyer(String texte) {
         return texte == null ? "" : texte.trim();
-    }
-
-    private String exigerTexte(String texte, String message) throws Exception {
-        String propre = nettoyer(texte);
-        if (propre.isEmpty()) {
-            throw new Exception(message);
-        }
-        return propre;
     }
 
     public Long getId() {

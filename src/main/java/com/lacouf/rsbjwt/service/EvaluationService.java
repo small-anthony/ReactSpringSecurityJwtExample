@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Contrat;
+import com.lacouf.rsbjwt.model.ENUM.CritereEvaluation;
 import com.lacouf.rsbjwt.model.Evaluation;
 import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationRequest;
 import com.lacouf.rsbjwt.repository.ContratRepository;
@@ -50,6 +51,7 @@ public class EvaluationService {
         if (evaluationRepository.existsByContratId(contratId)) {
             throw new Exception("Ce stagiaire a déjà été évalué");
         }
+        verifierEvaluation(contrat, requete);
         Evaluation evaluation = new Evaluation(
                 contrat,
                 requete.reponses(),
@@ -70,5 +72,38 @@ public class EvaluationService {
                 .filter(contrat -> contratId.equals(contrat.getId()))
                 .findFirst()
                 .orElseThrow(() -> new Exception("Stagiaire introuvable"));
+    }
+
+    private void verifierEvaluation(Contrat contrat, EvaluationRequest requete) throws Exception {
+        if (!contrat.estComplete()) {
+            throw new Exception("Le contrat doit être complété avant d'évaluer le stagiaire");
+        }
+        verifierReponsesCompletes(requete);
+        if (requete.appreciationGlobale() == null) {
+            throw new Exception("L'appréciation globale est obligatoire");
+        }
+        if (requete.accueilProchainStage() == null) {
+            throw new Exception(
+                    "Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage");
+        }
+        if (requete.heuresEncadrementParSemaine() < 0) {
+            throw new Exception("Le nombre d'heures d'encadrement ne peut pas être négatif");
+        }
+        exigerTexte(requete.nomSignataire(), "Le nom du signataire est obligatoire");
+        exigerTexte(requete.fonctionSignataire(), "La fonction du signataire est obligatoire");
+    }
+
+    private void verifierReponsesCompletes(EvaluationRequest requete) throws Exception {
+        for (CritereEvaluation critere : CritereEvaluation.values()) {
+            if (requete.reponses() == null || requete.reponses().get(critere) == null) {
+                throw new Exception("Tous les critères doivent être évalués");
+            }
+        }
+    }
+
+    private void exigerTexte(String texte, String message) throws Exception {
+        if (texte == null || texte.trim().isEmpty()) {
+            throw new Exception(message);
+        }
     }
 }

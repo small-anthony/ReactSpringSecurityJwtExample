@@ -76,6 +76,38 @@ class EvaluationServiceTest {
                 "Directeur");
     }
 
+    private EvaluationRequest requeteAvec(Map<CritereEvaluation, NiveauAccord> reponses,
+                                          AppreciationGlobale appreciation,
+                                          AccueilProchainStage accueil,
+                                          double heures,
+                                          String nomSignataire,
+                                          String fonctionSignataire) {
+        return new EvaluationRequest(
+                reponses,
+                Map.of(SectionEvaluation.PRODUCTIVITE, "Bien"),
+                appreciation,
+                "Très bon",
+                true,
+                heures,
+                accueil,
+                "Suffisante",
+                nomSignataire,
+                fonctionSignataire);
+    }
+
+    private void preparerContratEvaluable() {
+        Contrat contrat = contrat(7L, true);
+        when(contratRepository.findByCandidatureOffreStageEmployeurEmail(EMAIL)).thenReturn(List.of(contrat));
+        when(evaluationRepository.existsByContratId(7L)).thenReturn(false);
+    }
+
+    private void assertEvaluationRefusee(EvaluationRequest requete, String messageAttendu) {
+        Exception exception = assertThrows(Exception.class, () -> evaluationService.evaluer(7L, EMAIL, requete));
+
+        assertEquals(messageAttendu, exception.getMessage());
+        verify(evaluationRepository, never()).save(any(Evaluation.class));
+    }
+
     @Test
     void getStagiaires_neRetourneQueLesContratsComplets() {
         Contrat complet = contrat(1L, true);
@@ -198,5 +230,98 @@ class EvaluationServiceTest {
 
         assertEquals("Le contrat doit être complété avant d'évaluer le stagiaire", exception.getMessage());
         verify(evaluationRepository, never()).save(any(Evaluation.class));
+    }
+
+    @Test
+    void evaluer_critereManquant_lanceUneException() {
+        preparerContratEvaluable();
+        Map<CritereEvaluation, NiveauAccord> reponses = toutesLesReponses();
+        reponses.remove(CritereEvaluation.PLANIFIER_ORGANISER);
+
+        assertEvaluationRefusee(
+                requeteAvec(reponses, AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI, 7.5,
+                        "Jean Tremblay", "Directeur"),
+                "Tous les critères doivent être évalués");
+    }
+
+    @Test
+    void evaluer_reponsesNulles_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(null, AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI, 7.5,
+                        "Jean Tremblay", "Directeur"),
+                "Tous les critères doivent être évalués");
+    }
+
+    @Test
+    void evaluer_appreciationGlobaleAbsente_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(toutesLesReponses(), null, AccueilProchainStage.OUI, 7.5, "Jean Tremblay", "Directeur"),
+                "L'appréciation globale est obligatoire");
+    }
+
+    @Test
+    void evaluer_accueilProchainStageAbsent_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(toutesLesReponses(), AppreciationGlobale.DEPASSENT_LES_ATTENTES, null, 7.5,
+                        "Jean Tremblay", "Directeur"),
+                "Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage");
+    }
+
+    @Test
+    void evaluer_heuresNegatives_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(toutesLesReponses(), AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI,
+                        -1, "Jean Tremblay", "Directeur"),
+                "Le nombre d'heures d'encadrement ne peut pas être négatif");
+    }
+
+    @Test
+    void evaluer_nomSignataireVide_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(toutesLesReponses(), AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI,
+                        7.5, "   ", "Directeur"),
+                "Le nom du signataire est obligatoire");
+    }
+
+    @Test
+    void evaluer_nomSignataireNul_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(toutesLesReponses(), AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI,
+                        7.5, null, "Directeur"),
+                "Le nom du signataire est obligatoire");
+    }
+
+    @Test
+    void evaluer_fonctionSignataireVide_lanceUneException() {
+        preparerContratEvaluable();
+
+        assertEvaluationRefusee(
+                requeteAvec(toutesLesReponses(), AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI,
+                        7.5, "Jean Tremblay", ""),
+                "La fonction du signataire est obligatoire");
+    }
+
+    @Test
+    void evaluer_zeroHeureEncadrement_estAccepte() throws Exception {
+        preparerContratEvaluable();
+        when(evaluationRepository.save(any(Evaluation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EvaluationDto dto = evaluationService.evaluer(7L, EMAIL, requeteAvec(toutesLesReponses(),
+                AppreciationGlobale.DEPASSENT_LES_ATTENTES, AccueilProchainStage.OUI, 0, "Jean Tremblay", "Directeur"));
+
+        assertEquals(7L, dto.contratId());
+        verify(evaluationRepository).save(any(Evaluation.class));
     }
 }
