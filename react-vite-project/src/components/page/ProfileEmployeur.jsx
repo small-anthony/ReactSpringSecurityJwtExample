@@ -10,9 +10,9 @@ import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 const STATUS_STYLES = {
-    EN_ATTENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    ACCEPTE: "bg-green-100 text-green-800 border-green-200",
-    REFUSE: "bg-red-100 text-red-800 border-red-200",
+    EN_ATTENTE: "bg-amber-50 text-amber-800 border-amber-200",
+    ACCEPTE: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    REFUSE: "bg-red-50 text-red-800 border-red-200",
 };
 
 const compterCandidatures = (offre) =>
@@ -96,10 +96,10 @@ export default function ProfileEmployeur() {
         <main className="w-full max-w-5xl mx-auto my-10 px-4">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">{t("employeur_home.title")}</h1>
-                    <p className="text-gray-500 mt-1">{t("employeur_home.subtitle")}</p>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{t("employeur_home.title")}</h1>
+                    <p className="text-slate-500 text-sm sm:text-base mt-1">{t("employeur_home.subtitle")}</p>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                     <SelecteurSession
                         annees={annees}
                         anneeSelectionnee={anneeChoisie}
@@ -108,10 +108,10 @@ export default function ProfileEmployeur() {
                     <Link
                         to="/employeur/contrats"
                         id="btn-nav-contrats-employeur"
-                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 inline-flex items-center gap-2"
+                        className="btn-secondary"
                     >
                         <FileText className="w-4 h-4 text-blue-600" />
-                        {t("employeur_home.contracts_button", { defaultValue: "Contrats de stage" })}
+                        {t("employeur_home.contracts_button")}
                     </Link>
                     <Link
                         to="/employeur/stagiaires"
@@ -123,7 +123,7 @@ export default function ProfileEmployeur() {
                     </Link>
                     <Link
                         to="/employeur/creer-offre"
-                        className="shrink-0 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                        className="btn-primary shrink-0"
                     >
                         {t("employeur_home.create_offer")}
                     </Link>
@@ -131,14 +131,14 @@ export default function ProfileEmployeur() {
             </div>
 
             {!isLoading && !error && offres.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-gray-100 rounded-xl mb-6 w-fit">
+                <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100 border border-slate-200/80 rounded-xl mb-6 w-fit">
                     <button
                         type="button"
                         onClick={() => setCategorie("toutes")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "toutes"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("employeur_home.tabs.all")} ({offres.length})
@@ -146,10 +146,10 @@ export default function ProfileEmployeur() {
                     <button
                         type="button"
                         onClick={() => setCategorie("accepte")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "accepte"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("employeur_home.tabs.accepted")} ({offresAcceptees.length})
@@ -157,10 +157,10 @@ export default function ProfileEmployeur() {
                     <button
                         type="button"
                         onClick={() => setCategorie("en_attente")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "en_attente"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("employeur_home.tabs.pending")} ({offresEnAttente.length})
@@ -168,10 +168,10 @@ export default function ProfileEmployeur() {
                     <button
                         type="button"
                         onClick={() => setCategorie("refuse")}
-                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                             categorie === "refuse"
-                                ? "bg-white text-gray-900 shadow-xs"
-                                : "text-gray-600 hover:text-gray-900"
+                                ? "bg-white text-slate-900 shadow-xs"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                         }`}
                     >
                         {t("employeur_home.tabs.refused")} ({offresRefusees.length})
@@ -179,31 +179,31 @@ export default function ProfileEmployeur() {
                 </div>
             )}
 
-            {isLoading && <p className="text-gray-500">{t("employeur_home.loading")}</p>}
-            {error && <p className="p-4 rounded-lg bg-red-50 text-red-700 mb-4">{error}</p>}
+            {isLoading && <p className="text-slate-500 font-medium">{t("employeur_home.loading")}</p>}
+            {error && <p className="ds-alert-error mb-4" role="alert">{error}</p>}
             {!isLoading && !error && offres.length === 0 && (
-                <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                <p className="p-8 text-center rounded-2xl border border-dashed border-slate-300 bg-white text-slate-500 font-medium">
                     {t("employeur_home.no_offers")}
                 </p>
             )}
             {!isLoading && !error && offres.length > 0 && offresAffichees.length === 0 && (
-                <p className="p-6 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                <p className="p-8 text-center rounded-2xl border border-dashed border-slate-300 bg-white text-slate-500 font-medium">
                     {t("employeur_home.no_offers_category")}
                 </p>
             )}
 
-            <div className="grid gap-4">
+            <div className="grid gap-5">
                 {offresAffichees.map((offre) => (
-                    <article key={offre.id} className="p-7 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+                    <article key={offre.id} className="p-6 sm:p-7 ds-card hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between gap-4 mb-4">
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">{offre.titre}</h2>
-                                <p className="text-blue-600 font-medium mt-1 flex items-center gap-1.5 pb-4 border-b border-gray-100">
+                                <h2 className="text-xl font-bold text-slate-900">{offre.titre}</h2>
+                                <p className="text-blue-600 font-semibold mt-1 flex items-center gap-1.5 pb-4 border-b border-slate-100">
                                     <Briefcase className="w-4 h-4" strokeWidth={2} />
                                     {offre.nomEntreprise}
                                 </p>
                             </div>
-                            <span className={`shrink-0 px-3 py-1.5 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
+                            <span className={`shrink-0 px-3 py-1 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
                                 {t(`employeur_home.status.${offre.status}`)}
                             </span>
                         </div>
@@ -213,72 +213,72 @@ export default function ProfileEmployeur() {
                                     <GraduationCap className="w-4 h-4 text-blue-600" />
                                 </div>
                                 <div>
-                                    <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                    <span className="text-gray-800 text-sm font-medium">{traduireDiscipline(offre.discipline)}</span>
+                                    <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
+                                    <span className="text-slate-800 text-sm font-medium">{traduireDiscipline(offre.discipline)}</span>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <div className="bg-green-50 p-2 rounded-lg border border-green-100">
-                                    <DollarSign className="w-4 h-4 text-green-600" />
+                                <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                                    <DollarSign className="w-4 h-4 text-emerald-600" />
                                 </div>
                                 <div>
-                                    <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
-                                    <span className="text-gray-800 text-sm font-medium">{formaterSalaire(offre.salaire)}</span>
+                                    <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
+                                    <span className="text-slate-800 text-sm font-medium">{formaterSalaire(offre.salaire)}</span>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <div className="bg-orange-50 p-2 rounded-lg border border-orange-100">
-                                    <Clock className="w-4 h-4 text-orange-600" />
+                                <div className="bg-amber-50 p-2 rounded-lg border border-amber-100">
+                                    <Clock className="w-4 h-4 text-amber-600" />
                                 </div>
                                 <div>
-                                    <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                    <span className="text-gray-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
+                                    <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
+                                    <span className="text-slate-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="space-y-4 bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                        <div className="space-y-4 bg-slate-50/70 rounded-xl p-5 border border-slate-100">
                             <div>
-                                <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
-                                    <AlignLeft className="w-4 h-4 text-blue-500" />
+                                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
+                                    <AlignLeft className="w-4 h-4 text-blue-600" />
                                     {t('approbation.offres.attributes.description')}
                                 </h4>
-                                <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.description}</p>
+                                <p className="text-slate-600 text-sm leading-relaxed pl-6">{offre.description}</p>
                             </div>
-                            <div className="pt-2">
-                                <h4 className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
-                                    <ClipboardList className="w-4 h-4 text-purple-500" />
+                            <div className="pt-2 border-t border-slate-200/60">
+                                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
+                                    <ClipboardList className="w-4 h-4 text-indigo-600" />
                                     {t('approbation.offres.attributes.exigences')}
                                 </h4>
-                                <p className="text-gray-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
+                                <p className="text-slate-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
                             </div>
                         </div>
                         {offre.status === "REFUSE" && offre.messageReponse && (
-                            <div className="mt-5 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 text-sm rounded-lg shadow-sm">
+                            <div className="mt-5 ds-alert-error">
                                 <strong className="text-red-900">{t("employeur_home.motif_refus")} </strong>{offre.messageReponse}
                             </div>
                         )}
 
-                        <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100">
                             <button
                                 type="button"
                                 onClick={() => navigate(`/employeur/offres/${offre.id}/candidatures`)}
-                                className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 cursor-pointer"
+                                className="btn-primary"
                             >
                                 {t("employeur_home.view_candidates")} ({compterCandidatures(offre)})
                             </button>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2.5">
                                 <button
                                     type="button"
                                     onClick={() => setOffreAEditer(offre)}
-                                    className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                                    className="btn-secondary"
                                 >
                                     {t("employeur_home.edit_offer")}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setOffreASupprimer(offre)}
-                                    className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                                    className="btn-danger-soft"
                                 >
                                     {t("employeur_home.delete_offer")}
                                 </button>

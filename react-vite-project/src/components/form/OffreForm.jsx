@@ -75,7 +75,7 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
     return (
         <form id={id} onSubmit={handleFormSubmit} noValidate className="space-y-4">
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="ds-label">
                     {t("creer_offre.titre")} <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -84,19 +84,19 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                     value={formData.titre}
                     onChange={handleChange}
                     placeholder={t("creer_offre.placeholders.titre")}
-                    className={`w-full p-2.5 border rounded-lg ${
-                        errors.titre ? "border-red-500 bg-red-50" : "border-gray-300"
+                    className={`ds-input ${
+                        errors.titre ? "ds-input-error" : ""
                     }`}
                 />
                 {errors.titre && (
-                    <p className="text-red-500 text-xs mt-1">
+                    <p className="ds-error-text">
                         {t(`creer_offre.errors.${errors.titre}`)}
                     </p>
                 )}
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="ds-label">
                     {t("creer_offre.nomEntreprise")}
                 </label>
                 <input
@@ -104,20 +104,20 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                     name="nomEntreprise"
                     value={formData.nomEntreprise}
                     readOnly
-                    className="w-full p-2.5 border border-gray-200 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed"
+                    className="ds-input-readonly"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="ds-label">
                     {t("creer_offre.discipline")} <span className="text-red-500">*</span>
                 </label>
                 <select
                     name="discipline"
                     value={formData.discipline}
                     onChange={handleChange}
-                    className={`w-full p-2.5 border rounded-lg ${
-                        errors.discipline ? "border-red-500 bg-red-50" : "border-gray-300"
+                    className={`ds-input ${
+                        errors.discipline ? "ds-input-error" : ""
                     }`}
                 >
                     <option value="">{t("creer_offre.placeholders.discipline")}</option>
@@ -128,7 +128,7 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                     ))}
                 </select>
                 {errors.discipline && (
-                    <p className="text-red-500 text-xs mt-1">
+                    <p className="ds-error-text">
                         {t(`creer_offre.errors.${errors.discipline}`)}
                     </p>
                 )}
@@ -136,13 +136,13 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    <label className="ds-label">
                         {t("creer_offre.salaire")} <span className="text-red-500">*</span>
                     </label>
                     <div className="flex items-center w-full flex-nowrap">
                         {isEn && (
-                            <span className={`bg-gray-100 border border-r-0 font-semibold p-2.5 rounded-l-lg ${
-                                errors.salaire ? "border-red-500 bg-red-50" : "border-gray-300 text-gray-500"
+                            <span className={`bg-slate-100 border border-r-0 font-semibold px-3 py-2.5 text-sm rounded-l-lg ${
+                                errors.salaire ? "border-red-500 bg-red-50 text-red-600" : "border-slate-300 text-slate-600"
                             }`}>$</span>
                         )}
                         <input
@@ -153,33 +153,33 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                             onChange={handleChange}
                             onBlur={handleSalaireBlur}
                             placeholder={t("creer_offre.placeholders.salaire")}
-                            className={`min-w-0 flex-1 p-2.5 border ${
-                                isEn ? "rounded-none" : "rounded-l-lg"
-                            } ${errors.salaire ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}
+                            className={`min-w-0 flex-1 ds-input ${
+                                isEn ? "rounded-none" : "rounded-r-none"
+                            } ${errors.salaire ? "ds-input-error" : ""}`}
                         />
-                        <span className={`bg-gray-100 border border-l-0 font-semibold p-2.5 rounded-r-lg whitespace-nowrap select-none ${
-                            errors.salaire ? "border-red-500 bg-red-50" : "border-gray-300 text-gray-500"
+                        <span className={`bg-slate-100 border border-l-0 font-semibold px-3 py-2.5 text-sm rounded-r-lg whitespace-nowrap select-none ${
+                            errors.salaire ? "border-red-500 bg-red-50 text-red-600" : "border-slate-300 text-slate-600"
                         }`}>
               {isEn ? "/h" : "$/h"}
             </span>
                     </div>
                     {errors.salaire && (
-                        <p className="text-red-500 text-xs mt-1">
+                        <p className="ds-error-text">
                             {t(`creer_offre.errors.salaire.${errors.salaire}`)}
                         </p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    <label className="ds-label">
                         {t("creer_offre.duree")} <span className="text-red-500">*</span>
                     </label>
                     <select
                         name="duree"
                         value={formData.duree}
                         onChange={handleChange}
-                        className={`w-full p-2.5 border rounded-lg ${
-                            errors.duree ? "border-red-500 bg-red-50" : "border-gray-300"
+                        className={`ds-input ${
+                            errors.duree ? "ds-input-error" : ""
                         }`}
                     >
                         <option value="">{t("creer_offre.placeholders.duree")}</option>
@@ -190,7 +190,7 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                         ))}
                     </select>
                     {errors.duree && (
-                        <p className="text-red-500 text-xs mt-1">
+                        <p className="ds-error-text">
                             {t(`creer_offre.errors.${errors.duree}`)}
                         </p>
                     )}
@@ -198,7 +198,7 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="ds-label">
                     {t("creer_offre.exigences")} <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -207,19 +207,19 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                     value={formData.exigences}
                     onChange={handleChange}
                     placeholder={t("creer_offre.placeholders.exigences")}
-                    className={`w-full p-2.5 border rounded-lg ${
-                        errors.exigences ? "border-red-500 bg-red-50" : "border-gray-300"
+                    className={`ds-input ${
+                        errors.exigences ? "ds-input-error" : ""
                     }`}
                 />
                 {errors.exigences && (
-                    <p className="text-red-500 text-xs mt-1">
+                    <p className="ds-error-text">
                         {t(`creer_offre.errors.${errors.exigences}`)}
                     </p>
                 )}
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="ds-label">
                     {t("creer_offre.description")} <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -228,12 +228,12 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                     value={formData.description}
                     onChange={handleChange}
                     placeholder={t("creer_offre.placeholders.description")}
-                    className={`w-full p-2.5 border rounded-lg ${
-                        errors.description ? "border-red-500 bg-red-50" : "border-gray-300"
+                    className={`ds-input ${
+                        errors.description ? "ds-input-error" : ""
                     }`}
                 />
                 {errors.description && (
-                    <p className="text-red-500 text-xs mt-1">
+                    <p className="ds-error-text">
                         {t(`creer_offre.errors.${errors.description}`)}
                     </p>
                 )}

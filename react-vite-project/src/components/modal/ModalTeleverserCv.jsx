@@ -98,17 +98,17 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     return (
         <div onDragOver={(e) => e.preventDefault()}
              onDrop={(e) => e.preventDefault()}
-             className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-            <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl relative">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">
+             className="ds-modal-backdrop">
+            <div className="ds-modal-panel max-w-md p-6 sm:p-8 relative">
+                <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
+                    <h2 className="text-xl font-bold text-slate-900">
                         {t('cv_upload.title')}
                     </h2>
                     {onClose && (
                         <button
                             onClick={onClose}
                             type="button"
-                            className="text-gray-400 hover:text-gray-800 transition-colors p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer"
+                            className="text-slate-400 hover:text-slate-700 transition-colors p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -126,32 +126,30 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
                             onDragEnter={handleDragEnter}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
-                            className={`cursor-pointer flex items-center w-full px-3 py-2 border border-gray-300 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors bg-gray-50 ${
+                            className={`cursor-pointer flex items-center w-full px-3.5 py-2.5 border rounded-xl transition-all ${
                                 isDragging
                                     ? "border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-300"
-                                    : "border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors bg-gray-50"
+                                    : "border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 bg-slate-50"
                             }`}
                         >
-                            <span className="text-sm text-gray-700 font-medium whitespace-nowrap px-3 py-1 bg-white border border-gray-200 rounded-md shadow-sm">
+                            <span className="text-xs font-semibold text-slate-700 whitespace-nowrap px-3 py-1.5 bg-white border border-slate-200 rounded-lg shadow-xs">
                                 {t("cv_upload.choose_file")}
                             </span>
-                            <span className="text-sm text-gray-500 truncate ml-3 flex-1">
+                            <span className="text-sm text-slate-500 truncate ml-3 flex-1">
                                 {file ? file.name : t("cv_upload.no_file_chosen")}
                             </span>
                         </label>
                     </div>
 
                     {error && (
-                        <div className="p-3 bg-red-50 text-red-700 text-sm rounded-md">
+                        <div className="ds-alert-error" role="alert">
                             {error}
                         </div>
                     )}
 
                     <button
                         type="submit" disabled={!file || isLoading}
-                        className={`w-full py-2 px-4 rounded-md text-white font-medium transition-colors ${
-                            !file || isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                        }`}
+                        className="btn-primary w-full py-2.5"
                     >
                         {isLoading ? t('cv_upload.loading') : t('cv_upload.submit')}
                     </button>

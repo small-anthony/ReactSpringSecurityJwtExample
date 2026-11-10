@@ -60,15 +60,15 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
+            className="ds-modal-backdrop animate-fade-in"
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+                className="ds-modal-panel max-w-4xl h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-bold text-gray-800">{titre}</h3>
+                <div className="flex justify-between items-center p-4 border-b border-slate-200 bg-slate-50">
+                    <h3 className="text-lg font-bold text-slate-900">{titre}</h3>
                     <div className="flex items-center gap-2">
                         <a
                             href={pdfUrl}
@@ -82,7 +82,7 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
                         </a>
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200/80 text-slate-600 hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
                             title={t("approbation.cvs.close")}
                         >
                             <X className="w-4 h-4" strokeWidth={2.5} />
@@ -98,13 +98,13 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
                             setPageCourante(1);
                         }}
                         loading={
-                            <p className="text-gray-500 p-4">
-                                {t("approbation.cvs.loading_pdf", { defaultValue: "Chargement du PDF..." })}
+                            <p className="text-slate-500 p-4 font-medium">
+                                {t("approbation.cvs.loading_pdf")}
                             </p>
                         }
                         error={
-                            <p className="text-red-600 p-4">
-                                {t("approbation.cvs.error_pdf", { defaultValue: "Impossible d'afficher le PDF." })}
+                            <p className="text-red-600 p-4 font-medium">
+                                {t("approbation.cvs.error_pdf")}
                             </p>
                         }
                     >
@@ -130,7 +130,6 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
                     <div className="flex items-center justify-center p-3 border-t border-gray-200 bg-gray-50">
                         <span className="text-sm text-gray-700">
                             {t("approbation.cvs.page_of", {
-                                defaultValue: "Page {{current}} / {{total}}",
                                 current: pageCourante,
                                 total: nombrePages,
                             })}

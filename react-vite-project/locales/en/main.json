@@ -219,7 +219,8 @@
     "successTitle": "Internship Offer Created",
     "success": "Your internship offer has been created successfully!",
     "submit": "Create Offer",
-    "submitting": "Creating..."
+    "submitting": "Creating...",
+    "defaultError": "An error occurred while creating the offer."
   },
   "signup_professeur": {
     "title": "Teacher Registration",
@@ -319,7 +320,7 @@
       "EN_ATTENTE": "Awaiting coordinator approval",
       "ACCEPTE": "Offer approved",
       "ACCEPTEE": "Accepted",
-      "REFUSE": " Offer rejected",
+      "REFUSE": "Offer rejected",
       "REFUSEE": "Refused"
     },
     "view_candidates": "View candidates",
@@ -467,6 +468,9 @@
     "success_accepted": "Congratulations! The interview has been confirmed and added to your profile.",
     "success_refused": "The invitation was declined. The employer has been notified.",
     "success_conflict": "Your reschedule proposal has been sent to the employer!",
+    "error_load": "Error loading interview invitations",
+    "error_accept": "Error accepting interview invitation",
+    "error_refuse": "Error declining interview invitation",
     "status": {
       "en_attente": "Awaiting your reply",
       "acceptee": "Accepted",
@@ -768,7 +772,8 @@
     "confirm": "Confirm and sign contract",
     "error_blob": "Unable to capture signature.",
     "error_sign": "Error signing the contract.",
-    "signataire_label": "Student"
+    "signataire_label": "Student",
+    "watermark": "✕ Signature"
   },
   "contrats_etudiant": {
     "title": "My Internship Contracts",
@@ -797,9 +802,7 @@
     "error_refuse": "Error while refusing the contract.",
     "status_stage_trouve": "INTERNSHIP FOUND",
     "status_refused": "Contract refused",
-    "refused_badge_text": "Contract refused — Manager notified",
-    "banner_stage_trouve_title": "Platform status: INTERNSHIP FOUND",
-    "banner_stage_trouve_desc": "Congratulations! Your internship agreement has been electronically signed. Your coordinator and employer have been notified."
+    "refused_badge_text": "Contract refused — Manager notified"
   },
   "contrats_employeur": {
     "title": "Internship Contracts",
@@ -980,5 +983,114 @@
   "session": {
     "toutes": "All sessions",
     "libelle": "Winter {{annee}}"
+  },
+  "calendar": {
+    "clear": "Clear date",
+    "calendar": "Calendar",
+    "prev_month": "Previous month",
+    "next_month": "Next month"
+  },
+  "quick_login": {
+    "valentin_desc": "Interview scheduling, hiring, contract signing and archives",
+    "john_desc": "Student reports, contract creation, signing and printing",
+    "hatim_desc": "Internship contract signing, interview accepted",
+    "sophie_desc": "Refused interview (reschedule), signed contract",
+    "luc_desc": "Candidate to interview, signed contract ready for coordinator",
+    "emma_desc": "Hired student ready for contract, completed contract",
+    "daniil_desc": "No interview / No resume (coordinator reports)",
+    "company_cegep": "College",
+    "company_student_m": "Student",
+    "company_student_f": "Student"
+  },
+  "etudiant_dashboard": {
+    "greeting": "Hello, {{name}}",
+    "greeting_default": "My Student Workspace",
+    "subtitle_question": "Here is your current internship status and today's priorities.",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "explore": "Explore Internships",
+      "applications": "My Applications",
+      "interviews": "Interviews",
+      "stage": "My Internship & Contracts"
+    },
+    "journey_status": {
+      "contract_validated": "Internship confirmed • Contract validated",
+      "stage_found": "Internship found • Contract signed",
+      "contract_to_sign": "Action required • Contract to sign",
+      "contract_refused": "Contract refused • Pending manager review",
+      "hired_waiting_contract": "Application accepted • Contract in preparation",
+      "interview_pending": "Action required • Interview invitation",
+      "interview_confirmed": "Interview scheduled",
+      "applications_in_progress": "Applications under review",
+      "cv_required": "Action required • Resume to upload or update",
+      "searching": "Actively searching for an internship"
+    },
+    "todo": {
+      "title": "Priority Actions",
+      "urgent_badge": "Urgent",
+      "important_badge": "Priority",
+      "refused_badge": "Contract refused",
+      "action_badge": "Recommended",
+      "all_caught_up_title": "No urgent action required",
+      "all_caught_up_desc": "Your profile is up to date. We will notify you as soon as a response or interview invitation arrives.",
+      "cv_missing_title": "Upload your resume to start applying",
+      "cv_missing_desc": "Your profile does not have a resume yet. Upload a PDF so your coordinator can validate it.",
+      "cv_refused_title": "Update and replace your refused resume",
+      "cv_pending_info": "Your resume is currently being reviewed by the coordinator.",
+      "contract_to_sign_title": "Sign your internship contract — {{poste}}",
+      "contract_to_sign_desc": "The internship agreement with {{entreprise}} is ready and awaiting your electronic signature.",
+      "contract_sign_cta": "Review and sign",
+      "contract_refused_title": "Internship agreement refused — {{poste}}",
+      "contract_refused_desc": "You have refused this agreement with {{entreprise}}. Your internship coordinator has been notified for follow-up.",
+      "contract_refused_cta": "View contract",
+      "interview_to_respond_title": "Respond to interview invitation — {{poste}}",
+      "interview_to_respond_desc": "{{entreprise}} invited you to an interview. Confirm or decline the proposed slot.",
+      "interview_respond_cta": "Respond to invitation",
+      "hired_notice_title": "Hired at {{entreprise}} ({{poste}})",
+      "hired_notice_desc": "The employer selected your application. Your internship contract will be generated by the coordinator.",
+      "first_application_title": "Explore {{count}} available offers and apply",
+      "first_application_desc": "Your resume is ready. Browse available internships to submit your first applications.",
+      "explore_cta": "Explore internships"
+    },
+    "next_step": {
+      "label": "Next Step",
+      "stage_confirmed_title": "My Confirmed Internship",
+      "stage_confirmed_complete": "Agreement signed by all 3 parties (Student, Employer, Coordinator)",
+      "stage_confirmed_waiting_others": "Signed by you • Awaiting remaining official signatures",
+      "contract_refused_title": "Continue your internship search",
+      "contract_refused_status": "Agreement with {{entreprise}} refused",
+      "contract_refused_desc": "Your internship coordinator has been notified for follow-up. Keep exploring available offers to find your internship.",
+      "view_contract_cta": "View my contract",
+      "upcoming_interview_title": "Next Scheduled Interview",
+      "manage_interviews_cta": "View interview details",
+      "no_application_title": "Start applying",
+      "no_application_desc": "{{count}} validated internship offers are currently open for applications.",
+      "in_progress_title": "Tracking your {{count}} application(s)",
+      "in_progress_desc": "Your applications have been sent to employers. Keep applying to maximize your chances.",
+      "view_applications_cta": "View my applications"
+    },
+    "applications": {
+      "title": "My Recent Applications",
+      "view_all": "View all ({{count}})",
+      "empty_title": "No applications submitted yet",
+      "empty_desc": "Browse available offers to submit your first application.",
+      "status_hired": "Hired",
+      "status_contract_refused": "Contract refused",
+      "status_interview": "Interviewing",
+      "status_pending": "Pending",
+      "status_refused": "Not selected"
+    },
+    "discover": {
+      "title": "Internship Offers to Discover",
+      "view_all": "Explore all {{count}} offers"
+    },
+    "cv_pill": {
+      "validated": "Resume validated",
+      "pending": "Resume under review",
+      "refused": "Resume refused",
+      "missing": "No resume",
+      "replace": "Replace",
+      "upload": "Upload"
+    }
   }
 }

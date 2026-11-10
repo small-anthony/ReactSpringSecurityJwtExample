@@ -17,7 +17,7 @@ import {
 import ConvocationCard from "../convocation/ConvocationCard.jsx";
 import ModalRefuserConvocation from "../modal/ModalRefuserConvocation.jsx";
 
-export default function EtudiantConvocations({ embedMode = false, onPendingCountChange }) {
+export default function EtudiantConvocations({ embedMode, onPendingCountChange }) {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
 
@@ -32,26 +32,32 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [modalSubmitting, setModalSubmitting] = useState(false);
 
+  const notifierCompteurEnAttente = (liste) => {
+    if (!onPendingCountChange) {
+      return;
+    }
+    const pending = liste.filter((c) => c.statut === "EN_ATTENTE").length;
+    onPendingCountChange(pending, liste);
+  };
+
   const chargerConvocations = async () => {
     try {
       setLoading(true);
       setErreur(null);
       const authHeader = authService.buildAuthHeader();
       const data = await getConvocationsEtudiant(authHeader);
-      setConvocations(data || []);
-      if (onPendingCountChange) {
-        const pending = (data || []).filter((c) => c.statut === "EN_ATTENTE").length;
-        onPendingCountChange(pending);
-      }
+      const liste = data || [];
+      setConvocations(liste);
+      notifierCompteurEnAttente(liste);
     } catch (e) {
-      setErreur(e.message || "Erreur lors du chargement des convocations");
+      setErreur((e && e.message) || t("convocation.error_load"));
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    chargerConvocations();
+    void chargerConvocations();
   }, []);
 
   const handleAccepter = async (id, selectedSlot) => {
@@ -61,11 +67,13 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
       const authHeader = authService.buildAuthHeader();
       const updated = await accepterConvocation(id, selectedSlot, authHeader);
 
-      setConvocations((prev) =>
-        prev.map((c) => (c.id === id ? updated : c))
-      );
+      setConvocations((prev) => {
+        const next = prev.map((c) => (c.id === id ? updated : c));
+        notifierCompteurEnAttente(next);
+        return next;
+      });
     } catch (e) {
-      setErreur(e.message || "Erreur lors de l'acceptation");
+      setErreur((e && e.message) || t("convocation.error_accept"));
     } finally {
       setActionLoadingId(null);
     }
@@ -78,23 +86,22 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
 
   const handleConfirmerRefus = async (motif) => {
     if (!convocationRefusCible) return;
+    const idCible = convocationRefusCible.id;
     try {
       setModalSubmitting(true);
       setErreur(null);
       const authHeader = authService.buildAuthHeader();
-      const updated = await refuserConvocation(
-        convocationRefusCible.id,
-        motif,
-        authHeader
-      );
+      const updated = await refuserConvocation(idCible, motif, authHeader);
 
-      setConvocations((prev) =>
-        prev.map((c) => (c.id === convocationRefusCible.id ? updated : c))
-      );
+      setConvocations((prev) => {
+        const next = prev.map((c) => (c.id === idCible ? updated : c));
+        notifierCompteurEnAttente(next);
+        return next;
+      });
       setModalRefusOpen(false);
       setConvocationRefusCible(null);
     } catch (e) {
-      setErreur(e.message || "Erreur lors du refus de la convocation");
+      setErreur((e && e.message) || t("convocation.error_refuse"));
     } finally {
       setModalSubmitting(false);
     }
@@ -115,48 +122,39 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
 
   const content = (
     <>
-      <div className={embedMode ? "space-y-6" : "max-w-5xl mx-auto space-y-6"}>
-      {!embedMode ? (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-blue-600" />
-              <span>{t("convocation.title", { defaultValue: "Mes Convocations d'Entrevue" })}</span>
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              {t("convocation.subtitle", {
-                defaultValue: "Gérez les invitations d'entrevues envoyées par vos employeurs potentiels.",
-              })}
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-          <p className="text-sm text-gray-500">
-            {t("convocation.subtitle", {
-              defaultValue: "Gérez vos invitations d'entrevues envoyées par vos employeurs.",
-            })}
-          </p>
-        </div>
-      )}
-        {erreur && (
-          <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center gap-3 animate-in fade-in duration-200">
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-            <span className="text-sm font-semibold">{erreur}</span>
+      <div className={embedMode ? "space-y-5" : "max-w-5xl mx-auto space-y-6"}>
+        {!embedMode && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                <Calendar className="w-7 h-7 text-blue-600" />
+                <span>{t("convocation.title")}</span>
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">
+                {t("convocation.subtitle")}
+              </p>
+            </div>
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-2 pt-2">
+        {erreur && (
+          <div className="ds-alert-error">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span className="font-semibold">{erreur}</span>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setFiltre("TOUTES")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
               filtre === "TOUTES"
                 ? "bg-blue-600 text-white shadow-xs"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
             }`}
           >
-            {t("convocation.filter_all", { defaultValue: "Toutes" })} ({convocations.length})
+            {t("convocation.filter_all")} ({convocations.length})
           </button>
 
           <button
@@ -170,7 +168,7 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
           >
             <Clock className="w-3.5 h-3.5" />
             <span>
-              {t("convocation.filter_pending", { defaultValue: "En attente" })} ({countEnAttente})
+              {t("convocation.filter_pending")} ({countEnAttente})
             </span>
           </button>
 
@@ -185,7 +183,7 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>
-              {t("convocation.filter_confirmed", { defaultValue: "Confirmées" })} ({countAcceptees})
+              {t("convocation.filter_confirmed")} ({countAcceptees})
             </span>
           </button>
 
@@ -195,11 +193,11 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
               onClick={() => setFiltre("EXPIREE")}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                 filtre === "EXPIREE"
-                  ? "bg-gray-700 text-white shadow-xs"
-                  : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
+                  ? "bg-slate-700 text-white shadow-xs"
+                  : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
               }`}
             >
-              {t("convocation.status.expiree", { defaultValue: "Expirées" })} ({countExpirees})
+              {t("convocation.status.expiree")} ({countExpirees})
             </button>
           )}
 
@@ -212,31 +210,27 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
                 : "bg-white text-rose-700 hover:bg-rose-50 border border-rose-200"
             }`}
           >
-            {t("convocation.filter_refused", { defaultValue: "Refusées" })}
+            {t("convocation.filter_refused")}
           </button>
         </div>
 
         {loading && convocations.length === 0 ? (
-          <div className="bg-white p-12 rounded-2xl border border-gray-200 text-center space-y-3">
+          <div className="ds-card p-12 text-center space-y-3">
             <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
-            <p className="text-sm font-semibold text-gray-500">
-              {t("convocation.loading", { defaultValue: "Chargement de vos convocations..." })}
+            <p className="text-sm font-semibold text-slate-500">
+              {t("convocation.loading")}
             </p>
           </div>
         ) : convocationsFiltrees.length === 0 ? (
-          <div className="bg-white p-12 rounded-2xl border border-gray-200 text-center space-y-3">
-            <Inbox className="w-12 h-12 text-gray-300 mx-auto" />
-            <h3 className="text-base font-bold text-gray-700">
-              {t("convocation.empty_title", { defaultValue: "Aucune convocation" })}
+          <div className="ds-card p-12 text-center space-y-3">
+            <Inbox className="w-12 h-12 text-slate-300 mx-auto" />
+            <h3 className="text-base font-bold text-slate-800">
+              {t("convocation.empty_title")}
             </h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
               {filtre === "TOUTES"
-                ? t("convocation.empty_desc_all", {
-                    defaultValue: "Vous n'avez pas encore reçu de convocation d'entrevue pour vos candidatures.",
-                  })
-                : t("convocation.empty_desc_filter", {
-                    defaultValue: "Aucune convocation ne correspond au filtre sélectionné.",
-                  })}
+                ? t("convocation.empty_desc_all")
+                : t("convocation.empty_desc_filter")}
             </p>
           </div>
         ) : (
@@ -272,7 +266,7 @@ export default function EtudiantConvocations({ embedMode = false, onPendingCount
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8">
       {content}
     </div>
   );
