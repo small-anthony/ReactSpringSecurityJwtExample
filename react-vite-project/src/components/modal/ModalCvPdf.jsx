@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { X, Printer } from "lucide-react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -10,43 +10,27 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     import.meta.url
 ).toString();
 
-const LARGEUR_MAX = 800;
+const LARGEUR_PAGE = 800;
 const RATIO_PAGE_PAR_DEFAUT = 1.414;
+const ESPACE_ENTRE_PAGES = 12;
+const MARGE_INTERIEURE = 8;
+const PAGES_VOISINES_AFFICHEES = 2;
 
-function PagePdf({ numero, largeur, racine }) {
-    const conteneurRef = useRef(null);
-    const [visible, setVisible] = useState(typeof IntersectionObserver === "undefined");
-    const [rendue, setRendue] = useState(false);
-
-    useEffect(() => {
-        if (visible) return undefined;
-        const element = conteneurRef.current;
-        if (!element || !racine) return undefined;
-        const observateur = new IntersectionObserver(
-            ([entree]) => {
-                if (entree.isIntersecting) {
-                    setVisible(true);
-                    observateur.disconnect();
-                }
-            },
-            { root: racine, rootMargin: "1200px 0px" }
-        );
-        observateur.observe(element);
-        return () => observateur.disconnect();
-    }, [visible, racine]);
-
+function PagePdf({ numero, largeur, ratio, afficher, onDimensions }) {
     return (
         <div
-            ref={conteneurRef}
-            data-page={numero}
-            className="mb-3 bg-white shadow-md"
-            style={{ width: largeur, minHeight: rendue ? undefined : largeur * RATIO_PAGE_PAR_DEFAUT }}
+            className="bg-white shadow-md"
+            style={{
+                width: largeur,
+                height: largeur * ratio,
+                marginBottom: ESPACE_ENTRE_PAGES,
+            }}
         >
-            {visible && (
+            {afficher && (
                 <Page
                     pageNumber={numero}
                     width={largeur}
-                    onRenderSuccess={() => setRendue(true)}
+                    onLoadSuccess={numero === 1 ? onDimensions : undefined}
                 />
             )}
         </div>
@@ -57,68 +41,21 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
     const { t } = useTranslation("main");
     const [nombrePages, setNombrePages] = useState(0);
     const [pageCourante, setPageCourante] = useState(1);
-    const [racine, setRacine] = useState(null);
-    const [largeur, setLargeur] = useState(LARGEUR_MAX);
-    const imageRef = useRef(null);
-
-    useEffect(() => {
-        if (!racine || typeof ResizeObserver === "undefined") return undefined;
-        const mettreAJour = () =>
-            setLargeur(Math.max(200, Math.min(LARGEUR_MAX, racine.clientWidth - 32)));
-        mettreAJour();
-        const observateur = new ResizeObserver(mettreAJour);
-        observateur.observe(racine);
-        return () => observateur.disconnect();
-    }, [racine]);
-
-    useEffect(() => {
-        return () => {
-            if (imageRef.current) cancelAnimationFrame(imageRef.current);
-        };
-    }, []);
-
-    const mettreAJourPageCourante = useCallback(() => {
-        if (!racine) return;
-        const limites = racine.getBoundingClientRect();
-        const milieu = limites.top + limites.height / 2;
-        const pages = racine.querySelectorAll("[data-page]");
-        for (const page of pages) {
-            const rect = page.getBoundingClientRect();
-            if (rect.top <= milieu && rect.bottom > milieu) {
-                setPageCourante(Number(page.dataset.page));
-                return;
-            }
-        }
-    }, [racine]);
-
-    const surDefilement = () => {
-        if (imageRef.current) return;
-        imageRef.current = requestAnimationFrame(() => {
-            imageRef.current = null;
-            mettreAJourPageCourante();
-        });
-    };
+    const [ratio, setRatio] = useState(RATIO_PAGE_PAR_DEFAUT);
 
     if (!pdfUrl) return null;
 
-    const handleImprimer = () => {
-        try {
-            const iframe = document.createElement("iframe");
-            iframe.style.position = "fixed";
-            iframe.style.right = "0";
-            iframe.style.bottom = "0";
-            iframe.style.width = "0";
-            iframe.style.height = "0";
-            iframe.style.border = "0";
-            iframe.src = pdfUrl;
-            document.body.appendChild(iframe);
-            iframe.onload = () => {
-                iframe.contentWindow?.focus();
-                iframe.contentWindow?.print();
-            };
-        } catch {
-            window.print();
-        }
+    const hauteurParPage = LARGEUR_PAGE * ratio + ESPACE_ENTRE_PAGES;
+
+    const surDefilement = (event) => {
+        const { scrollTop, clientHeight } = event.currentTarget;
+        const milieu = scrollTop + clientHeight / 2 - MARGE_INTERIEURE;
+        const index = Math.floor(milieu / hauteurParPage);
+        setPageCourante(Math.min(Math.max(index + 1, 1), nombrePages));
+    };
+
+    const surChargementPremierePage = (page) => {
+        setRatio(page.originalHeight / page.originalWidth);
     };
 
     return (
@@ -133,15 +70,16 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
                 <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
                     <h3 className="text-lg font-bold text-gray-800">{titre}</h3>
                     <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={handleImprimer}
+                        <a
+                            href={pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 text-xs font-semibold shadow-xs transition cursor-pointer"
                             title={t("contrats.actions.print", { defaultValue: "Imprimer" })}
                         >
                             <Printer className="w-3.5 h-3.5 text-gray-600" />
                             <span>{t("contrats.actions.print", { defaultValue: "Imprimer" })}</span>
-                        </button>
+                        </a>
                         <button
                             onClick={onClose}
                             className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
@@ -152,11 +90,7 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
                     </div>
                 </div>
 
-                <div
-                    ref={setRacine}
-                    onScroll={surDefilement}
-                    className="flex-grow bg-gray-100 p-2 overflow-auto"
-                >
+                <div onScroll={surDefilement} className="flex-grow bg-gray-100 p-2 overflow-auto">
                     <Document
                         file={pdfUrl}
                         onLoadSuccess={({ numPages }) => {
@@ -175,14 +109,19 @@ export default function ModalCvPdf({ pdfUrl, onClose, titre }) {
                         }
                     >
                         <div className="flex flex-col items-center">
-                            {Array.from({ length: nombrePages }, (_, index) => (
-                                <PagePdf
-                                    key={index + 1}
-                                    numero={index + 1}
-                                    largeur={largeur}
-                                    racine={racine}
-                                />
-                            ))}
+                            {Array.from({ length: nombrePages }, (_, index) => {
+                                const numero = index + 1;
+                                return (
+                                    <PagePdf
+                                        key={numero}
+                                        numero={numero}
+                                        largeur={LARGEUR_PAGE}
+                                        ratio={ratio}
+                                        afficher={Math.abs(numero - pageCourante) <= PAGES_VOISINES_AFFICHEES}
+                                        onDimensions={surChargementPremierePage}
+                                    />
+                                );
+                            })}
                         </div>
                     </Document>
                 </div>
