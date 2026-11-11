@@ -6,7 +6,6 @@ import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
@@ -161,7 +160,7 @@ public class GestionnaireControllerTest {
     }
 
     @Test
-    void getOffresEnAttente_shouldReturnOk() throws Exception {
+    void getOffresEnAttente_shouldReturnOk() {
 //        ARRANGE
         List<OffreStageDto> liste = List.of(mock(OffreStageDto.class));
 
@@ -264,14 +263,13 @@ public class GestionnaireControllerTest {
     }
 
     @Test
-    void getTousLesEtudiants_shouldReturnOk() {
+    void getRapportEtudiants_shouldReturnOk() {
         // ARRANGE
         List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
-
-        when(gestionnaireService.getTousLesEtudiants()).thenReturn(liste);
+        when(gestionnaireService.getRapportEtudiants(null)).thenReturn(liste);
 
         // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getTousLesEtudiants();
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getRapportEtudiants(null);
 
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -279,75 +277,14 @@ public class GestionnaireControllerTest {
     }
 
     @Test
-    void getEtudiantsSansConvocation_shouldReturnOk() {
-        // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
-
-        when(gestionnaireService.getEtudiantsSansConvocation(null)).thenReturn(liste);
-
-        // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsSansConvocation(null);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(liste, response.getBody());
-    }
-
-    @Test
-    void getEtudiantsEnAttenteEntrevue_shouldReturnOk() {
-        // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
-
-        when(gestionnaireService.getEtudiantsEnAttenteEntrevue(null)).thenReturn(liste);
-
-        // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteEntrevue(null);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(liste, response.getBody());
-    }
-
-    @Test
-    void getEtudiantsEnAttenteReponse_shouldReturnOk() {
-        // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
-
-        when(gestionnaireService.getEtudiantsEnAttenteReponse(null)).thenReturn(liste);
-
-        // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsEnAttenteReponse(null);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(liste, response.getBody());
-    }
-
-    @Test
-    void getEtudiantsTrouveStage_shouldReturnOk() {
-        // ARRANGE
-        List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
-
-        when(gestionnaireService.getEtudiantsTrouveStage(null)).thenReturn(liste);
-
-        // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsTrouveStage(null);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(liste, response.getBody());
-    }
-
-    @Test
-    void getEtudiantsTrouveStage_avecAnnee_shouldReturnOk() {
+    void getRapportEtudiants_avecAnnee_shouldReturnOk() {
         // ARRANGE
         int annee = 2026;
         List<RapportEtudiantDto> liste = List.of(mock(RapportEtudiantDto.class));
-
-        when(gestionnaireService.getEtudiantsTrouveStage(annee)).thenReturn(liste);
+        when(gestionnaireService.getRapportEtudiants(annee)).thenReturn(liste);
 
         // ACT
-        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getEtudiantsTrouveStage(annee);
+        ResponseEntity<List<RapportEtudiantDto>> response = gestionnaireController.getRapportEtudiants(annee);
 
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());

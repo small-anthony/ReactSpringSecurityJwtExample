@@ -411,7 +411,8 @@
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
     "contrats": "Contrats de stage",
-    "rapports": "Rapports étudiants"
+    "rapports": "Rapports étudiants",
+    "dashboard": "Tableau de bord"
   },
   "rapports_etudiants": {
     "title": "Rapports des étudiants",
@@ -834,5 +835,40 @@
   "session": {
     "toutes": "Toutes les sessions",
     "libelle": "Hiver {{annee}}"
+  },
+  "gestionnaire_dashboard": {
+    "title": "Suivi des étudiants",
+    "subtitle": "Tableau de bord de l'avancement et de l'état de recherche de stage des étudiants.",
+    "kpi_total": "Total inscrits",
+    "status": {
+      "STAGE_TROUVE": "Stage trouvé",
+      "EN_ATTENTE_REPONSE": "Attente réponse",
+      "EN_ATTENTE_ENTREVUE": "Attente entrevue",
+      "SANS_CONVOCATION": "Sans convocation",
+      "AUCUNE_CANDIDATURE": "Aucune candidature"
+    },
+    "search_placeholder": "Rechercher par nom, courriel ou matricule...",
+    "total": "Total : {{count}} étudiant",
+    "total_plural": "Total : {{count}} étudiants",
+    "loading": "Chargement des étudiants...",
+    "empty": "Aucun étudiant ne correspond aux critères sélectionnés.",
+    "error_fetch": "Erreur lors du chargement des données des étudiants.",
+    "th_student": "Étudiant",
+    "th_matricule": "Matricule",
+    "th_email": "Courriel",
+    "th_discipline": "Discipline",
+    "th_status": "Statut de stage",
+    "th_offers": "Candidatures",
+    "application": "candidature",
+    "applications_plural": "candidatures",
+    "no_application": "Aucune candidature",
+    "modal_applications_empty": "Cet étudiant n'a postulé à aucune offre pour cette session.",
+    "statut_candidature": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTEE": "Acceptée",
+      "REFUSEE": "Refusée",
+      "EMBAUCHEE": "Embauché"
+    },
+    "view_count": "Voir ({{count}})"
   }
 }

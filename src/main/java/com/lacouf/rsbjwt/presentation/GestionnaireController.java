@@ -4,7 +4,6 @@ import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -125,31 +124,8 @@ public class GestionnaireController {
         }
     }
 
-    @GetMapping("/rapports/etudiants-inscrits")
-    public ResponseEntity<List<RapportEtudiantDto>> getTousLesEtudiants() {
-        return ResponseEntity.ok(gestionnaireService.getTousLesEtudiants());
+    @GetMapping("/rapports/etudiants")
+    public ResponseEntity<List<RapportEtudiantDto>> getRapportEtudiants(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getRapportEtudiants(annee));
     }
-
-    @GetMapping("/rapports/etudiants-sans-convocation")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsSansConvocation(@RequestParam(required = false) Integer annee) {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsSansConvocation(annee));
-    }
-
-    @GetMapping("/rapports/etudiants-attente-entrevue")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteEntrevue(@RequestParam(required = false) Integer annee) {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteEntrevue(annee));
-    }
-
-    @GetMapping("/rapports/etudiants-attente-reponse")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsEnAttenteReponse(@RequestParam(required = false) Integer annee) {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsEnAttenteReponse(annee));
-    }
-
-    @GetMapping("/rapports/etudiants-trouve-stage")
-    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage(@RequestParam(required = false) Integer annee) {
-        return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage(annee));
-    }
-
 }
-
-    
