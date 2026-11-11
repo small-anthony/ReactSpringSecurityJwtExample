@@ -3,7 +3,6 @@ import {useCallback, useContext} from "react";
 import {AuthServiceContext, UserRole} from "../AuthService";
 import {NotificationServiceContext} from "./index";
 
-/// Le type de notification qu'on reçoit. Aucune implication de fonctionnalité.
 export const NotificationType = Object.freeze({
     Informative: "INFORMATIVE",
     Success: "SUCCESS",
@@ -11,7 +10,6 @@ export const NotificationType = Object.freeze({
     ActionRequired: "ACTION_REQUIRED",
 })
 
-/// Le type d'action que cette notification permet. Modifie la fonctionnalité.
 export const NotificationActionType = Object.freeze({
     ViewResource: "VIEW_RESOURCE",
     SendResource: "SEND_RESOURCE",
@@ -26,14 +24,14 @@ export const NotificationResourceType = Object.freeze({
 })
 
 export default class Notification {
-    id; // number
-    type; // NotificationType
-    action; // NotificationActionType
-    message; // string
-    dismissed; // boolean
-    dateCreation; // Date
+    id;
+    type;
+    action;
+    message;
+    dismissed;
+    dateCreation;
 
-    _actionData; // any
+    _actionData;
 
     constructor({id, type, message, action, dateCreation, dismissed}) {
         this.id = id;
@@ -51,23 +49,13 @@ export default class Notification {
     }
 }
 
-/**
- * Table de fonctions pour générer un handler pour les notifications.
- *
- * Retourne une fonction qui prépare l'état React (useContext, useState, etc.),
- * et à son tour retourne une fonction qui serait appelée par la notification.
- * Ce pattern permet d'implémenter diverses façons de générer des actions pout les notifications
- * tout en respectant le Rule of Hooks de React.
- */
 const _notificationActionToHandler = {
     [NotificationActionType.ViewResource]: (notification, payload) => {
-        // Hooks
         const authService = useContext(AuthServiceContext);
         const notificationService = useContext(NotificationServiceContext);
         const navigate = useNavigate();
         const userData = authService.getUserData();
 
-        // Callback
         const { type } = payload;
         return async () => {
             await notificationService.dismissNotification(notification.id);
@@ -92,13 +80,11 @@ const _notificationActionToHandler = {
     },
 
     [NotificationActionType.SendResource]: (notification, payload) => {
-        // Hooks
         const authService = useContext(AuthServiceContext);
         const notificationService = useContext(NotificationServiceContext);
         const navigate = useNavigate();
         const userData = authService.getUserData();
 
-        // Callback
         const { type } = payload;
         return async () => {
             await notificationService.dismissNotification(notification.id);

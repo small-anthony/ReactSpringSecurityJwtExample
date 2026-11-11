@@ -39,8 +39,6 @@ public class Notification {
 	private Instant dateDismissed = null;
 	private Instant dateDeleted = null;
 
-	/// Créé une entité Notification.
-	/// Ceux qui veulent créer une notification devront plutôt utiliser un des méthodes Factory
 	protected Notification(@NonNull NotificationType type, @NonNull NotificationAction action, @NonNull String message) {
 		this.type = type;
 		this.action = action;
