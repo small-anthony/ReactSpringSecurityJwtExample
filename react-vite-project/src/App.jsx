@@ -19,6 +19,8 @@ import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
 import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
+import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
+import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
@@ -129,6 +131,16 @@ function App() {
                     <Route
                         path="employeur/contrats"
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EmployeurContrats /> : <Navigate to="/" />))}
+                    />
+
+                    <Route
+                        path="employeur/stagiaires"
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EmployeurStagiaires /> : <Navigate to="/" />))}
+                    />
+
+                    <Route
+                        path="employeur/stagiaires/:contratId/evaluation"
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EvaluationStagiaire /> : <Navigate to="/" />))}
                     />
 
                     <Route

@@ -42,6 +42,10 @@ public abstract class UserApp  {
 
     public String getLastName() { return this.lastName; }
 
+    public String nomComplet() {
+        return firstName + " " + lastName;
+    }
+
     public String getEmail(){
         return credentials.getUsername();
     }

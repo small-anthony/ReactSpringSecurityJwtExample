@@ -232,6 +232,33 @@ public class Contrat {
 	public OffreStage getOffreStage() {
 		return candidature.getOffreStage();
 	}
+	public boolean estComplete() {
+		return statut == StatutContrat.COMPLETE;
+	}
+
+	public String nomEtudiant() {
+		return getEtudiant().nomComplet();
+	}
+
+	public String disciplineEtudiant() {
+		return getEtudiant().getDiscipline();
+	}
+
+	public String nomEntreprise() {
+		return getEmployeur().getEntreprise();
+	}
+
+	public String nomSuperviseur() {
+		return getEmployeur().nomComplet();
+	}
+
+	public String telephoneSuperviseur() {
+		return getEmployeur().getTelephone();
+	}
+
+	public String titreOffre() {
+		return getOffreStage().getTitre();
+	}
 
 	public Signature<Etudiant> getSignatureEtudiant() {
 		return signatureEtudiant;
