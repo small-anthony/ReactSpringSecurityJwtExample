@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
+import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.model.OffreStage;
@@ -24,12 +25,14 @@ public class GestionnaireService {
     private final CvRepository cvRepository;
     private final OffreStageRepository offreStageRepository;
     private final EtudiantRepository etudiantRepository;
+    private final NotificationService notificationService;
 
-    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository, CandidatureRepository candidatureRepository) {
+    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository, CandidatureRepository candidatureRepository, NotificationService notificationService) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
         this.candidatureRepository = candidatureRepository;
+        this.notificationService = notificationService;
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -40,6 +43,7 @@ public class GestionnaireService {
             throw new Exception("Ce CV a deja ete traite.");
         }
         cv.accepterApprobation();
+        notificationService.pushNotification(Notification.cvAccepted(), cv.getEtudiantId());
         return CvDto.create(cvRepository.save(cv));
     }
 
@@ -51,6 +55,7 @@ public class GestionnaireService {
             throw new Exception("Ce CV a deja ete traite.");
         }
         cv.refuserApprobation(message);
+        notificationService.pushNotification(Notification.cvRejected(), cv.getEtudiantId());
         return CvDto.create(cvRepository.save(cv));
     }
 

@@ -1092,5 +1092,8 @@
       "replace": "Replace",
       "upload": "Upload"
     }
+  },
+  "notifications": {
+    "titre": "My notifications"
   }
 }

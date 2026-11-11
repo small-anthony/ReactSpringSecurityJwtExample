@@ -48,6 +48,9 @@ public class GestionnaireServiceTest {
     @Mock
     private CandidatureRepository candidatureRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Test
     void getCvEnAttente_shouldReturnListCvEnAttente() {
 //        ARRANGE
