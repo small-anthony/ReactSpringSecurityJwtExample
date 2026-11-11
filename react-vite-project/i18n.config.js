@@ -4,17 +4,21 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 import enMain from "./locales/en/main.json";
 import frMain from "./locales/fr/main.json";
+import frNotification from "./locales/fr/notification.json";
 import enAuth from "./locales/en/auth.json";
 import frAuth from "./locales/fr/auth.json";
+import enNotification from "./locales/en/notification.json";
 
 const resources = {
     en: {
         main: enMain,
         auth: enAuth,
+        notification: enNotification,
     },
     fr: {
         main: frMain,
         auth: frAuth,
+        notification: frNotification,
     },
 };
 

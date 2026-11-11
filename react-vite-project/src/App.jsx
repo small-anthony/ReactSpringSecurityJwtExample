@@ -1,5 +1,5 @@
 import PageLayout from "./components/PageLayout.jsx";
-import React, { useContext } from "react";
+import React, {useContext, useEffect} from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageAccueilStagify from "./components/page/PageAccueilStagify.jsx";
 import About from "./components/About.jsx";
@@ -20,9 +20,22 @@ import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
 import AssignationProfesseurs from "./components/page/AssignationProfesseurs.jsx";
 import ProfesseurEtudiants from "./components/page/ProfesseurEtudiants.jsx";
+import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
+import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
+import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
+    const notificationService = useContext(NotificationServiceContext);
+
+    useEffect(() => {
+        const refreshNotifs = async () => {
+            await notificationService.refreshNotifications();
+        }
+
+        refreshNotifs();
+    }, [authService.getAuth()]);
+
     const userData = authService.getUserData();
     const token = authService.getAuth();
 
@@ -120,6 +133,16 @@ function App() {
                     <Route
                         path="employeur/contrats"
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EmployeurContrats /> : <Navigate to="/" />))}
+                    />
+
+                    <Route
+                        path="employeur/stagiaires"
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EmployeurStagiaires /> : <Navigate to="/" />))}
+                    />
+
+                    <Route
+                        path="employeur/stagiaires/:contratId/evaluation"
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "EMPLOYEUR" ? <EvaluationStagiaire /> : <Navigate to="/" />))}
                     />
 
                     <Route

@@ -6,6 +6,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
@@ -29,25 +30,36 @@ public class GestionnaireService {
     private final OffreStageRepository offreStageRepository;
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
+    private final NotificationService notificationService;
 
     @Autowired
     public GestionnaireService(CvRepository cvRepository,
                               OffreStageRepository offreStageRepository,
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository,
-                              ProfesseurRepository professeurRepository) {
+                              ProfesseurRepository professeurRepository,
+                              NotificationService notificationService) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
         this.candidatureRepository = candidatureRepository;
         this.professeurRepository = professeurRepository;
+        this.notificationService = notificationService;
+    }
+
+    public GestionnaireService(CvRepository cvRepository,
+                              OffreStageRepository offreStageRepository,
+                              EtudiantRepository etudiantRepository,
+                              CandidatureRepository candidatureRepository,
+                              ProfesseurRepository professeurRepository) {
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
                               OffreStageRepository offreStageRepository,
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository) {
-        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null);
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null);
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -58,6 +70,9 @@ public class GestionnaireService {
             throw new Exception("Ce CV a deja ete traite.");
         }
         cv.accepterApprobation();
+        if (notificationService != null) {
+            notificationService.pushNotification(Notification.cvAccepted(), cv.getEtudiantId());
+        }
         return CvDto.create(cvRepository.save(cv));
     }
 
@@ -69,6 +84,9 @@ public class GestionnaireService {
             throw new Exception("Ce CV a deja ete traite.");
         }
         cv.refuserApprobation(message);
+        if (notificationService != null) {
+            notificationService.pushNotification(Notification.cvRejected(), cv.getEtudiantId());
+        }
         return CvDto.create(cvRepository.save(cv));
     }
 

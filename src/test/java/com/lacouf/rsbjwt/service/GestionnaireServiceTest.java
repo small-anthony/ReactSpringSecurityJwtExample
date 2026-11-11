@@ -56,6 +56,9 @@ public class GestionnaireServiceTest {
     @Mock
     private ProfesseurRepository professeurRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Test
     void getCvEnAttente_shouldReturnListCvEnAttente() {
 //        ARRANGE
