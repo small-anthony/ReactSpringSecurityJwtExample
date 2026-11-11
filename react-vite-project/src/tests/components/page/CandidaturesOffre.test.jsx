@@ -88,6 +88,30 @@ const deuxiemeCandidature = {
     },
 };
 
+const convocationEnAttente = {
+    id: 5,
+    statut: "EN_ATTENTE",
+    messageEmployeur: null,
+    dateLimite: "2030-01-10T12:00:00Z",
+    rendezVousPossibles: [
+        { date: "2030-01-15T14:00:00Z", lieu: "Salle 101" },
+        { date: "2030-01-16T09:30:00Z", lieu: "Salle 102" },
+    ],
+    rendezVousSelection: null,
+};
+
+const convocationAcceptee = {
+    id: 5,
+    statut: "ACCEPTEE",
+    messageEmployeur: null,
+    dateLimite: "2030-01-10T12:00:00Z",
+    rendezVousPossibles: [
+        { date: "2030-01-15T14:00:00Z", lieu: "Salle 101" },
+        { date: "2030-01-16T09:30:00Z", lieu: "Salle 102" },
+    ],
+    rendezVousSelection: { date: "2030-01-16T09:30:00Z", lieu: "Salle 204" },
+};
+
 function afficherPage() {
     return render(
         <MemoryRouter initialEntries={["/employeur/offres/10/candidatures"]}>
@@ -196,6 +220,66 @@ describe("CandidaturesOffre", () => {
         expect(screen.getByText("candidatures_offre.hire")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.refuse")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
+    });
+
+    it("convocation en attente : affiche la boîte avec les créneaux proposés", async () => {
+        const user = userEvent.setup();
+        getCandidatures.mockResolvedValue([
+            { ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE", convocation: convocationEnAttente },
+        ]);
+
+        afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
+
+        expect(await screen.findByText(/candidatures_offre\.entrevue\.en_attente/)).toBeInTheDocument();
+        expect(screen.getByText(/Salle 101/)).toBeInTheDocument();
+        expect(screen.getByText(/Salle 102/)).toBeInTheDocument();
+        expect(screen.queryByText(/candidatures_offre\.entrevue\.confirmee/)).not.toBeInTheDocument();
+    });
+
+    it("entrevue acceptée par l'étudiant : affiche la date et le lieu choisis", async () => {
+        const user = userEvent.setup();
+        getCandidatures.mockResolvedValue([
+            { ...candidatureEnAttente, statut: "ACCEPTEE", convocation: convocationAcceptee },
+        ]);
+
+        afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
+
+        expect(await screen.findByText(/candidatures_offre\.entrevue\.confirmee/)).toBeInTheDocument();
+        expect(screen.getByText(/Salle 204/)).toBeInTheDocument();
+        expect(screen.queryByText(/candidatures_offre\.entrevue\.en_attente/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Salle 101/)).not.toBeInTheDocument();
+    });
+
+    it("candidature acceptée sans convocation : aucune boîte d'entrevue", async () => {
+        const user = userEvent.setup();
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE", convocation: null }]);
+
+        afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
+
+        expect(await screen.findByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
+        expect(screen.queryByText(/candidatures_offre\.entrevue\.confirmee/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/candidatures_offre\.entrevue\.en_attente/)).not.toBeInTheDocument();
+    });
+
+    it("candidat embauché : la boîte d'entrevue n'est plus affichée", async () => {
+        const user = userEvent.setup();
+        getCandidatures.mockResolvedValue([
+            { ...candidatureEnAttente, statut: "EMBAUCHEE", convocation: convocationAcceptee },
+        ]);
+
+        afficherPage();
+
+        await user.click(await screen.findByText(/candidatures_offre\.tabs\.hired/i));
+
+        expect(await screen.findByText("candidatures_offre.status.EMBAUCHEE")).toBeInTheDocument();
+        expect(screen.queryByText(/candidatures_offre\.entrevue\.confirmee/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Salle 204/)).not.toBeInTheDocument();
     });
 
     it("embauche un candidat : le badge Embauché apparaît et les boutons disparaissent", async () => {

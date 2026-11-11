@@ -11,6 +11,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ContratService {
 
     private final ContratRepository contratRepository;
@@ -33,6 +35,7 @@ public class ContratService {
         this.userAppRepository = userAppRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<CandidaturePourContratDto> getCandidaturesPourContrat() {
         List<Candidature> candidatures = new ArrayList<>();
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE));
@@ -113,26 +116,31 @@ public class ContratService {
         return ContratDto.create(contratRepository.save(contrat));
     }
 
+    @Transactional(readOnly = true)
     public List<ContratDto> getTousLesContrats() {
         return ContratDto.create(contratRepository.findAllByOrderByDateCreationDesc());
     }
 
+    @Transactional(readOnly = true)
     public ContratDto getContratById(Long id) throws Exception {
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new Exception("Contrat introuvable avec l'identifiant : " + id));
         return ContratDto.create(contrat);
     }
 
+    @Transactional(readOnly = true)
     public byte[] getContratPdf(Long id) throws Exception {
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new Exception("Contrat introuvable avec l'identifiant : " + id));
         return contrat.getData();
     }
 
+    @Transactional(readOnly = true)
     public List<ContratDto> getContratsEtudiant(String email) {
         return ContratDto.create(contratRepository.findByCandidatureEtudiantEmail(email));
     }
 
+    @Transactional(readOnly = true)
     public List<ContratDto> getContratsEmployeur(String email) {
         return ContratDto.create(contratRepository.findByCandidatureOffreStageEmployeurEmail(email));
     }

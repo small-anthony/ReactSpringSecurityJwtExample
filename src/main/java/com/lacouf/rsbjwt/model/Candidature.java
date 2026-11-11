@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"etudiant_id", "offre_stage_id"}))
@@ -66,6 +67,13 @@ public class Candidature {
     public void addConvocation(Convocation convocation) {
         convocation.setCandidature(this);
         convocations.add(convocation);
+    }
+
+    public Optional<Convocation> derniereConvocation() {
+        if (convocations == null || convocations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(convocations.get(convocations.size() - 1));
     }
 
     public boolean appartientAEmployeur(String courriel) {

@@ -18,7 +18,8 @@ public record CandidatureDto(int id,
                              LocalDateTime dateDecision,
                              String titreOffre,
                              String nomEntreprise,
-                             String messageRefusConvocation) {
+                             String messageRefusConvocation,
+                             ConvocationResumeDto convocation) {
 
     public CandidatureDto(int id,
                           StatutCandidature statut,
@@ -26,7 +27,7 @@ public record CandidatureDto(int id,
                           EtudiantDto etudiant,
                           String messageReponse,
                           LocalDateTime dateDecision) {
-        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, null, null, null);
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, null, null, null, null);
     }
 
     public CandidatureDto(int id,
@@ -37,21 +38,33 @@ public record CandidatureDto(int id,
                           LocalDateTime dateDecision,
                           String titreOffre,
                           String nomEntreprise) {
-        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, null);
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, null, null);
+    }
+
+    public CandidatureDto(int id,
+                          StatutCandidature statut,
+                          LocalDateTime dateCandidature,
+                          EtudiantDto etudiant,
+                          String messageReponse,
+                          LocalDateTime dateDecision,
+                          String titreOffre,
+                          String nomEntreprise,
+                          String messageRefusConvocation) {
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, messageRefusConvocation, null);
     }
 
     public static CandidatureDto create(Candidature candidature) {
         Etudiant etudiant = candidature.getEtudiant();
         OffreStage offre = candidature.getOffreStage();
 
-        String messageRefus = null;
-        if (candidature.getConvocations() != null) {
-            for (Convocation conv : candidature.getConvocations()) {
-                if (conv.getStatut() == StatutConvocation.REFUSEE) {
-                    messageRefus = conv.getReponseEtudiant();
-                }
-            }
-        }
+        String messageRefus = candidature.derniereConvocation()
+                .filter(conv -> conv.getStatut() == StatutConvocation.REFUSEE)
+                .map(Convocation::getReponseEtudiant)
+                .orElse(null);
+
+        ConvocationResumeDto convocation = candidature.derniereConvocation()
+                .map(ConvocationResumeDto::create)
+                .orElse(null);
 
         return new CandidatureDto(
                 candidature.getId().intValue(),
@@ -62,7 +75,8 @@ public record CandidatureDto(int id,
                 candidature.getDateDecision(),
                 offre != null ? offre.getTitre() : null,
                 offre != null ? offre.getNomEntreprise() : null,
-                messageRefus
+                messageRefus,
+                convocation
         );
     }
 

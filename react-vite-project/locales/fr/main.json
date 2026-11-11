@@ -26,7 +26,8 @@
     "voir_offres": "Voir offres",
     "logout": "Déconnexion",
     "contrats": "Mes contrats",
-    "contrats_employeur": "Mes contrats"
+    "contrats_employeur": "Mes contrats",
+    "stagiaires": "Mes stagiaires"
   },
   "home": {
     "title": "Stagify",
@@ -385,7 +386,11 @@
     "modal_convoquer_title": "Planifier une convocation:",
     "create_rendezvous": "Insérez un rendez-vous avec le bouton ci-bas.",
     "slot": "Créneau {{number}}",
-    "add_slot": "+ Ajouter un créneau"
+    "add_slot": "+ Ajouter un créneau",
+    "entrevue": {
+      "confirmee": "Entrevue confirmée :",
+      "en_attente": "Convocation envoyée. En attente de la réponse de l'étudiant parmi ces créneaux :"
+    }
   },
   "candidature_etudiant": {
     "status": {
@@ -827,6 +832,152 @@
       "title": "Refuser le contrat de stage",
       "desc": "Êtes-vous certain de vouloir refuser de signer ce contrat de stage ? Cette action informera votre gestionnaire de stage et l'étudiant de votre refus.",
       "confirm": "Confirmer le refus"
+    }
+  },
+  "stagiaires": {
+    "title": "Mes stagiaires",
+    "subtitle": "Consultez vos stagiaires et remplissez leur fiche d'évaluation.",
+    "loading": "Chargement de vos stagiaires...",
+    "error_load": "Erreur lors du chargement de vos stagiaires",
+    "period": "Période",
+    "company": "Entreprise",
+    "tabs": {
+      "all": "Tous mes stagiaires",
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalués"
+    },
+    "status": {
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalué"
+    },
+    "actions": {
+      "evaluate": "Évaluer le stagiaire",
+      "view": "Voir l'évaluation"
+    },
+    "empty": {
+      "title": "Aucun stagiaire trouvé",
+      "subtitle": "Vos stagiaires apparaîtront ici lorsque leur contrat aura été signé par toutes les parties."
+    }
+  },
+  "evaluation": {
+    "back": "Retour à mes stagiaires",
+    "title": "Fiche d'évaluation du stagiaire",
+    "title_view": "Évaluation du stagiaire",
+    "subtitle": "Cochez les comportements observés chez le stagiaire et formulez des commentaires s'il y a lieu.",
+    "loading": "Chargement de la fiche d'évaluation...",
+    "error_load": "Erreur lors du chargement de la fiche d'évaluation",
+    "error_submit": "Erreur lors de l'enregistrement de l'évaluation",
+    "success": "L'évaluation a été enregistrée avec succès.",
+    "submitted_on": "Évaluation soumise le {{date}}",
+    "student_info": {
+      "student": "Nom de l'élève",
+      "program": "Programme d'études",
+      "company": "Nom de l'entreprise",
+      "supervisor": "Nom du superviseur",
+      "phone": "Téléphone",
+      "position": "Poste",
+      "period": "Période"
+    },
+    "able_to": "Le stagiaire a été en mesure de :",
+    "comments": "Commentaires",
+    "levels": {
+      "TOTALEMENT_EN_ACCORD": "Totalement en accord",
+      "PLUTOT_EN_ACCORD": "Plutôt en accord",
+      "PLUTOT_EN_DESACCORD": "Plutôt en désaccord",
+      "TOTALEMENT_EN_DESACCORD": "Totalement en désaccord",
+      "NON_APPLICABLE": "N/A"
+    },
+    "sections": {
+      "PRODUCTIVITE": {
+        "title": "1. Productivité",
+        "description": "Capacité d'optimiser son rendement au travail"
+      },
+      "QUALITE_TRAVAIL": {
+        "title": "2. Qualité du travail",
+        "description": "Capacité de s'acquitter des tâches sous sa responsabilité en s'imposant personnellement des normes de qualité"
+      },
+      "RELATIONS_INTERPERSONNELLES": {
+        "title": "3. Qualité des relations interpersonnelles",
+        "description": "Capacité d'établir des interrelations harmonieuses dans son milieu de travail"
+      },
+      "HABILETES_PERSONNELLES": {
+        "title": "4. Habiletés personnelles",
+        "description": "Capacité de faire preuve d'attitudes ou de comportements matures et responsables"
+      }
+    },
+    "criteres": {
+      "PLANIFIER_ORGANISER": "planifier et organiser son travail de façon efficace",
+      "COMPRENDRE_DIRECTIVES": "comprendre rapidement les directives relatives à son travail",
+      "RYTHME_SOUTENU": "maintenir un rythme de travail soutenu",
+      "ETABLIR_PRIORITES": "établir ses priorités",
+      "RESPECTER_ECHEANCIERS": "respecter ses échéanciers",
+      "RESPECTER_MANDATS": "respecter les mandats qui lui ont été confiés",
+      "ATTENTION_DETAILS": "porter attention aux détails dans la réalisation de ses tâches",
+      "VERIFIER_TRAVAIL": "vérifier son travail, s'assurer que rien n'a été oublié",
+      "OCCASIONS_PERFECTIONNEMENT": "rechercher des occasions de se perfectionner",
+      "ANALYSE_PROBLEMES": "faire une bonne analyse des problèmes rencontrés",
+      "CONTACTS_FACILES": "établir facilement des contacts avec les gens",
+      "TRAVAIL_EQUIPE": "contribuer activement au travail d'équipe",
+      "CULTURE_ENTREPRISE": "s'adapter facilement à la culture de l'entreprise",
+      "CRITIQUES_CONSTRUCTIVES": "accepter les critiques constructives",
+      "RESPECT_ENVERS_LES_GENS": "être respectueux envers les gens",
+      "ECOUTE_ACTIVE": "faire preuve d'écoute active en essayant de comprendre le point de vue de l'autre",
+      "INTERET_MOTIVATION": "démontrer de l'intérêt et de la motivation au travail",
+      "EXPRIMER_IDEES": "exprimer clairement ses idées",
+      "INITIATIVE": "faire preuve d'initiative",
+      "TRAVAIL_SECURITAIRE": "travailler de façon sécuritaire",
+      "SENS_RESPONSABILITES": "démontrer un bon sens des responsabilités ne requérant qu'un minimum de supervision",
+      "PONCTUALITE_ASSIDUITE": "être ponctuel et assidu à son travail"
+    },
+    "overall": {
+      "title": "Appréciation globale du stagiaire",
+      "precision": "Précisez votre appréciation",
+      "options": {
+        "DEPASSENT_DE_BEAUCOUP_LES_ATTENTES": "Les habiletés démontrées dépassent de beaucoup les attentes",
+        "DEPASSENT_LES_ATTENTES": "Les habiletés démontrées dépassent les attentes",
+        "REPONDENT_PLEINEMENT_AUX_ATTENTES": "Les habiletés démontrées répondent pleinement aux attentes",
+        "REPONDENT_PARTIELLEMENT_AUX_ATTENTES": "Les habiletés démontrées répondent partiellement aux attentes",
+        "NE_REPONDENT_PAS_AUX_ATTENTES": "Les habiletés démontrées ne répondent pas aux attentes"
+      }
+    },
+    "discussed": {
+      "label": "Cette évaluation a été discutée avec le stagiaire",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "hours": {
+      "label": "Nombre d'heures réel par semaine d'encadrement accordé au stagiaire",
+      "placeholder": "Ex: 7,5"
+    },
+    "next_internship": {
+      "label": "L'entreprise aimerait accueillir cet élève pour son prochain stage",
+      "options": {
+        "OUI": "Oui",
+        "NON": "Non",
+        "PEUT_ETRE": "Peut-être"
+      }
+    },
+    "technical_training": {
+      "label": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage ?",
+      "placeholder": "Votre réponse..."
+    },
+    "signatory": {
+      "title": "Signataire",
+      "name": "Nom (en lettres moulées)",
+      "role": "Fonction",
+      "name_placeholder": "Ex: Jimmy Donaldson",
+      "role_placeholder": "Ex: Directeur des technologies"
+    },
+    "submit": "Enregistrer l'évaluation",
+    "submitting": "Enregistrement...",
+    "errors": {
+      "incomplete": "Veuillez évaluer tous les critères : il en reste {{nombre}}.",
+      "overall": "Veuillez choisir une appréciation globale.",
+      "discussed": "Veuillez indiquer si l'évaluation a été discutée avec le stagiaire.",
+      "hours": "Veuillez entrer un nombre d'heures d'encadrement valide.",
+      "next_internship": "Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage.",
+      "name": "Le nom du signataire est obligatoire.",
+      "role": "La fonction du signataire est obligatoire."
     }
   },
   "session": {

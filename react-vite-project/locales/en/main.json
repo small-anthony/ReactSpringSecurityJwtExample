@@ -26,7 +26,8 @@
     "voir_offres": "View offers",
     "logout": "Logout",
     "contrats": "My contracts",
-    "contrats_employeur": "My contracts"
+    "contrats_employeur": "My contracts",
+    "stagiaires": "My interns"
   },
   "home": {
     "title": "Stagify",
@@ -385,7 +386,11 @@
     "modal_convoquer_title": "Schedule an interview:",
     "create_rendezvous": "Create a new time slot with the button below.",
     "slot": "Time slot {{number}}",
-    "add_slot": "+ Add a time slot"
+    "add_slot": "+ Add a time slot",
+    "entrevue": {
+      "confirmee": "Interview confirmed:",
+      "en_attente": "Convocation sent. Waiting for the student to choose among these time slots:"
+    }
   },
   "candidature_etudiant": {
     "status": {
@@ -827,6 +832,152 @@
       "title": "Refuse internship contract",
       "desc": "Are you sure you want to refuse to sign this internship contract? This will notify your internship manager and the student.",
       "confirm": "Confirm refusal"
+    }
+  },
+  "stagiaires": {
+    "title": "My interns",
+    "subtitle": "View your interns and fill out their evaluation form.",
+    "loading": "Loading your interns...",
+    "error_load": "Error while loading your interns",
+    "period": "Period",
+    "company": "Company",
+    "tabs": {
+      "all": "All my interns",
+      "to_evaluate": "To evaluate",
+      "evaluated": "Evaluated"
+    },
+    "status": {
+      "to_evaluate": "To evaluate",
+      "evaluated": "Evaluated"
+    },
+    "actions": {
+      "evaluate": "Evaluate intern",
+      "view": "View evaluation"
+    },
+    "empty": {
+      "title": "No interns found",
+      "subtitle": "Your interns will appear here once their contract has been signed by all parties."
+    }
+  },
+  "evaluation": {
+    "back": "Back to my interns",
+    "title": "Intern evaluation form",
+    "title_view": "Intern evaluation",
+    "subtitle": "Check the behaviours observed in the intern and add comments where appropriate.",
+    "loading": "Loading the evaluation form...",
+    "error_load": "Error while loading the evaluation form",
+    "error_submit": "Error while saving the evaluation",
+    "success": "The evaluation was saved successfully.",
+    "submitted_on": "Evaluation submitted on {{date}}",
+    "student_info": {
+      "student": "Student name",
+      "program": "Study program",
+      "company": "Company name",
+      "supervisor": "Supervisor name",
+      "phone": "Phone",
+      "position": "Position",
+      "period": "Period"
+    },
+    "able_to": "The intern was able to:",
+    "comments": "Comments",
+    "levels": {
+      "TOTALEMENT_EN_ACCORD": "Strongly agree",
+      "PLUTOT_EN_ACCORD": "Somewhat agree",
+      "PLUTOT_EN_DESACCORD": "Somewhat disagree",
+      "TOTALEMENT_EN_DESACCORD": "Strongly disagree",
+      "NON_APPLICABLE": "N/A"
+    },
+    "sections": {
+      "PRODUCTIVITE": {
+        "title": "1. Productivity",
+        "description": "Ability to optimize one's performance at work"
+      },
+      "QUALITE_TRAVAIL": {
+        "title": "2. Quality of work",
+        "description": "Ability to carry out the tasks under one's responsibility while setting personal quality standards"
+      },
+      "RELATIONS_INTERPERSONNELLES": {
+        "title": "3. Quality of interpersonal relationships",
+        "description": "Ability to build harmonious relationships in the workplace"
+      },
+      "HABILETES_PERSONNELLES": {
+        "title": "4. Personal skills",
+        "description": "Ability to show mature and responsible attitudes and behaviours"
+      }
+    },
+    "criteres": {
+      "PLANIFIER_ORGANISER": "plan and organize their work efficiently",
+      "COMPRENDRE_DIRECTIVES": "quickly understand work-related instructions",
+      "RYTHME_SOUTENU": "maintain a steady work pace",
+      "ETABLIR_PRIORITES": "set priorities",
+      "RESPECTER_ECHEANCIERS": "meet deadlines",
+      "RESPECTER_MANDATS": "respect the mandates entrusted to them",
+      "ATTENTION_DETAILS": "pay attention to detail when carrying out tasks",
+      "VERIFIER_TRAVAIL": "check their work and make sure nothing was forgotten",
+      "OCCASIONS_PERFECTIONNEMENT": "look for opportunities to improve their skills",
+      "ANALYSE_PROBLEMES": "analyze problems encountered well",
+      "CONTACTS_FACILES": "easily build relationships with people",
+      "TRAVAIL_EQUIPE": "actively contribute to teamwork",
+      "CULTURE_ENTREPRISE": "adapt easily to the company culture",
+      "CRITIQUES_CONSTRUCTIVES": "accept constructive criticism",
+      "RESPECT_ENVERS_LES_GENS": "be respectful toward people",
+      "ECOUTE_ACTIVE": "show active listening by trying to understand the other person's point of view",
+      "INTERET_MOTIVATION": "show interest and motivation at work",
+      "EXPRIMER_IDEES": "express their ideas clearly",
+      "INITIATIVE": "show initiative",
+      "TRAVAIL_SECURITAIRE": "work safely",
+      "SENS_RESPONSABILITES": "show a good sense of responsibility requiring minimal supervision",
+      "PONCTUALITE_ASSIDUITE": "be punctual and regular at work"
+    },
+    "overall": {
+      "title": "Overall assessment of the intern",
+      "precision": "Please elaborate on your assessment",
+      "options": {
+        "DEPASSENT_DE_BEAUCOUP_LES_ATTENTES": "The skills demonstrated far exceed expectations",
+        "DEPASSENT_LES_ATTENTES": "The skills demonstrated exceed expectations",
+        "REPONDENT_PLEINEMENT_AUX_ATTENTES": "The skills demonstrated fully meet expectations",
+        "REPONDENT_PARTIELLEMENT_AUX_ATTENTES": "The skills demonstrated partially meet expectations",
+        "NE_REPONDENT_PAS_AUX_ATTENTES": "The skills demonstrated do not meet expectations"
+      }
+    },
+    "discussed": {
+      "label": "This evaluation was discussed with the intern",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "hours": {
+      "label": "Actual number of supervision hours per week given to the intern",
+      "placeholder": "E.g. 7.5"
+    },
+    "next_internship": {
+      "label": "The company would like to welcome this student for their next internship",
+      "options": {
+        "OUI": "Yes",
+        "NON": "No",
+        "PEUT_ETRE": "Maybe"
+      }
+    },
+    "technical_training": {
+      "label": "Was the intern's technical training sufficient to carry out the internship mandate?",
+      "placeholder": "Your answer..."
+    },
+    "signatory": {
+      "title": "Signatory",
+      "name": "Name (in block letters)",
+      "role": "Position",
+      "name_placeholder": "E.g. Jimmy Donaldson",
+      "role_placeholder": "E.g. Director of Technology"
+    },
+    "submit": "Save the evaluation",
+    "submitting": "Saving...",
+    "errors": {
+      "incomplete": "Please evaluate every criterion: {{nombre}} left.",
+      "overall": "Please choose an overall assessment.",
+      "discussed": "Please indicate whether the evaluation was discussed with the intern.",
+      "hours": "Please enter a valid number of supervision hours.",
+      "next_internship": "Please indicate whether the company would welcome this student for a next internship.",
+      "name": "The signatory's name is required.",
+      "role": "The signatory's position is required."
     }
   },
   "session": {
