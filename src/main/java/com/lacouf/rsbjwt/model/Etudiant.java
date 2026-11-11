@@ -19,6 +19,10 @@ public class Etudiant extends UserApp {
     @OneToMany(mappedBy = "etudiant")
     private List<Candidature> candidatures = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "professeur_id")
+    private Professeur professeur;
+
     public Etudiant(String firstName, String lastName, Credentials credentials, int matricule, String discipline) {
         super(firstName, lastName, credentials);
         this.matricule = matricule;
@@ -62,7 +66,16 @@ public class Etudiant extends UserApp {
     public List<Candidature> getCandidatures() {
         return candidatures;
     }
+
     public void setCandidatures(List<Candidature> candidatures) {
         this.candidatures = candidatures;
+    }
+
+    public Professeur getProfesseur() {
+        return professeur;
+    }
+
+    public void setProfesseur(Professeur professeur) {
+        this.professeur = professeur;
     }
 }

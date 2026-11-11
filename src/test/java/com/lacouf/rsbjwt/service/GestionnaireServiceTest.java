@@ -14,6 +14,11 @@ import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
+import com.lacouf.rsbjwt.model.Professeur;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
+import com.lacouf.rsbjwt.service.dto.AssignationProfesseurResponseDto;
+import com.lacouf.rsbjwt.service.dto.EtudiantPourAssignationDto;
+import com.lacouf.rsbjwt.service.dto.ProfesseurPourAssignationDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
@@ -47,6 +52,9 @@ public class GestionnaireServiceTest {
 
     @Mock
     private CandidatureRepository candidatureRepository;
+
+    @Mock
+    private ProfesseurRepository professeurRepository;
 
     @Mock
     private NotificationService notificationService;
@@ -415,5 +423,226 @@ public class GestionnaireServiceTest {
         assertNotNull(resultat);
         assertTrue(resultat.isEmpty());
         verify(etudiantRepository).findEtudiantsTrouveStage(anneeArchive);
+    }
+
+    @Test
+    void getEtudiantsPourAssignation_avecAnnee() {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        when(etudiantRepository.findEtudiantsTrouveStage(2026)).thenReturn(List.of(etudiant));
+
+        // Act
+        List<EtudiantPourAssignationDto> resultat = gestionnaireService.getEtudiantsPourAssignation(2026);
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals("Sophie", resultat.getFirst().firstName());
+        verify(etudiantRepository).findEtudiantsTrouveStage(2026);
+    }
+
+    @Test
+    void getEtudiantsPourAssignation_sansAnnee() {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Luc", "Belanger", new Credentials("luc@test.com", "pass", Role.ETUDIANT), 654321, "info");
+        etudiant.setId(2L);
+        when(etudiantRepository.findEtudiantsTrouveStage()).thenReturn(List.of(etudiant));
+
+        // Act
+        List<EtudiantPourAssignationDto> resultat = gestionnaireService.getEtudiantsPourAssignation(null);
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals("Luc", resultat.getFirst().firstName());
+        verify(etudiantRepository).findEtudiantsTrouveStage();
+    }
+
+    @Test
+    void getProfesseursPourAssignation_avecNom() {
+        // Arrange
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        when(professeurRepository.findByNom("Martin")).thenReturn(List.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(2L);
+
+        // Act
+        List<ProfesseurPourAssignationDto> resultat = gestionnaireService.getProfesseursPourAssignation("Martin");
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals("Martin", resultat.getFirst().firstName());
+        assertEquals(2L, resultat.getFirst().nombreEtudiantsAssignes());
+        assertFalse(resultat.getFirst().tropEtudiants());
+    }
+
+    @Test
+    void getProfesseursPourAssignation_sansNom() {
+        // Arrange
+        Professeur prof = new Professeur("Chantal", "Gagnon", new Credentials("chantal@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(20L);
+        when(professeurRepository.findAll()).thenReturn(List.of(prof));
+        when(etudiantRepository.countByProfesseurId(20L)).thenReturn(6L);
+
+        // Act
+        List<ProfesseurPourAssignationDto> resultat = gestionnaireService.getProfesseursPourAssignation(null);
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals(6L, resultat.getFirst().nombreEtudiantsAssignes());
+        assertTrue(resultat.getFirst().tropEtudiants());
+    }
+
+    private Etudiant createEtudiantAvecStage(Long id, String prenom, String nom, String email, int matricule) {
+        Etudiant etudiant = new Etudiant(prenom, nom, new Credentials(email, "pass", Role.ETUDIANT), matricule, "info");
+        etudiant.setId(id);
+        OffreStage offre = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
+        offre.setId(1L);
+        Candidature cand = new Candidature(etudiant, offre);
+        cand.setId(1L);
+        cand.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(cand));
+        return etudiant;
+    }
+
+    @Test
+    void assignerProfesseur_avecProfesseurId_succes() throws Exception {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(professeurRepository.findById(10L)).thenReturn(Optional.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(2L);
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        AssignationProfesseurResponseDto reponse = gestionnaireService.assignerProfesseur(1L, 10L, null);
+
+        // Assert
+        assertNotNull(reponse);
+        assertTrue(reponse.success());
+        assertEquals("Sophie", reponse.etudiant().firstName());
+        assertEquals("Martin", reponse.professeur().firstName());
+        assertNull(reponse.avertissement());
+    }
+
+    @Test
+    void assignerProfesseur_avecProfesseurNom_succes() throws Exception {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(2L, "Luc", "Belanger", "luc@test.com", 654321);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        when(etudiantRepository.findById(2L)).thenReturn(Optional.of(etudiant));
+        when(professeurRepository.findByNom("Martin Tremblay")).thenReturn(List.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(1L);
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        AssignationProfesseurResponseDto reponse = gestionnaireService.assignerProfesseur(2L, null, "Martin Tremblay");
+
+        // Assert
+        assertNotNull(reponse);
+        assertTrue(reponse.success());
+        assertEquals("Martin", reponse.professeur().firstName());
+    }
+
+    @Test
+    void assignerProfesseur_depasseSeuilCharge_retourneAvertissement() throws Exception {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(professeurRepository.findById(10L)).thenReturn(Optional.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(6L);
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        AssignationProfesseurResponseDto reponse = gestionnaireService.assignerProfesseur(1L, 10L, null);
+
+        // Assert
+        assertNotNull(reponse);
+        assertNotNull(reponse.avertissement());
+        assertTrue(reponse.avertissement().contains("seuil recommandé"));
+    }
+
+    @Test
+    void assignerProfesseur_etudiantSansStage_lanceException() {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(1L, 10L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("L'étudiant n'a pas encore trouvé de stage"));
+    }
+
+    @Test
+    void assignerProfesseur_etudiantNonTrouve_lanceException() {
+        // Arrange
+        when(etudiantRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(99L, 10L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("Étudiant non trouvé"));
+    }
+
+    @Test
+    void assignerProfesseur_professeurNonTrouve_lanceException() {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(professeurRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(1L, 99L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("Professeur non trouvé"));
+    }
+
+    @Test
+    void desassignerProfesseur_succes() throws Exception {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        etudiant.setProfesseur(prof);
+
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        EtudiantPourAssignationDto resultat = gestionnaireService.desassignerProfesseur(1L);
+
+        // Assert
+        assertNotNull(resultat);
+        assertNull(resultat.professeurAssigne());
+        assertFalse(resultat.estAssigne());
+    }
+
+    @Test
+    void desassignerProfesseur_etudiantNonTrouve_lanceException() {
+        // Arrange
+        when(etudiantRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.desassignerProfesseur(99L)
+        );
+
+        assertTrue(exception.getMessage().contains("Étudiant non trouvé"));
     }
 }

@@ -1,4 +1,4 @@
-﻿import {BASE_URL} from "../../components/config/Config.jsx";
+import {BASE_URL} from "../../components/config/Config.jsx";
 
 export async function getCvsEnAttente(authHeader) {
     const response = await fetch(`${BASE_URL}/gestionnaire/cv/en-attente`, {
@@ -98,5 +98,73 @@ export async function getEtudiantsTrouveStage(authHeader, annee = null) {
         : `${BASE_URL}/gestionnaire/rapports/etudiants-trouve-stage`;
     const response = await fetch(url, { headers: authHeader });
     if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants ayant trouvé un stage");
+    return response.json();
+}
+
+export async function getEtudiantsPourAssignation(authHeader, annee = null) {
+    const url = annee
+        ? `${BASE_URL}/gestionnaire/assignation-professeurs/etudiants?annee=${annee}`
+        : `${BASE_URL}/gestionnaire/assignation-professeurs/etudiants`;
+    const response = await fetch(url, { headers: authHeader });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des étudiants pour assignation");
+    return response.json();
+}
+
+export async function getProfesseursPourAssignation(authHeader, nom = null) {
+    const url = nom && nom.trim().length > 0
+        ? `${BASE_URL}/gestionnaire/assignation-professeurs/professeurs?nom=${encodeURIComponent(nom.trim())}`
+        : `${BASE_URL}/gestionnaire/assignation-professeurs/professeurs`;
+    const response = await fetch(url, { headers: authHeader });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des professeurs");
+    return response.json();
+}
+
+export async function assignerProfesseur(etudiantId, professeurId, authHeader, professeurNom = null) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/assignation-professeurs`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeader,
+        },
+        body: JSON.stringify({ etudiantId, professeurId, professeurNom })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de l'assignation du professeur");
+    }
+
+    return response.json();
+}
+
+export async function modifierAssignationProfesseur(etudiantId, professeurId, authHeader, professeurNom = null) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/assignation-professeurs`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeader,
+        },
+        body: JSON.stringify({ etudiantId, professeurId, professeurNom })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de la modification de l'assignation");
+    }
+
+    return response.json();
+}
+
+export async function desassignerProfesseur(etudiantId, authHeader) {
+    const response = await fetch(`${BASE_URL}/gestionnaire/assignation-professeurs/${etudiantId}`, {
+        method: 'DELETE',
+        headers: authHeader,
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de la désassignation du professeur");
+    }
+
     return response.json();
 }

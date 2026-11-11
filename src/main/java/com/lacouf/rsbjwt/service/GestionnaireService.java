@@ -1,20 +1,24 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
+import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Notification;
+import com.lacouf.rsbjwt.model.OffreStage;
+import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
-import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
 import com.lacouf.rsbjwt.service.dto.*;
-import com.lacouf.rsbjwt.service.dto.CvDto;
-import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,14 +29,37 @@ public class GestionnaireService {
     private final CvRepository cvRepository;
     private final OffreStageRepository offreStageRepository;
     private final EtudiantRepository etudiantRepository;
+    private final ProfesseurRepository professeurRepository;
     private final NotificationService notificationService;
 
-    public GestionnaireService(CvRepository cvRepository, OffreStageRepository offreStageRepository, EtudiantRepository etudiantRepository, CandidatureRepository candidatureRepository, NotificationService notificationService) {
+    @Autowired
+    public GestionnaireService(CvRepository cvRepository,
+                              OffreStageRepository offreStageRepository,
+                              EtudiantRepository etudiantRepository,
+                              CandidatureRepository candidatureRepository,
+                              ProfesseurRepository professeurRepository,
+                              NotificationService notificationService) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
         this.candidatureRepository = candidatureRepository;
+        this.professeurRepository = professeurRepository;
         this.notificationService = notificationService;
+    }
+
+    public GestionnaireService(CvRepository cvRepository,
+                              OffreStageRepository offreStageRepository,
+                              EtudiantRepository etudiantRepository,
+                              CandidatureRepository candidatureRepository,
+                              ProfesseurRepository professeurRepository) {
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null);
+    }
+
+    public GestionnaireService(CvRepository cvRepository,
+                              OffreStageRepository offreStageRepository,
+                              EtudiantRepository etudiantRepository,
+                              CandidatureRepository candidatureRepository) {
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null);
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -43,7 +70,9 @@ public class GestionnaireService {
             throw new Exception("Ce CV a deja ete traite.");
         }
         cv.accepterApprobation();
-        notificationService.pushNotification(Notification.cvAccepted(), cv.getEtudiantId());
+        if (notificationService != null) {
+            notificationService.pushNotification(Notification.cvAccepted(), cv.getEtudiantId());
+        }
         return CvDto.create(cvRepository.save(cv));
     }
 
@@ -55,7 +84,9 @@ public class GestionnaireService {
             throw new Exception("Ce CV a deja ete traite.");
         }
         cv.refuserApprobation(message);
-        notificationService.pushNotification(Notification.cvRejected(), cv.getEtudiantId());
+        if (notificationService != null) {
+            notificationService.pushNotification(Notification.cvRejected(), cv.getEtudiantId());
+        }
         return CvDto.create(cvRepository.save(cv));
     }
 
@@ -209,5 +240,148 @@ public class GestionnaireService {
                 .stream()
                 .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
                 .toList();
+    }
+
+    public List<EtudiantPourAssignationDto> getEtudiantsPourAssignation(Integer annee) {
+        List<Etudiant> etudiants = (annee != null)
+                ? etudiantRepository.findEtudiantsTrouveStage(annee)
+                : etudiantRepository.findEtudiantsTrouveStage();
+
+        return etudiants.stream()
+                .map(e -> toEtudiantPourAssignationDto(e, annee))
+                .toList();
+    }
+
+    public List<ProfesseurPourAssignationDto> getProfesseursPourAssignation(String nom) {
+        if (professeurRepository == null) return List.of();
+        List<Professeur> professeurs = (nom != null && !nom.isBlank())
+                ? professeurRepository.findByNom(nom.trim())
+                : professeurRepository.findAll();
+
+        return professeurs.stream()
+                .map(p -> {
+                    long count = etudiantRepository.countByProfesseurId(p.getId());
+                    return ProfesseurPourAssignationDto.create(p, count);
+                })
+                .toList();
+    }
+
+    public List<ProfesseurPourAssignationDto> getProfesseursPourAssignation() {
+        return getProfesseursPourAssignation(null);
+    }
+
+    public AssignationProfesseurResponseDto assignerProfesseur(Long etudiantId, Long professeurId, String professeurNom) throws Exception {
+        if (etudiantId == null) {
+            throw new Exception("L'identifiant de l'étudiant est obligatoire.");
+        }
+        if (professeurId == null && (professeurNom == null || professeurNom.isBlank())) {
+            throw new Exception("L'identifiant ou le nom du professeur est obligatoire.");
+        }
+
+        Etudiant etudiant = etudiantRepository.findById(etudiantId)
+                .orElseThrow(() -> new Exception("Étudiant non trouvé avec l'id : " + etudiantId));
+
+        boolean aTrouveStage = etudiant.getCandidatures() != null && etudiant.getCandidatures().stream().anyMatch(c ->
+                c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE
+        );
+        if (!aTrouveStage) {
+            throw new Exception("L'étudiant n'a pas encore trouvé de stage. L'assignation d'un professeur n'est pas possible.");
+        }
+
+        Professeur professeur = null;
+        if (professeurId != null) {
+            professeur = (professeurRepository != null)
+                    ? professeurRepository.findById(professeurId)
+                        .orElseThrow(() -> new Exception("Professeur non trouvé avec l'id : " + professeurId))
+                    : null;
+        } else {
+            List<Professeur> professeurs = (professeurRepository != null)
+                    ? professeurRepository.findByNom(professeurNom.trim())
+                    : List.of();
+            if (professeurs.isEmpty()) {
+                throw new Exception("Aucun professeur trouvé avec le nom : " + professeurNom);
+            }
+            professeur = professeurs.get(0);
+        }
+
+        if (professeur == null) {
+            throw new Exception("Professeur non trouvé.");
+        }
+
+        long countActuel = etudiantRepository.countByProfesseurId(professeur.getId());
+        boolean dejaAssigne = etudiant.getProfesseur() != null && etudiant.getProfesseur().getId().equals(professeur.getId());
+
+        String avertissement = null;
+        if (!dejaAssigne && countActuel >= ProfesseurPourAssignationDto.SEUIL_MAX_RECOMMANDE) {
+            avertissement = "Attention : Le professeur " + professeur.getFirstName() + " " + professeur.getLastName() +
+                    " a déjà " + countActuel + " étudiants assignés (seuil recommandé : " + ProfesseurPourAssignationDto.SEUIL_MAX_RECOMMANDE + ").";
+        }
+
+        boolean estModification = etudiant.getProfesseur() != null && !dejaAssigne;
+
+        etudiant.setProfesseur(professeur);
+        Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
+
+        String message = estModification
+                ? "L'assignation du professeur a été modifiée avec succès."
+                : "Le professeur a été assigné avec succès à l'étudiant.";
+
+        return AssignationProfesseurResponseDto.succes(
+                toEtudiantPourAssignationDto(etudiantSauvegarde),
+                ProfesseurDto.create(professeur),
+                message,
+                avertissement
+        );
+    }
+
+    public AssignationProfesseurResponseDto assignerProfesseur(Long etudiantId, Long professeurId) throws Exception {
+        return assignerProfesseur(etudiantId, professeurId, null);
+    }
+
+    public EtudiantPourAssignationDto desassignerProfesseur(Long etudiantId) throws Exception {
+        Etudiant etudiant = etudiantRepository.findById(etudiantId)
+                .orElseThrow(() -> new Exception("Étudiant non trouvé avec l'id : " + etudiantId));
+
+        etudiant.setProfesseur(null);
+        return toEtudiantPourAssignationDto(etudiantRepository.save(etudiant));
+    }
+
+    private EtudiantPourAssignationDto toEtudiantPourAssignationDto(Etudiant etudiant) {
+        return toEtudiantPourAssignationDto(etudiant, null);
+    }
+
+    private EtudiantPourAssignationDto toEtudiantPourAssignationDto(Etudiant etudiant, Integer annee) {
+        List<Candidature> candidatures = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
+        List<Candidature> candidaturesFiltrees = (annee != null)
+                ? candidatures.stream().filter(c -> annee.equals(c.getAnneeOffre())).toList()
+                : candidatures;
+
+        Candidature stage = candidaturesFiltrees.stream()
+                .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
+                .findFirst()
+                .orElseGet(() -> candidaturesFiltrees.stream()
+                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
+                        .findFirst()
+                        .orElse(null));
+
+        boolean aTrouve = stage != null;
+        String titre = stage != null ? stage.getTitreOffre() : null;
+        String entreprise = stage != null ? stage.getNomEntreprise() : null;
+        ProfesseurDto profDto = etudiant.getProfesseur() != null ? ProfesseurDto.create(etudiant.getProfesseur()) : null;
+
+        return new EtudiantPourAssignationDto(
+                etudiant.getId(),
+                etudiant.getFirstName(),
+                etudiant.getLastName(),
+                etudiant.getEmail(),
+                etudiant.getMatricule(),
+                etudiant.getDiscipline(),
+                aTrouve,
+                titre,
+                entreprise,
+                profDto,
+                profDto != null,
+                CandidatureDto.create(candidaturesFiltrees)
+        );
     }
 }

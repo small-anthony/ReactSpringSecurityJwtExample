@@ -1,8 +1,13 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.model.auth.Role;
+
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.presentation.RequestDto.ModifierOffreRequest;
+import com.lacouf.rsbjwt.presentation.RequestDto.CreationConvocationRequest;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
+import java.time.Instant;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.ConvocationService;
@@ -39,6 +44,17 @@ public class EmployeurControllerTest {
     @InjectMocks
     private EmployeurController employeurController;
 
+    private ConvocationDto createDummyConvocationDto() {
+        return new ConvocationDto(
+                1L, "Message", StatutConvocation.EN_ATTENTE, Instant.now().plusSeconds(3600),
+                List.of(), null, null
+        );
+    }
+
+    private EmployeurDto createDummyEmployeurDto() {
+        return new EmployeurDto(1, "Valentin", "Dimitrov", "employeur@test.com", Role.EMPLOYEUR, "CGI Inc.", "514-555-1234");
+    }
+
     @Test
     void signUpEmployeur_shouldReturnCreated() throws Exception {
 //        ARRANGE
@@ -51,7 +67,7 @@ public class EmployeurControllerTest {
         request.put("password", "password");
         request.put("passwordConfirmation", "password");
 
-        EmployeurDto employeurDto = mock(EmployeurDto.class);
+        EmployeurDto employeurDto = createDummyEmployeurDto();
 
         when(userAppService.registerEmployeur(
                 "Jimmy",
@@ -447,5 +463,186 @@ public class EmployeurControllerTest {
 //        ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(convocations, response.getBody());
+    }
+
+    @Test
+    void convoquerCandidat_succes() throws Exception {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        CreationConvocationRequest request = new CreationConvocationRequest("Bienvenue", List.of());
+        ConvocationDto convocationDto = createDummyConvocationDto();
+
+        when(convocationService.creerConvocation("employeur@entreprise.com", 1L, request.rendezVousPossibles(), request.messageEmployeur()))
+                .thenReturn(convocationDto);
+
+        // Act
+        ResponseEntity<Object> response = employeurController.convoquerCandidat(1L, request, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(convocationDto, response.getBody());
+    }
+
+    @Test
+    void convoquerCandidat_erreur_retourneBadRequest() throws Exception {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        CreationConvocationRequest request = new CreationConvocationRequest("Bienvenue", List.of());
+
+        when(convocationService.creerConvocation("employeur@entreprise.com", 1L, request.rendezVousPossibles(), request.messageEmployeur()))
+                .thenThrow(new Exception("Erreur de convocation"));
+
+        // Act
+        ResponseEntity<Object> response = employeurController.convoquerCandidat(1L, request, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(Map.of("message", "Erreur de convocation"), response.getBody());
+    }
+
+    @Test
+    void getConvocationsEmployeur_sansAnnee_shouldReturnOk() {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        List<ConvocationDto> convocations = List.of(createDummyConvocationDto());
+        when(convocationService.getConvocationsEmployeur("employeur@entreprise.com")).thenReturn(convocations);
+
+        // Act
+        ResponseEntity<Object> response = employeurController.getConvocationsEmployeur(null, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(convocations, response.getBody());
+    }
+
+    @Test
+    void getConvocationsEmployeur_erreur_shouldReturnBadRequest() {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        when(convocationService.getConvocationsEmployeur("employeur@entreprise.com"))
+                .thenThrow(new RuntimeException("Erreur convocations"));
+
+        // Act
+        ResponseEntity<Object> response = employeurController.getConvocationsEmployeur(null, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur convocations", response.getBody());
+    }
+
+    @Test
+    void getOffres_surchargeSansAnnee() throws Exception {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        List<OffreStageDto> offres = List.of(
+                new OffreStageDto(1, "Titre", "Desc", "Ent", StatusAcceptation.EN_ATTENTE, "")
+        );
+        when(employeurService.getOffres("employeur@entreprise.com")).thenReturn(offres);
+
+        // Act
+        ResponseEntity<Object> response = employeurController.getOffres(authentication);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offres, response.getBody());
+    }
+
+    @Test
+    void getAnnees_erreur_retourneBadRequest() throws Exception {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+        when(employeurService.getAnnees("employeur@entreprise.com")).thenThrow(new Exception("Erreur annees"));
+
+        // Act
+        ResponseEntity<Object> response = employeurController.getAnnees(authentication);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur annees", response.getBody());
+    }
+
+    @Test
+    void testCreerOffre_avecAnnee_succes() throws Exception {
+        // Arrange
+        Map<String, String> request = new HashMap<>();
+        request.put("titre", "Stagiaire");
+        request.put("nomEntreprise", "CGI");
+        request.put("description", "Dev web");
+        request.put("discipline", "info");
+        request.put("duree", "15 sem");
+        request.put("salaire", "25$/h");
+        request.put("exigences", "Java");
+        request.put("annee", "2026");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "employeur@entreprise.com", 2026))
+                .thenReturn(offreDto);
+
+        // Act
+        ResponseEntity<Object> response = employeurController.creerOffre(request, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
+    }
+
+    @Test
+    void testCreerOffre_avecChampsOptionnelsSansAnnee_succes() throws Exception {
+        // Arrange
+        Map<String, String> request = new HashMap<>();
+        request.put("titre", "Stagiaire");
+        request.put("nomEntreprise", "CGI");
+        request.put("description", "Dev web");
+        request.put("discipline", "info");
+        request.put("duree", "15 sem");
+        request.put("salaire", "25$/h");
+        request.put("exigences", "Java");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "employeur@entreprise.com"))
+                .thenReturn(offreDto);
+
+        // Act
+        ResponseEntity<Object> response = employeurController.creerOffre(request, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
+    }
+
+    @Test
+    void testCreerOffre_avecAnneeInvalide_succes() throws Exception {
+        // Arrange
+        Map<String, String> request = new HashMap<>();
+        request.put("titre", "Stagiaire");
+        request.put("nomEntreprise", "CGI");
+        request.put("description", "Dev web");
+        request.put("annee", "non-nombre");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("employeur@entreprise.com");
+
+        OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "employeur@entreprise.com"))
+                .thenReturn(offreDto);
+
+        // Act
+        ResponseEntity<Object> response = employeurController.creerOffre(request, authentication);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(offreDto, response.getBody());
     }
 }

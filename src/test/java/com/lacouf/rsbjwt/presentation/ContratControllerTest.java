@@ -3,7 +3,9 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.service.ContratService;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
+import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
+import java.time.Instant;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,28 @@ public class ContratControllerTest {
 
 	private CreationContratRequest requestValide;
 
+	private ContratDto createDummyContratDto() {
+		return new ContratDto(
+				1L, 1L, 1L, "Dev Web", "CGI",
+				"Employeur Nom", "employeur@test.com",
+				"Martin", "Sophie", "sophie@test.com", 123456,
+				LocalDate.now(), LocalDate.now().plusMonths(3),
+				"35h / semaine", "20$ / heure", "Developper des applications", "Conditions",
+				StatutContrat.EN_ATTENTE_SIGNATURE, Instant.now(),
+				false, false, false,
+				false, false, false
+		);
+	}
+
+	private CandidaturePourContratDto createDummyCandidaturePourContratDto() {
+		return new CandidaturePourContratDto(
+				1L, 1L, "Dev Web", "CGI",
+				"Employeur Nom", "employeur@test.com",
+				1L, "Martin", "Sophie", "sophie@test.com", 123456,
+				false, null
+		);
+	}
+
 	@BeforeEach
 	void setUp() {
 		requestValide = new CreationContratRequest(
@@ -52,7 +76,7 @@ public class ContratControllerTest {
 		// Arrange
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("gestionnaire@test.com");
-		when(contratService.creerContrat(requestValide, "gestionnaire@test.com")).thenReturn(mock(ContratDto.class));
+		when(contratService.creerContrat(requestValide, "gestionnaire@test.com")).thenReturn(createDummyContratDto());
 
 		// Act
 		ResponseEntity<?> response = contratController.creerContrat(requestValide, auth);
@@ -80,7 +104,7 @@ public class ContratControllerTest {
 	@Test
 	void getCandidaturesAccepteesPourContrat_devraitRetournerListe() {
 		// Arrange
-		List<CandidaturePourContratDto> liste = List.of(mock(CandidaturePourContratDto.class));
+		List<CandidaturePourContratDto> liste = List.of(createDummyCandidaturePourContratDto());
 		when(contratService.getCandidaturesPourContrat()).thenReturn(liste);
 
 		// Act
@@ -94,7 +118,7 @@ public class ContratControllerTest {
 	@Test
 	void getTousLesContrats_devraitRetournerListe() {
 		// Arrange
-		List<ContratDto> liste = List.of(mock(ContratDto.class));
+		List<ContratDto> liste = List.of(createDummyContratDto());
 		when(contratService.getTousLesContrats()).thenReturn(liste);
 
 		// Act
@@ -110,7 +134,7 @@ public class ContratControllerTest {
 		// Arrange
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("etudiant@test.com");
-		List<ContratDto> liste = List.of(mock(ContratDto.class));
+		List<ContratDto> liste = List.of(createDummyContratDto());
 		when(contratService.getContratsEtudiant("etudiant@test.com")).thenReturn(liste);
 
 		// Act
@@ -126,7 +150,7 @@ public class ContratControllerTest {
 		// Arrange
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("employeur@test.com");
-		List<ContratDto> liste = List.of(mock(ContratDto.class));
+		List<ContratDto> liste = List.of(createDummyContratDto());
 		when(contratService.getContratsEmployeur("employeur@test.com")).thenReturn(liste);
 
 		// Act
@@ -140,7 +164,7 @@ public class ContratControllerTest {
 	@Test
 	void getContratById_shouldReturnContrat() throws Exception {
 		// Arrange
-		ContratDto dto = mock(ContratDto.class);
+		ContratDto dto = createDummyContratDto();
 		when(contratService.getContratById(1L)).thenReturn(dto);
 
 		// Act
@@ -169,7 +193,7 @@ public class ContratControllerTest {
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("etudiant@test.com");
 		MultipartFile file = mock(MultipartFile.class);
-		ContratDto dto = mock(ContratDto.class);
+		ContratDto dto = createDummyContratDto();
 		when(contratService.signerContrat(1L, "etudiant@test.com", file)).thenReturn(dto);
 
 		// Act
@@ -201,7 +225,7 @@ public class ContratControllerTest {
 		// Arrange
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("etudiant@test.com");
-		ContratDto dto = mock(ContratDto.class);
+		ContratDto dto = createDummyContratDto();
 		when(contratService.rejeterContrat(1L, "etudiant@test.com")).thenReturn(dto);
 
 		// Act

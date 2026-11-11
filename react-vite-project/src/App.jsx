@@ -18,6 +18,8 @@ import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
+import AssignationProfesseurs from "./components/page/AssignationProfesseurs.jsx";
+import ProfesseurEtudiants from "./components/page/ProfesseurEtudiants.jsx";
 import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
 import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
 import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
@@ -145,7 +147,7 @@ function App() {
 
                     <Route
                         path="professeur"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <PreposeHome /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <ProfesseurEtudiants /> : <Navigate to="/" />))}
                     />
 
                     <Route
@@ -168,6 +170,15 @@ function App() {
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/assignation-professeurs"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <AssignationProfesseurs /> :
                                         <Navigate to="/" />
                         }
                     />

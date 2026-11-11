@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     boolean existsByMatricule(int matricule);
+
     @Query("SELECT e FROM Etudiant e WHERE " +
             "LOWER(e.firstName) LIKE LOWER(CONCAT('%', :motCle, '%')) OR " +
             "LOWER(e.lastName) LIKE LOWER(CONCAT('%', :motCle, '%')) OR " +
@@ -90,6 +91,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
 
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
+        LEFT JOIN FETCH e.professeur
         JOIN FETCH e.candidatures c
         WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE)
     """)
@@ -97,9 +99,28 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
 
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
+        LEFT JOIN FETCH e.professeur
         JOIN FETCH e.candidatures c
         WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE)
         AND c.offreStage.annee = :annee
     """)
     List<Etudiant> findEtudiantsTrouveStage(@Param("annee") int annee);
+
+    @Query("""
+        SELECT DISTINCT e FROM Etudiant e
+        LEFT JOIN FETCH e.candidatures c
+        LEFT JOIN FETCH c.offreStage
+        WHERE e.professeur.id = :professeurId
+    """)
+    List<Etudiant> findByProfesseurId(@Param("professeurId") Long professeurId);
+
+    @Query("""
+        SELECT DISTINCT e FROM Etudiant e
+        LEFT JOIN FETCH e.candidatures c
+        LEFT JOIN FETCH c.offreStage
+        WHERE LOWER(e.professeur.credentials.email) = LOWER(:email)
+    """)
+    List<Etudiant> findByProfesseurEmail(@Param("email") String email);
+
+    long countByProfesseurId(Long professeurId);
 }
