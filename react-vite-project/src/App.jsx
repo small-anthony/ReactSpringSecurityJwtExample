@@ -8,7 +8,6 @@ import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
 import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
 import CreerOffre from "./components/page/CreerOffre.jsx";
-import ProfileGestionnaire from "./components/page/ProfileGestionnaire.jsx";
 import ProfileEmployeur from "./components/page/ProfileEmployeur.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
@@ -127,7 +126,7 @@ function App() {
 
                     <Route
                         path="gestionnaire"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ProfileGestionnaire /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <RapportsEtudiants /> : <Navigate to="/" />))}
                     />
 
                     <Route
@@ -140,20 +139,13 @@ function App() {
                         element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ApprobationCvs /> : <Navigate to="/" />))}
                     />
                     <Route
+                        path="gestionnaire/rapports" element={<Navigate to="/gestionnaire" replace />} />
+                    <Route
                         path="gestionnaire/contrats"
                         element={
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
-                                        <Navigate to="/" />
-                        }
-                    />
-                    <Route
-                        path="gestionnaire/rapports"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "GESTIONNAIRE" ? <RapportsEtudiants /> :
                                         <Navigate to="/" />
                         }
                     />

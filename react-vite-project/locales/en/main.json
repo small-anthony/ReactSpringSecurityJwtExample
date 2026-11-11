@@ -406,7 +406,8 @@
     "cvs": "Resume Approvals",
     "offres": "Offer Approvals",
     "contrats": "Internship Contracts",
-    "rapports": "Student Reports"
+    "rapports": "Student Reports",
+    "dashboard": "Dashboard"
   },
   "rapports_etudiants": {
     "title": "Student Reports",
@@ -829,5 +830,40 @@
   "session": {
     "toutes": "All sessions",
     "libelle": "Winter {{annee}}"
+  },
+  "gestionnaire_dashboard": {
+    "title": "Student Progress Tracking",
+    "subtitle": "Dashboard of student progress and internship placement status.",
+    "kpi_total": "Total Students",
+    "status": {
+      "STAGE_TROUVE": "Internship Found",
+      "EN_ATTENTE_REPONSE": "Waiting for Response",
+      "EN_ATTENTE_ENTREVUE": "Waiting for Interview",
+      "SANS_CONVOCATION": "No Interview Invitation",
+      "AUCUNE_CANDIDATURE": "No Application Submitted"
+    },
+    "search_placeholder": "Search by name, email or student ID...",
+    "total": "Total: {{count}} student",
+    "total_plural": "Total: {{count}} students",
+    "loading": "Loading students...",
+    "empty": "No students match the selected criteria.",
+    "error_fetch": "Error loading student data.",
+    "th_student": "Student",
+    "th_matricule": "Student ID",
+    "th_email": "Email",
+    "th_discipline": "Discipline",
+    "th_status": "Internship Status",
+    "th_offers": "Applications",
+    "application": "application",
+    "applications_plural": "applications",
+    "no_application": "No applications",
+    "modal_applications_empty": "This student has not applied to any offers for this session.",
+    "statut_candidature": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTEE": "Accepted",
+      "REFUSEE": "Rejected",
+      "EMBAUCHEE": "Hired"
+    },
+    "view_count": "View ({{count}})"
   }
 }
