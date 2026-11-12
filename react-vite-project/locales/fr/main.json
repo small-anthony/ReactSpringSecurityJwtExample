@@ -656,13 +656,29 @@
       "horaire": "Horaire de travail",
       "horaire_placeholder": "Ex: Du lundi au vendredi, 9h à 17h (35h/semaine)",
       "salaire": "Rémunération / Salaire",
-      "salaire_placeholder": "Ex: 22.50$/h ou 800$/semaine",
+      "salaire_placeholder": "22.50",
+      "duree_calculee": "{{count}} semaines",
       "taches": "Description des tâches et responsabilités",
       "taches_placeholder": "Détaillez les tâches confiées au stagiaire...",
       "conditions": "Conditions de travail et avantages",
       "conditions_placeholder": "Ex: Télétravail hybride (2 jours au bureau), équipement informatique fourni...",
       "submit": "Créer et envoyer pour signature",
-      "submitting": "Création en cours..."
+      "submitting": "Création en cours...",
+      "errors": {
+        "candidature": "Veuillez choisir un étudiant embauché.",
+        "already_exists": "Un contrat existe déjà pour cette candidature.",
+        "dateDebut": "La date de début est obligatoire.",
+        "dateFin": "La date de fin est obligatoire.",
+        "date_order": "La date de fin ne peut pas être antérieure à la date de début.",
+        "horaire": "L'horaire de travail est obligatoire.",
+        "salaire": {
+          "required": "La rémunération est obligatoire.",
+          "format": "Format de rémunération invalide (doit être entre 0 et 50 $/h)."
+        },
+        "taches": "La description des tâches est obligatoire.",
+        "tachesLength": "La description des tâches doit contenir au moins 20 caractères.",
+        "conditions": "Les conditions de travail sont obligatoires."
+      }
     },
     "status": {
       "label": "Statut",

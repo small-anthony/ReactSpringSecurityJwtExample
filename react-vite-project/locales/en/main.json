@@ -655,13 +655,29 @@
       "horaire": "Work Schedule",
       "horaire_placeholder": "E.g.: Monday to Friday, 9am to 5pm (35h/week)",
       "salaire": "Compensation / Salary",
-      "salaire_placeholder": "E.g.: $22.50/hr or $800/week",
+      "salaire_placeholder": "22.50",
+      "duree_calculee": "{{count}} weeks",
       "taches": "Description of Duties & Responsibilities",
       "taches_placeholder": "Detail the tasks assigned to the intern...",
       "conditions": "Working Conditions & Perks",
       "conditions_placeholder": "E.g.: Hybrid remote work (2 days at office), laptop provided...",
       "submit": "Create & Send for Signatures",
-      "submitting": "Creating..."
+      "submitting": "Creating...",
+      "errors": {
+        "candidature": "Please select a hired student.",
+        "already_exists": "A contract already exists for this application.",
+        "dateDebut": "Start date is required.",
+        "dateFin": "End date is required.",
+        "date_order": "End date cannot be earlier than start date.",
+        "horaire": "Work schedule is required.",
+        "salaire": {
+          "required": "Compensation is required.",
+          "format": "Invalid compensation format (must be between 0 and 50 $/hr)."
+        },
+        "taches": "Description of duties is required.",
+        "tachesLength": "Description of duties must contain at least 20 characters.",
+        "conditions": "Working conditions are required."
+      }
     },
     "status": {
       "label": "Status",

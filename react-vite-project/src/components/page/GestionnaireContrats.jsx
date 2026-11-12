@@ -33,6 +33,40 @@ export default function GestionnaireContrats() {
 
   const authHeader = authService.buildAuthHeader();
 
+  const traduireErreurContrat = (message) => {
+    if (!message) return "";
+    const msg = String(message).trim();
+    if (msg.startsWith("contrats.alerts.")) {
+      return t(msg);
+    }
+    const lower = msg.toLowerCase();
+    if (lower.includes("informations obligatoires manquent") || lower.includes("mandatory information is missing")) {
+      return t("contrats.alerts.error_missing_fields");
+    }
+    if (lower.includes("date de fin") && (lower.includes("antérieure") || lower.includes("anterieure") || lower.includes("avant") || lower.includes("earlier") || lower.includes("before"))) {
+      return t("contrats.alerts.error_date_order");
+    }
+    if (lower.includes("un contrat existe") || lower.includes("contract already exists")) {
+      return t("contrats.alerts.error_already_exists");
+    }
+    if (lower.includes("pas été embauché") || lower.includes("pas ete embauche") || lower.includes("was not hired")) {
+      return t("contrats.alerts.error_not_hired");
+    }
+    if (lower.includes("candidature introuvable") || lower.includes("chargement des données") || lower.includes("loading contract data")) {
+      return t("contrats.alerts.error_load");
+    }
+    if (lower.includes("téléchargement") || lower.includes("telechargement") || lower.includes("downloading")) {
+      return t("contrats.alerts.error_download");
+    }
+    if (lower.includes("ouverture") || lower.includes("opening")) {
+      return t("contrats.alerts.error_open");
+    }
+    if (lower.includes("refus") || lower.includes("refusing") || lower.includes("refuse")) {
+      return t("contrats.alerts.error_refuse");
+    }
+    return message;
+  };
+
   const chargerDonnees = async () => {
     try {
       setLoading(true);
@@ -213,7 +247,7 @@ export default function GestionnaireContrats() {
             id="contrat-error-alert"
             className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md font-medium shadow-sm flex items-center justify-between"
           >
-            <span>{erreur}</span>
+            <span>{traduireErreurContrat(erreur)}</span>
             <button
               onClick={() => setErreur(null)}
               className="text-red-500 hover:text-red-700 p-1"
