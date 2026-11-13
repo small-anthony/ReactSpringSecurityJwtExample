@@ -89,6 +89,17 @@ public class Notification {
 		return dateDismissed;
 	}
 
+	public static Notification cvCreated(Cv cv) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(
+						NotificationActionType.VIEW_RESOURCE,
+						NotificationPayload.ViewResource(NotificationResourceType.CV, cv.getId())
+				),
+				"gestionnaire.cv_created"
+		);
+	}
+
 	public static Notification cvAccepted() {
 		return new Notification(
 				NotificationType.SUCCESS,
