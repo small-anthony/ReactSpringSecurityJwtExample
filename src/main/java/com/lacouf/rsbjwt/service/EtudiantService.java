@@ -1,14 +1,8 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
-import com.lacouf.rsbjwt.model.Etudiant;
-import com.lacouf.rsbjwt.model.OffreStage;
-import com.lacouf.rsbjwt.model.UserApp;
-import com.lacouf.rsbjwt.repository.CandidatureRepository;
-import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.OffreStageRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
@@ -30,22 +24,22 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final OffreStageRepository offreStageRepository;
     private final CandidatureRepository candidatureRepository;
+    private NotificationService notificationService;
+    private GestionnaireRepository gestionnaireRepository;
 
     @Autowired
     public EtudiantService(UserAppRepository userAppRepository,
                            EtudiantRepository etudiantRepository,
                            OffreStageRepository offreStageRepository,
-                           CandidatureRepository candidatureRepository) {
+                           CandidatureRepository candidatureRepository,
+                           NotificationService notificationService,
+                           GestionnaireRepository gestionnaireRepository) {
         this.userAppRepository = userAppRepository;
         this.etudiantRepository = etudiantRepository;
         this.offreStageRepository = offreStageRepository;
         this.candidatureRepository = candidatureRepository;
-    }
-
-    public EtudiantService(UserAppRepository userAppRepository,
-                           EtudiantRepository etudiantRepository,
-                           OffreStageRepository offreStageRepository) {
-        this(userAppRepository, etudiantRepository, offreStageRepository, null);
+        this.notificationService = notificationService;
+        this.gestionnaireRepository = gestionnaireRepository;
     }
 
     public CvDto uploadCv(String emailConnecte, MultipartFile file) throws Exception {
@@ -65,8 +59,14 @@ public class EtudiantService {
         etudiant.setCv(file.getBytes());
 
         Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
+        Cv newCv = etudiantSauvegarde.getCv();
 
-        return CvDto.create(etudiantSauvegarde.getCv());
+        List<Gestionnaire> gestionnaires = gestionnaireRepository.findAll();
+        gestionnaires.forEach((gestionnaire ->
+            notificationService.pushNotification(Notification.cvCreated(newCv), gestionnaire.getId())
+        ));
+
+        return CvDto.create(newCv);
     }
 
     public OffreStageDto postuler(Long offreId, String emailConnecte) throws Exception {

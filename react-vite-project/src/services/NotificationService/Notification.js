@@ -71,7 +71,7 @@ const _notificationActionToHandler = {
                 case NotificationResourceType.Cv: {
                     switch (userData.role) {
                         case UserRole.Etudiant: return navigate("/etudiant");
-                        case UserRole.Gestionnaire: return navigate("/gestionnaire/approbations/cv");
+                        case UserRole.Gestionnaire: return navigate("/gestionnaire/approbations/cvs");
                     }
                     break;
                 }

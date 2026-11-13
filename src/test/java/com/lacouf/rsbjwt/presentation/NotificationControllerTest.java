@@ -102,7 +102,7 @@ public class NotificationControllerTest {
 		// ARRANGE
 		NotificationDTO notification = new NotificationDTO(1L, null, null, null, null, false);
 		Map<String, Object> request = new HashMap<>();
-		request.put("id", 1L);
+		request.put("id", 1);
 
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("test@email.com");
@@ -114,6 +114,33 @@ public class NotificationControllerTest {
 		// ASSERT
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(notification, response.getBody());
+	}
+
+	@Test
+	public void dismissNotification_weirdArgs_shouldHandleCorrectly() throws Exception {
+		// ARRANGE
+		NotificationDTO notification = new NotificationDTO(1L, null, null, null, null, false);
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("test@email.com");
+		when(notificationService.dismissNotification(1L, "test@email.com")).thenReturn(notification);
+
+		Map<Object, ResponseEntity<DataTransferObject>> validInputs = new HashMap<>();
+		validInputs.put(1L, null);
+		validInputs.put("1", null);
+
+		// ACT
+		Map<String, Object> request = new HashMap<>();
+		for(Object key : validInputs.keySet()) {
+			request.put("id", key);
+			validInputs.put(key, notificationController.dismissNotification(request, auth));
+		}
+
+		// ASSERT
+		for(Object inputKind : validInputs.keySet()) {
+			ResponseEntity<DataTransferObject> result = validInputs.get(inputKind);
+			assertEquals(HttpStatus.OK, result.getStatusCode(), "Input \"" + inputKind + "\" (" + inputKind.getClass() + ") returned " + result.getStatusCode());
+			assertEquals(notification, result.getBody(), "Input \"" + inputKind + "\" (" + inputKind.getClass() + ") did not return notification");
+		}
 	}
 
 	@Test
