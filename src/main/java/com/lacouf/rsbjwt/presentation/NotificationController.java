@@ -33,15 +33,24 @@ public class NotificationController {
 		}
 	}
 
-	@PostMapping()
+	@PostMapping("/dismiss")
 	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody Map<String, Object> request, Authentication authentication) {
 		try {
 			String actorEmail = authentication.getName();
-			Long id = (Long) request.get("id");
+
+			long id;
+			Object rawId = request.get("id");
+			id = switch (rawId) {
+				case Integer intId -> Long.valueOf(intId);
+				case Long longId -> longId;
+				case String stringId -> Long.parseLong(stringId);
+				case null, default -> throw new ClassCastException("cannot convert id to Long");
+			};
+
 			NotificationDTO notification = notificationService.dismissNotification(id, actorEmail);
 			return ResponseEntity.ok().body(notification);
 		}
-		catch(NullPointerException | ClassCastException e) {
+		catch(NullPointerException | ClassCastException | NumberFormatException e) {
 			return ResponseEntity.badRequest().body(new ErrorResponse("bad id"));
 		}
 		catch(Exception e) {
