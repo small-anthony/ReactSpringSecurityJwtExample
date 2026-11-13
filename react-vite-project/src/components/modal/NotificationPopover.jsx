@@ -17,7 +17,12 @@ export function NotificationButton() {
     const notifications = notificationService.getNotifications();
 
     const buttonRef = useRef(null);
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
+
+    async function onNotificationHandle(notification, handler) {
+        await handler();
+        setIsOpen(false);
+    }
 
     function pickBellIcon(className) {
         if(!notifications) {
@@ -37,7 +42,7 @@ export function NotificationButton() {
             <button className="cursor-pointer select-none" type="button" onClick={() => {setIsOpen(!isOpen)}}>
                 {pickBellIcon("w-5")}
             </button>
-            {isOpen && (<NotificationPopover notifications={notifications} buttonRef={buttonRef}/>)}
+            {isOpen && (<NotificationPopover notifications={notifications} onInteraction={onNotificationHandle}/>)}
         </div>
     );
 }
@@ -45,11 +50,17 @@ export function NotificationButton() {
 function NotificationCard({
     notification = new Notification(),
     t = useTranslation(['main', 'notification']).t,
+
+    onInteraction
 }) {
     const handler = notification.useHandler();
 
     const locale = i18n.language;
     const formattedDate = Intl.DateTimeFormat(locale, {dateStyle: "long", timeStyle: "short"}).format(notification.dateCreation);
+
+    function onButtonClick() {
+        onInteraction(notification, handler);
+    }
 
     function NotificationIcon({className}) {
         switch(notification.type) {
@@ -77,7 +88,7 @@ function NotificationCard({
                 </div>
                 <InfoSpacer/>
                 <div className="shrink">
-                    <button onClick={handler} type="button" className="text-xs p-1 rounded-2xl cursor-pointer text-white bg-blue-500 hover:bg-blue-700 transition">
+                    <button onClick={onButtonClick} type="button" className="text-xs p-1 rounded-2xl cursor-pointer text-white bg-blue-500 hover:bg-blue-700 transition">
                         <ArrowRightIcon className="w-4"/>
                     </button>
                 </div>
@@ -91,9 +102,13 @@ function NotificationCard({
 
 function NotificationPopover({
     notifications,
-    buttonRef,
+    onInteraction,
 }) {
     const { t } = useTranslation(['main', 'notification'])
+
+    function onButtonClick(notification, handler) {
+        onInteraction(notification, handler);
+    }
 
     return (
         <div className="absolute right-0 w-80 h-100 top-full z-40 drop-shadow-md">
@@ -106,6 +121,7 @@ function NotificationPopover({
                         <NotificationCard
                             key={notification.id}
                             notification={notification}
+                            onInteraction={onButtonClick}
                             t={t}
                         />
                     )}
