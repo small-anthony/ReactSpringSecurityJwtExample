@@ -131,11 +131,12 @@ export default function TableEtudiantsAssignation({
                                                     <button
                                                         type="button"
                                                         onClick={() => onDesassigner(etudiant)}
-                                                        className="btn-danger-soft !py-1.5 !px-2.5 !text-xs"
+                                                        className="btn-danger-soft !py-1.5 !px-3 !text-xs"
                                                         title={t("assignation_professeurs.btn_desassigner")}
                                                         aria-label={t("assignation_professeurs.btn_desassigner")}
                                                     >
-                                                        <UserX className="w-4 h-4" />
+                                                        <UserX className="w-3.5 h-3.5" />
+                                                        {t("assignation_professeurs.btn_desassigner")}
                                                     </button>
                                                 </>
                                             ) : (
