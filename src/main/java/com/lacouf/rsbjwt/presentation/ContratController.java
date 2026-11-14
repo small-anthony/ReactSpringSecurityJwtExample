@@ -6,6 +6,8 @@ import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/contrats")
 public class ContratController {
+	private static final Logger log = LoggerFactory.getLogger(ContratController.class);
 	private final ContratService contratService;
 
 	public ContratController(ContratService contratService) {
@@ -32,6 +35,11 @@ public class ContratController {
 			ContratDto contrat = contratService.creerContrat(request, email);
 			return ResponseEntity.status(HttpStatus.CREATED).body(contrat);
 		} catch (Exception e) {
+			if (estErreurContrainteSql(e)) {
+				log.warn("Contrainte de base de données dépassée lors de la création du contrat : {}", e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Certains champs du contrat dépassent la longueur maximale autorisée.");
+			}
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
@@ -107,5 +115,19 @@ public class ContratController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
+	}
+
+	private boolean estErreurContrainteSql(Throwable error) {
+		for (Throwable current = error; current != null; current = current.getCause()) {
+			String className = current.getClass().getSimpleName();
+			String message = current.getMessage() != null ? current.getMessage().toLowerCase() : "";
+			if ("DataIntegrityViolationException".equals(className)
+					|| message.contains("could not execute statement")
+					|| message.contains("value too long")
+					|| message.contains("data truncation")) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

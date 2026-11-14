@@ -670,13 +670,16 @@
         "dateFin": "End date is required.",
         "date_order": "End date cannot be earlier than start date.",
         "horaire": "Work schedule is required.",
+        "horaireMaxLength": "Work schedule cannot exceed 255 characters.",
         "salaire": {
           "required": "Compensation is required.",
           "format": "Invalid compensation format (must be between 0 and 50 $/hr)."
         },
         "taches": "Description of duties is required.",
         "tachesLength": "Description of duties must contain at least 20 characters.",
-        "conditions": "Working conditions are required."
+        "tachesMaxLength": "Description of duties cannot exceed 5000 characters.",
+        "conditions": "Working conditions are required.",
+        "conditionsMaxLength": "Working conditions cannot exceed 5000 characters."
       }
     },
     "status": {
@@ -711,7 +714,8 @@
       "success_signed_manager": "Internship contract electronically signed successfully! The contract is now completed.",
       "success_refused_manager": "The internship contract was refused. The employer and student have been notified.",
       "error_print": "Error while printing the contract.",
-      "error_refuse": "Error while refusing the contract."
+      "error_refuse": "Error while refusing the contract.",
+      "error_value_too_long": "Some contract fields exceed the maximum allowed length."
     },
     "role_label_manager": "The internship manager (college representative)",
     "refuse_modal": {

@@ -374,15 +374,15 @@ export default function EtudiantContrats({ embedMode = false, onPendingCountChan
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-3 bg-gray-50/70 p-3 rounded-xl border border-gray-100">
-                                    <div className="bg-purple-100 p-2 rounded-lg text-purple-700">
+                                <div className="flex items-start gap-3 bg-gray-50/70 p-3 rounded-xl border border-gray-100 min-w-0">
+                                    <div className="bg-purple-100 p-2 rounded-lg text-purple-700 shrink-0">
                                         <Clock className="w-4 h-4" />
                                     </div>
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                                             {t("contrats.form.horaire")}
                                         </span>
-                                        <span className="text-gray-800 text-xs font-semibold">
+                                        <span className="block text-gray-800 text-xs font-semibold break-words leading-relaxed">
                                             {c.horaire}
                                         </span>
                                     </div>

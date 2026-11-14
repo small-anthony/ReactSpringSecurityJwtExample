@@ -309,41 +309,41 @@ export default function EmployeurContrats() {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
+                                    <div className="flex items-start gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 shrink-0">
                                             <Calendar className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("contrats.table.dates", { defaultValue: "Période" })}
                                             </span>
-                                            <span className="text-xs font-semibold text-gray-800">
+                                            <span className="block text-xs font-semibold text-gray-800 break-words">
                                                 {c.dateDebut} → {c.dateFin}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600">
+                                    <div className="flex items-start gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 shrink-0">
                                             <DollarSign className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("contrats.table.salary", { defaultValue: "Salaire" })}
                                             </span>
-                                            <span className="text-xs font-bold text-emerald-700">{c.salaire}</span>
+                                            <span className="block text-xs font-bold text-emerald-700 break-words">{c.salaire}</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+                                    <div className="flex items-start gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600 shrink-0">
                                             <Clock className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("contrats.form.horaire", { defaultValue: "Horaire de travail" })}
                                             </span>
-                                            <span className="text-xs font-medium text-gray-700 truncate">{c.horaire}</span>
+                                            <span className="block text-xs font-medium text-gray-700 break-words leading-relaxed">{c.horaire}</span>
                                         </div>
                                     </div>
                                 </div>

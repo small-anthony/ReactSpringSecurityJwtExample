@@ -15,8 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 
 @Service
@@ -35,15 +38,49 @@ public class ContratService {
         this.userAppRepository = userAppRepository;
     }
 
+    private record EtudiantEmployeurAnnee(Long etudiantId, Long employeurId, int annee) {
+    }
+
     @Transactional(readOnly = true)
     public List<CandidaturePourContratDto> getCandidaturesPourContrat() {
         List<Candidature> candidatures = new ArrayList<>();
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE));
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE));
-        return candidatures.stream()
-                .distinct()
-                .map(c -> CandidaturePourContratDto.create(c, contratRepository.findByCandidatureId(c.getId())))
+
+        List<Candidature> distinctCandidatures = candidatures.stream().distinct().toList();
+        Set<EtudiantEmployeurAnnee> contratsExistants = new HashSet<>();
+        List<Candidature> sansContrat = new ArrayList<>();
+
+        for (Candidature c : distinctCandidatures) {
+            Optional<Contrat> contratOpt = contratRepository.findByCandidatureId(c.getId());
+            if (contratOpt.isPresent()) {
+                EtudiantEmployeurAnnee cle = cleContrat(c);
+                if (cle != null) {
+                    contratsExistants.add(cle);
+                }
+            } else {
+                sansContrat.add(c);
+            }
+        }
+
+        return sansContrat.stream()
+                .filter(c -> {
+                    EtudiantEmployeurAnnee cle = cleContrat(c);
+                    return cle == null || !contratsExistants.contains(cle);
+                })
+                .map(c -> CandidaturePourContratDto.create(c, Optional.empty()))
                 .toList();
+    }
+
+    private EtudiantEmployeurAnnee cleContrat(Candidature c) {
+        Etudiant etudiant = c.getEtudiant();
+        OffreStage offre = c.getOffreStage();
+        Employeur employeur = c.getEmployeur();
+        if (etudiant == null || offre == null || employeur == null
+                || etudiant.getId() == null || employeur.getId() == null) {
+            return null;
+        }
+        return new EtudiantEmployeurAnnee(etudiant.getId(), employeur.getId(), offre.getAnnee());
     }
 
     public ContratDto creerContrat(CreationContratRequest request, String gestionnaireEmail) throws Exception {
@@ -145,6 +182,10 @@ public class ContratService {
         return ContratDto.create(contratRepository.findByCandidatureOffreStageEmployeurEmail(email));
     }
 
+    private static final int MAX_HORAIRE_LENGTH = 255;
+    private static final int MAX_SALAIRE_LENGTH = 100;
+    private static final int MAX_TEXT_LENGTH = 5000;
+
     private void validerRequeteContrat(CreationContratRequest request) throws Exception {
         if (request == null || request.candidatureId() == null
                 || request.dateDebut() == null || request.dateFin() == null
@@ -154,6 +195,18 @@ public class ContratService {
         }
         if (request.dateFin().isBefore(request.dateDebut())) {
             throw new Exception("La date de fin ne peut pas être antérieure à la date de début.");
+        }
+        if (request.horaire().trim().length() > MAX_HORAIRE_LENGTH) {
+            throw new Exception("L'horaire de travail ne peut pas dépasser " + MAX_HORAIRE_LENGTH + " caractères.");
+        }
+        if (request.salaire().trim().length() > MAX_SALAIRE_LENGTH) {
+            throw new Exception("Le salaire ne peut pas dépasser " + MAX_SALAIRE_LENGTH + " caractères.");
+        }
+        if (request.descriptionTaches().trim().length() > MAX_TEXT_LENGTH) {
+            throw new Exception("La description des tâches ne peut pas dépasser " + MAX_TEXT_LENGTH + " caractères.");
+        }
+        if (request.conditions().trim().length() > MAX_TEXT_LENGTH) {
+            throw new Exception("Les conditions de travail ne peuvent pas dépasser " + MAX_TEXT_LENGTH + " caractères.");
         }
     }
 
