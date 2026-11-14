@@ -165,15 +165,15 @@ export default function ListeContratsGestionnaire({
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="bg-purple-50 p-2 rounded-lg border border-purple-100">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="bg-purple-50 p-2 rounded-lg border border-purple-100 shrink-0">
                 <Clock className="w-4 h-4 text-purple-600" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                   {t("contrats.form.horaire")}
                 </span>
-                <span className="text-gray-800 text-sm font-medium">
+                <span className="block text-gray-800 text-sm font-medium break-words leading-relaxed">
                   {c.horaire}
                 </span>
               </div>

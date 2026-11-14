@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+const MAX_HORAIRE_LENGTH = 255;
+const MAX_TEXT_LENGTH = 5000;
+
 export default function FormulaireCreationContrat({
   candidatures = [],
   submitting = false,
@@ -31,11 +34,25 @@ export default function FormulaireCreationContrat({
   const [conditions, setConditions] = useState("");
   const [errors, setErrors] = useState({});
 
+  const candidaturesDisponibles = useMemo(() => {
+    const dejaContractesParCompagnie = new Set(
+      candidatures
+        .filter((c) => c.contratExiste)
+        .map((c) => `${c.etudiantId}::${c.employeurEmail || c.nomEntreprise || ""}`)
+    );
+
+    return candidatures.filter((c) => {
+      if (c.contratExiste) return false;
+      const cle = `${c.etudiantId}::${c.employeurEmail || c.nomEntreprise || ""}`;
+      return !dejaContractesParCompagnie.has(cle);
+    });
+  }, [candidatures]);
+
   const selectedCandidature = useMemo(() => {
-    return candidatures.find(
+    return candidaturesDisponibles.find(
       (c) => String(c.candidatureId) === String(selectedCandidatureId)
     );
-  }, [candidatures, selectedCandidatureId]);
+  }, [candidaturesDisponibles, selectedCandidatureId]);
 
   const nombreSemaines = useMemo(() => {
     if (!dateDebut || !dateFin) return null;
@@ -57,7 +74,7 @@ export default function FormulaireCreationContrat({
     setSelectedCandidatureId(candId);
     clearError("candidature");
 
-    const cand = candidatures.find((c) => String(c.candidatureId) === String(candId));
+    const cand = candidaturesDisponibles.find((c) => String(c.candidatureId) === String(candId));
     if (cand) {
       if (cand.salaireOffre) {
         const match = cand.salaireOffre.match(/\d+([.,]\d+)?/);
@@ -77,8 +94,14 @@ export default function FormulaireCreationContrat({
 
       if (cand.descriptionOffre) {
         setDescriptionTaches(cand.descriptionOffre);
+        if (cand.descriptionOffre.trim().length > MAX_TEXT_LENGTH) {
+          setErrors((prev) => ({ ...prev, descriptionTaches: "maxLength" }));
+        } else {
+          clearError("descriptionTaches");
+        }
       } else {
         setDescriptionTaches("");
+        clearError("descriptionTaches");
       }
     } else {
       setSalaire("");
@@ -100,8 +123,13 @@ export default function FormulaireCreationContrat({
   };
 
   const handleHoraireChange = (e) => {
-    setHoraire(e.target.value);
-    clearError("horaire");
+    const val = e.target.value;
+    setHoraire(val);
+    if (val.trim().length > MAX_HORAIRE_LENGTH) {
+      setErrors((prev) => ({ ...prev, horaire: "maxLength" }));
+    } else {
+      clearError("horaire");
+    }
   };
 
   const handleSalaireChange = (e) => {
@@ -137,16 +165,26 @@ export default function FormulaireCreationContrat({
   };
 
   const handleTachesChange = (e) => {
-    setDescriptionTaches(e.target.value);
-    clearError("descriptionTaches");
+    const val = e.target.value;
+    setDescriptionTaches(val);
+    if (val.trim().length > MAX_TEXT_LENGTH) {
+      setErrors((prev) => ({ ...prev, descriptionTaches: "maxLength" }));
+    } else {
+      clearError("descriptionTaches");
+    }
   };
 
   const handleConditionsChange = (e) => {
-    setConditions(e.target.value);
-    clearError("conditions");
+    const val = e.target.value;
+    setConditions(val);
+    if (val.trim().length > MAX_TEXT_LENGTH) {
+      setErrors((prev) => ({ ...prev, conditions: "maxLength" }));
+    } else {
+      clearError("conditions");
+    }
   };
 
-  const validate = () => {
+  const getValidationErrors = () => {
     const newErrors = {};
 
     if (!selectedCandidatureId) {
@@ -167,6 +205,8 @@ export default function FormulaireCreationContrat({
 
     if (!horaire.trim()) {
       newErrors.horaire = "required";
+    } else if (horaire.trim().length > MAX_HORAIRE_LENGTH) {
+      newErrors.horaire = "maxLength";
     }
 
     if (!salaire.toString().trim()) {
@@ -182,21 +222,32 @@ export default function FormulaireCreationContrat({
       newErrors.descriptionTaches = "required";
     } else if (descriptionTaches.trim().length < 20) {
       newErrors.descriptionTaches = "minLength";
+    } else if (descriptionTaches.trim().length > MAX_TEXT_LENGTH) {
+      newErrors.descriptionTaches = "maxLength";
     }
 
     if (!conditions.trim()) {
       newErrors.conditions = "required";
+    } else if (conditions.trim().length > MAX_TEXT_LENGTH) {
+      newErrors.conditions = "maxLength";
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) {
-      onErreur?.(t("contrats.alerts.error_missing_fields"));
+    const newErrors = getValidationErrors();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      const hasLengthError = Object.values(newErrors).includes("maxLength");
+      onErreur?.(
+        hasLengthError
+          ? t("contrats.alerts.error_value_too_long")
+          : t("contrats.alerts.error_missing_fields")
+      );
       return;
     }
 
@@ -266,10 +317,9 @@ export default function FormulaireCreationContrat({
             <option value="">
               {t("contrats.candidature_select.placeholder")}
             </option>
-            {candidatures.map((c) => (
+            {candidaturesDisponibles.map((c) => (
               <option key={c.candidatureId} value={c.candidatureId}>
-                {c.etudiantPrenom} {c.etudiantNom} ({c.etudiantMatricule}) — {c.nomEntreprise} ({c.titreOffre}){" "}
-                {c.contratExiste ? `— [${t("contrats.candidature_select.already_contracted")}]` : ""}
+                {c.etudiantPrenom} {c.etudiantNom} ({c.etudiantMatricule}) — {c.nomEntreprise} ({c.titreOffre})
               </option>
             ))}
           </select>
@@ -408,12 +458,21 @@ export default function FormulaireCreationContrat({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label
-              htmlFor="contrat-horaire"
-              className="block text-sm font-semibold text-slate-700 mb-1"
-            >
-              {t("contrats.form.horaire")} <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label
+                htmlFor="contrat-horaire"
+                className="block text-sm font-semibold text-slate-700"
+              >
+                {t("contrats.form.horaire")} <span className="text-red-500">*</span>
+              </label>
+              {horaire.length > 0 && (
+                <span className={`text-xs ${
+                  horaire.trim().length > MAX_HORAIRE_LENGTH ? "text-red-600 font-semibold" : "text-slate-400"
+                }`}>
+                  {horaire.length} / {MAX_HORAIRE_LENGTH}
+                </span>
+              )}
+            </div>
             <input
               id="contrat-horaire"
               type="text"
@@ -421,14 +480,18 @@ export default function FormulaireCreationContrat({
               onChange={handleHoraireChange}
               placeholder={t("contrats.form.horaire_placeholder")}
               className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
-                errors.horaire
+                errors.horaire === "maxLength"
+                  ? "border-red-500 border-b-2 bg-red-50 text-slate-900 ring-1 ring-red-400"
+                  : errors.horaire
                   ? "border-red-500 bg-red-50 text-slate-900"
                   : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               }`}
             />
             {errors.horaire && (
               <p className="text-red-500 text-xs mt-1">
-                {t("contrats.form.errors.horaire")}
+                {errors.horaire === "maxLength"
+                  ? t("contrats.form.errors.horaireMaxLength")
+                  : t("contrats.form.errors.horaire")}
               </p>
             )}
           </div>
@@ -478,12 +541,19 @@ export default function FormulaireCreationContrat({
         </div>
 
         <div>
-          <label
-            htmlFor="contrat-taches"
-            className="block text-sm font-semibold text-slate-700 mb-1"
-          >
-            {t("contrats.form.taches")} <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label
+              htmlFor="contrat-taches"
+              className="block text-sm font-semibold text-slate-700"
+            >
+              {t("contrats.form.taches")} <span className="text-red-500">*</span>
+            </label>
+            <span className={`text-xs ${
+              descriptionTaches.trim().length > MAX_TEXT_LENGTH ? "text-red-600 font-semibold" : "text-slate-400"
+            }`}>
+              {descriptionTaches.length} / {MAX_TEXT_LENGTH}
+            </span>
+          </div>
           <textarea
             id="contrat-taches"
             rows={4}
@@ -491,7 +561,9 @@ export default function FormulaireCreationContrat({
             onChange={handleTachesChange}
             placeholder={t("contrats.form.taches_placeholder")}
             className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
-              errors.descriptionTaches
+              errors.descriptionTaches === "maxLength"
+                ? "border-red-500 border-b-2 bg-red-50 text-slate-900 ring-1 ring-red-400"
+                : errors.descriptionTaches
                 ? "border-red-500 bg-red-50 text-slate-900"
                 : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
             }`}
@@ -500,18 +572,27 @@ export default function FormulaireCreationContrat({
             <p className="text-red-500 text-xs mt-1">
               {errors.descriptionTaches === "minLength"
                 ? t("contrats.form.errors.tachesLength")
+                : errors.descriptionTaches === "maxLength"
+                ? t("contrats.form.errors.tachesMaxLength")
                 : t("contrats.form.errors.taches")}
             </p>
           )}
         </div>
 
         <div>
-          <label
-            htmlFor="contrat-conditions"
-            className="block text-sm font-semibold text-slate-700 mb-1"
-          >
-            {t("contrats.form.conditions")} <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label
+              htmlFor="contrat-conditions"
+              className="block text-sm font-semibold text-slate-700"
+            >
+              {t("contrats.form.conditions")} <span className="text-red-500">*</span>
+            </label>
+            <span className={`text-xs ${
+              conditions.trim().length > MAX_TEXT_LENGTH ? "text-red-600 font-semibold" : "text-slate-400"
+            }`}>
+              {conditions.length} / {MAX_TEXT_LENGTH}
+            </span>
+          </div>
           <textarea
             id="contrat-conditions"
             rows={3}
@@ -519,14 +600,18 @@ export default function FormulaireCreationContrat({
             onChange={handleConditionsChange}
             placeholder={t("contrats.form.conditions_placeholder")}
             className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
-              errors.conditions
+              errors.conditions === "maxLength"
+                ? "border-red-500 border-b-2 bg-red-50 text-slate-900 ring-1 ring-red-400"
+                : errors.conditions
                 ? "border-red-500 bg-red-50 text-slate-900"
                 : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
             }`}
           />
           {errors.conditions && (
             <p className="text-red-500 text-xs mt-1">
-              {t("contrats.form.errors.conditions")}
+              {errors.conditions === "maxLength"
+                ? t("contrats.form.errors.conditionsMaxLength")
+                : t("contrats.form.errors.conditions")}
             </p>
           )}
         </div>

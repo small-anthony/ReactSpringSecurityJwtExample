@@ -61,6 +61,18 @@ export default function GestionnaireContrats() {
     if (lower.includes("ouverture") || lower.includes("opening")) {
       return t("contrats.alerts.error_open");
     }
+    if (lower.includes("horaire de travail") && lower.includes("dépasser")) {
+      return t("contrats.form.errors.horaireMaxLength");
+    }
+    if (lower.includes("description des tâches") && lower.includes("dépasser")) {
+      return t("contrats.form.errors.tachesMaxLength");
+    }
+    if (lower.includes("conditions de travail") && lower.includes("dépasser")) {
+      return t("contrats.form.errors.conditionsMaxLength");
+    }
+    if (lower.includes("value too long") || lower.includes("could not execute statement") || lower.includes("longueur maximale")) {
+      return t("contrats.alerts.error_value_too_long");
+    }
     if (lower.includes("refus") || lower.includes("refusing") || lower.includes("refuse")) {
       return t("contrats.alerts.error_refuse");
     }
