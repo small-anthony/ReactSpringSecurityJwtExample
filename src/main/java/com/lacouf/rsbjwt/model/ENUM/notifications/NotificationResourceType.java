@@ -6,4 +6,5 @@ public enum NotificationResourceType {
 	CANDIDATURE,
 	CONVOCATION,
 	CONTRAT,
+	EVALUATION_MILIEU,
 }

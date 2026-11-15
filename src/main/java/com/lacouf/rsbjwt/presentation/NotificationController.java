@@ -37,7 +37,8 @@ public class NotificationController {
 	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody Map<String, Object> request, Authentication authentication) {
 		try {
 			String actorEmail = authentication.getName();
-			Long id = (Long) request.get("id");
+			Object rawId = request.get("id");
+			Long id = ((Number) rawId).longValue();
 			NotificationDTO notification = notificationService.dismissNotification(id, actorEmail);
 			return ResponseEntity.ok().body(notification);
 		}

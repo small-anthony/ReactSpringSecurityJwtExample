@@ -86,7 +86,7 @@ public class NotificationControllerTest {
 		// ARRANGE
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("test@email.com");
-		when(notificationService.getNotificationsForEmail("test@gmail.com")).thenThrow(Exception.class);
+		when(notificationService.getNotificationsForEmail("test@email.com")).thenThrow(Exception.class);
 
 		// ACT
 		ResponseEntity<?> response = notificationController.getNotificationsForAuth(auth);

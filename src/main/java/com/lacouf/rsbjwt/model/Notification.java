@@ -110,4 +110,15 @@ public class Notification {
 				"etudiant.cv_rejected"
 		);
 	}
+
+	public static Notification evaluationMilieuSoumise(Long evaluationId) {
+		return new Notification(
+				NotificationType.INFORMATIVE,
+				new NotificationAction(
+						NotificationActionType.VIEW_RESOURCE,
+						NotificationPayload.ViewResource(NotificationResourceType.EVALUATION_MILIEU, evaluationId)
+				),
+				"gestionnaire.evaluation_milieu_soumise"
+		);
+	}
 }
