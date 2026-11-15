@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exceptions.BadArgumentFormatException;
 import com.lacouf.rsbjwt.service.NotificationService;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
@@ -44,13 +45,13 @@ public class NotificationController {
 				case Integer intId -> Long.valueOf(intId);
 				case Long longId -> longId;
 				case String stringId -> Long.parseLong(stringId);
-				case null, default -> throw new ClassCastException("cannot convert id to Long");
+				case null, default -> throw new BadArgumentFormatException("cannot convert id to Long");
 			};
 
 			NotificationDTO notification = notificationService.dismissNotification(id, actorEmail);
 			return ResponseEntity.ok().body(notification);
 		}
-		catch(NullPointerException | ClassCastException | NumberFormatException e) {
+		catch(NullPointerException | BadArgumentFormatException | NumberFormatException e) {
 			return ResponseEntity.badRequest().body(new ErrorResponse("bad id"));
 		}
 		catch(Exception e) {
