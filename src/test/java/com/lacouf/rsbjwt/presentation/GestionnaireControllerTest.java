@@ -15,6 +15,9 @@ import com.lacouf.rsbjwt.service.dto.AssignationProfesseurResponseDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantPourAssignationDto;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.ENUM.CapaciteAccueilStagiaires;
+import com.lacouf.rsbjwt.model.ENUM.StageCible;
+import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
 import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
 import com.lacouf.rsbjwt.service.dto.ProfesseurPourAssignationDto;
 import org.junit.jupiter.api.Test;
@@ -24,7 +27,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
@@ -494,5 +500,44 @@ public class GestionnaireControllerTest {
         // ASSERT
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getEtudiantsStageNonEvalueParProfesseur_shouldReturnOk() {
+        List<RapportEtudiantDto> liste = List.of(createDummyRapportEtudiantDto());
+        when(gestionnaireService.getEtudiantsStageNonEvalueParProfesseur(2026)).thenReturn(liste);
+
+        ResponseEntity<List<RapportEtudiantDto>> response =
+                gestionnaireController.getEtudiantsStageNonEvalueParProfesseur(2026);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getEvaluationsMilieuStage_shouldReturnOk() {
+        EvaluationMilieuStageDto dto = new EvaluationMilieuStageDto(
+                42L, 1L, 3L, 10L, "Martin Tremblay", "CGI", "Valentin", "123 rue",
+                "Montréal", "H3G 1T4", "514-555-1234", "", "Sophie Martin",
+                "2026-05-18 → 2026-08-21", 1, Map.of(), 5.0, 4.0, 3.0, "24.00", "",
+                StageCible.PREMIER_STAGE, CapaciteAccueilStagiaires.UN, true, false,
+                "", "", "", "", "", "", "Martin Tremblay", LocalDate.now()
+        );
+        when(gestionnaireService.getEvaluationsMilieuStage()).thenReturn(List.of(dto));
+
+        ResponseEntity<List<EvaluationMilieuStageDto>> response = gestionnaireController.getEvaluationsMilieuStage();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getEvaluationMilieuParEtudiant_nonTrouvee_shouldReturnNotFound() {
+        when(gestionnaireService.getEvaluationMilieuParEtudiant(99L))
+                .thenThrow(new NoSuchElementException("Aucune évaluation"));
+
+        ResponseEntity<?> response = gestionnaireController.getEvaluationMilieuParEtudiant(99L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

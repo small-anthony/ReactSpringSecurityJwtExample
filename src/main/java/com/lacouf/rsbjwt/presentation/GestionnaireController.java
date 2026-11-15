@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping({ "/gestionnaire" })
@@ -126,6 +127,11 @@ public class GestionnaireController {
         }
     }
 
+    @GetMapping("/rapports/etudiants")
+    public ResponseEntity<List<RapportEtudiantDto>> getRapportEtudiants(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getRapportEtudiants(annee));
+    }
+
     @GetMapping("/rapports/etudiants-inscrits")
     public ResponseEntity<List<RapportEtudiantDto>> getTousLesEtudiants() {
         return ResponseEntity.ok(gestionnaireService.getTousLesEtudiants());
@@ -149,6 +155,28 @@ public class GestionnaireController {
     @GetMapping("/rapports/etudiants-trouve-stage")
     public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsTrouveStage(@RequestParam(required = false) Integer annee) {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage(annee));
+    }
+
+    @GetMapping("/rapports/stages-non-evalues-professeur")
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsStageNonEvalueParProfesseur(
+            @RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsStageNonEvalueParProfesseur(annee));
+    }
+
+    @GetMapping("/evaluations-milieu")
+    public ResponseEntity<List<EvaluationMilieuStageDto>> getEvaluationsMilieuStage() {
+        return ResponseEntity.ok(gestionnaireService.getEvaluationsMilieuStage());
+    }
+
+    @GetMapping("/etudiants/{etudiantId}/evaluation-milieu")
+    public ResponseEntity<?> getEvaluationMilieuParEtudiant(@PathVariable Long etudiantId) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getEvaluationMilieuParEtudiant(etudiantId));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/assignation-professeurs/etudiants")

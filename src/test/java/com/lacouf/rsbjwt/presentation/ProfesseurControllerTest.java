@@ -1,15 +1,20 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.ENUM.CapaciteAccueilStagiaires;
+import com.lacouf.rsbjwt.model.ENUM.StageCible;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationMilieuStageRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.service.dto.DossierStageProfesseurDto;
+import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
 import com.lacouf.rsbjwt.service.ProfesseurService;
@@ -25,9 +30,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -264,5 +271,71 @@ class ProfesseurControllerTest {
 //        Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertInstanceOf(List.class, response.getBody());
+    }
+
+    @Test
+    void getDossierStage_succes_retourne200() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        DossierStageProfesseurDto dto = new DossierStageProfesseurDto(
+                1L, 3L, 5L, "CGI", "Valentin", "514-555-1234", "emp@test.com",
+                "Sophie Martin", "info", "Dev Web", "2026-05-18", "2026-08-21",
+                "2026-05-18 → 2026-08-21", "24.00", "Martin Tremblay", false, null
+        );
+        when(professeurService.getDossierStagePourProfesseur("martin@test.com", 1L)).thenReturn(dto);
+
+        ResponseEntity<?> response = professeurController.getDossierStage(1L, auth);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void getDossierStage_accesRefuse_retourne403() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getDossierStagePourProfesseur("martin@test.com", 1L))
+                .thenThrow(new SecurityException("Accès refusé"));
+
+        ResponseEntity<?> response = professeurController.getDossierStage(1L, auth);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
+    void getEvaluationMilieu_nonTrouvee_retourne404() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getEvaluationMilieuPourProfesseur("martin@test.com", 1L))
+                .thenThrow(new NoSuchElementException("Aucune évaluation"));
+
+        ResponseEntity<?> response = professeurController.getEvaluationMilieu(1L, auth);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_succes_retourne201() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        EvaluationMilieuStageRequest req = new EvaluationMilieuStageRequest(
+                "CGI", "Valentin", "123 rue", "Montréal", "H3G 1T4", "514-555-1234", "",
+                "Sophie Martin", "2026-05-18 → 2026-08-21", 1, Map.of(),
+                5.0, 4.0, 3.0, "24.00", "", StageCible.PREMIER_STAGE, CapaciteAccueilStagiaires.UN,
+                true, false, "", "", "", "", "", "", "Martin Tremblay", LocalDate.now()
+        );
+        EvaluationMilieuStageDto dto = new EvaluationMilieuStageDto(
+                42L, 1L, 3L, 10L, "Martin Tremblay", "CGI", "Valentin", "123 rue",
+                "Montréal", "H3G 1T4", "514-555-1234", "", "Sophie Martin",
+                "2026-05-18 → 2026-08-21", 1, Map.of(), 5.0, 4.0, 3.0, "24.00", "",
+                StageCible.PREMIER_STAGE, CapaciteAccueilStagiaires.UN, true, false,
+                "", "", "", "", "", "", "Martin Tremblay", LocalDate.now()
+        );
+        when(professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req)).thenReturn(dto);
+
+        ResponseEntity<?> response = professeurController.soumettreEvaluationMilieu(1L, req, auth);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(dto, response.getBody());
     }
 }
