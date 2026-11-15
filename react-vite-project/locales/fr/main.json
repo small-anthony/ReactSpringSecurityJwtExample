@@ -412,6 +412,7 @@
   },
   "sidepanel": {
     "title": "Tableau de bord",
+    "dashboard": "Tableau de bord",
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
     "contrats": "Contrats de stage",
@@ -432,12 +433,17 @@
     "th_email": "Courriel",
     "th_discipline": "Discipline",
     "th_offers": "Poste & Entreprise",
+    "th_milieu_evaluation": "Évaluation du milieu",
+    "voir_evaluation_milieu": "Voir l'évaluation du milieu",
+    "milieu_evalue_badge": "Évalué",
+    "milieu_non_evalue_badge": "Non évalué",
     "types": {
       "etudiants-inscrits": "Étudiants inscrits sur la plate-forme",
       "etudiants-sans-convocation": "Étudiants n'ayant aucune convocation à une entrevue",
       "etudiants-attente-entrevue": "Étudiants en attente d'entrevue",
       "etudiants-attente-reponse": "Étudiants en attente d'une réponse d'entrevue",
-      "etudiants-trouve-stage": "Étudiants ayant trouvé un stage"
+      "etudiants-trouve-stage": "Étudiants ayant trouvé un stage",
+      "stages-non-evalues-professeur": "Stages non évalués par le professeur"
     }
   },
   "convocation": {
@@ -1100,7 +1106,12 @@
     }
   },
   "notifications": {
-    "titre": "Mes notifications"
+    "titre": "Mes notifications",
+    "non_lues_count": "{{count}} nouvelle(s)",
+    "tout_lu": "Tout est à jour",
+    "vide_titre": "Aucune notification",
+    "vide_description": "Vous êtes à jour pour le moment.",
+    "ouvrir": "Consulter"
   },
   "assignation_professeurs": {
     "badge_section": "Supervision des stages",
@@ -1166,6 +1177,19 @@
     "offre_stage_defaut": "Offre de stage",
     "postule_le": "Postulé le {{date}}",
     "erreur_chargement": "Erreur lors du chargement de vos étudiants.",
+    "tabs": {
+      "all": "Tous",
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalués"
+    },
+    "contact_label": "Superviseur / Contact",
+    "phone_label": "Téléphone",
+    "periode_label": "Dates du stage",
+    "non_specifie": "Non précisé",
+    "badge_milieu_evalue": "Milieu évalué",
+    "badge_milieu_a_evaluer": "Milieu à évaluer",
+    "btn_evaluer_milieu": "Évaluer le milieu de stage",
+    "btn_voir_evaluation_milieu": "Voir l'évaluation du milieu",
     "statut": {
       "EMBAUCHEE": "Embauché(e)",
       "ACCEPTEE": "Offre acceptée",
@@ -1175,5 +1199,190 @@
       "EN_RECHERCHE": "En recherche de stage",
       "REFUSE": "Refusée"
     }
+  },
+  "evaluation_milieu": {
+    "back_professeur": "Retour à mes étudiants supervisés",
+    "back_gestionnaire": "Retour aux rapports étudiants",
+    "title": "Évaluation du milieu de stage",
+    "title_view": "Évaluation du milieu de stage (Consultable)",
+    "subtitle": "Formulaire officiel d'évaluation du milieu de stage par l'enseignant responsable.",
+    "program_header": "Techniques de l'informatique — Alternance travail-études",
+    "loading": "Chargement du formulaire d'évaluation du milieu de stage...",
+    "error_load": "Impossible de charger le dossier d'évaluation du milieu de stage.",
+    "error_submit": "Erreur lors de la soumission de l'évaluation du milieu de stage.",
+    "success": "L'évaluation du milieu de stage a été enregistrée et transmise au gestionnaire de stage avec succès.",
+    "submitted_on": "Évaluation soumise le {{date}} par {{professeur}}",
+    "readonly_notice": "Cette évaluation a été soumise et verrouillée en lecture seule.",
+    "summary_card": {
+      "student": "Stagiaire",
+      "program": "Programme",
+      "company": "Entreprise",
+      "position": "Poste",
+      "period": "Période du contrat"
+    },
+    "section1": {
+      "title": "1. Identification de l'entreprise",
+      "nom_entreprise": "Nom de l'entreprise",
+      "personne_contact": "Personne contact",
+      "adresse": "Adresse",
+      "adresse_placeholder": "Ex: 1350 boul. René-Lévesque Ouest",
+      "ville": "Ville",
+      "ville_placeholder": "Ex: Montréal",
+      "code_postal": "Code postal",
+      "code_postal_placeholder": "Ex: H3G 1T4",
+      "telephone": "Téléphone",
+      "telecopieur": "Télécopieur (facultatif)",
+      "telecopieur_placeholder": "Ex: 514-555-9999"
+    },
+    "section2": {
+      "title": "2. Identification du stagiaire",
+      "nom_stagiaire": "Nom du stagiaire",
+      "date_stage": "Date du stage",
+      "date_stage_placeholder": "Ex: 2026-05-18 → 2026-08-21",
+      "numero_stage": "Stage",
+      "stage_1": "Stage 1",
+      "stage_2": "Stage 2"
+    },
+    "section3": {
+      "title": "3. Évaluation du milieu de stage",
+      "subtitle": "Évaluez chacun des dix critères ci-dessous selon votre observation du milieu.",
+      "progress_label": "Progression : {{repondus}} / {{total}} critères",
+      "asterisk_note": "* Toute réponse « Plutôt en désaccord » ou « Totalement en désaccord » doit être expliquée dans la section Commentaires.",
+      "levels": {
+        "TOTALEMENT_EN_ACCORD": "Totalement en accord",
+        "PLUTOT_EN_ACCORD": "Plutôt en accord",
+        "PLUTOT_EN_DESACCORD": "Plutôt en désaccord *",
+        "TOTALEMENT_EN_DESACCORD": "Totalement en désaccord *",
+        "NON_APPLICABLE": "Impossible de se prononcer"
+      },
+      "criteres": {
+        "TACHES_CONFORMES": "Les tâches confiées au stagiaire sont conformes aux tâches annoncées dans l'entente de stage.",
+        "MESURES_ACCUEIL": "Des mesures d'accueil facilitent l'intégration du nouveau stagiaire.",
+        "TEMPS_ENCADREMENT_SUFFISANT": "Le temps réel consacré à l'encadrement du stagiaire est suffisant.",
+        "ENVIRONNEMENT_SECURITAIRE": "L'environnement de travail respecte les normes d'hygiène et de sécurité au travail.",
+        "CLIMAT_TRAVAIL_AGREABLE": "Le climat de travail est agréable.",
+        "ACCESSIBLE_TRANSPORT_COMMUN": "Le milieu de stage est accessible par transport en commun.",
+        "SALAIRE_INTERESSANT": "Le salaire offert est intéressant pour le stagiaire.",
+        "COMMUNICATION_SUPERVISEUR": "La communication avec le superviseur de stage facilite le déroulement du stage.",
+        "EQUIPEMENT_ADEQUAT": "L'équipement fourni est adéquat pour réaliser les tâches confiées.",
+        "VOLUME_TRAVAIL_ACCEPTABLE": "Le volume de travail est acceptable."
+      },
+      "heures_encadrement": {
+        "titre": "Préciser le nombre d'heures d'encadrement par semaine :",
+        "mois1": "Premier mois (h/sem)",
+        "mois2": "Deuxième mois (h/sem)",
+        "mois3": "Troisième mois (h/sem)",
+        "placeholder": "Ex: 5"
+      },
+      "salaire": {
+        "label": "Préciser le salaire horaire offert :",
+        "placeholder": "Ex: 24.00",
+        "unite": "$ / heure"
+      },
+      "commentaires": {
+        "label": "Commentaires",
+        "obligatoire_badge": "Justification requise (*)",
+        "placeholder": "Rédigez vos observations ou justifiez les réponses en désaccord..."
+      }
+    },
+    "section4": {
+      "title": "4. Observations générales",
+      "milieu_privilegier": {
+        "label": "Ce milieu est à privilégier pour le :",
+        "PREMIER_STAGE": "Premier stage",
+        "DEUXIEME_STAGE": "Deuxième stage"
+      },
+      "capacite_accueil": {
+        "label": "Ce milieu est ouvert à accueillir :",
+        "UN": "Un stagiaire",
+        "DEUX": "Deux stagiaires",
+        "TROIS": "Trois stagiaires",
+        "PLUS_DE_TROIS": "Plus de trois"
+      },
+      "meme_stagiaire": {
+        "label": "Ce milieu désire accueillir le même stagiaire pour un prochain stage :",
+        "oui": "Oui",
+        "non": "Non"
+      },
+      "quarts_variables": {
+        "label": "Ce milieu offre des quarts de travail variables :",
+        "oui": "Oui",
+        "non": "Non",
+        "plages_label": "Préciser les plages horaires des quarts de travail :",
+        "plage": "Plage {{index}}",
+        "de": "De",
+        "a": "à"
+      },
+      "signature_label": "Signature de l'enseignant responsable du stagiaire",
+      "signature_placeholder": "Nom complet de l'enseignant responsable",
+      "date_label": "Date de l'évaluation"
+    },
+    "submit": "Soumettre l'évaluation du milieu",
+    "submitting": "Envoi en cours...",
+    "errors": {
+      "banner": "Veuillez corriger les champs en erreur avant de soumettre le formulaire.",
+      "nom_entreprise": "Le nom de l'entreprise est obligatoire.",
+      "personne_contact": "La personne contact est obligatoire.",
+      "adresse": "L'adresse de l'entreprise est obligatoire.",
+      "ville": "La ville est obligatoire.",
+      "code_postal_required": "Le code postal est obligatoire.",
+      "code_postal_format": "Le code postal doit respecter le format canadien (ex. H3G 1T4).",
+      "telephone": "Le numéro de téléphone est obligatoire.",
+      "nom_stagiaire": "Le nom du stagiaire est obligatoire.",
+      "date_stage": "La date du stage est obligatoire.",
+      "numero_stage": "Veuillez sélectionner le numéro du stage (1 ou 2).",
+      "criteres_incomplets": "Veuillez répondre à tous les critères : {{nombre}} critère(s) restant(s).",
+      "critere_requis": "Veuillez sélectionner une réponse pour ce critère.",
+      "heures_mois": "Veuillez entrer un nombre d'heures valide (0 ou plus).",
+      "salaire": "Veuillez préciser le salaire horaire offert.",
+      "commentaires_requis": "Veuillez expliquer dans les commentaires les critères évalués en désaccord (*).",
+      "milieu_privilegier": "Veuillez indiquer pour quel stage ce milieu est à privilégier.",
+      "capacite_accueil": "Veuillez indiquer le nombre de stagiaires que le milieu peut accueillir.",
+      "meme_stagiaire": "Veuillez indiquer si le milieu désire accueillir le même stagiaire.",
+      "quarts_variables": "Veuillez indiquer si le milieu offre des quarts de travail variables.",
+      "quart1_requis": "Veuillez préciser au moins la première plage horaire (début et fin).",
+      "quart_paire": "Veuillez renseigner l'heure de début et l'heure de fin pour chaque plage horaire utilisée.",
+      "signature": "La signature de l'enseignant responsable est obligatoire."
+    }
+  },
+  "gestionnaire_dashboard": {
+    "title": "Suivi des étudiants",
+    "subtitle": "Tableau de bord de l'avancement et de l'état de recherche de stage des étudiants.",
+    "kpi_total": "Total inscrits",
+    "status": {
+      "STAGE_TROUVE": "Stage trouvé",
+      "NON_EVALUE_PROFESSEUR": "À évaluer (prof.)",
+      "EN_ATTENTE_REPONSE": "Attente réponse",
+      "EN_ATTENTE_ENTREVUE": "Attente entrevue",
+      "SANS_CONVOCATION": "Sans convocation",
+      "AUCUNE_CANDIDATURE": "Aucune candidature"
+    },
+    "search_placeholder": "Rechercher par nom, courriel ou matricule...",
+    "total": "Total : {{count}} étudiant",
+    "total_plural": "Total : {{count}} étudiants",
+    "loading": "Chargement des étudiants...",
+    "empty": "Aucun étudiant ne correspond aux critères sélectionnés.",
+    "error_fetch": "Erreur lors du chargement des données des étudiants.",
+    "th_student": "Étudiant",
+    "th_matricule": "Matricule",
+    "th_email": "Courriel",
+    "th_discipline": "Discipline",
+    "th_status": "Statut de stage",
+    "th_evaluation": "Évaluation du milieu",
+    "th_offers": "Candidatures",
+    "milieu_evalue": "Milieu évalué",
+    "en_attente_professeur": "En attente du professeur",
+    "voir_evaluation": "Voir l'évaluation",
+    "application": "candidature",
+    "applications_plural": "candidatures",
+    "no_application": "Aucune candidature",
+    "modal_applications_empty": "Cet étudiant n'a postulé à aucune offre pour cette session.",
+    "statut_candidature": {
+      "EN_ATTENTE": "En attente",
+      "ACCEPTEE": "Acceptée",
+      "REFUSEE": "Refusée",
+      "EMBAUCHEE": "Embauché"
+    },
+    "view_count": "Voir ({{count}})"
   }
 }
