@@ -8,7 +8,6 @@ import SignupProfesseurForm from "./components/auth/SignupProfesseurForm.jsx";
 import SignupEtudiantForm from "./components/auth/SignupEtudiantForm.jsx";
 import SignupEmployeurForm from "./components/auth/SignupEmployeurForm.jsx";
 import CreerOffre from "./components/page/CreerOffre.jsx";
-import ProfileGestionnaire from "./components/page/ProfileGestionnaire.jsx";
 import ProfileEmployeur from "./components/page/ProfileEmployeur.jsx";
 import { AuthServiceContext } from "./services/AuthService.tsx";
 import CandidaturesOffre from "./components/page/CandidaturesOffre.jsx";
@@ -23,6 +22,7 @@ import ProfesseurEtudiants from "./components/page/ProfesseurEtudiants.jsx";
 import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
 import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
 import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
+import EvaluationMilieuStage from "./components/page/EvaluationMilieuStage.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
@@ -98,22 +98,12 @@ function App() {
 
                     <Route
                         path="etudiant/convocations"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "ETUDIANT" ? <Navigate to="/etudiant?tab=convocations" replace /> :
-                                        <Navigate to="/" />
-                        }
+                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "ETUDIANT" ? <Navigate to="/etudiant?tab=convocations" replace /> : <Navigate to="/" />}
                     />
 
                     <Route
                         path="etudiant/contrats"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "ETUDIANT" ? <Navigate to="/etudiant?tab=contrats" replace /> :
-                                        <Navigate to="/" />
-                        }
+                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "ETUDIANT" ? <Navigate to="/etudiant?tab=contrats" replace /> : <Navigate to="/" />}
                     />
                     <Route
                         path="employeur"
@@ -151,8 +141,13 @@ function App() {
                     />
 
                     <Route
+                        path="professeur/etudiants/:etudiantId/evaluation-milieu"
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <EvaluationMilieuStage mode="professeur" /> : <Navigate to="/" />))}
+                    />
+
+                    <Route
                         path="gestionnaire"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <ProfileGestionnaire /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "GESTIONNAIRE" ? <RapportsEtudiants /> : <Navigate to="/" />))}
                     />
 
                     <Route
@@ -166,30 +161,19 @@ function App() {
                     />
                     <Route
                         path="gestionnaire/contrats"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
-                                        <Navigate to="/" />
-                        }
+                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "GESTIONNAIRE" ? <GestionnaireContrats /> : <Navigate to="/" />}
                     />
                     <Route
                         path="gestionnaire/assignation-professeurs"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "GESTIONNAIRE" ? <AssignationProfesseurs /> :
-                                        <Navigate to="/" />
-                        }
+                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "GESTIONNAIRE" ? <AssignationProfesseurs /> : <Navigate to="/" />}
                     />
                     <Route
                         path="gestionnaire/rapports"
-                        element={
-                            !token ? <Navigate to="/login" /> :
-                                !userData ? null :
-                                    role === "GESTIONNAIRE" ? <RapportsEtudiants /> :
-                                        <Navigate to="/" />
-                        }
+                        element={<Navigate to="/gestionnaire" replace />}
+                    />
+                    <Route
+                        path="gestionnaire/etudiants/:etudiantId/evaluation-milieu"
+                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "GESTIONNAIRE" ? <EvaluationMilieuStage mode="gestionnaire" /> : <Navigate to="/" />}
                     />
                 </Route>
             </Routes>

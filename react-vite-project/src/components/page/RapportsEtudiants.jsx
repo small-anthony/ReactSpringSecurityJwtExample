@@ -1,65 +1,44 @@
-import React, { useState, useEffect, useContext } from "react";
-import { FileText } from "lucide-react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
+import { LayoutDashboard, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
-import {
-    getEtudiantsInscrits,
-    getEtudiantsSansConvocation,
-    getEtudiantsAttenteEntrevue,
-    getEtudiantsAttenteReponse,
-    getEtudiantsTrouveStage
-} from "../../services/api/GestionnaireService.js";
-import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
-import { useOffreFormater } from "../../hooks/useOffreFormater.js";
-import SelecteurSession from "../widget/SelecteurSession.jsx";
+import { getRapportEtudiants } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
+import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
+import CartesKpiRapportGestionnaire from "../widget/CartesKpiRapportGestionnaire.jsx";
+import TableRapportsEtudiants from "../widget/TableRapportsEtudiants.jsx";
+import ModalCandidaturesEtudiant from "../modal/ModalCandidaturesEtudiant.jsx";
+import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
 
 export default function RapportsEtudiants() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const { traduireDiscipline } = useOffreFormater();
-    const [typeRapport, setTypeRapport] = useState("inscrits");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const rawEvalId = Number(searchParams.get("etudiantEvaluationId"));
+    const etudiantEvaluationId = Number.isInteger(rawEvalId) && rawEvalId > 0 ? rawEvalId : null;
+
     const [etudiants, setEtudiants] = useState([]);
     const [annees, setAnnees] = useState([]);
     const [anneeChoisie, setAnneeChoisie] = useState(null);
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
+    const [recherche, setRecherche] = useState("");
+    const [filtreStatut, setFiltreStatut] = useState("TOUS");
+    const [etudiantSelectionne, setEtudiantSelectionne] = useState(null);
 
-    const afficheOffres =
-        typeRapport === "attente-entrevue" ||
-        typeRapport === "attente-reponse" ||
-        typeRapport === "trouve-stage";
-
-    const chargerRapport = async () => {
-        try {
-            setLoading(true);
-            setErreur(null);
-            const authHeader = authService.buildAuthHeader();
-
-            let data = [];
-            if (typeRapport === "inscrits") {
-                data = await getEtudiantsInscrits(authHeader);
-            } else if (typeRapport === "sans-convocation") {
-                data = await getEtudiantsSansConvocation(authHeader, anneeChoisie);
-            } else if (typeRapport === "attente-entrevue") {
-                data = await getEtudiantsAttenteEntrevue(authHeader, anneeChoisie);
-            } else if (typeRapport === "attente-reponse") {
-                data = await getEtudiantsAttenteReponse(authHeader, anneeChoisie);
-            } else if (typeRapport === "trouve-stage") {
-                data = await getEtudiantsTrouveStage(authHeader, anneeChoisie);
-            }
-
-            setEtudiants(data || []);
-        } catch {
-            setErreur(t("rapports_etudiants.error_fetch"));
-        } finally {
-            setLoading(false);
-        }
+    const ouvrirEvaluation = (id) => {
+        const next = new URLSearchParams(searchParams);
+        next.set("etudiantEvaluationId", String(id));
+        setSearchParams(next);
     };
 
-    useEffect(() => {
-        void chargerRapport();
-    }, [typeRapport, authService, anneeChoisie]);
+    const fermerEvaluation = () => {
+        const next = new URLSearchParams(searchParams);
+        next.delete("etudiantEvaluationId");
+        setSearchParams(next, { replace: true });
+    };
 
     useEffect(() => {
         getAnneesGestionnaire(authService.buildAuthHeader())
@@ -72,124 +51,148 @@ export default function RapportsEtudiants() {
             .catch(() => setAnnees([]));
     }, [authService]);
 
+    useEffect(() => {
+        let isMounted = true;
+        const charger = async () => {
+            try {
+                setLoading(true);
+                setErreur(null);
+                const data = await getRapportEtudiants(authService.buildAuthHeader(), anneeChoisie);
+                if (isMounted) setEtudiants(data || []);
+            } catch {
+                if (isMounted) setErreur(t("gestionnaire_dashboard.error_fetch"));
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        void charger();
+        return () => { isMounted = false; };
+    }, [authService, anneeChoisie, t]);
+
+    const stats = useMemo(() => ({
+        total: etudiants.length,
+        stageTrouve: etudiants.filter((e) => e.statutStage === "STAGE_TROUVE").length,
+        nonEvalueProfesseur: etudiants.filter((e) => e.statutStage === "STAGE_TROUVE" && !e.milieuEvalue).length,
+        attenteReponse: etudiants.filter((e) => e.statutStage === "EN_ATTENTE_REPONSE").length,
+        attenteEntrevue: etudiants.filter((e) => e.statutStage === "EN_ATTENTE_ENTREVUE").length,
+        sansConvocation: etudiants.filter((e) => e.statutStage === "SANS_CONVOCATION").length,
+        aucuneCandidature: etudiants.filter((e) => e.statutStage === "AUCUNE_CANDIDATURE").length,
+    }), [etudiants]);
+
+    const etudiantsFiltres = useMemo(() => {
+        let resultat = etudiants;
+
+        if (filtreStatut === "NON_EVALUE_PROFESSEUR") {
+            resultat = resultat.filter((e) => e.statutStage === "STAGE_TROUVE" && !e.milieuEvalue);
+        } else if (filtreStatut !== "TOUS") {
+            resultat = resultat.filter((e) => e.statutStage === filtreStatut);
+        }
+
+        if (recherche.trim()) {
+            const terme = recherche.trim().toLowerCase();
+            resultat = resultat.filter((e) =>
+                `${e.firstName} ${e.lastName} ${e.email} ${e.matricule}`.toLowerCase().includes(terme)
+            );
+        }
+
+        return resultat;
+    }, [etudiants, filtreStatut, recherche]);
+
     return (
-        <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
-            <SidePanelGestionnaire activeTab="rapports" />
+        <main className="flex flex-col md:flex-row w-full min-h-screen bg-gray-50/30">
+            <SidePanelGestionnaire activeTab="dashboard" />
 
-            <main className="flex-1 p-6 sm:p-10 space-y-6">
-                <div>
-                    <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-                        <FileText className="w-7 h-7 text-blue-600" />
-                        <span>{t("rapports_etudiants.title")}</span>
-                    </h1>
-                    <p className="text-sm text-slate-500 mt-1">
-                        {t("rapports_etudiants.subtitle")}
-                    </p>
-                </div>
+            <div className="flex-1 p-6 md:p-10 animate-in fade-in duration-300">
+                {etudiantEvaluationId ? (
+                    <div className="max-w-5xl mx-auto">
+                        <FormulaireEvaluationMilieuStage
+                            etudiantId={etudiantEvaluationId}
+                            mode="gestionnaire"
+                            onRetour={fermerEvaluation}
+                        />
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2.5">
+                                    <LayoutDashboard className="w-7 h-7 text-blue-600" />
+                                    <span>{t("gestionnaire_dashboard.title")}</span>
+                                </h1>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    {t("gestionnaire_dashboard.subtitle")}
+                                </p>
+                            </div>
 
-                <div className="ds-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                        <label htmlFor="select-rapport" className="text-sm font-semibold text-slate-700 shrink-0">
-                            {t("rapports_etudiants.select_label")}
-                        </label>
-                        <select
-                            id="select-rapport"
-                            value={typeRapport}
-                            onChange={(e) => setTypeRapport(e.target.value)}
-                            className="w-full sm:w-96 ds-input"
-                        >
-                            <option value="inscrits">{t("rapports_etudiants.types.etudiants-inscrits")}</option>
-                            <option value="sans-convocation">{t("rapports_etudiants.types.etudiants-sans-convocation")}</option>
-                            <option value="attente-entrevue">{t("rapports_etudiants.types.etudiants-attente-entrevue")}</option>
-                            <option value="attente-reponse">{t("rapports_etudiants.types.etudiants-attente-reponse")}</option>
-                            <option value="trouve-stage">{t("rapports_etudiants.types.etudiants-trouve-stage")}</option>
-                        </select>
-                        {typeRapport !== "inscrits" && (
                             <SelecteurSession
                                 annees={annees}
                                 anneeSelectionnee={anneeChoisie}
                                 onChangementAnnee={setAnneeChoisie}
                             />
+                        </div>
+
+                        {erreur && (
+                            <div className="p-4 bg-red-50 text-red-700 border-l-4 border-red-500 rounded-xl text-sm">
+                                {erreur}
+                            </div>
                         )}
-                    </div>
 
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200/80 self-start sm:self-auto">
-                        {t(etudiants.length > 1 ? "rapports_etudiants.total_plural" : "rapports_etudiants.total", {
-                            count: etudiants.length
-                        })}
-                    </span>
-                </div>
+                        <CartesKpiRapportGestionnaire
+                            stats={stats}
+                            filtreStatut={filtreStatut}
+                            onSelectFiltre={setFiltreStatut}
+                        />
 
-                {erreur && (
-                    <div className="ds-alert-error" role="alert">
-                        {erreur}
+                        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+                            <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="relative flex-1 max-w-md">
+                                    <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                                    <input
+                                        type="text"
+                                        value={recherche}
+                                        onChange={(e) => setRecherche(e.target.value)}
+                                        placeholder={t("gestionnaire_dashboard.search_placeholder")}
+                                        className="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                                    />
+                                </div>
+
+                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                    {t(
+                                        etudiantsFiltres.length > 1
+                                            ? "gestionnaire_dashboard.total_plural"
+                                            : "gestionnaire_dashboard.total",
+                                        { count: etudiantsFiltres.length }
+                                    )}
+                                </span>
+                            </div>
+
+                            {loading ? (
+                                <div className="p-12 text-center text-sm text-gray-500">
+                                    {t("gestionnaire_dashboard.loading")}
+                                </div>
+                            ) : etudiantsFiltres.length === 0 ? (
+                                <div className="p-12 text-center text-sm text-gray-500">
+                                    {t("gestionnaire_dashboard.empty")}
+                                </div>
+                            ) : (
+                                <TableRapportsEtudiants
+                                    etudiants={etudiantsFiltres}
+                                    onVoirCandidatures={setEtudiantSelectionne}
+                                    onConsulterEvaluation={ouvrirEvaluation}
+                                />
+                            )}
+                        </div>
                     </div>
                 )}
+            </div>
 
-                <div className="ds-card overflow-hidden">
-                    {loading ? (
-                        <div className="p-12 text-center text-sm text-slate-500 font-medium">
-                            {t("rapports_etudiants.loading")}
-                        </div>
-                    ) : etudiants.length === 0 ? (
-                        <div className="p-12 text-center text-sm text-slate-500 font-medium">
-                            {t("rapports_etudiants.empty")}
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm text-slate-600">
-                                <thead className="bg-slate-50/90 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                                <tr>
-                                    <th className="px-6 py-4">{t("rapports_etudiants.th_student")}</th>
-                                    <th className="px-6 py-4">{t("rapports_etudiants.th_matricule")}</th>
-                                    <th className="px-6 py-4">{t("rapports_etudiants.th_email")}</th>
-                                    <th className="px-6 py-4">{t("rapports_etudiants.th_discipline")}</th>
-                                    {afficheOffres && (
-                                        <th className="px-6 py-4">{t("rapports_etudiants.th_offers")}</th>
-                                    )}
-                                </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                {etudiants.map((etudiant) => (
-                                    <tr key={etudiant.id} className="hover:bg-slate-50/70 transition-colors">
-                                        <td className="px-6 py-4 font-bold text-slate-900">
-                                            {etudiant.firstName} {etudiant.lastName}
-                                        </td>
-                                        <td className="px-6 py-4 font-mono text-xs font-medium text-slate-700">
-                                            {etudiant.matricule}
-                                        </td>
-                                        <td className="px-6 py-4 text-slate-600">
-                                            {etudiant.email}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
-                                                    {traduireDiscipline(etudiant.discipline)}
-                                                </span>
-                                        </td>
-                                        {afficheOffres && (
-                                            <td className="px-6 py-4">
-                                                <details className="text-xs cursor-pointer">
-                                                    <summary className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
-                                                        ({etudiant.candidatures?.length || 0}) {t("offres_etudiant.btn_see_details")}
-                                                    </summary>
-                                                    <div className="mt-2 space-y-1 text-slate-700 pl-2 border-l-2 border-blue-200">
-                                                        {(etudiant.candidatures || []).map((cand) => (
-                                                            <div key={cand.id}>
-                                                                {cand.titreOffre} - {cand.nomEntreprise}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </details>
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
-            </main>
-        </div>
+            {etudiantSelectionne && (
+                <ModalCandidaturesEtudiant
+                    etudiant={etudiantSelectionne}
+                    onClose={() => setEtudiantSelectionne(null)}
+                />
+            )}
+        </main>
     );
 }
