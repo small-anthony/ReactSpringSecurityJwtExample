@@ -34,10 +34,16 @@ const NotificationService = ({ children }) => {
                 return;
             }
 
-            const response = await APIHelper.post("/notifications/dismiss", authService.buildAuthHeader(), {id: id});
+            const response = await APIHelper.post("/notifications", authService.buildAuthHeader(), {id: id});
             if(!response.ok) {
                 throw new Error(await response.text())
             }
+            const updated = await response.json();
+            setNotifications((prev) =>
+                Array.isArray(prev)
+                    ? prev.map((item) => (item.id === id ? new Notification(updated) : item))
+                    : prev
+            );
         }
     }
 

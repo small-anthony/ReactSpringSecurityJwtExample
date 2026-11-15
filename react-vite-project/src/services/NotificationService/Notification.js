@@ -21,6 +21,7 @@ export const NotificationResourceType = Object.freeze({
     Candidature: "CANDIDATURE",
     Convocation: "CONVOCATION",
     Contrat: "CONTRAT",
+    EvaluationMilieu: "EVALUATION_MILIEU",
 })
 
 export default class Notification {
@@ -49,6 +50,14 @@ export default class Notification {
     }
 }
 
+async function marquerNotificationLue(notificationService, id) {
+    try {
+        await notificationService.dismissNotification(id);
+    } catch {
+        return;
+    }
+}
+
 const _notificationActionToHandler = {
     [NotificationActionType.ViewResource]: (notification, payload) => {
         const authService = useContext(AuthServiceContext);
@@ -56,9 +65,9 @@ const _notificationActionToHandler = {
         const navigate = useNavigate();
         const userData = authService.getUserData();
 
-        const { type } = payload;
+        const { type, id } = payload;
         return async () => {
-            await notificationService.dismissNotification(notification.id);
+            await marquerNotificationLue(notificationService, notification.id);
             switch (type) {
                 case NotificationResourceType.OffreStage: {
                     switch (userData.role) {
@@ -71,7 +80,14 @@ const _notificationActionToHandler = {
                 case NotificationResourceType.Cv: {
                     switch (userData.role) {
                         case UserRole.Etudiant: return navigate("/etudiant");
-                        case UserRole.Gestionnaire: return navigate("/gestionnaire/approbations/cv");
+                        case UserRole.Gestionnaire: return navigate("/gestionnaire/approbations/cvs");
+                    }
+                    break;
+                }
+                case NotificationResourceType.EvaluationMilieu: {
+                    switch (userData.role) {
+                        case UserRole.Gestionnaire:
+                            return navigate(id ? `/gestionnaire?etudiantEvaluationId=${id}` : "/gestionnaire");
                     }
                     break;
                 }
@@ -87,7 +103,7 @@ const _notificationActionToHandler = {
 
         const { type } = payload;
         return async () => {
-            await notificationService.dismissNotification(notification.id);
+            await marquerNotificationLue(notificationService, notification.id);
             switch (type) {
                 case NotificationResourceType.OffreStage: {
                     switch (userData.role) {
