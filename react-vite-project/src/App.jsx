@@ -22,7 +22,7 @@ import ProfesseurEtudiants from "./components/page/ProfesseurEtudiants.jsx";
 import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
 import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
 import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
-import EvaluationMilieuStage from "./components/page/EvaluationMilieuStage.jsx";
+import FormulaireEvaluationMilieuStage from "./components/widget/FormulaireEvaluationMilieuStage.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
@@ -142,7 +142,7 @@ function App() {
 
                     <Route
                         path="professeur/etudiants/:etudiantId/evaluation-milieu"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <EvaluationMilieuStage mode="professeur" /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <div className="min-h-screen bg-gray-50/70 py-8 px-4 sm:px-6"><FormulaireEvaluationMilieuStage mode="professeur" /></div> : <Navigate to="/" />))}
                     />
 
                     <Route
@@ -173,7 +173,7 @@ function App() {
                     />
                     <Route
                         path="gestionnaire/etudiants/:etudiantId/evaluation-milieu"
-                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "GESTIONNAIRE" ? <EvaluationMilieuStage mode="gestionnaire" /> : <Navigate to="/" />}
+                        element={!token ? <Navigate to="/login" /> : !userData ? null : role === "GESTIONNAIRE" ? <div className="min-h-screen bg-gray-50/70 py-8 px-4 sm:px-6"><FormulaireEvaluationMilieuStage mode="gestionnaire" /></div> : <Navigate to="/" />}
                     />
                 </Route>
             </Routes>

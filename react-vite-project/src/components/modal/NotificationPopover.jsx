@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Bell, ChevronRight, CircleAlert, CircleCheck, CircleHelp, CircleX, Info, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
@@ -15,29 +15,17 @@ const TYPE_STYLES = {
 export function NotificationButton() {
     const notificationService = useContext(NotificationServiceContext);
     const notifications = notificationService.getNotifications();
-    const containerRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
     const nonLues = Array.isArray(notifications) ? notifications.filter((n) => !n.dismissed).length : 0;
 
-    useEffect(() => {
-        if (!isOpen) return undefined;
-        const handleOutside = (e) => {
-            if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
-        };
-        const handleEscape = (e) => {
-            if (e.key === "Escape") setIsOpen(false);
-        };
-        document.addEventListener("mousedown", handleOutside);
-        document.addEventListener("keydown", handleEscape);
-        return () => {
-            document.removeEventListener("mousedown", handleOutside);
-            document.removeEventListener("keydown", handleEscape);
-        };
-    }, [isOpen]);
-
     return (
-        <div ref={containerRef} className="relative flex items-center">
+        <div
+            className="relative flex items-center"
+            onKeyDown={(e) => {
+                if (e.key === "Escape") setIsOpen(false);
+            }}
+        >
             <button
                 type="button"
                 aria-expanded={isOpen}
@@ -54,7 +42,10 @@ export function NotificationButton() {
                 )}
             </button>
             {isOpen && (
-                <NotificationPopover notifications={notifications || []} nonLues={nonLues} onClose={() => setIsOpen(false)} />
+                <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} aria-hidden="true" />
+                    <NotificationPopover notifications={notifications || []} nonLues={nonLues} onClose={() => setIsOpen(false)} />
+                </>
             )}
         </div>
     );

@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { BrowserRouter } from "react-router-dom";
 import RapportsEtudiants from "../../../components/page/RapportsEtudiants.jsx";
@@ -16,7 +16,7 @@ const mockAuth = {
     buildAuthHeader: vi.fn(() => ({ Authorization: "Bearer token123" })),
 };
 
-const mockEtudiants = [
+const mockEtudiantsInscrits = [
     {
         id: 1,
         firstName: "Jean",
@@ -24,11 +24,8 @@ const mockEtudiants = [
         email: "jean.tremblay@test.ca",
         matricule: 1234567,
         discipline: "INFORMATIQUE",
-        statutStage: "STAGE_TROUVE",
         milieuEvalue: false,
-        candidatures: [
-            { id: 10, titreOffre: "Développeur Fullstack", nomEntreprise: "CGI", statut: "EMBAUCHEE", dateCandidature: "2026-02-15T10:00:00" },
-        ],
+        candidatures: [],
     },
     {
         id: 2,
@@ -37,22 +34,10 @@ const mockEtudiants = [
         email: "sophie.martin@test.ca",
         matricule: 7654321,
         discipline: "INFORMATIQUE",
-        statutStage: "EN_ATTENTE_ENTREVUE",
-        milieuEvalue: false,
+        milieuEvalue: true,
         candidatures: [
-            { id: 11, titreOffre: "Analyste QA", nomEntreprise: "Desjardins", statut: "EN_ATTENTE", dateCandidature: "2026-03-01T14:30:00" },
+            { id: 10, titreOffre: "Développeur Fullstack", nomEntreprise: "CGI" },
         ],
-    },
-    {
-        id: 3,
-        firstName: "Alex",
-        lastName: "Roy",
-        email: "alex.roy@test.ca",
-        matricule: 9876543,
-        discipline: "INFORMATIQUE",
-        statutStage: "AUCUNE_CANDIDATURE",
-        milieuEvalue: false,
-        candidatures: [],
     },
 ];
 
@@ -64,85 +49,63 @@ const renderComponent = () => render(
     </AuthServiceContext.Provider>
 );
 
-describe("RapportsEtudiants (Tableau de bord Gestionnaire)", () => {
+describe("RapportsEtudiants", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         OffreStageService.getAnneesGestionnaire.mockResolvedValue([2026, 2025]);
-        GestionnaireService.getRapportEtudiants.mockResolvedValue(mockEtudiants);
+        GestionnaireService.getEtudiantsInscrits.mockResolvedValue(mockEtudiantsInscrits);
+        GestionnaireService.getEtudiantsTrouveStage.mockResolvedValue([mockEtudiantsInscrits[1]]);
+        GestionnaireService.getEtudiantsStagesNonEvaluesProfesseur.mockResolvedValue([mockEtudiantsInscrits[0]]);
         i18n.changeLanguage("fr");
     });
 
-    it("devrait afficher le titre, les cartes KPI et la liste des étudiants", async () => {
+    it("devrait afficher le titre, le sélecteur et les étudiants inscrits par défaut", async () => {
         renderComponent();
 
-        expect(await screen.findByText("Suivi des étudiants")).toBeInTheDocument();
+        expect(await screen.findByText("Rapports des étudiants")).toBeInTheDocument();
         expect(screen.getByText("Jean Tremblay")).toBeInTheDocument();
         expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
-        expect(screen.getByText("Alex Roy")).toBeInTheDocument();
-        expect(screen.getByText("3")).toBeInTheDocument();
+        expect(screen.getByText("Total : 2 étudiants")).toBeInTheDocument();
     });
 
-    it("devrait filtrer les étudiants par statut lors du clic sur une carte KPI", async () => {
+    it("devrait charger les étudiants ayant trouvé un stage avec le bouton d'évaluation du milieu", async () => {
         renderComponent();
-
         await screen.findByText("Jean Tremblay");
 
-        const boutonStageTrouve = screen.getByRole("button", { name: /stage trouvé/i });
-        fireEvent.click(boutonStageTrouve);
-
-        expect(screen.getByText("Jean Tremblay")).toBeInTheDocument();
-        expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
-        expect(screen.queryByText("Alex Roy")).not.toBeInTheDocument();
-    });
-
-    it("devrait filtrer les étudiants avec la barre de recherche", async () => {
-        renderComponent();
-
-        await screen.findByText("Jean Tremblay");
-
-        const champRecherche = screen.getByPlaceholderText(/rechercher par nom/i);
-        fireEvent.change(champRecherche, { target: { value: "Martin" } });
-
-        expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
-        expect(screen.queryByText("Jean Tremblay")).not.toBeInTheDocument();
-        expect(screen.queryByText("Alex Roy")).not.toBeInTheDocument();
-    });
-
-    it("devrait afficher un message si aucun étudiant ne correspond aux critères", async () => {
-        renderComponent();
-
-        await screen.findByText("Jean Tremblay");
-
-        const champRecherche = screen.getByPlaceholderText(/rechercher par nom/i);
-        fireEvent.change(champRecherche, { target: { value: "Introuvable" } });
-
-        expect(screen.getByText("Aucun étudiant ne correspond aux critères sélectionnés.")).toBeInTheDocument();
-    });
-
-    it("devrait ouvrir la modale des candidatures lors du clic sur le bouton de candidature", async () => {
-        renderComponent();
-
-        await screen.findByText("Jean Tremblay");
-
-        const boutonsCandidatures = screen.getAllByRole("button", { name: /voir \(1\)/i });
-        fireEvent.click(boutonsCandidatures[0]);
-
-        expect(screen.getByText("Développeur Fullstack")).toBeInTheDocument();
-        expect(screen.getByText("CGI")).toBeInTheDocument();
-
-        const boutonFermer = screen.getByRole("button", { name: /fermer/i });
-        fireEvent.click(boutonFermer);
-
-        await waitFor(() => {
-            expect(screen.queryByText("Développeur Fullstack")).not.toBeInTheDocument();
+        fireEvent.change(screen.getByLabelText(/type de rapport/i), {
+            target: { value: "trouve-stage" },
         });
+
+        expect(await screen.findByText("Sophie Martin")).toBeInTheDocument();
+        expect(screen.queryByText("Jean Tremblay")).not.toBeInTheDocument();
+        expect(screen.getByText("Développeur Fullstack - CGI")).toBeInTheDocument();
+        expect(screen.getByText("Évalué")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /voir l'évaluation du milieu/i })).toBeInTheDocument();
     });
 
-    it("devrait afficher un message d'erreur si la récupération échoue", async () => {
-        GestionnaireService.getRapportEtudiants.mockRejectedValue(new Error("Erreur réseau"));
+    it("devrait charger les stages non évalués par le professeur", async () => {
+        renderComponent();
+        await screen.findByText("Jean Tremblay");
+
+        fireEvent.change(screen.getByLabelText(/type de rapport/i), {
+            target: { value: "stages-non-evalues-professeur" },
+        });
+
+        expect(await screen.findByText("Non évalué")).toBeInTheDocument();
+        expect(GestionnaireService.getEtudiantsStagesNonEvaluesProfesseur).toHaveBeenCalled();
+    });
+
+    it("devrait afficher un message si le rapport est vide", async () => {
+        GestionnaireService.getEtudiantsInscrits.mockResolvedValue([]);
         renderComponent();
 
-        expect(await screen.findByText("Erreur lors du chargement des données des étudiants.")).toBeInTheDocument();
+        expect(await screen.findByText("Aucun étudiant ne correspond à ce rapport pour le moment.")).toBeInTheDocument();
+    });
+
+    it("devrait afficher un message d'erreur si le chargement échoue", async () => {
+        GestionnaireService.getEtudiantsInscrits.mockRejectedValue(new Error("Erreur réseau"));
+        renderComponent();
+
+        expect(await screen.findByText("Erreur lors du chargement du rapport.")).toBeInTheDocument();
     });
 });
-
