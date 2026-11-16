@@ -116,7 +116,7 @@ export default function RapportsEtudiants() {
                     <FormulaireEvaluationMilieuStage
                         mode="gestionnaire"
                         etudiantId={etudiantEvaluationId}
-                        onBack={fermerEvaluation}
+                        onRetour={fermerEvaluation}
                     />
                 ) : (
                     <>
