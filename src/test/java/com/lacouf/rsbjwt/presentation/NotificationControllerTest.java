@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.presentation.RequestDto.DismissNotificationRequest;
 import com.lacouf.rsbjwt.service.NotificationService;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
@@ -81,7 +80,7 @@ public class NotificationControllerTest {
 		// ARRANGE
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("test@email.com");
-		when(notificationService.getNotificationsForEmail("test@gmail.com")).thenThrow(Exception.class);
+		when(notificationService.getNotificationsForEmail("test@email.com")).thenThrow(Exception.class);
 
 		// ACT
 		ResponseEntity<?> response = notificationController.getNotificationsForAuth(auth);
@@ -96,17 +95,60 @@ public class NotificationControllerTest {
 	public void dismissNotification_allGood_shouldWork() throws Exception {
 		// ARRANGE
 		NotificationDTO notification = new NotificationDTO(1L, null, null, null, null, false);
-		DismissNotificationRequest request = new DismissNotificationRequest(1L);
-
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("test@email.com");
 		when(notificationService.dismissNotification(1L, "test@email.com")).thenReturn(notification);
 
 		// ACT
-		ResponseEntity<DataTransferObject> response = notificationController.dismissNotification(request, auth);
+		ResponseEntity<DataTransferObject> response = notificationController.dismissNotification(1L, auth);
 
 		// ASSERT
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(notification, response.getBody());
+	}
+
+	@Test
+	public void dismissNotification_badArgs_shouldBeBadRequest() {
+		// ARRANGE
+		Authentication auth = mock(Authentication.class);
+
+		// ACT
+		ResponseEntity<DataTransferObject> response = notificationController.dismissNotification(null, auth);
+
+		// ASSERT
+		verifyNoInteractions(notificationService);
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertEquals(ErrorResponse.class, response.getBody().getClass());
+	}
+
+	@Test
+	public void deleteNotification_allGood_shouldReturnNoContent() throws Exception {
+		// ARRANGE
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("test@email.com");
+
+		// ACT
+		ResponseEntity<?> response = notificationController.deleteNotification(1L, auth);
+
+		// ASSERT
+		verify(notificationService).deleteNotification(1L, "test@email.com");
+		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+	}
+
+	@Test
+	public void deleteNotification_whenServiceThrows_shouldReturnError() throws Exception {
+		// ARRANGE
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("test@email.com");
+		doThrow(new Exception("erreur")).when(notificationService).deleteNotification(1L, "test@email.com");
+
+		// ACT
+		ResponseEntity<?> response = notificationController.deleteNotification(1L, auth);
+
+		// ASSERT
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertEquals(ErrorResponse.class, response.getBody().getClass());
 	}
 }

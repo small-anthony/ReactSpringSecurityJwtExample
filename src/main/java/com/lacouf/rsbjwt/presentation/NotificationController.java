@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.presentation.RequestDto.DismissNotificationRequest;
 import com.lacouf.rsbjwt.service.NotificationService;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
@@ -34,15 +33,26 @@ public class NotificationController {
 	}
 
 	@PostMapping("/dismiss")
-	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody DismissNotificationRequest dismissRequest, Authentication authentication) {
+	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody Long id, Authentication authentication) {
 		try {
+			if (id == null) {
+				return ResponseEntity.badRequest().body(new ErrorResponse("bad id"));
+			}
 			String actorEmail = authentication.getName();
-			long id = dismissRequest.id();
-
 			NotificationDTO notification = notificationService.dismissNotification(id, actorEmail);
 			return ResponseEntity.ok().body(notification);
 		}
 		catch(Exception e) {
+			return ResponseEntity.internalServerError().body(ErrorResponse.create(e));
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteNotification(@PathVariable Long id, Authentication authentication) {
+		try {
+			notificationService.deleteNotification(id, authentication.getName());
+			return ResponseEntity.noContent().build();
+		} catch (Exception e) {
 			return ResponseEntity.internalServerError().body(ErrorResponse.create(e));
 		}
 	}
