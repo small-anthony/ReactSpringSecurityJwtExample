@@ -7,12 +7,20 @@ import {getConvocationsEtudiant} from "../../services/api/ConvocationAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import {DISCIPLINES} from "../../constants/disciplines";
 import {DUREES} from "../../constants/durees";
-import {AlertTriangle, Briefcase, Building2, Calendar, CheckCircle2, FileText, FilterX, Search, XCircle} from "lucide-react";
+import {AlertTriangle, Briefcase, Building2, Calendar, CheckCircle2, Clock, FileText, FilterX, Search, XCircle} from "lucide-react";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import EtudiantContrats from "./EtudiantContrats.jsx";
 import {getContratsEtudiant} from "../../services/api/ContratAPI.js";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
+
+const ORDRE_STATUT_CANDIDATURE = {
+    EMBAUCHEE: 0,
+    ACCEPTEE: 1,
+    EN_ATTENTE_REPONSE: 2,
+    EN_ATTENTE: 3,
+    REFUSEE: 4,
+};
 
 export default function OffreStagesEtudiant() {
     const { t } = useTranslation("main");
@@ -145,10 +153,15 @@ export default function OffreStagesEtudiant() {
         });
     }, [offres]);
 
+    const offresEmbauchees = useMemo(
+        () => mesCandidaturesOffres.filter((o) => candidaturesParOffre[o.id]?.statut === "EMBAUCHEE"),
+        [mesCandidaturesOffres, candidaturesParOffre]
+    );
+
     const offresFiltrees = useMemo(() => {
         const listeBase = ongletActif === "mes_candidatures" ? mesCandidaturesOffres : offres;
 
-        return listeBase.filter((offre) => {
+        const filtrees = listeBase.filter((offre) => {
             const aPostule = mesCandidaturesOffres.map((o) => o.id).includes(offre.id);
 
             if (ongletActif === "toutes" && aPostule) {
@@ -178,7 +191,17 @@ export default function OffreStagesEtudiant() {
                 correspondDuree
             );
         });
-    }, [offres, mesCandidaturesOffres, recherche, filtreEntreprise, filtreDiscipline, filtreDuree, ongletActif]);
+
+        if (ongletActif !== "mes_candidatures") {
+            return filtrees;
+        }
+
+        return [...filtrees].sort((a, b) => {
+            const ordreA = ORDRE_STATUT_CANDIDATURE[candidaturesParOffre[a.id]?.statut] ?? 99;
+            const ordreB = ORDRE_STATUT_CANDIDATURE[candidaturesParOffre[b.id]?.statut] ?? 99;
+            return ordreA - ordreB;
+        });
+    }, [offres, mesCandidaturesOffres, candidaturesParOffre, recherche, filtreEntreprise, filtreDiscipline, filtreDuree, ongletActif]);
 
     const aDesFiltresActifs = recherche || filtreEntreprise || filtreDiscipline || filtreDuree;
 
@@ -198,11 +221,30 @@ export default function OffreStagesEtudiant() {
                             <Briefcase className="w-3.5 h-3.5 text-[#2563EB]" strokeWidth={1.5} />
                             <span>{t("offres_etudiant.badge")}</span>
                         </div>
-                        {aTrouveStage && (
+                        {aTrouveStage ? (
                             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                                 <span>{t("contrats_etudiant.status_stage_trouve", { defaultValue: "STAGE TROUVÉ" })}</span>
                             </div>
+                        ) : offresEmbauchees.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => changerOnglet("mes_candidatures")}
+                                className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs hover:bg-emerald-200/70 transition cursor-pointer"
+                            >
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                <span>
+                                    {offresEmbauchees.length === 1
+                                        ? t("offres_etudiant.status_hired_single", {
+                                              company: offresEmbauchees[0].nomEntreprise,
+                                              defaultValue: `Statut : Embauché(e) — ${offresEmbauchees[0].nomEntreprise}`,
+                                          })
+                                        : t("offres_etudiant.status_hired_multiple", {
+                                              count: offresEmbauchees.length,
+                                              defaultValue: `Statut : Embauché(e) (${offresEmbauchees.length})`,
+                                          })}
+                                </span>
+                            </button>
                         )}
                     </div>
                     <h1 className="text-3xl font-bold text-[#111827] tracking-tight sm:text-4xl">
@@ -405,10 +447,22 @@ export default function OffreStagesEtudiant() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {offresFiltrees.map((offre) => (
+                                        {offresFiltrees.map((offre) => {
+                                            const candidatureOffre = candidaturesParOffre[offre.id];
+                                            const statutCandidature = candidatureOffre?.statut;
+                                            const estEmbauchee = ongletActif === "mes_candidatures" && statutCandidature === "EMBAUCHEE";
+                                            const dateDecisionFormatee = candidatureOffre?.dateDecision
+                                                ? new Date(candidatureOffre.dateDecision).toLocaleDateString()
+                                                : null;
+
+                                            return (
                                             <article
                                                 key={offre.id}
-                                                className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-xs hover:shadow-md hover:border-[#CBD5E1] transition-all duration-200 flex flex-col justify-between"
+                                                className={`bg-white rounded-xl border p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between ${
+                                                    estEmbauchee
+                                                        ? "border-emerald-300 ring-1 ring-emerald-200 hover:border-emerald-400"
+                                                        : "border-[#E2E8F0] hover:border-[#CBD5E1]"
+                                                }`}
                                             >
                                                 <div>
                                                     <div className="space-y-2 mb-4">
@@ -440,13 +494,54 @@ export default function OffreStagesEtudiant() {
                                                     </div>
                                                 </div>
 
-                                                {ongletActif === "mes_candidatures" && (
+                                                {ongletActif === "mes_candidatures" && statutCandidature && (
                                                     <div className="pt-3 pb-3">
-                                                        {candidaturesParOffre[offre.id]?.statut === "REFUSEE" && (
+                                                        {statutCandidature === "EMBAUCHEE" && (
+                                                            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
+                                                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" strokeWidth={2} />
+                                                                    <span>{t("candidature_etudiant.badge_EMBAUCHEE", { defaultValue: "Embauché(e)" })}</span>
+                                                                </div>
+                                                                <p className="text-xs font-medium text-emerald-800">
+                                                                    {t("candidature_etudiant.status.EMBAUCHEE")}
+                                                                </p>
+                                                                {dateDecisionFormatee && (
+                                                                    <p className="text-[11px] text-emerald-700">
+                                                                        {t("candidature_etudiant.hired_on", {
+                                                                            date: dateDecisionFormatee,
+                                                                            defaultValue: `Embauché(e) le ${dateDecisionFormatee}`,
+                                                                        })}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {statutCandidature === "ACCEPTEE" && (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                                <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" strokeWidth={1.5} />
+                                                                <span>{t("candidature_etudiant.status_entrevue_confirmee", { defaultValue: "Entrevue confirmée — En attente de décision" })}</span>
+                                                            </span>
+                                                        )}
+
+                                                        {statutCandidature === "EN_ATTENTE_REPONSE" && (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                                                                <Calendar className="w-3.5 h-3.5 text-amber-600 shrink-0" strokeWidth={1.5} />
+                                                                <span>{t("candidature_etudiant.status.EN_ATTENTE_REPONSE")}</span>
+                                                            </span>
+                                                        )}
+
+                                                        {statutCandidature === "EN_ATTENTE" && (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                                                <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" strokeWidth={1.5} />
+                                                                <span>{t("candidature_etudiant.status.EN_ATTENTE")}</span>
+                                                            </span>
+                                                        )}
+
+                                                        {statutCandidature === "REFUSEE" && (
                                                             <p className="text-xs text-rose-600 flex items-center gap-1.5 font-medium">
                                                                 <XCircle className="w-4 h-4 shrink-0 text-rose-500" strokeWidth={1.5} />
                                                                 <span>
-                                                                    {candidaturesParOffre[offre.id]?.messageReponse === "L'offre a été supprimée par l'employeur"
+                                                                    {candidatureOffre?.messageReponse === "L'offre a été supprimée par l'employeur"
                                                                         ? t("candidature_etudiant.offer_deleted")
                                                                         : t("candidature_etudiant.status.REFUSEE")}
                                                                 </span>
@@ -465,7 +560,8 @@ export default function OffreStagesEtudiant() {
                                                     </button>
                                                 </div>
                                             </article>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </>
@@ -477,6 +573,7 @@ export default function OffreStagesEtudiant() {
                 offre={offreSelectionnee}
                 onClose={() => setOffreSelectionnee(null)}
                 aPostule={offreSelectionnee ? mesCandidaturesOffres.map((o) => o.id).includes(offreSelectionnee.id) : false}
+                candidature={offreSelectionnee ? candidaturesParOffre[offreSelectionnee.id] : null}
                 onPostulerSucces={handlePostulerSucces}
             />
         </div>

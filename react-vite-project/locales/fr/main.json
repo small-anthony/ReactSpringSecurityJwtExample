@@ -398,9 +398,12 @@
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
       "REFUSEE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
-      "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "EN_ATTENTE_REPONSE": "Convoqué(e) à une entrevue",
       "EMBAUCHEE": "Félicitations, vous êtes embauché(e) !"
     },
+    "badge_EMBAUCHEE": "Embauché(e)",
+    "hired_on": "Embauché(e) le {{date}}",
+    "status_entrevue_confirmee": "Entrevue confirmée — En attente de décision",
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
     "modal_refused_no_reason": "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
@@ -614,6 +617,8 @@
     "tab_my_applications": "Mes candidatures",
     "applied_badge": "Candidature envoyée",
     "empty_applied": "Vous n'avez pas encore postulé à une offre de stage.",
+    "status_hired_single": "Statut : Embauché(e) — {{company}}",
+    "status_hired_multiple": "Statut : Embauché(e) ({{count}})",
     "modal": {
       "validated_badge": "Offre validée",
       "discipline": "Discipline",

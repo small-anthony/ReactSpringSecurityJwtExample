@@ -397,9 +397,12 @@
       "ACCEPTEE": "Invited to an interview",
       "REFUSE": "Application rejected. Click \"View details\" for more information.",
       "REFUSEE": "Application rejected. Click \"View details\" for more information.",
-      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EN_ATTENTE_REPONSE": "Invited to an interview",
       "EMBAUCHEE": "Congratulations, you have been hired!"
     },
+    "badge_EMBAUCHEE": "Hired",
+    "hired_on": "Hired on {{date}}",
+    "status_entrevue_confirmee": "Interview confirmed — Awaiting decision",
     "refuse_reason": "Employer's message",
     "modal_refused_title": "Application rejected",
     "modal_refused_no_reason": "Your application was not selected by the employer for this internship offer.",
@@ -613,6 +616,8 @@
     "tab_my_applications": "My Applications",
     "applied_badge": "Application sent",
     "empty_applied": "You have not applied to any internship offers yet.",
+    "status_hired_single": "Status: Hired — {{company}}",
+    "status_hired_multiple": "Status: Hired ({{count}})",
     "modal": {
       "validated_badge": "Validated offer",
       "discipline": "Discipline",
