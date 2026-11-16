@@ -1,14 +1,11 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationResourceType;
-import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.repository.NotificationRepository;
+import com.lacouf.rsbjwt.presentation.RequestDto.DismissNotificationRequest;
 import com.lacouf.rsbjwt.service.NotificationService;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
-import com.lacouf.rsbjwt.util.NotificationPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -101,8 +96,7 @@ public class NotificationControllerTest {
 	public void dismissNotification_allGood_shouldWork() throws Exception {
 		// ARRANGE
 		NotificationDTO notification = new NotificationDTO(1L, null, null, null, null, false);
-		Map<String, Object> request = new HashMap<>();
-		request.put("id", 1);
+		DismissNotificationRequest request = new DismissNotificationRequest(1L);
 
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("test@email.com");
@@ -114,52 +108,5 @@ public class NotificationControllerTest {
 		// ASSERT
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(notification, response.getBody());
-	}
-
-	@Test
-	public void dismissNotification_weirdArgs_shouldHandleCorrectly() throws Exception {
-		// ARRANGE
-		NotificationDTO notification = new NotificationDTO(1L, null, null, null, null, false);
-		Authentication auth = mock(Authentication.class);
-		when(auth.getName()).thenReturn("test@email.com");
-		when(notificationService.dismissNotification(1L, "test@email.com")).thenReturn(notification);
-
-		Map<Object, ResponseEntity<DataTransferObject>> validInputs = new HashMap<>();
-		validInputs.put(1L, null);
-		validInputs.put("1", null);
-
-		// ACT
-		Map<String, Object> request = new HashMap<>();
-		for(Object key : validInputs.keySet()) {
-			request.put("id", key);
-			validInputs.put(key, notificationController.dismissNotification(request, auth));
-		}
-
-		// ASSERT
-		for(Object inputKind : validInputs.keySet()) {
-			ResponseEntity<DataTransferObject> result = validInputs.get(inputKind);
-			assertEquals(HttpStatus.OK, result.getStatusCode(), "Input \"" + inputKind + "\" (" + inputKind.getClass() + ") returned " + result.getStatusCode());
-			assertEquals(notification, result.getBody(), "Input \"" + inputKind + "\" (" + inputKind.getClass() + ") did not return notification");
-		}
-	}
-
-	@Test
-	public void dismissNotification_badArgs_shouldBeBadRequest() throws Exception {
-		// ARRANGE
-		NotificationDTO notification = new NotificationDTO(1L, null, null, null, null, false);
-		Map<String, Object> request = new HashMap<>();
-		request.put("id", "Boy what the hell boy");
-
-		Authentication auth = mock(Authentication.class);
-		when(auth.getName()).thenReturn("test@email.com");
-		verifyNoInteractions(notificationService);
-
-		// ACT
-		ResponseEntity<DataTransferObject> response = notificationController.dismissNotification(request, auth);
-
-		// ASSERT
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		assertNotNull(response.getBody());
-		assertEquals(ErrorResponse.class, response.getBody().getClass());
 	}
 }

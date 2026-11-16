@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exceptions.BadArgumentFormatException;
+import com.lacouf.rsbjwt.presentation.RequestDto.DismissNotificationRequest;
 import com.lacouf.rsbjwt.service.NotificationService;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.NotificationDTO;
@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/notifications")
@@ -35,24 +34,13 @@ public class NotificationController {
 	}
 
 	@PostMapping("/dismiss")
-	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody Map<String, Object> request, Authentication authentication) {
+	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody DismissNotificationRequest dismissRequest, Authentication authentication) {
 		try {
 			String actorEmail = authentication.getName();
-
-			long id;
-			Object rawId = request.get("id");
-			id = switch (rawId) {
-				case Integer intId -> Long.valueOf(intId);
-				case Long longId -> longId;
-				case String stringId -> Long.parseLong(stringId);
-				case null, default -> throw new BadArgumentFormatException("cannot convert id to Long");
-			};
+			long id = dismissRequest.id();
 
 			NotificationDTO notification = notificationService.dismissNotification(id, actorEmail);
 			return ResponseEntity.ok().body(notification);
-		}
-		catch(NullPointerException | BadArgumentFormatException | NumberFormatException e) {
-			return ResponseEntity.badRequest().body(new ErrorResponse("bad id"));
 		}
 		catch(Exception e) {
 			return ResponseEntity.internalServerError().body(ErrorResponse.create(e));
