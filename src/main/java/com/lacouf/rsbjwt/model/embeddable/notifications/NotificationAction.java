@@ -20,20 +20,23 @@ public class NotificationAction {
 	private NotificationActionType type;
 
 	@Immutable
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "action_payload")
-	private Map<String, Object> payload;
+	@Column(name = "action_reference_id")
+	private Long referenceId;
 
-	public NotificationAction(@NonNull NotificationActionType type, @NonNull Map<String, Object> payload) {
+	public NotificationAction(@NonNull NotificationActionType type) {
+		this(type, null);
+	}
+
+	public NotificationAction(@NonNull NotificationActionType type, Long referenceId) {
 		this.type = type;
-		this.payload = payload;
+		this.referenceId = referenceId;
 	}
 
 	public NotificationActionType getType() {
 		return type;
 	}
 
-	public Map<String, Object> getPayload() {
-		return Collections.unmodifiableMap(payload);
+	public Long getReferenceId() {
+		return referenceId;
 	}
 }
