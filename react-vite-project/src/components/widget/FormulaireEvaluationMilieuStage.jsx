@@ -18,6 +18,7 @@ const NIVEAUX = ["TOTALEMENT_EN_ACCORD", "PLUTOT_EN_ACCORD", "PLUTOT_EN_DESACCOR
 const STAGES_CIBLES = ["PREMIER_STAGE", "DEUXIEME_STAGE"];
 const CAPACITES_ACCUEIL = ["UN", "DEUX", "TROIS", "PLUS_DE_TROIS"];
 const CODE_POSTAL_REGEX = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
+const SALAIRE_REGEX = /^\d+([.,]\d{1,2})?$/;
 const CHAMPS_QUARTS = ["quart1Debut", "quart1Fin", "quart2Debut", "quart2Fin", "quart3Debut", "quart3Fin"];
 const CHAMPS_STRING = [
     "nomEntreprise", "personneContact", "adresse", "ville", "codePostal", "telephone", "telecopieur",
@@ -38,7 +39,7 @@ const CHAMPS_SECTION_1 = [
 const CHAMPS_TEXTE_OBLIGATOIRES = [
     ["nomEntreprise", "nom_entreprise"], ["personneContact", "personne_contact"], ["adresse", "adresse"],
     ["ville", "ville"], ["telephone", "telephone"], ["nomStagiaire", "nom_stagiaire"],
-    ["dateStage", "date_stage"], ["salaireHoraire", "salaire"], ["milieuAPrivilegier", "milieu_privilegier"],
+    ["dateStage", "date_stage"], ["milieuAPrivilegier", "milieu_privilegier"],
     ["nombreStagiairesAccueillis", "capacite_accueil"], ["signatureEnseignant", "signature"]
 ];
 
@@ -100,6 +101,9 @@ const validerFormulaireEvaluationMilieu = (formulaire, t) => {
     const codePostalTrim = formulaire.codePostal.trim();
     if (!codePostalTrim) erreurs.codePostal = t("evaluation_milieu.errors.code_postal_required");
     else if (!CODE_POSTAL_REGEX.test(codePostalTrim)) erreurs.codePostal = t("evaluation_milieu.errors.code_postal_format");
+
+    const salaireTrim = formulaire.salaireHoraire.trim();
+    if (!salaireTrim || !SALAIRE_REGEX.test(salaireTrim)) erreurs.salaireHoraire = t("evaluation_milieu.errors.salaire");
 
     if (formulaire.numeroStage !== 1 && formulaire.numeroStage !== 2) erreurs.numeroStage = t("evaluation_milieu.errors.numero_stage");
     for (const critere of CRITERES_MILIEU) {
@@ -174,16 +178,17 @@ function OptionRadio({ nom, valeur, selectionnee, onSelect, disabled, ariaLabel,
 
 function LienRetour({ estGestionnaire, onRetour, t }) {
     const libelle = estGestionnaire ? t("evaluation_milieu.back_gestionnaire") : t("evaluation_milieu.back_professeur");
+    const classes = "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-xs transition cursor-pointer";
     if (onRetour) {
         return (
-            <button type="button" onClick={onRetour} className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 cursor-pointer">
+            <button type="button" onClick={onRetour} className={classes}>
                 <ArrowLeft className="w-4 h-4" />
                 <span>{libelle}</span>
             </button>
         );
     }
     return (
-        <Link to={estGestionnaire ? "/gestionnaire" : "/professeur"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800">
+        <Link to={estGestionnaire ? "/gestionnaire" : "/professeur"} className={classes}>
             <ArrowLeft className="w-4 h-4" />
             <span>{libelle}</span>
         </Link>
@@ -362,13 +367,14 @@ export default function FormulaireEvaluationMilieuStage({ etudiantId, mode = "pr
 
     return (
         <form onSubmit={handleSubmit} noValidate className="max-w-4xl mx-auto space-y-6">
-            <div ref={hautRef} className="space-y-4 scroll-mt-24">
+            <div ref={hautRef} className="scroll-mt-24" />
+            <div className="sticky top-20 z-20">
                 <LienRetour estGestionnaire={estGestionnaire} onRetour={onRetour} t={t} />
-                <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-blue-600">{t("evaluation_milieu.program_header")}</p>
-                    <h1 className="text-3xl font-bold text-gray-800 mt-1">{lecture ? t("evaluation_milieu.title_view") : t("evaluation_milieu.title")}</h1>
-                    {!lecture && <p className="text-gray-500 mt-1">{t("evaluation_milieu.subtitle")}</p>}
-                </div>
+            </div>
+            <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-blue-600">{t("evaluation_milieu.program_header")}</p>
+                <h1 className="text-3xl font-bold text-gray-800 mt-1">{lecture ? t("evaluation_milieu.title_view") : t("evaluation_milieu.title")}</h1>
+                {!lecture && <p className="text-gray-500 mt-1">{t("evaluation_milieu.subtitle")}</p>}
             </div>
 
             {erreurSoumission && (
@@ -510,7 +516,7 @@ export default function FormulaireEvaluationMilieuStage({ etudiantId, mode = "pr
                                             <span>{t("evaluation_milieu.section3.salaire.label")} *</span>
                                         </label>
                                         <div className="flex items-center max-w-xs gap-2">
-                                            <input id="salaire-horaire" type="text" value={formulaire.salaireHoraire} onChange={(e) => majChamp("salaireHoraire", e.target.value)} placeholder={t("evaluation_milieu.section3.salaire.placeholder")} disabled={lecture} aria-invalid={Boolean(erreursChamps.salaireHoraire)} className={classeChamp(erreursChamps, "salaireHoraire")} />
+                                            <input id="salaire-horaire" type="text" inputMode="decimal" value={formulaire.salaireHoraire} onChange={(e) => majChamp("salaireHoraire", e.target.value.replace(/[^0-9.,]/g, ""))} placeholder={t("evaluation_milieu.section3.salaire.placeholder")} disabled={lecture} aria-invalid={Boolean(erreursChamps.salaireHoraire)} className={classeChamp(erreursChamps, "salaireHoraire")} />
                                             <span className="shrink-0 text-xs font-semibold text-gray-600">{t("evaluation_milieu.section3.salaire.unite")}</span>
                                         </div>
                                         <ErreurInline message={erreursChamps.salaireHoraire} />

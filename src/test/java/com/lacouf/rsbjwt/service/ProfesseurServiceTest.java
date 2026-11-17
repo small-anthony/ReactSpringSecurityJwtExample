@@ -10,8 +10,6 @@ import com.lacouf.rsbjwt.model.ENUM.StageCible;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
-import com.lacouf.rsbjwt.model.Gestionnaire;
-import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.model.auth.Credentials;
@@ -21,7 +19,6 @@ import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
 import com.lacouf.rsbjwt.repository.ProfesseurRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.DossierStageProfesseurDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantSuperviseDto;
 import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
@@ -35,13 +32,10 @@ import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,12 +52,6 @@ public class ProfesseurServiceTest {
 
     @Mock
     private EvaluationMilieuStageRepository evaluationMilieuStageRepository;
-
-    @Mock
-    private UserAppRepository userAppRepository;
-
-    @Mock
-    private NotificationService notificationService;
 
     @InjectMocks
     private ProfesseurService professeurService;
@@ -322,12 +310,10 @@ public class ProfesseurServiceTest {
     }
 
     @Test
-    void soumettreEvaluationMilieu_succes_sauvegardeEtNotifieGestionnaire() throws Exception {
+    void soumettreEvaluationMilieu_succes_sauvegardeEvaluation() throws Exception {
         Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
         prof.setId(10L);
         Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
-        Gestionnaire gestionnaire = new Gestionnaire("John", "Gestion", new Credentials("gestionnaire@test.com", "pass", Role.GESTIONNAIRE));
-        gestionnaire.setId(99L);
 
         EvaluationMilieuStageRequest req = creerRequeteValide(
                 creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD),
@@ -343,7 +329,6 @@ public class ProfesseurServiceTest {
             e.setId(42L);
             return e;
         });
-        when(userAppRepository.findByRole(Role.GESTIONNAIRE)).thenReturn(List.of(gestionnaire));
 
         EvaluationMilieuStageDto resultat = professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req);
 
@@ -351,7 +336,6 @@ public class ProfesseurServiceTest {
         assertEquals(42L, resultat.id());
         assertEquals("CGI Inc.", resultat.nomEntreprise());
         assertEquals("H3G 1T4", resultat.codePostal());
-        verify(notificationService).pushNotification(any(Notification.class), eq(99L));
     }
 
     @Test

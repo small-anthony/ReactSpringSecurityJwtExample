@@ -5,16 +5,12 @@ import com.lacouf.rsbjwt.model.Contrat;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
-import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.Professeur;
-import com.lacouf.rsbjwt.model.UserApp;
-import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationMilieuStageRequest;
 import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
 import com.lacouf.rsbjwt.repository.ProfesseurRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.DossierStageProfesseurDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantSuperviseDto;
 import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
@@ -30,28 +26,22 @@ public class ProfesseurService {
     private final EtudiantRepository etudiantRepository;
     private final ContratRepository contratRepository;
     private final EvaluationMilieuStageRepository evaluationMilieuStageRepository;
-    private final UserAppRepository userAppRepository;
-    private final NotificationService notificationService;
 
     @Autowired
     public ProfesseurService(
             ProfesseurRepository professeurRepository,
             EtudiantRepository etudiantRepository,
             ContratRepository contratRepository,
-            EvaluationMilieuStageRepository evaluationMilieuStageRepository,
-            UserAppRepository userAppRepository,
-            NotificationService notificationService
+            EvaluationMilieuStageRepository evaluationMilieuStageRepository
     ) {
         this.professeurRepository = professeurRepository;
         this.etudiantRepository = etudiantRepository;
         this.contratRepository = contratRepository;
         this.evaluationMilieuStageRepository = evaluationMilieuStageRepository;
-        this.userAppRepository = userAppRepository;
-        this.notificationService = notificationService;
     }
 
     public ProfesseurService(ProfesseurRepository professeurRepository, EtudiantRepository etudiantRepository) {
-        this(professeurRepository, etudiantRepository, null, null, null, null);
+        this(professeurRepository, etudiantRepository, null, null);
     }
 
     private record AccesProfesseurEtudiant(Professeur professeur, Etudiant etudiant) {}
@@ -117,21 +107,7 @@ public class ProfesseurService {
                 stage, acces.etudiant(), acces.professeur(), request
         );
         EvaluationMilieuStage sauvegardee = evaluationMilieuStageRepository.save(entity);
-        notifierGestionnaires(sauvegardee);
         return EvaluationMilieuStageDto.create(sauvegardee);
-    }
-
-    private void notifierGestionnaires(EvaluationMilieuStage evaluation) {
-        if (notificationService == null || userAppRepository == null) return;
-        Long cibleId = evaluation.getEtudiant() != null
-                ? evaluation.getEtudiant().getId()
-                : evaluation.getId();
-        for (UserApp gestionnaire : userAppRepository.findByRole(Role.GESTIONNAIRE)) {
-            notificationService.pushNotification(
-                    Notification.evaluationMilieuSoumise(cibleId),
-                    gestionnaire.getId()
-            );
-        }
     }
 
     private AccesProfesseurEtudiant verifierProfesseurEtAccesEtudiant(String professeurEmail, Long etudiantId) throws Exception {

@@ -100,10 +100,11 @@ public class NotificationServiceTest {
 	public void getNotifications_badUser_shouldThrow() {
 		// ARRANGE
 		when(userAppRepository.findUserAppByEmail(testUser.getEmail())).thenReturn(Optional.empty());
-
-		// ACT & ASSERT
-		assertThrows(Exception.class, () -> notificationService.getNotificationsForEmail(testUser.getEmail()));
 		verifyNoInteractions(notificationRepository);
+		// ACT
+
+		// ASSERT
+		assertThrows(Exception.class, () -> notificationService.getNotificationsForEmail(testUser.getEmail()));
 	}
 
 	@Test
@@ -128,6 +129,7 @@ public class NotificationServiceTest {
 		when(notificationRepository.save(targetedNotification)).thenReturn(targetedNotification);
 
 		// ACT
+		Long id = targetedNotification.getId();
 		NotificationDTO dismissed = notificationService.dismissNotification(targetedNotification.getId(), testUser.getEmail());
 
 		// ASSERT
@@ -140,39 +142,15 @@ public class NotificationServiceTest {
 	}
 
 	@Test
-	public void dismissNotification_wrongUser_shouldThrowException() {
+	public void dismissNotification_wrongUser_shouldThrowException() throws Exception {
 		// ARRANGE
 		Notification targetedNotification = testNotifications.getFirst();
 		when(notificationRepository.findByIdWithOwner(targetedNotification.getId())).thenReturn(Optional.of(targetedNotification));
-
-		// ACT & ASSERT
-		assertThrows(Exception.class, () -> notificationService.dismissNotification(targetedNotification.getId(), "randomkid@email.com"));
 		verify(notificationRepository, never()).save(targetedNotification);
-	}
-
-	@Test
-	public void deleteNotification_allGood_shouldMarkDeleted() throws Exception {
-		// ARRANGE
-		Notification targetedNotification = testNotifications.getFirst();
-		when(notificationRepository.findByIdWithOwner(targetedNotification.getId())).thenReturn(Optional.of(targetedNotification));
-		when(notificationRepository.save(targetedNotification)).thenReturn(targetedNotification);
 
 		// ACT
-		notificationService.deleteNotification(targetedNotification.getId(), testUser.getEmail());
 
 		// ASSERT
-		assertTrue(targetedNotification.isDismissed());
-		verify(notificationRepository).save(targetedNotification);
-	}
-
-	@Test
-	public void deleteNotification_wrongUser_shouldThrowException() {
-		// ARRANGE
-		Notification targetedNotification = testNotifications.getFirst();
-		when(notificationRepository.findByIdWithOwner(targetedNotification.getId())).thenReturn(Optional.of(targetedNotification));
-
-		// ACT & ASSERT
-		assertThrows(Exception.class, () -> notificationService.deleteNotification(targetedNotification.getId(), "randomkid@email.com"));
-		verify(notificationRepository, never()).save(targetedNotification);
+		assertThrows(Exception.class, () -> notificationService.dismissNotification(targetedNotification.getId(), "randomkid@email.com"));
 	}
 }

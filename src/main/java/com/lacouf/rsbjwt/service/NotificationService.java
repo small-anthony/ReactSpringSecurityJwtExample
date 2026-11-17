@@ -49,17 +49,4 @@ public class NotificationService {
 		notification.dismiss();
 		return NotificationDTO.create(notificationRepository.save(notification));
 	}
-
-	@Transactional
-	public void deleteNotification(Long notificationId, String actorEmail) throws Exception {
-		Notification notification = notificationRepository.findByIdWithOwner(notificationId)
-				.orElseThrow(Exception::new);
-
-		if (!notification.isOwnedBy(actorEmail)) {
-			throw new Exception("Impossible de supprimer une notification qu'on ne possède pas");
-		}
-
-		notification.markDeleted();
-		notificationRepository.save(notification);
-	}
 }

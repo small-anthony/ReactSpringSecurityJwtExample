@@ -2,7 +2,6 @@ package com.lacouf.rsbjwt.model.ENUM.notifications;
 
 public enum NotificationActionType {
 	NONE,
-	VOIR_OFFRES,
-	TELEVERSER_CV,
-	VOIR_EVALUATION_MILIEU
+	VIEW_RESOURCE,
+	SEND_RESOURCE,
 }

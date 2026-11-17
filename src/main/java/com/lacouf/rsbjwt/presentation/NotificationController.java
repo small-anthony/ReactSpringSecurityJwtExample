@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/notifications")
@@ -32,27 +33,18 @@ public class NotificationController {
 		}
 	}
 
-	@PostMapping("/dismiss")
-	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody Long id, Authentication authentication) {
+	@PostMapping()
+	public ResponseEntity<DataTransferObject> dismissNotification(@RequestBody Map<String, Object> request, Authentication authentication) {
 		try {
-			if (id == null) {
-				return ResponseEntity.badRequest().body(new ErrorResponse("bad id"));
-			}
 			String actorEmail = authentication.getName();
+			Long id = (Long) request.get("id");
 			NotificationDTO notification = notificationService.dismissNotification(id, actorEmail);
 			return ResponseEntity.ok().body(notification);
 		}
-		catch(Exception e) {
-			return ResponseEntity.internalServerError().body(ErrorResponse.create(e));
+		catch(NullPointerException | ClassCastException e) {
+			return ResponseEntity.badRequest().body(new ErrorResponse("bad id"));
 		}
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteNotification(@PathVariable Long id, Authentication authentication) {
-		try {
-			notificationService.deleteNotification(id, authentication.getName());
-			return ResponseEntity.noContent().build();
-		} catch (Exception e) {
+		catch(Exception e) {
 			return ResponseEntity.internalServerError().body(ErrorResponse.create(e));
 		}
 	}

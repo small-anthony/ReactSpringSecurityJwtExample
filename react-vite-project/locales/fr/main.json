@@ -1334,7 +1334,7 @@
       "criteres_incomplets": "Veuillez répondre à tous les critères : {{nombre}} critère(s) restant(s).",
       "critere_requis": "Veuillez sélectionner une réponse pour ce critère.",
       "heures_mois": "Veuillez entrer un nombre d'heures valide (0 ou plus).",
-      "salaire": "Veuillez préciser le salaire horaire offert.",
+      "salaire": "Veuillez saisir un salaire horaire valide (chiffres uniquement, ex. 24.50).",
       "commentaires_requis": "Veuillez expliquer dans les commentaires les critères évalués en désaccord (*).",
       "milieu_privilegier": "Veuillez indiquer pour quel stage ce milieu est à privilégier.",
       "capacite_accueil": "Veuillez indiquer le nombre de stagiaires que le milieu peut accueillir.",

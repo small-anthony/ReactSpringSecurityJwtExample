@@ -1334,7 +1334,7 @@
       "criteres_incomplets": "Please answer all criteria: {{nombre}} criterion/criteria remaining.",
       "critere_requis": "Please select a rating for this criterion.",
       "heures_mois": "Please enter a valid number of hours (0 or more).",
-      "salaire": "Please specify the hourly wage offered.",
+      "salaire": "Please enter a valid hourly wage (numbers only, e.g. 24.50).",
       "commentaires_requis": "Please explain the negative criterion ratings (*) in the comments section.",
       "milieu_privilegier": "Please indicate which internship level this workplace is recommended for.",
       "capacite_accueil": "Please indicate how many interns the workplace can host.",

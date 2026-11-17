@@ -6,12 +6,10 @@ import { getEtudiantsAssignes, getAnneesProfesseur } from "../../services/api/Pr
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import CarteEtudiantAssigne from "../widget/CarteEtudiantAssigne.jsx";
 import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
-import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 
 export default function ProfesseurEtudiants() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const { traduireDiscipline } = useOffreFormater();
     const userData = authService.getUserData();
 
     const [etudiants, setEtudiants] = useState([]);
@@ -21,7 +19,6 @@ export default function ProfesseurEtudiants() {
     const [erreur, setErreur] = useState(null);
     const [recherche, setRecherche] = useState("");
     const [filtreEvaluation, setFiltreEvaluation] = useState("TOUS");
-    const [etudiantDeplieId, setEtudiantDeplieId] = useState(null);
     const [etudiantEvaluationId, setEtudiantEvaluationId] = useState(null);
 
     const chargerDonnees = useCallback(async () => {
@@ -175,10 +172,7 @@ export default function ProfesseurEtudiants() {
                         <CarteEtudiantAssigne
                             key={etudiant.id}
                             etudiant={etudiant}
-                            estDeplie={etudiantDeplieId === etudiant.id}
-                            onToggleDeplier={(id) => setEtudiantDeplieId((prev) => (prev === id ? null : id))}
                             onOuvrirEvaluation={(id) => setEtudiantEvaluationId(id)}
-                            traduireDiscipline={traduireDiscipline}
                         />
                     ))}
                 </div>

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 public final class EvaluationMilieuStageValidator {
     private static final Pattern CODE_POSTAL_CANADIEN = Pattern.compile("^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$");
+    private static final Pattern SALAIRE_NUMERIQUE = Pattern.compile("^\\d+([.,]\\d{1,2})?$");
     private static final int MAX_COMMENTAIRES_LENGTH = 2000;
 
     private EvaluationMilieuStageValidator() {
@@ -43,6 +44,9 @@ public final class EvaluationMilieuStageValidator {
         validerHeures(request.heuresEncadrementMois2(), "deuxième mois");
         validerHeures(request.heuresEncadrementMois3(), "troisième mois");
         exigerNonVide(request.salaireHoraire(), "Le salaire horaire offert est obligatoire.");
+        if (!SALAIRE_NUMERIQUE.matcher(request.salaireHoraire().trim()).matches()) {
+            throw new Exception("Le salaire horaire doit être un nombre valide.");
+        }
 
         if (request.commentaires() != null && request.commentaires().trim().length() > MAX_COMMENTAIRES_LENGTH) {
             throw new Exception("Les commentaires ne peuvent pas dépasser 2000 caractères.");

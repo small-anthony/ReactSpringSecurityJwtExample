@@ -2,15 +2,9 @@ import React from "react";
 import {
     Briefcase,
     Building2,
-    Calendar,
     Mail,
-    Phone,
-    User,
-    ChevronDown,
-    ChevronUp,
     CheckCircle2,
     Clock,
-    FileText,
     ClipboardCheck,
     Eye,
     AlertCircle
@@ -49,15 +43,8 @@ function StatutStageBadge({ statut }) {
     );
 }
 
-export default function CarteEtudiantAssigne({
-    etudiant,
-    estDeplie,
-    onToggleDeplier,
-    onOuvrirEvaluation,
-    traduireDiscipline
-}) {
+export default function CarteEtudiantAssigne({ etudiant, onOuvrirEvaluation }) {
     const { t } = useTranslation("main");
-    const candidatures = etudiant.candidatures || [];
 
     return (
         <div className="ds-card hover:shadow-md transition-shadow duration-200 overflow-hidden">
@@ -94,14 +81,6 @@ export default function CarteEtudiantAssigne({
                             </span>
                             <span>•</span>
                             <span>{t("professeur.matricule_label")}: {etudiant.matricule || "—"}</span>
-                            {etudiant.discipline && (
-                                <>
-                                    <span>•</span>
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
-                                        {traduireDiscipline(etudiant.discipline)}
-                                    </span>
-                                </>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -116,28 +95,6 @@ export default function CarteEtudiantAssigne({
                             <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span className="truncate max-w-xs">{etudiant.titreOffreStage || "—"}</span>
                         </div>
-                        {etudiant.aStage && (
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-slate-500 pt-0.5">
-                                {etudiant.personneContact && (
-                                    <span className="flex items-center gap-1">
-                                        <User className="w-3 h-3 text-slate-400" />
-                                        {etudiant.personneContact}
-                                    </span>
-                                )}
-                                {etudiant.telephoneEntreprise && (
-                                    <span className="flex items-center gap-1">
-                                        <Phone className="w-3 h-3 text-slate-400" />
-                                        {etudiant.telephoneEntreprise}
-                                    </span>
-                                )}
-                                {etudiant.dateDebutStage && etudiant.dateFinStage && (
-                                    <span className="flex items-center gap-1">
-                                        <Calendar className="w-3 h-3 text-slate-400" />
-                                        {etudiant.dateDebutStage} → {etudiant.dateFinStage}
-                                    </span>
-                                )}
-                            </div>
-                        )}
                     </div>
 
                     {etudiant.aStage && (
@@ -161,61 +118,8 @@ export default function CarteEtudiantAssigne({
                             </button>
                         )
                     )}
-
-                    {candidatures.length > 0 && (
-                        <button
-                            type="button"
-                            onClick={() => onToggleDeplier(etudiant.id)}
-                            className="btn-secondary !py-2 !px-3.5 !text-xs"
-                        >
-                            <FileText className="w-3.5 h-3.5 text-blue-600" />
-                            <span>{t("professeur.btn_demandes", { count: candidatures.length })}</span>
-                            {estDeplie ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        </button>
-                    )}
                 </div>
             </div>
-
-            {estDeplie && candidatures.length > 0 && (
-                <div className="px-5 sm:px-6 pb-6 pt-3 bg-slate-50/60 border-t border-slate-100 animate-in fade-in duration-150">
-                    <h4 className="text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
-                        {t("professeur.historique_demandes")}
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {candidatures.map((c) => (
-                            <div key={c.id} className="p-3.5 bg-white rounded-xl border border-slate-200 text-xs shadow-2xs space-y-1.5">
-                                <div className="flex items-center justify-between gap-2">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <span className="font-bold text-slate-900 truncate">
-                                            {c.titreOffre || c.offreTitre || t("professeur.offre_stage_defaut")}
-                                        </span>
-                                        {c.anneeOffre && (
-                                            <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                                                {t("session.libelle", { annee: c.anneeOffre })}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <StatutStageBadge statut={c.statut} />
-                                </div>
-                                <div className="flex items-center gap-2 text-slate-500">
-                                    <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                    <span>{c.nomEntreprise || t("professeur.entreprise_defaut")}</span>
-                                </div>
-                                {(c.dateCandidature || c.datePostulation) && (
-                                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                                        <Calendar className="w-3 h-3" />
-                                        <span>
-                                            {t("professeur.postule_le", {
-                                                date: new Date(c.dateCandidature || c.datePostulation).toLocaleDateString()
-                                            })}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
