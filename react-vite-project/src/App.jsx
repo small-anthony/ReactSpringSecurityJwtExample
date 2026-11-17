@@ -20,6 +20,7 @@ import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
 import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
 import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
 import FormulaireEvaluationMilieuStage from "./components/widget/FormulaireEvaluationMilieuStage.jsx";
+import AssignationProfesseurs from "./components/page/AssignationProfesseurs.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
