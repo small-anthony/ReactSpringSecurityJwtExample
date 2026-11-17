@@ -135,7 +135,7 @@ function App() {
 
                     <Route
                         path="professeur"
-                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <PreposeHome /> : <Navigate to="/" />))}
+                        element={!token ? (<Navigate to="/login" />) : (!userData ? null : (role === "PROFESSEUR" ? <ProfesseurEtudiants /> : <Navigate to="/" />))}
                     />
 
                     <Route
@@ -158,6 +158,15 @@ function App() {
                             !token ? <Navigate to="/login" /> :
                                 !userData ? null :
                                     role === "GESTIONNAIRE" ? <GestionnaireContrats /> :
+                                        <Navigate to="/" />
+                        }
+                    />
+                    <Route
+                        path="gestionnaire/assignation-professeurs"
+                        element={
+                            !token ? <Navigate to="/login" /> :
+                                !userData ? null :
+                                    role === "GESTIONNAIRE" ? <AssignationProfesseurs /> :
                                         <Navigate to="/" />
                         }
                     />

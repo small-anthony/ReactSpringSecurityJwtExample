@@ -12,6 +12,10 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
+import com.lacouf.rsbjwt.service.ProfesseurService;
+import com.lacouf.rsbjwt.service.dto.EtudiantSuperviseDto;
+import org.springframework.security.core.Authentication;
+import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,8 +44,18 @@ class ProfesseurControllerTest {
     @Mock
     private CandidatureRepository candidatureRepository;
 
+    @Mock
+    private ProfesseurService professeurService;
+
     @InjectMocks
     private ProfesseurController professeurController;
+
+    private EtudiantSuperviseDto createDummyEtudiantSuperviseDto() {
+        return new EtudiantSuperviseDto(
+                1L, "Sophie", "Martin", "sophie@test.com", 123456, "informatique",
+                "EMBAUCHEE", "CGI", "Dev Web", List.of()
+        );
+    }
 
     @Test
     void signUpProfesseur_avecDonneesValides_retourne201EtLeDto() throws Exception {
@@ -175,6 +189,68 @@ class ProfesseurControllerTest {
 //        Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getMesEtudiants_succes_retourneListe() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        List<EtudiantSuperviseDto> liste = List.of(createDummyEtudiantSuperviseDto());
+        when(professeurService.getEtudiantsAssignes("martin@test.com", 2026)).thenReturn(liste);
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMesEtudiants(auth, 2026);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getMesEtudiants_erreur_retourneBadRequest() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getEtudiantsAssignes("martin@test.com", 2026)).thenThrow(new Exception("Erreur"));
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMesEtudiants(auth, 2026);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur", response.getBody());
+    }
+
+    @Test
+    void getMonEtudiantDetail_succes_retourneEtudiant() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        EtudiantSuperviseDto dto = createDummyEtudiantSuperviseDto();
+        when(professeurService.getEtudiantDetail(1L, "martin@test.com")).thenReturn(dto);
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMonEtudiantDetail(1L, auth);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void getMonEtudiantDetail_erreur_retourneBadRequest() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getEtudiantDetail(1L, "martin@test.com")).thenThrow(new Exception("Non trouvé"));
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMonEtudiantDetail(1L, auth);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Non trouvé", response.getBody());
     }
 
     @Test
