@@ -1,10 +1,8 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationActionType;
-import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationResourceType;
 import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.embeddable.notifications.NotificationAction;
-import com.lacouf.rsbjwt.util.NotificationPayload;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 import org.jspecify.annotations.NonNull;
@@ -89,25 +87,30 @@ public class Notification {
 		return dateDismissed;
 	}
 
+	public void markDeleted() {
+		this.dateDeleted = Instant.now();
+	}
+
 	public static Notification cvAccepted() {
 		return new Notification(
 				NotificationType.SUCCESS,
-				new NotificationAction(
-						NotificationActionType.VIEW_RESOURCE,
-						NotificationPayload.ViewResource(NotificationResourceType.OFFRE_STAGE, null)
-				),
+				new NotificationAction(NotificationActionType.VOIR_OFFRES),
 				"etudiant.cv_accepted"
 		);
 	}
-
 	public static Notification cvRejected() {
 		return new Notification(
 				NotificationType.FAILED,
-				new NotificationAction(
-						NotificationActionType.SEND_RESOURCE,
-						NotificationPayload.SendResource(NotificationResourceType.CV)
-				),
+				new NotificationAction(NotificationActionType.TELEVERSER_CV),
 				"etudiant.cv_rejected"
+		);
+	}
+
+	public static Notification cvCreated(Cv cv) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.APPROUVER_CV, cv.getId()),
+				"gestionnaire.cv_submitted"
 		);
 	}
 }

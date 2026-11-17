@@ -7,10 +7,7 @@ import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
-import com.lacouf.rsbjwt.repository.CandidatureRepository;
-import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.OffreStageRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantDto;
@@ -54,6 +51,12 @@ public class EtudiantServiceTest {
 
         @Mock
         CandidatureRepository candidatureRepository;
+
+        @Mock
+        GestionnaireRepository gestionnaireRepository;
+
+        @Mock
+        NotificationRepository notificationRepository;
 
         @InjectMocks
         EtudiantService etudiantService;

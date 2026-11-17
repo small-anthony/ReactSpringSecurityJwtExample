@@ -27,7 +27,10 @@
     "logout": "Logout",
     "contrats": "My contracts",
     "contrats_employeur": "My contracts",
-    "stagiaires": "My interns"
+    "stagiaires": "My interns",
+    "mes_etudiants": "My Students",
+    "dashboard": "Dashboard",
+    "assignation_professeurs": "Professor Assignment"
   },
   "home": {
     "title": "Stagify",
@@ -409,10 +412,12 @@
   },
   "sidepanel": {
     "title": "Manager Workspace",
+    "dashboard": "Dashboard",
     "cvs": "Resume Approvals",
     "offres": "Offer Approvals",
     "contrats": "Internship Contracts",
-    "rapports": "Student Reports"
+    "rapports": "Student Reports",
+    "assignation_professeurs": "Professor Assignment"
   },
   "rapports_etudiants": {
     "title": "Student Reports",
@@ -428,12 +433,17 @@
     "th_email": "Email",
     "th_discipline": "Discipline",
     "th_offers": "Position & Company",
+    "th_milieu_evaluation": "Workplace Evaluation",
+    "voir_evaluation_milieu": "View workplace evaluation",
+    "milieu_evalue_badge": "Evaluated",
+    "milieu_non_evalue_badge": "Not evaluated",
     "types": {
       "etudiants-inscrits": "Students registered on the platform",
       "etudiants-sans-convocation": "Students with no interview invitation",
       "etudiants-attente-entrevue": "Students waiting for an interview",
       "etudiants-attente-reponse": "Students waiting for an interview response",
-      "etudiants-trouve-stage": "Students who found an internship"
+      "etudiants-trouve-stage": "Students who found an internship",
+      "stages-non-evalues-professeur": "Internships not yet evaluated by the professor"
     }
   },
   "convocation": {
@@ -1003,7 +1013,9 @@
     "daniil_desc": "No interview / No resume (coordinator reports)",
     "company_cegep": "College",
     "company_student_m": "Student",
-    "company_student_f": "Student"
+    "company_student_f": "Student",
+    "company_professeur": "College - Teacher",
+    "martin_desc": "Supervision of assigned students and tracking of internship applications"
   },
   "etudiant_dashboard": {
     "greeting": "Hello, {{name}}",
@@ -1097,6 +1109,283 @@
     }
   },
   "notifications": {
-    "titre": "My notifications"
+    "titre": "My notifications",
+    "non_lues_count": "{{count}} new",
+    "tout_lu": "All caught up",
+    "vide_titre": "No notifications",
+    "vide_description": "You're all caught up for now.",
+    "ouvrir": "Open"
+  },
+  "assignation_professeurs": {
+    "badge_section": "Internship Supervision",
+    "titre": "Professor Assignment",
+    "description": "Assign a supervising professor to students who have secured an internship or modify existing assignments.",
+    "stats_total": "Students with internship",
+    "stats_assignes": "Professor assigned",
+    "stats_non_assignes": "To assign",
+    "recherche_placeholder": "Search by name, student ID, company, position...",
+    "filtre_tous": "All",
+    "filtre_non_assignes": "Unassigned",
+    "filtre_assignes": "Assigned",
+    "chargement": "Loading students...",
+    "aucun_etudiant": "No students found",
+    "aucun_resultat_filtre": "Modify your search or filters to see other students.",
+    "aucun_etudiant_stage": "No students have been hired for an internship in this session yet.",
+    "th_etudiant": "Student",
+    "th_stage": "Secured Internship",
+    "th_professeur": "Supervising Professor",
+    "th_action": "Action",
+    "non_assigne": "Unassigned",
+    "btn_assigner": "Assign",
+    "btn_modifier": "Modify",
+    "btn_desassigner": "Unassign",
+    "matricule_label": "Student ID",
+    "modal_stage_chez": "Internship at {{entreprise}} ({{titre}})",
+    "modal_titre_assigner": "Assign Supervising Professor",
+    "modal_titre_modifier": "Modify Supervisor",
+    "modal_label_recherche": "Search professor by name",
+    "modal_recherche_placeholder": "Type a professor name (e.g. Martin, Tremblay)...",
+    "modal_label_liste": "Available Professors",
+    "modal_seuil_info": "Recommended threshold: 5 students",
+    "aucun_professeur": "No professor matches this name.",
+    "etudiants_abrege": "students",
+    "avertissement_charge_titre": "Workload Warning",
+    "avertissement_charge_message": "Professor {{nom}} already has {{count}} students assigned (recommended threshold: {{seuil}}). The assignment is allowed, but please balance the workload.",
+    "btn_confirmer_assignation": "Confirm Assignment",
+    "btn_confirmer_modification": "Confirm Modification",
+    "succes_assignation": "Professor assignment saved successfully.",
+    "erreur_assignation": "Error during professor assignment.",
+    "erreur_chargement": "Error loading data.",
+    "titre_modal_desassigner": "Unassign Professor?",
+    "confirmation_desassigner": "Do you want to remove the supervising professor for {{etudiant}}? The student will become available for assignment again.",
+    "btn_retirer": "Remove Assignment",
+    "succes_desassignation": "Professor removed successfully.",
+    "erreur_desassignation": "Error removing professor."
+  },
+  "professeur": {
+    "mes_etudiants": "My Assigned Students",
+    "badge_role": "Supervising Professor Space",
+    "titre_page": "My Supervised Students",
+    "bienvenue": "Welcome {{nom}}, track the internship progress and requests of your assigned students.",
+    "total_etudiants": "{{count}} supervised student(s)",
+    "chargement": "Loading your assigned students...",
+    "aucun_etudiant_titre": "No students assigned",
+    "aucun_etudiant_description": "The internship manager has not assigned any students to you for this session yet. Students will appear here once assigned.",
+    "aucun_resultat_recherche": "No student matches your search criteria.",
+    "recherche_placeholder": "Search by name, student ID, company...",
+    "btn_demandes": "Applications ({{count}})",
+    "historique_demandes": "Internship Application History",
+    "matricule_label": "Student ID",
+    "entreprise_defaut": "Unspecified company",
+    "offre_stage_defaut": "Internship offer",
+    "postule_le": "Applied on {{date}}",
+    "erreur_chargement": "Error loading your students.",
+    "tabs": {
+      "all": "All",
+      "to_evaluate": "To evaluate",
+      "evaluated": "Evaluated"
+    },
+    "contact_label": "Supervisor / Contact",
+    "phone_label": "Phone",
+    "periode_label": "Internship dates",
+    "non_specifie": "Not specified",
+    "badge_milieu_evalue": "Workplace evaluated",
+    "badge_milieu_a_evaluer": "Workplace to evaluate",
+    "btn_evaluer_milieu": "Evaluate workplace",
+    "btn_voir_evaluation_milieu": "View workplace evaluation",
+    "statut": {
+      "EMBAUCHEE": "Hired",
+      "ACCEPTEE": "Offer accepted",
+      "EN_ATTENTE": "Pending",
+      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "REFUSEE": "Rejected",
+      "REFUSE": "Rejected",
+      "EN_RECHERCHE": "Searching for internship"
+    }
+  },
+  "evaluation_milieu": {
+    "back_professeur": "Back to my supervised students",
+    "back_gestionnaire": "Back to student reports",
+    "title": "Internship Workplace Evaluation",
+    "title_view": "Internship Workplace Evaluation (Read-Only)",
+    "subtitle": "Official internship workplace evaluation form completed by the supervising professor.",
+    "program_header": "Computer Science Technology — Cooperative Education",
+    "loading": "Loading the workplace evaluation form...",
+    "error_load": "Unable to load the workplace evaluation record.",
+    "error_submit": "Error while submitting the workplace evaluation.",
+    "success": "The workplace evaluation was saved and sent to the internship manager successfully.",
+    "submitted_on": "Evaluation submitted on {{date}} by {{professeur}}",
+    "readonly_notice": "This evaluation has been submitted and locked in read-only mode.",
+    "summary_card": {
+      "student": "Intern",
+      "program": "Program",
+      "company": "Company",
+      "position": "Position",
+      "period": "Contract period"
+    },
+    "section1": {
+      "title": "1. Company Identification",
+      "nom_entreprise": "Company name",
+      "personne_contact": "Contact person",
+      "adresse": "Address",
+      "adresse_placeholder": "E.g. 1350 René-Lévesque Blvd West",
+      "ville": "City",
+      "ville_placeholder": "E.g. Montreal",
+      "code_postal": "Postal code",
+      "code_postal_placeholder": "E.g. H3G 1T4",
+      "telephone": "Phone",
+      "telecopieur": "Fax (optional)",
+      "telecopieur_placeholder": "E.g. 514-555-9999"
+    },
+    "section2": {
+      "title": "2. Intern Identification",
+      "nom_stagiaire": "Intern name",
+      "date_stage": "Internship dates",
+      "date_stage_placeholder": "E.g. 2026-05-18 → 2026-08-21",
+      "numero_stage": "Internship",
+      "stage_1": "Internship 1",
+      "stage_2": "Internship 2"
+    },
+    "section3": {
+      "title": "3. Workplace Evaluation",
+      "subtitle": "Rate each of the ten criteria below based on your observation of the workplace.",
+      "progress_label": "Progress: {{repondus}} / {{total}} criteria",
+      "asterisk_note": "* Any \"Somewhat disagree\" or \"Strongly disagree\" rating must be explained in the Comments section.",
+      "levels": {
+        "TOTALEMENT_EN_ACCORD": "Strongly agree",
+        "PLUTOT_EN_ACCORD": "Somewhat agree",
+        "PLUTOT_EN_DESACCORD": "Somewhat disagree *",
+        "TOTALEMENT_EN_DESACCORD": "Strongly disagree *",
+        "NON_APPLICABLE": "Unable to assess"
+      },
+      "criteres": {
+        "TACHES_CONFORMES": "The tasks assigned to the intern match the tasks stated in the internship agreement.",
+        "MESURES_ACCUEIL": "Onboarding measures facilitate the integration of the new intern.",
+        "TEMPS_ENCADREMENT_SUFFISANT": "The actual time devoted to supervising the intern is sufficient.",
+        "ENVIRONNEMENT_SECURITAIRE": "The work environment complies with occupational health and safety standards.",
+        "CLIMAT_TRAVAIL_AGREABLE": "The working atmosphere is pleasant.",
+        "ACCESSIBLE_TRANSPORT_COMMUN": "The workplace is accessible by public transit.",
+        "SALAIRE_INTERESSANT": "The salary offered is attractive for the intern.",
+        "COMMUNICATION_SUPERVISEUR": "Communication with the internship supervisor facilitates the internship.",
+        "EQUIPEMENT_ADEQUAT": "The equipment provided is adequate to carry out the assigned tasks.",
+        "VOLUME_TRAVAIL_ACCEPTABLE": "The workload is acceptable."
+      },
+      "heures_encadrement": {
+        "titre": "Specify the number of supervision hours per week:",
+        "mois1": "First month (hrs/wk)",
+        "mois2": "Second month (hrs/wk)",
+        "mois3": "Third month (hrs/wk)",
+        "placeholder": "E.g. 5"
+      },
+      "salaire": {
+        "label": "Specify the hourly wage offered:",
+        "placeholder": "E.g. 24.00",
+        "unite": "$ / hour"
+      },
+      "commentaires": {
+        "label": "Comments",
+        "obligatoire_badge": "Explanation required (*)",
+        "placeholder": "Write your observations or explain any negative ratings..."
+      }
+    },
+    "section4": {
+      "title": "4. General Observations",
+      "milieu_privilegier": {
+        "label": "This workplace is recommended for:",
+        "PREMIER_STAGE": "First internship",
+        "DEUXIEME_STAGE": "Second internship"
+      },
+      "capacite_accueil": {
+        "label": "This workplace is open to hosting:",
+        "UN": "One intern",
+        "DEUX": "Two interns",
+        "TROIS": "Three interns",
+        "PLUS_DE_TROIS": "More than three"
+      },
+      "meme_stagiaire": {
+        "label": "This workplace wishes to host the same intern for a future internship:",
+        "oui": "Yes",
+        "non": "No"
+      },
+      "quarts_variables": {
+        "label": "This workplace offers variable work shifts:",
+        "oui": "Yes",
+        "non": "No",
+        "plages_label": "Specify the shift time slots:",
+        "plage": "Shift {{index}}",
+        "de": "From",
+        "a": "to"
+      },
+      "signature_label": "Signature of the supervising professor",
+      "signature_placeholder": "Full name of the supervising professor",
+      "date_label": "Evaluation date"
+    },
+    "submit": "Submit Workplace Evaluation",
+    "submitting": "Submitting...",
+    "errors": {
+      "banner": "Please fix the highlighted errors before submitting the form.",
+      "nom_entreprise": "Company name is required.",
+      "personne_contact": "Contact person is required.",
+      "adresse": "Company address is required.",
+      "ville": "City is required.",
+      "code_postal_required": "Postal code is required.",
+      "code_postal_format": "Postal code must follow Canadian format (e.g. H3G 1T4).",
+      "telephone": "Phone number is required.",
+      "nom_stagiaire": "Intern name is required.",
+      "date_stage": "Internship date is required.",
+      "numero_stage": "Please select the internship number (1 or 2).",
+      "criteres_incomplets": "Please answer all criteria: {{nombre}} criterion/criteria remaining.",
+      "critere_requis": "Please select a rating for this criterion.",
+      "heures_mois": "Please enter a valid number of hours (0 or more).",
+      "salaire": "Please enter a valid hourly wage (numbers only, e.g. 24.50).",
+      "commentaires_requis": "Please explain the negative criterion ratings (*) in the comments section.",
+      "milieu_privilegier": "Please indicate which internship level this workplace is recommended for.",
+      "capacite_accueil": "Please indicate how many interns the workplace can host.",
+      "meme_stagiaire": "Please indicate whether the workplace wishes to host the same intern again.",
+      "quarts_variables": "Please indicate whether the workplace offers variable shifts.",
+      "quart1_requis": "Please specify at least the first shift time slot (start and end).",
+      "quart_paire": "Please provide both start and end times for each shift slot used.",
+      "signature": "The supervising professor's signature is required."
+    }
+  },
+  "gestionnaire_dashboard": {
+    "title": "Student Progress Tracking",
+    "subtitle": "Dashboard of student progress and internship placement status.",
+    "kpi_total": "Total Students",
+    "status": {
+      "STAGE_TROUVE": "Internship Found",
+      "NON_EVALUE_PROFESSEUR": "Pending Prof. Eval.",
+      "EN_ATTENTE_REPONSE": "Waiting for Response",
+      "EN_ATTENTE_ENTREVUE": "Waiting for Interview",
+      "SANS_CONVOCATION": "No Interview Invitation",
+      "AUCUNE_CANDIDATURE": "No Application Submitted"
+    },
+    "search_placeholder": "Search by name, email or student ID...",
+    "total": "Total: {{count}} student",
+    "total_plural": "Total: {{count}} students",
+    "loading": "Loading students...",
+    "empty": "No students match the selected criteria.",
+    "error_fetch": "Error loading student data.",
+    "th_student": "Student",
+    "th_matricule": "Student ID",
+    "th_email": "Email",
+    "th_discipline": "Discipline",
+    "th_status": "Internship Status",
+    "th_evaluation": "Workplace Evaluation",
+    "th_offers": "Applications",
+    "milieu_evalue": "Evaluated",
+    "en_attente_professeur": "Awaiting professor",
+    "voir_evaluation": "View evaluation",
+    "application": "application",
+    "applications_plural": "applications",
+    "no_application": "No applications",
+    "modal_applications_empty": "This student has not applied to any offers for this session.",
+    "statut_candidature": {
+      "EN_ATTENTE": "Pending",
+      "ACCEPTEE": "Accepted",
+      "REFUSEE": "Rejected",
+      "EMBAUCHEE": "Hired"
+    },
+    "view_count": "View ({{count}})"
   }
 }
