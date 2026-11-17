@@ -105,4 +105,12 @@ public class Notification {
 				"etudiant.cv_rejected"
 		);
 	}
+
+	public static Notification cvCreated(Cv cv) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.APPROUVER_CV, cv.getId()),
+				"gestionnaire.cv_submitted"
+		);
+	}
 }
