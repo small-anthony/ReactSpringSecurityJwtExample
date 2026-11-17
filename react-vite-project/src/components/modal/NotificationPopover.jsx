@@ -45,6 +45,8 @@ export function NotificationButton() {
 
         if (notification.action?.type === "VOIR_OFFRES" || notification.action?.type === "TELEVERSER_CV") {
             navigate("/etudiant?tab=toutes");
+        } else if (notification.action?.type === "APPROUVER_CV") {
+            navigate("/gestionnaire/approbations/cvs");
         }
         setIsOpen(false);
     };
