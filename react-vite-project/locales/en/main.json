@@ -987,7 +987,10 @@
       "hours": "Please enter a valid number of supervision hours.",
       "next_internship": "Please indicate whether the company would welcome this student for a next internship.",
       "name": "The signatory's name is required.",
-      "role": "The signatory's position is required."
+      "role": "The signatory's position is required.",
+      "criterion": "Please choose an answer.",
+      "summary": "The form has {{nombre}} error(s).",
+      "go_to_first": "Go to the first error"
     }
   },
   "session": {

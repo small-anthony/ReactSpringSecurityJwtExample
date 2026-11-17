@@ -151,7 +151,16 @@ describe("EvaluationStagiaire", () => {
             expect(screen.getByLabelText("evaluation.signatory.role")).toHaveValue("");
         });
 
-        it("devrait afficher les erreurs de validation sans appeler l'API si le formulaire est vide", async () => {
+        it("ne devrait afficher aucune erreur avant la première soumission", async () => {
+            // Arrange & Act
+            await chargerFormulaireVide();
+
+            // Assert
+            expect(screen.queryByText("evaluation.errors.criterion")).not.toBeInTheDocument();
+            expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+        });
+
+        it("devrait afficher chaque erreur à l'endroit du champ manquant sans appeler l'API", async () => {
             // Arrange
             await chargerFormulaireVide();
 
@@ -159,17 +168,83 @@ describe("EvaluationStagiaire", () => {
             fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
 
             // Assert
-            const alerte = await screen.findByRole("alert");
-            expect(within(alerte).getByText("evaluation.errors.incomplete")).toBeInTheDocument();
-            expect(within(alerte).getByText("evaluation.errors.overall")).toBeInTheDocument();
-            expect(within(alerte).getByText("evaluation.errors.discussed")).toBeInTheDocument();
-            expect(within(alerte).getByText("evaluation.errors.hours")).toBeInTheDocument();
-            expect(within(alerte).getByText("evaluation.errors.next_internship")).toBeInTheDocument();
-            expect(within(alerte).getByText("evaluation.errors.role")).toBeInTheDocument();
+            expect(screen.getAllByText("evaluation.errors.criterion")).toHaveLength(22);
+            expect(screen.getByText("evaluation.errors.overall")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.discussed")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.hours")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.next_internship")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.role")).toBeInTheDocument();
+            expect(screen.queryByText("evaluation.errors.name")).not.toBeInTheDocument();
             expect(soumettreEvaluation).not.toHaveBeenCalled();
         });
 
-        it("devrait refuser un nombre d'heures invalide", async () => {
+        it("devrait placer le message de chaque critère manquant dans son propre bloc", async () => {
+            // Arrange
+            await chargerFormulaireVide();
+
+            // Act
+            fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
+
+            // Assert
+            const bloc = document.getElementById("critere-PLANIFIER_ORGANISER");
+            expect(within(bloc).getByText("evaluation.errors.criterion")).toBeInTheDocument();
+            const groupe = screen.getByRole("radiogroup", { name: "evaluation.criteres.PLANIFIER_ORGANISER" });
+            expect(groupe).toHaveAttribute("aria-invalid", "true");
+        });
+
+        it("devrait afficher un résumé près du bouton avec un lien vers la première erreur", async () => {
+            // Arrange
+            await chargerFormulaireVide();
+
+            // Act
+            fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
+
+            // Assert
+            const alerte = screen.getByRole("alert");
+            expect(within(alerte).getByText("evaluation.errors.summary")).toBeInTheDocument();
+            expect(within(alerte).getByRole("link", { name: "evaluation.errors.go_to_first" })).toHaveAttribute(
+                "href",
+                "#critere-PLANIFIER_ORGANISER"
+            );
+        });
+
+        it("devrait faire disparaître l'erreur d'un critère dès qu'une réponse est choisie", async () => {
+            // Arrange
+            await chargerFormulaireVide();
+            fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
+            expect(screen.getAllByText("evaluation.errors.criterion")).toHaveLength(22);
+
+            // Act
+            choisir("evaluation.criteres.PLANIFIER_ORGANISER : evaluation.levels.PLUTOT_EN_ACCORD");
+
+            // Assert
+            expect(screen.getAllByText("evaluation.errors.criterion")).toHaveLength(21);
+            const bloc = document.getElementById("critere-PLANIFIER_ORGANISER");
+            expect(within(bloc).queryByText("evaluation.errors.criterion")).not.toBeInTheDocument();
+        });
+
+        it("devrait faire disparaître les autres erreurs quand les champs sont corrigés", async () => {
+            // Arrange
+            await chargerFormulaireVide();
+            fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
+
+            // Act
+            choisir("evaluation.overall.options.DEPASSENT_LES_ATTENTES");
+            choisir("evaluation.discussed.label : evaluation.discussed.yes");
+            fireEvent.change(screen.getByLabelText("evaluation.hours.label"), { target: { value: "4" } });
+            choisir("evaluation.next_internship.label : evaluation.next_internship.options.OUI");
+            fireEvent.change(screen.getByLabelText("evaluation.signatory.role"), { target: { value: "Directeur" } });
+
+            // Assert
+            expect(screen.queryByText("evaluation.errors.overall")).not.toBeInTheDocument();
+            expect(screen.queryByText("evaluation.errors.discussed")).not.toBeInTheDocument();
+            expect(screen.queryByText("evaluation.errors.hours")).not.toBeInTheDocument();
+            expect(screen.queryByText("evaluation.errors.next_internship")).not.toBeInTheDocument();
+            expect(screen.queryByText("evaluation.errors.role")).not.toBeInTheDocument();
+            expect(screen.getAllByText("evaluation.errors.criterion")).toHaveLength(22);
+        });
+
+        it("devrait refuser un nombre d'heures invalide à côté du champ", async () => {
             // Arrange
             await chargerFormulaireVide();
             remplirFormulaireValide();
@@ -179,8 +254,8 @@ describe("EvaluationStagiaire", () => {
             fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
 
             // Assert
-            const alerte = await screen.findByRole("alert");
-            expect(within(alerte).getByText("evaluation.errors.hours")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.hours")).toBeInTheDocument();
+            expect(screen.getByLabelText("evaluation.hours.label")).toHaveAttribute("aria-invalid", "true");
             expect(soumettreEvaluation).not.toHaveBeenCalled();
         });
 
@@ -194,11 +269,11 @@ describe("EvaluationStagiaire", () => {
             fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
 
             // Assert
-            expect(await screen.findByText("evaluation.errors.hours")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.hours")).toBeInTheDocument();
             expect(soumettreEvaluation).not.toHaveBeenCalled();
         });
 
-        it("devrait refuser un nom de signataire vide", async () => {
+        it("devrait refuser un nom de signataire vide à côté du champ", async () => {
             // Arrange
             await chargerFormulaireVide();
             remplirFormulaireValide();
@@ -208,7 +283,8 @@ describe("EvaluationStagiaire", () => {
             fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
 
             // Assert
-            expect(await screen.findByText("evaluation.errors.name")).toBeInTheDocument();
+            expect(screen.getByText("evaluation.errors.name")).toBeInTheDocument();
+            expect(screen.getByLabelText("evaluation.signatory.name")).toHaveAttribute("aria-invalid", "true");
             expect(soumettreEvaluation).not.toHaveBeenCalled();
         });
 
@@ -221,7 +297,7 @@ describe("EvaluationStagiaire", () => {
             fireEvent.click(screen.getByRole("button", { name: "evaluation.submit" }));
 
             // Assert
-            expect(await screen.findByText("evaluation.errors.incomplete")).toBeInTheDocument();
+            expect(screen.getAllByText("evaluation.errors.criterion")).toHaveLength(21);
             expect(screen.getByText("1 / 5")).toBeInTheDocument();
         });
 
@@ -285,6 +361,7 @@ describe("EvaluationStagiaire", () => {
             // Assert
             const alerte = await screen.findByRole("alert");
             expect(within(alerte).getByText("Ce stagiaire a déjà été évalué")).toBeInTheDocument();
+            expect(screen.queryByText("evaluation.errors.summary")).not.toBeInTheDocument();
             expect(screen.queryByText("evaluation.success")).not.toBeInTheDocument();
             expect(screen.getByRole("button", { name: "evaluation.submit" })).toBeEnabled();
         });

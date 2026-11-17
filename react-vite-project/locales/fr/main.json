@@ -987,7 +987,10 @@
       "hours": "Veuillez entrer un nombre d'heures d'encadrement valide.",
       "next_internship": "Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage.",
       "name": "Le nom du signataire est obligatoire.",
-      "role": "La fonction du signataire est obligatoire."
+      "role": "La fonction du signataire est obligatoire.",
+      "criterion": "Veuillez choisir une réponse.",
+      "summary": "Le formulaire contient {{nombre}} erreur(s).",
+      "go_to_first": "Aller à la première erreur"
     }
   },
   "session": {
