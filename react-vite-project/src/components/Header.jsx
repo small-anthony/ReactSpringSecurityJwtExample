@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../services/AuthService.tsx";
 import { useTranslation } from "react-i18next";
 import "./Header.css";
+import {NotificationButton} from "./modal/NotificationPopover.jsx";
 
 function extraireRoleTexte(user) {
   if (!user || !user.role) {
@@ -144,13 +145,11 @@ function Header({ user }) {
 
             {user ? (
               <div className="flex items-center gap-2.5 pl-2">
+                <NotificationButton/>
                 <div className="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-slate-50 border border-slate-200/90 text-xs shadow-2xs">
                   <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
                     {initials || "U"}
                   </div>
-                  <span className="font-semibold text-slate-800">
-                    {prenom} {nom}
-                  </span>
                   <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                     {formatRole(roleTexte)}
                   </span>
