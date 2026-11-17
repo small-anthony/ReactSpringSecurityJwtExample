@@ -17,7 +17,7 @@ interface UserData {
     hasCv?: boolean;
 }
 
-interface IAuthService {
+export interface IAuthService {
     isAuthed(): boolean;
     getAuth(): string;
     buildAuthHeader(): object;

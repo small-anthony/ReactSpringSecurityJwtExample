@@ -1,5 +1,5 @@
 import PageLayout from "./components/PageLayout.jsx";
-import React, { useContext } from "react";
+import React, {useContext, useEffect} from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageAccueilStagify from "./components/page/PageAccueilStagify.jsx";
 import About from "./components/About.jsx";
@@ -18,11 +18,22 @@ import OffreStagesEtudiant from "./components/page/OffreStagesEtudiant.jsx";
 import GestionnaireContrats from "./components/page/GestionnaireContrats.jsx";
 import RapportsEtudiants from "./components/page/RapportsEtudiants.jsx";
 import EmployeurContrats from "./components/page/EmployeurContrats.jsx";
+import { NotificationServiceContext } from "./services/NotificationService/index.jsx";
 import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
 import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);
+    const notificationService = useContext(NotificationServiceContext);
+
+    useEffect(() => {
+        const refreshNotifs = async () => {
+            await notificationService.refreshNotifications();
+        }
+
+        refreshNotifs();
+    }, [authService.getAuth()]);
+
     const userData = authService.getUserData();
     const token = authService.getAuth();
 
