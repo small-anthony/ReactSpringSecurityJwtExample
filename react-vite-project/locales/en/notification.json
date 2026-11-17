@@ -1,8 +1,9 @@
 {
   "etudiant": {
-    "cv_accepted": "Your CV was accepted! You can now browse internship offers."
+    "cv_accepted": "Your CV was accepted! You can now browse internship offers.",
+    "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV."
   },
   "gestionnaire": {
-    "evaluation_milieu_soumise": "A supervising professor has submitted a new internship workplace evaluation."
+    "evaluation_milieu_soumise": "A professor has submitted a workplace evaluation."
   }
 }

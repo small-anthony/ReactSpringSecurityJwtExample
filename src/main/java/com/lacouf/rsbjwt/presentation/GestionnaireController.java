@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping({ "/gestionnaire" })
@@ -172,10 +171,8 @@ public class GestionnaireController {
     public ResponseEntity<?> getEvaluationMilieuParEtudiant(@PathVariable Long etudiantId) {
         try {
             return ResponseEntity.ok(gestionnaireService.getEvaluationMilieuParEtudiant(etudiantId));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Évaluation du milieu de stage introuvable.");
         }
     }
 

@@ -139,10 +139,8 @@ public class ProfesseurController {
         try {
             String email = authentication != null ? authentication.getName() : null;
             return ResponseEntity.ok(professeurService.getDossierStagePourProfesseur(email, etudiantId));
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de charger le dossier de stage.");
         }
     }
 
@@ -153,12 +151,8 @@ public class ProfesseurController {
         try {
             String email = authentication != null ? authentication.getName() : null;
             return ResponseEntity.ok(professeurService.getEvaluationMilieuPourProfesseur(email, etudiantId));
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de charger l'évaluation du milieu.");
         }
     }
 
@@ -171,10 +165,8 @@ public class ProfesseurController {
             String email = authentication != null ? authentication.getName() : null;
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(professeurService.soumettreEvaluationMilieu(email, etudiantId, request));
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de soumettre l'évaluation du milieu.");
         }
     }
 }

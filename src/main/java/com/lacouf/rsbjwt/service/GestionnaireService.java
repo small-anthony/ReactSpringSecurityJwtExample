@@ -284,14 +284,14 @@ public class GestionnaireService {
                 .toList();
     }
 
-    public EvaluationMilieuStageDto getEvaluationMilieuParEtudiant(Long etudiantId) {
+    public EvaluationMilieuStageDto getEvaluationMilieuParEtudiant(Long etudiantId) throws Exception {
         if (evaluationMilieuStageRepository == null) {
-            throw new NoSuchElementException("Aucune évaluation du milieu de stage trouvée pour cet étudiant.");
+            throw new Exception("Aucune évaluation du milieu de stage trouvée pour cet étudiant.");
         }
         return evaluationMilieuStageRepository.findByEtudiantIdOrderByDateEvaluationDesc(etudiantId).stream()
                 .findFirst()
                 .map(EvaluationMilieuStageDto::create)
-                .orElseThrow(() -> new NoSuchElementException("Aucune évaluation du milieu de stage trouvée pour cet étudiant."));
+                .orElseThrow(() -> new Exception("Aucune évaluation du milieu de stage trouvée pour cet étudiant."));
     }
 
     private RapportEtudiantDto toRapportEtudiantDto(Etudiant etudiant, Integer annee) {

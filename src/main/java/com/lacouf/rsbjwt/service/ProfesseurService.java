@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class ProfesseurService {
@@ -78,7 +77,7 @@ public class ProfesseurService {
     }
 
     @Transactional(readOnly = true)
-    public DossierStageProfesseurDto getDossierStagePourProfesseur(String professeurEmail, Long etudiantId) {
+    public DossierStageProfesseurDto getDossierStagePourProfesseur(String professeurEmail, Long etudiantId) throws Exception {
         AccesProfesseurEtudiant acces = verifierProfesseurEtAccesEtudiant(professeurEmail, etudiantId);
         Candidature stage = exigerStageActif(acces.etudiant());
         return DossierStageProfesseurDto.create(
@@ -91,14 +90,14 @@ public class ProfesseurService {
     }
 
     @Transactional(readOnly = true)
-    public EvaluationMilieuStageDto getEvaluationMilieuPourProfesseur(String professeurEmail, Long etudiantId) {
+    public EvaluationMilieuStageDto getEvaluationMilieuPourProfesseur(String professeurEmail, Long etudiantId) throws Exception {
         AccesProfesseurEtudiant acces = verifierProfesseurEtAccesEtudiant(professeurEmail, etudiantId);
         Candidature stage = exigerStageActif(acces.etudiant());
         if (evaluationMilieuStageRepository == null) {
-            throw new NoSuchElementException("Aucune évaluation du milieu de stage n'a encore été soumise pour cet étudiant.");
+            throw new Exception("Aucune évaluation du milieu de stage n'a encore été soumise pour cet étudiant.");
         }
         EvaluationMilieuStage evaluation = evaluationMilieuStageRepository.findByCandidatureId(stage.getId())
-                .orElseThrow(() -> new NoSuchElementException("Aucune évaluation du milieu de stage n'a encore été soumise pour cet étudiant."));
+                .orElseThrow(() -> new Exception("Aucune évaluation du milieu de stage n'a encore été soumise pour cet étudiant."));
         return EvaluationMilieuStageDto.create(evaluation);
     }
 
@@ -107,11 +106,11 @@ public class ProfesseurService {
             String professeurEmail,
             Long etudiantId,
             EvaluationMilieuStageRequest request
-    ) {
+    ) throws Exception {
         AccesProfesseurEtudiant acces = verifierProfesseurEtAccesEtudiant(professeurEmail, etudiantId);
         Candidature stage = exigerStageActif(acces.etudiant());
         if (evaluationMilieuStageRepository.existsByCandidatureId(stage.getId())) {
-            throw new IllegalStateException("Ce milieu de stage a déjà été évalué.");
+            throw new Exception("Ce milieu de stage a déjà été évalué.");
         }
         EvaluationMilieuStageValidator.validerRequeteEvaluation(request);
         EvaluationMilieuStage entity = EvaluationMilieuStageValidator.construireEntite(
@@ -135,24 +134,24 @@ public class ProfesseurService {
         }
     }
 
-    private AccesProfesseurEtudiant verifierProfesseurEtAccesEtudiant(String professeurEmail, Long etudiantId) {
+    private AccesProfesseurEtudiant verifierProfesseurEtAccesEtudiant(String professeurEmail, Long etudiantId) throws Exception {
         if (professeurEmail == null || professeurEmail.isBlank()) {
-            throw new SecurityException("Accès refusé : utilisateur non authentifié.");
+            throw new Exception("Accès refusé : utilisateur non authentifié.");
         }
         Professeur professeur = professeurRepository.findByEmail(professeurEmail)
-                .orElseThrow(() -> new SecurityException("Accès refusé : professeur introuvable."));
+                .orElseThrow(() -> new Exception("Accès refusé : professeur introuvable."));
         Etudiant etudiant = etudiantRepository.findById(etudiantId)
-                .orElseThrow(() -> new IllegalArgumentException("Étudiant introuvable."));
+                .orElseThrow(() -> new Exception("Étudiant introuvable."));
         if (etudiant.getProfesseur() == null || !etudiant.getProfesseur().getId().equals(professeur.getId())) {
-            throw new SecurityException("Accès refusé : cet étudiant ne vous est pas assigné.");
+            throw new Exception("Accès refusé : cet étudiant ne vous est pas assigné.");
         }
         return new AccesProfesseurEtudiant(professeur, etudiant);
     }
 
-    private Candidature exigerStageActif(Etudiant etudiant) {
+    private Candidature exigerStageActif(Etudiant etudiant) throws Exception {
         Candidature stage = trouverStageActif(etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of());
         if (stage == null) {
-            throw new IllegalArgumentException("Cet étudiant n'a pas de stage actif.");
+            throw new Exception("Cet étudiant n'a pas de stage actif.");
         }
         return stage;
     }

@@ -1,131 +1,153 @@
-import React, { useContext, useState } from "react";
-import { Bell, ChevronRight, CircleAlert, CircleCheck, CircleHelp, CircleX, Info, Loader2 } from "lucide-react";
+import {BellIcon, CheckCircle2, Info, AlertTriangle, XCircle, X,} from "lucide-react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
+import { getNotifications, dismissNotificationApi, deleteNotificationApi } from "../../services/api/NotificationAPI.js";
 import i18n from "i18next";
-import { NotificationServiceContext } from "../../services/NotificationService/index.jsx";
-import Notification, { NotificationType } from "../../services/NotificationService/Notification.js";
 
-const TYPE_STYLES = {
-    [NotificationType.Failed]: { Icon: CircleX, wrapper: "bg-rose-50 text-rose-600" },
-    [NotificationType.Success]: { Icon: CircleCheck, wrapper: "bg-emerald-50 text-emerald-600" },
-    [NotificationType.Informative]: { Icon: Info, wrapper: "bg-blue-50 text-blue-600" },
-    [NotificationType.ActionRequired]: { Icon: CircleAlert, wrapper: "bg-amber-50 text-amber-600" }
-};
+function getIconStyle(type) {
+    switch (type) {
+        case "SUCCESS":
+            return { Icon: CheckCircle2, classes: "bg-emerald-50 text-emerald-600" };
+        case "FAILED":
+            return { Icon: XCircle, classes: "bg-rose-50 text-rose-600" };
+        case "ACTION_REQUIRED":
+            return { Icon: AlertTriangle, classes: "bg-amber-50 text-amber-600" };
+        default:
+            return { Icon: Info, classes: "bg-blue-50 text-blue-600" };
+    }
+}
 
 export function NotificationButton() {
-    const notificationService = useContext(NotificationServiceContext);
-    const notifications = notificationService.getNotifications();
+    const { t } = useTranslation(['main', 'notification']);
+    const navigate = useNavigate();
+    const authService = useContext(AuthServiceContext);
+
+    const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    const nonLues = Array.isArray(notifications) ? notifications.filter((n) => !n.dismissed).length : 0;
+    useEffect(() => {
+        if (!authService.isAuthed()) return;
 
-    return (
-        <div
-            className="relative flex items-center"
-            onKeyDown={(e) => {
-                if (e.key === "Escape") setIsOpen(false);
-            }}
-        >
-            <button
-                type="button"
-                aria-expanded={isOpen}
-                onClick={() => setIsOpen((prev) => !prev)}
-                className={`relative w-9 h-9 rounded-full border flex items-center justify-center transition cursor-pointer shadow-2xs ${
-                    isOpen ? "bg-blue-50 border-blue-200 text-blue-600" : "bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-700"
-                }`}
-            >
-                {!notifications ? <Loader2 className="w-4 h-4 animate-spin text-gray-400" /> : <Bell className="w-4 h-4" />}
-                {nonLues > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
-                        {nonLues > 9 ? "9+" : nonLues}
-                    </span>
-                )}
-            </button>
-            {isOpen && (
-                <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} aria-hidden="true" />
-                    <NotificationPopover notifications={notifications || []} nonLues={nonLues} onClose={() => setIsOpen(false)} />
-                </>
-            )}
-        </div>
-    );
-}
+        getNotifications(authService.buildAuthHeader())
+            .then((data) => setNotifications(data || []))
+            .catch(() => setNotifications([]));
+    }, [authService]);
 
-function NotificationCard({ notification = new Notification(), t, onClose }) {
-    const handler = notification.useHandler();
-    const { Icon, wrapper } = TYPE_STYLES[notification.type] || { Icon: CircleHelp, wrapper: "bg-gray-100 text-gray-500" };
-    let dateFormatee = "";
-    if (notification.dateCreation) {
-        try {
-            const d = notification.dateCreation instanceof Date ? notification.dateCreation : new Date(notification.dateCreation);
-            dateFormatee = Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" }).format(d);
-        } catch {
-            dateFormatee = "";
+    const handleAction = async (notification) => {
+        if (!notification.dismissed) {
+            await dismissNotificationApi(notification.id, authService.buildAuthHeader());
+            setNotifications((prev) =>
+                prev.map((n) => (n.id === notification.id ? { ...n, dismissed: true } : n))
+            );
         }
-    }
-    const nonLue = !notification.dismissed;
-    const handleClick = async () => {
-        if (handler) await handler();
-        onClose?.();
+
+        if (notification.action?.type === "VOIR_OFFRES" || notification.action?.type === "TELEVERSER_CV") {
+            navigate("/etudiant?tab=toutes");
+        } else if (notification.action?.type === "VOIR_EVALUATION_MILIEU") {
+            navigate(`/gestionnaire${notification.action?.referenceId ? `?etudiantEvaluationId=${notification.action.referenceId}` : ""}`);
+        }
+        setIsOpen(false);
     };
 
-    return (
-        <button
-            type="button"
-            onClick={handleClick}
-            className={`group w-full text-left px-4 py-3.5 flex items-start gap-3 transition cursor-pointer ${
-                nonLue ? "bg-blue-50/35 hover:bg-blue-50/70" : "bg-white hover:bg-gray-50/80 opacity-80"
-            }`}
-        >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${wrapper}`}>
-                <Icon className="w-4 h-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className={`text-xs leading-relaxed text-gray-800 ${nonLue ? "font-semibold" : "font-normal"}`}>
-                    {t(notification.message, { ns: "notification" })}
-                </p>
-                {dateFormatee && <span className="block text-[11px] text-gray-400 mt-1">{dateFormatee}</span>}
-            </div>
-            <div className="flex items-center gap-1.5 shrink-0 self-center">
-                {nonLue && <span className="w-2 h-2 rounded-full bg-blue-600" />}
-                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition" />
-            </div>
-        </button>
-    );
-}
+    const handleDelete = async (e, id) => {
+        e.stopPropagation();
+        await deleteNotificationApi(id, authService.buildAuthHeader());
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+    };
 
-function NotificationPopover({ notifications, nonLues, onClose }) {
-    const { t } = useTranslation(["main", "notification"]);
+    const nbNonLues = notifications.filter((n) => !n.dismissed).length;
+    const locale = i18n.language || "fr";
 
     return (
-        <div className="absolute right-0 top-full mt-2.5 w-80 sm:w-96 z-50 bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
-            <header className="px-4 py-3.5 border-b border-gray-100 bg-gray-50/70 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-blue-600" />
-                    <h2 className="text-sm font-bold text-gray-900">{t("notifications.titre")}</h2>
-                </div>
-                <span
-                    className={`px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
-                        nonLues > 0 ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-100 text-gray-600 border-gray-200"
-                    }`}
-                >
-                    {nonLues > 0 ? t("notifications.non_lues_count", { count: nonLues }) : t("notifications.tout_lu")}
-                </span>
-            </header>
-            {notifications.length === 0 ? (
-                <div className="py-10 px-6 text-center space-y-2">
-                    <div className="w-11 h-11 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto">
-                        <Bell className="w-5 h-5" />
+        <div className="relative">
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className={`flex items-center gap-1.5 h-8 px-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
+                    nbNonLues > 0
+                        ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                        : "bg-slate-50 border-slate-200/90 text-slate-600 hover:bg-slate-100"
+                }`}
+            >
+                <BellIcon className="w-4 h-4" />
+                {nbNonLues > 0 && <span>{nbNonLues}</span>}
+            </button>
+
+            {isOpen && (
+                <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+
+                    <div className="absolute right-0 mt-2 w-80 sm:w-96 z-50 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                        <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+                            <h3 className="text-sm font-bold text-slate-900">
+                                {t('notifications.titre')}
+                            </h3>
+                            {nbNonLues > 0 && (
+                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                                    {nbNonLues} {nbNonLues > 1 ? "nouvelles" : "nouvelle"}
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="max-h-96 overflow-y-auto divide-y divide-slate-100">
+                            {notifications.length === 0 ? (
+                                <div className="py-10 px-4 text-center">
+                                    <BellIcon className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                                    <p className="text-xs text-slate-400">Aucune notification pour le moment.</p>
+                                </div>
+                            ) : (
+                                notifications.map((notif) => {
+                                    const { Icon, classes } = getIconStyle(notif.type);
+                                    const date = Intl.DateTimeFormat(locale, {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                    }).format(new Date(notif.dateCreation));
+
+                                    return (
+                                        <div
+                                            key={notif.id}
+                                            onClick={() => handleAction(notif)}
+                                            className={`w-full text-left px-4 py-3 flex items-start gap-3 transition cursor-pointer ${
+                                                notif.dismissed
+                                                    ? "bg-white opacity-60 hover:bg-slate-50"
+                                                    : "bg-blue-50/35 hover:bg-blue-50/70"
+                                            }`}
+                                        >
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${classes}`}>
+                                                <Icon className="w-4 h-4" />
+                                            </div>
+
+                                            <div className="flex-1 min-w-0">
+                                                <p className={`text-xs leading-relaxed ${notif.dismissed ? "text-slate-600" : "text-slate-900 font-medium"}`}>
+                                                    {t(notif.message, { ns: 'notification' })}
+                                                </p>
+                                                <span className="text-[11px] text-slate-400 mt-1 block">
+                                                    {date}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 shrink-0 self-center">
+                                                {!notif.dismissed && (
+                                                    <span className="w-2 h-2 rounded-full bg-blue-600" />
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => handleDelete(e, notif.id)}
+                                                    title="Supprimer"
+                                                    className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
-                    <p className="text-sm font-semibold text-gray-700">{t("notifications.vide_titre")}</p>
-                    <p className="text-xs text-gray-400">{t("notifications.vide_description")}</p>
-                </div>
-            ) : (
-                <div className="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                    {notifications.map((notification) => (
-                        <NotificationCard key={notification.id} notification={notification} t={t} onClose={onClose} />
-                    ))}
-                </div>
+                </>
             )}
         </div>
     );

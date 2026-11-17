@@ -532,9 +532,9 @@ public class GestionnaireControllerTest {
     }
 
     @Test
-    void getEvaluationMilieuParEtudiant_nonTrouvee_shouldReturnNotFound() {
+    void getEvaluationMilieuParEtudiant_nonTrouvee_shouldReturnNotFound() throws Exception {
         when(gestionnaireService.getEvaluationMilieuParEtudiant(99L))
-                .thenThrow(new NoSuchElementException("Aucune évaluation"));
+                .thenThrow(new Exception("Aucune évaluation"));
 
         ResponseEntity<?> response = gestionnaireController.getEvaluationMilieuParEtudiant(99L);
 

@@ -274,7 +274,7 @@ class ProfesseurControllerTest {
     }
 
     @Test
-    void getDossierStage_succes_retourne200() {
+    void getDossierStage_succes_retourne200() throws Exception {
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("martin@test.com");
         DossierStageProfesseurDto dto = new DossierStageProfesseurDto(
@@ -291,31 +291,31 @@ class ProfesseurControllerTest {
     }
 
     @Test
-    void getDossierStage_accesRefuse_retourne403() {
+    void getDossierStage_accesRefuse_retourne400() throws Exception {
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("martin@test.com");
         when(professeurService.getDossierStagePourProfesseur("martin@test.com", 1L))
-                .thenThrow(new SecurityException("Accès refusé"));
+                .thenThrow(new Exception("Accès refusé"));
 
         ResponseEntity<?> response = professeurController.getDossierStage(1L, auth);
 
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    void getEvaluationMilieu_nonTrouvee_retourne404() {
+    void getEvaluationMilieu_nonTrouvee_retourne400() throws Exception {
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("martin@test.com");
         when(professeurService.getEvaluationMilieuPourProfesseur("martin@test.com", 1L))
-                .thenThrow(new NoSuchElementException("Aucune évaluation"));
+                .thenThrow(new Exception("Aucune évaluation"));
 
         ResponseEntity<?> response = professeurController.getEvaluationMilieu(1L, auth);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    void soumettreEvaluationMilieu_succes_retourne201() {
+    void soumettreEvaluationMilieu_succes_retourne201() throws Exception {
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("martin@test.com");
         EvaluationMilieuStageRequest req = new EvaluationMilieuStageRequest(
