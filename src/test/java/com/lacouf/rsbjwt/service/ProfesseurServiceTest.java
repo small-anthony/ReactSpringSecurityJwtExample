@@ -1,23 +1,41 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.Contrat;
+import com.lacouf.rsbjwt.model.Employeur;
+import com.lacouf.rsbjwt.model.ENUM.CapaciteAccueilStagiaires;
+import com.lacouf.rsbjwt.model.ENUM.CritereEvaluationMilieu;
+import com.lacouf.rsbjwt.model.ENUM.NiveauAccord;
+import com.lacouf.rsbjwt.model.ENUM.StageCible;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationMilieuStageRequest;
+import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
+import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
 import com.lacouf.rsbjwt.repository.ProfesseurRepository;
+import com.lacouf.rsbjwt.service.dto.DossierStageProfesseurDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantSuperviseDto;
+import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +46,12 @@ public class ProfesseurServiceTest {
 
     @Mock
     private EtudiantRepository etudiantRepository;
+
+    @Mock
+    private ContratRepository contratRepository;
+
+    @Mock
+    private EvaluationMilieuStageRepository evaluationMilieuStageRepository;
 
     @InjectMocks
     private ProfesseurService professeurService;
@@ -179,5 +203,250 @@ public class ProfesseurServiceTest {
         );
 
         assertTrue(exception.getMessage().contains("Cet étudiant n'est pas assigné à ce professeur"));
+    }
+
+    private Map<CritereEvaluationMilieu, NiveauAccord> creerReponsesCompletes(NiveauAccord niveau) {
+        Map<CritereEvaluationMilieu, NiveauAccord> map = new EnumMap<>(CritereEvaluationMilieu.class);
+        for (CritereEvaluationMilieu critere : CritereEvaluationMilieu.values()) {
+            map.put(critere, niveau);
+        }
+        return map;
+    }
+
+    private EvaluationMilieuStageRequest creerRequeteValide(
+            Map<CritereEvaluationMilieu, NiveauAccord> reponses,
+            String commentaires,
+            boolean quartsVariables
+    ) {
+        return new EvaluationMilieuStageRequest(
+                "CGI Inc.",
+                "Valentin Dimitrov",
+                "1350 René-Lévesque Ouest",
+                "Montréal",
+                "H3G 1T4",
+                "514-555-1234",
+                "514-555-9999",
+                "Sophie Martin",
+                "2026-05-18 → 2026-08-21",
+                1,
+                reponses,
+                5.0,
+                4.0,
+                3.0,
+                "24.00",
+                commentaires,
+                StageCible.PREMIER_STAGE,
+                CapaciteAccueilStagiaires.DEUX,
+                true,
+                quartsVariables,
+                quartsVariables ? "08:00" : "",
+                quartsVariables ? "16:00" : "",
+                "",
+                "",
+                "",
+                "",
+                "Martin Tremblay",
+                LocalDate.of(2026, 6, 15)
+        );
+    }
+
+    private Etudiant creerEtudiantAvecStageComplet(Professeur prof) {
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        etudiant.setProfesseur(prof);
+
+        Employeur employeur = new Employeur("Valentin", "Dimitrov", new Credentials("emp@test.com", "pass", Role.EMPLOYEUR), "CGI Inc.", "514-555-1234");
+        employeur.setId(5L);
+
+        OffreStage offre = new OffreStage("Dev Web", "Desc", employeur, "info", "24$/h", "15 sem", "Java");
+        offre.setId(2L);
+        offre.setNomEntreprise("CGI Inc.");
+
+        Candidature cand = new Candidature(etudiant, offre);
+        cand.setId(3L);
+        cand.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(cand));
+        return etudiant;
+    }
+
+    @Test
+    void getDossierStagePourProfesseur_succes_preremplitChamps() throws Exception {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+        Candidature cand = etudiant.getCandidatures().getFirst();
+        Contrat contrat = new Contrat(cand, new byte[]{1}, LocalDate.of(2026, 5, 18), LocalDate.of(2026, 8, 21), "35h", "24.00$/h", "Taches", "Conditions");
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(3L)).thenReturn(Optional.of(contrat));
+        when(evaluationMilieuStageRepository.findByCandidatureId(3L)).thenReturn(Optional.empty());
+
+        DossierStageProfesseurDto dto = professeurService.getDossierStagePourProfesseur("martin@test.com", 1L);
+
+        assertEquals("CGI Inc.", dto.nomEntreprise());
+        assertEquals("Valentin Dimitrov", dto.personneContact());
+        assertEquals("514-555-1234", dto.telephoneEntreprise());
+        assertEquals("Sophie Martin", dto.nomStagiaire());
+        assertEquals("2026-05-18 → 2026-08-21", dto.dateStage());
+        assertEquals("24.00$/h", dto.salaireHoraire());
+        assertEquals("Martin Tremblay", dto.nomProfesseur());
+        assertFalse(dto.milieuEvalue());
+    }
+
+    @Test
+    void getDossierStagePourProfesseur_autreProfesseur_lanceSecurityException() {
+        Professeur prof1 = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof1.setId(10L);
+        Professeur prof2 = new Professeur("Chantal", "Gagnon", new Credentials("chantal@test.com", "pass", Role.PROFESSEUR));
+        prof2.setId(20L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof2);
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof1));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+
+        assertThrows(Exception.class, () ->
+                professeurService.getDossierStagePourProfesseur("martin@test.com", 1L));
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_succes_sauvegardeEvaluation() throws Exception {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+
+        EvaluationMilieuStageRequest req = creerRequeteValide(
+                creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD),
+                "Très bon milieu",
+                false
+        );
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(3L)).thenReturn(false);
+        when(evaluationMilieuStageRepository.save(any(EvaluationMilieuStage.class))).thenAnswer(inv -> {
+            EvaluationMilieuStage e = inv.getArgument(0);
+            e.setId(42L);
+            return e;
+        });
+
+        EvaluationMilieuStageDto resultat = professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req);
+
+        assertNotNull(resultat);
+        assertEquals(42L, resultat.id());
+        assertEquals("CGI Inc.", resultat.nomEntreprise());
+        assertEquals("H3G 1T4", resultat.codePostal());
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_dejaEvalue_lanceIllegalStateException() {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+        EvaluationMilieuStageRequest req = creerRequeteValide(creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD), "", false);
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(3L)).thenReturn(true);
+
+        assertThrows(Exception.class, () ->
+                professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req));
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_reponseNegativeSansCommentaire_lanceException() {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+
+        Map<CritereEvaluationMilieu, NiveauAccord> reponses = creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD);
+        reponses.put(CritereEvaluationMilieu.EQUIPEMENT_ADEQUAT, NiveauAccord.PLUTOT_EN_DESACCORD);
+        EvaluationMilieuStageRequest req = creerRequeteValide(reponses, "   ", false);
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(3L)).thenReturn(false);
+
+        Exception ex = assertThrows(Exception.class, () ->
+                professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req));
+        assertTrue(ex.getMessage().contains("commentaires"));
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_critereManquant_lanceException() {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+
+        Map<CritereEvaluationMilieu, NiveauAccord> reponses = creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD);
+        reponses.remove(CritereEvaluationMilieu.VOLUME_TRAVAIL_ACCEPTABLE);
+        EvaluationMilieuStageRequest req = creerRequeteValide(reponses, "", false);
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(3L)).thenReturn(false);
+
+        assertThrows(Exception.class, () ->
+                professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req));
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_quartsVariablesSansPlage_lanceException() {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+
+        EvaluationMilieuStageRequest base = creerRequeteValide(creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD), "", true);
+        EvaluationMilieuStageRequest reqSansPlage = new EvaluationMilieuStageRequest(
+                base.nomEntreprise(), base.personneContact(), base.adresse(), base.ville(), base.codePostal(),
+                base.telephone(), base.telecopieur(), base.nomStagiaire(), base.dateStage(), base.numeroStage(),
+                base.reponses(), base.heuresEncadrementMois1(), base.heuresEncadrementMois2(), base.heuresEncadrementMois3(),
+                base.salaireHoraire(), base.commentaires(), base.milieuAPrivilegier(), base.nombreStagiairesAccueillis(),
+                base.accueillirMemeStagiaire(), true, "", "", "", "", "", "", base.signatureEnseignant(), base.dateEvaluation()
+        );
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(3L)).thenReturn(false);
+
+        assertThrows(Exception.class, () ->
+                professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, reqSansPlage));
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_codePostalInvalide_lanceException() {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+
+        EvaluationMilieuStageRequest base = creerRequeteValide(creerReponsesCompletes(NiveauAccord.TOTALEMENT_EN_ACCORD), "", false);
+        EvaluationMilieuStageRequest reqInvalide = new EvaluationMilieuStageRequest(
+                base.nomEntreprise(), base.personneContact(), base.adresse(), base.ville(), "12345",
+                base.telephone(), base.telecopieur(), base.nomStagiaire(), base.dateStage(), base.numeroStage(),
+                base.reponses(), base.heuresEncadrementMois1(), base.heuresEncadrementMois2(), base.heuresEncadrementMois3(),
+                base.salaireHoraire(), base.commentaires(), base.milieuAPrivilegier(), base.nombreStagiairesAccueillis(),
+                base.accueillirMemeStagiaire(), false, "", "", "", "", "", "", base.signatureEnseignant(), base.dateEvaluation()
+        );
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(3L)).thenReturn(false);
+
+        assertThrows(Exception.class, () ->
+                professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, reqInvalide));
+    }
+
+    @Test
+    void getEvaluationMilieuPourProfesseur_inexistant_lanceNoSuchElement() {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(evaluationMilieuStageRepository.findByCandidatureId(3L)).thenReturn(Optional.empty());
+
+        assertThrows(Exception.class, () ->
+                professeurService.getEvaluationMilieuPourProfesseur("martin@test.com", 1L));
     }
 }

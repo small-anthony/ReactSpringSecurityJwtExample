@@ -6,12 +6,14 @@ import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
 import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
+import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.ProfesseurRepository;
 import com.lacouf.rsbjwt.service.dto.*;
@@ -31,6 +33,7 @@ public class GestionnaireService {
     private final EtudiantRepository etudiantRepository;
     private final ProfesseurRepository professeurRepository;
     private final NotificationService notificationService;
+    private final EvaluationMilieuStageRepository evaluationMilieuStageRepository;
 
     @Autowired
     public GestionnaireService(CvRepository cvRepository,
@@ -38,13 +41,24 @@ public class GestionnaireService {
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository,
                               ProfesseurRepository professeurRepository,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              EvaluationMilieuStageRepository evaluationMilieuStageRepository) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
         this.candidatureRepository = candidatureRepository;
         this.professeurRepository = professeurRepository;
         this.notificationService = notificationService;
+        this.evaluationMilieuStageRepository = evaluationMilieuStageRepository;
+    }
+
+    public GestionnaireService(CvRepository cvRepository,
+                              OffreStageRepository offreStageRepository,
+                              EtudiantRepository etudiantRepository,
+                              CandidatureRepository candidatureRepository,
+                              ProfesseurRepository professeurRepository,
+                              NotificationService notificationService) {
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, notificationService, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
@@ -52,14 +66,14 @@ public class GestionnaireService {
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository,
                               ProfesseurRepository professeurRepository) {
-        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null);
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
                               OffreStageRepository offreStageRepository,
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository) {
-        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null);
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null, null);
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -163,6 +177,18 @@ public class GestionnaireService {
         return new ArrayList<>(annees);
     }
 
+    public List<RapportEtudiantDto> getRapportEtudiants() {
+        return getRapportEtudiants(AcademicSessionUtils.getAnneeActuelle());
+    }
+
+    public List<RapportEtudiantDto> getRapportEtudiants(Integer annee) {
+        int anneeCible = (annee != null) ? annee : AcademicSessionUtils.getAnneeActuelle();
+        return etudiantRepository.findAll()
+                .stream()
+                .map(e -> toRapportEtudiantDto(e, anneeCible))
+                .toList();
+    }
+
     public List<RapportEtudiantDto> getTousLesEtudiants() {
         return etudiantRepository.findAll()
                 .stream()
@@ -229,17 +255,80 @@ public class GestionnaireService {
     }
 
     public List<RapportEtudiantDto> getEtudiantsTrouveStage(Integer annee) {
-        if (annee == null) {
-            return etudiantRepository.findEtudiantsTrouveStage()
-                    .stream()
-                    .map(RapportEtudiantDto::create)
-                    .toList();
-        }
-
-        return etudiantRepository.findEtudiantsTrouveStage(annee)
-                .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
+        List<Etudiant> etudiants = (annee == null)
+                ? etudiantRepository.findEtudiantsTrouveStage()
+                : etudiantRepository.findEtudiantsTrouveStage(annee);
+        return etudiants.stream()
+                .map(e -> toRapportEtudiantDto(e, annee))
                 .toList();
+    }
+
+    public List<RapportEtudiantDto> getEtudiantsStageNonEvalueParProfesseur(Integer annee) {
+        List<Etudiant> etudiants = (annee == null)
+                ? etudiantRepository.findEtudiantsTrouveStage()
+                : etudiantRepository.findEtudiantsTrouveStage(annee);
+        return etudiants.stream()
+                .filter(e -> !estMilieuEvalue(e, annee))
+                .map(e -> annee == null
+                        ? RapportEtudiantDto.create(e, false, null)
+                        : RapportEtudiantDto.createFilteredByAnnee(e, annee, false, null))
+                .toList();
+    }
+
+    public List<EvaluationMilieuStageDto> getEvaluationsMilieuStage() {
+        if (evaluationMilieuStageRepository == null) {
+            return List.of();
+        }
+        return evaluationMilieuStageRepository.findAllByOrderByDateEvaluationDesc().stream()
+                .map(EvaluationMilieuStageDto::create)
+                .toList();
+    }
+
+    public EvaluationMilieuStageDto getEvaluationMilieuParEtudiant(Long etudiantId) throws Exception {
+        if (evaluationMilieuStageRepository == null) {
+            throw new Exception("Aucune évaluation du milieu de stage trouvée pour cet étudiant.");
+        }
+        return evaluationMilieuStageRepository.findByEtudiantIdOrderByDateEvaluationDesc(etudiantId).stream()
+                .findFirst()
+                .map(EvaluationMilieuStageDto::create)
+                .orElseThrow(() -> new Exception("Aucune évaluation du milieu de stage trouvée pour cet étudiant."));
+    }
+
+    private RapportEtudiantDto toRapportEtudiantDto(Etudiant etudiant, Integer annee) {
+        Candidature stage = trouverStageActif(etudiant, annee);
+        Optional<EvaluationMilieuStage> evaluationOpt = (evaluationMilieuStageRepository != null && stage != null)
+                ? evaluationMilieuStageRepository.findByCandidatureId(stage.getId())
+                : Optional.empty();
+        boolean milieuEvalue = evaluationOpt.isPresent();
+        Long evaluationMilieuId = evaluationOpt.map(EvaluationMilieuStage::getId).orElse(null);
+
+        if (annee == null) {
+            return RapportEtudiantDto.create(etudiant, milieuEvalue, evaluationMilieuId);
+        }
+        return RapportEtudiantDto.createFilteredByAnnee(etudiant, annee, milieuEvalue, evaluationMilieuId);
+    }
+
+    private boolean estMilieuEvalue(Etudiant etudiant, Integer annee) {
+        if (evaluationMilieuStageRepository == null) {
+            return false;
+        }
+        Candidature stage = trouverStageActif(etudiant, annee);
+        return stage != null && evaluationMilieuStageRepository.existsByCandidatureId(stage.getId());
+    }
+
+    private Candidature trouverStageActif(Etudiant etudiant, Integer annee) {
+        List<Candidature> candidatures = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
+        List<Candidature> filtrees = (annee != null)
+                ? candidatures.stream().filter(c -> annee.equals(c.getAnneeOffre())).toList()
+                : candidatures;
+
+        return filtrees.stream()
+                .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
+                .findFirst()
+                .orElseGet(() -> filtrees.stream()
+                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
+                        .findFirst()
+                        .orElse(null));
     }
 
     public List<EtudiantPourAssignationDto> getEtudiantsPourAssignation(Integer annee) {

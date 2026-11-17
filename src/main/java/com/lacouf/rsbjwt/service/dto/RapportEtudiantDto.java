@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import java.util.List;
 
@@ -11,9 +13,74 @@ public record RapportEtudiantDto(
         String email,
         int matricule,
         String discipline,
-        List<CandidatureDto> candidatures
+        String statutStage,
+        List<CandidatureDto> candidatures,
+        boolean milieuEvalue,
+        Long evaluationMilieuId
 ) {
+    public RapportEtudiantDto(
+            int id,
+            String firstName,
+            String lastName,
+            String email,
+            int matricule,
+            String discipline,
+            List<CandidatureDto> candidatures
+    ) {
+        this(id, firstName, lastName, email, matricule, discipline, null, candidatures, false, null);
+    }
+
+    public RapportEtudiantDto(
+            int id,
+            String firstName,
+            String lastName,
+            String email,
+            int matricule,
+            String discipline,
+            String statutStage,
+            List<CandidatureDto> candidatures
+    ) {
+        this(id, firstName, lastName, email, matricule, discipline, statutStage, candidatures, false, null);
+    }
+
+    public RapportEtudiantDto(
+            int id,
+            String firstName,
+            String lastName,
+            String email,
+            int matricule,
+            String discipline,
+            List<CandidatureDto> candidatures,
+            boolean milieuEvalue,
+            Long evaluationMilieuId
+    ) {
+        this(id, firstName, lastName, email, matricule, discipline, null, candidatures, milieuEvalue, evaluationMilieuId);
+    }
+
     public static RapportEtudiantDto create(Etudiant etudiant) {
+        return create(etudiant, false, null);
+    }
+
+    public static RapportEtudiantDto create(Etudiant etudiant, Integer annee) {
+        return create(etudiant, annee, false, null);
+    }
+
+    public static RapportEtudiantDto create(Etudiant etudiant, boolean milieuEvalue, Long evaluationMilieuId) {
+        return create(etudiant, null, milieuEvalue, evaluationMilieuId);
+    }
+
+    public static RapportEtudiantDto create(
+            Etudiant etudiant,
+            Integer annee,
+            boolean milieuEvalue,
+            Long evaluationMilieuId
+    ) {
+        List<Candidature> cands = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
+        if (annee != null) {
+            cands = cands.stream()
+                    .filter(c -> c.getOffreStage() != null && c.getOffreStage().getAnnee() == annee)
+                    .toList();
+        }
         return new RapportEtudiantDto(
                 etudiant.getId().intValue(),
                 etudiant.getFirstName(),
@@ -21,22 +88,50 @@ public record RapportEtudiantDto(
                 etudiant.getEmail(),
                 etudiant.getMatricule(),
                 etudiant.getDiscipline(),
-                CandidatureDto.create(etudiant.getCandidatures())
+                determinerStatut(cands),
+                CandidatureDto.create(cands),
+                milieuEvalue,
+                evaluationMilieuId
         );
     }
 
     public static RapportEtudiantDto createFilteredByAnnee(Etudiant etudiant, int annee) {
-        List<Candidature> candidaturesFiltrees = etudiant.getCandidatures().stream()
-                .filter(c -> c.getOffreStage() != null && c.getOffreStage().getAnnee() == annee)
-                .toList();
-        return new RapportEtudiantDto(
-                etudiant.getId().intValue(),
-                etudiant.getFirstName(),
-                etudiant.getLastName(),
-                etudiant.getEmail(),
-                etudiant.getMatricule(),
-                etudiant.getDiscipline(),
-                CandidatureDto.create(candidaturesFiltrees)
+        return create(etudiant, annee, false, null);
+    }
+
+    public static RapportEtudiantDto createFilteredByAnnee(
+            Etudiant etudiant,
+            int annee,
+            boolean milieuEvalue,
+            Long evaluationMilieuId
+    ) {
+        return create(etudiant, annee, milieuEvalue, evaluationMilieuId);
+    }
+
+    private static String determinerStatut(List<Candidature> candidatures) {
+        if (candidatures == null || candidatures.isEmpty()) {
+            return "AUCUNE_CANDIDATURE";
+        }
+        boolean stageTrouve = candidatures.stream().anyMatch(c ->
+                c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE
         );
+        if (stageTrouve) {
+            return "STAGE_TROUVE";
+        }
+        boolean attenteReponse = candidatures.stream().anyMatch(c ->
+                c.getStatut() == StatutCandidature.EN_ATTENTE_REPONSE
+        );
+        if (attenteReponse) {
+            return "EN_ATTENTE_REPONSE";
+        }
+        boolean attenteEntrevue = candidatures.stream().anyMatch(c ->
+                c.getConvocations() != null && c.getConvocations().stream().anyMatch(conv ->
+                        conv.getStatut() == StatutConvocation.EN_ATTENTE
+                )
+        );
+        if (attenteEntrevue) {
+            return "EN_ATTENTE_ENTREVUE";
+        }
+        return "SANS_CONVOCATION";
     }
 }

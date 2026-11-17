@@ -81,6 +81,25 @@ public class Candidature {
         return offreStage != null ? offreStage.getAnnee() : null;
     }
 
+    public String getSalaireOffre() {
+        return offreStage != null ? offreStage.getSalaire() : null;
+    }
+
+    public String nomContactEmployeur() {
+        Employeur employeur = offreStage != null ? offreStage.getEmployeur() : null;
+        return employeur != null ? employeur.nomComplet() : null;
+    }
+
+    public String telephoneEmployeur() {
+        Employeur employeur = offreStage != null ? offreStage.getEmployeur() : null;
+        return employeur != null ? employeur.getTelephone() : null;
+    }
+
+    public String emailEmployeur() {
+        Employeur employeur = offreStage != null ? offreStage.getEmployeur() : null;
+        return employeur != null ? employeur.getEmail() : null;
+    }
+
     public Optional<Convocation> derniereConvocation() {
         if (convocations == null || convocations.isEmpty()) {
             return Optional.empty();

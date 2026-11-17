@@ -2,13 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-export default function SidePanelGestionnaire({ activeTab = "none" }) {
+export default function SidePanelGestionnaire({ activeTab = "dashboard" }) {
     const { t } = useTranslation("main");
     const tabs = [
+        { key: "dashboard", label: t('sidepanel.dashboard'), to: "/gestionnaire" },
         { key: "approbationsOffres", label: t('sidepanel.offres'), to: "/gestionnaire/approbations/offres" },
         { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
         { key: "contrats", label: t('sidepanel.contrats'), to: "/gestionnaire/contrats" },
-        { key: "rapports", label: t('sidepanel.rapports'), to: "/gestionnaire/rapports" },
         { key: "assignationProfesseurs", label: t('sidepanel.assignation_professeurs'), to: "/gestionnaire/assignation-professeurs" },
     ];
 

@@ -49,3 +49,41 @@ export async function getAnneesProfesseur(authHeader) {
   }
   return response.json();
 }
+
+export async function getDossierStage(etudiantId, authHeader) {
+  const response = await fetch(`${BASE_URL}/professeur/etudiants/${etudiantId}/stage`, {
+    headers: authHeader,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la récupération du dossier de stage");
+  }
+  return response.json();
+}
+
+export async function getEvaluationMilieu(etudiantId, authHeader) {
+  const response = await fetch(`${BASE_URL}/professeur/etudiants/${etudiantId}/evaluation-milieu`, {
+    headers: authHeader,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Évaluation du milieu de stage introuvable");
+  }
+  return response.json();
+}
+
+export async function soumettreEvaluationMilieu(etudiantId, payload, authHeader) {
+  const response = await fetch(`${BASE_URL}/professeur/etudiants/${etudiantId}/evaluation-milieu`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erreur lors de la soumission de l'évaluation du milieu");
+  }
+  return response.json();
+}
