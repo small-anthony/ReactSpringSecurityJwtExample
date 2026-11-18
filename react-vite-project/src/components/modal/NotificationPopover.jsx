@@ -49,6 +49,8 @@ export function NotificationButton() {
             navigate("/etudiant?uploadCv=true");
         } else if (notification.action?.type === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
+        } else if (notification.action?.type === "APPROUVER_OFFRE") {
+            navigate("/gestionnaire/approbations/offres");
         }
         setIsOpen(false);
     };

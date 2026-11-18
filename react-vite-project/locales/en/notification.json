@@ -4,6 +4,7 @@
     "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV."
   },
   "gestionnaire": {
-    "cv_submitted": "A student submitted a new CV for approval."
+    "cv_submitted": "A student submitted a new CV for approval.",
+    "offre_submitted": "An employer submitted a new internship offer for approval."
   }
 }

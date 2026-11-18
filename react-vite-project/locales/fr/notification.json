@@ -4,6 +4,7 @@
     "cv_rejected": "Votre CV a été refusé. Veuillez consulter les commentaires et soumettre un nouveau CV."
   },
   "gestionnaire": {
-    "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver."
+    "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver.",
+    "offre_submitted": "Un employeur a déposé une nouvelle offre de stage à approuver."
   }
 }
