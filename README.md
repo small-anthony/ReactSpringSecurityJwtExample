@@ -76,19 +76,19 @@
 ## 2. [EQ2-21] En tant que gestionnaire, j'assigne un prof à un stagiaire
 
 ### Définitions de "Done"
-> **À COMPLÉTER par la personne qui a réalisé cette story** : remplacer les lignes entre crochets par les vrais numéros de tâches, classes, fichiers de tests et critères. Supprimer cette note ensuite.
-
-- [ ] **Tâches complétées**
-  - [ ] `EQ2-XXX` : [Backend : service, contrôleur et modèle pour l'assignation d'un professeur à un stagiaire]
-  - [ ] `EQ2-XXX` : [Frontend : page `AssignationProfesseurs` et appels API]
-- [ ] **Tests validés**
-  - [ ] Backend : [classes de tests et cas couverts]
-  - [ ] Frontend : [fichiers de tests et nombre de tests]
-- [ ] **Critères de succès respectés**
-  - [ ] [Le gestionnaire voit la liste des stagiaires et des professeurs disponibles]
-  - [ ] [L'assignation est enregistrée et visible après rechargement]
-  - [ ] [Cas d'erreur gérés : stagiaire déjà assigné, professeur introuvable]
-  - [ ] Support bilingue FR / EN
+- [x] **Tâches complétées**
+  - [x] `EQ2-113` (BE) : `GestionnaireService` (`getEtudiantsPourAssignation`, `getProfesseursPourAssignation`, `assignerProfesseur`, `modifierAssignationProfesseur`, `desassignerProfesseur`), `GestionnaireController` (`/gestionnaire/assignation-professeurs`), `ProfesseurService` (`getEtudiantsAssignes`), `ProfesseurController` (`/professeur/etudiants-assignes`, `/professeur/etudiants-assignes/{id}`), DTOs `AssignationProfesseurRequest`, `AssignationProfesseurResponseDto`, `EtudiantPourAssignationDto`, `ProfesseurPourAssignationDto`, `EtudiantSuperviseDto`.
+  - [x] `EQ2-112` (FE) : pages `AssignationProfesseurs` et `ProfesseurEtudiants`, modale `ModalAssignerProfesseur`, widgets `TableEtudiantsAssignation`, `StatsAssignationProfesseurs`, `CarteEtudiantAssigne`, appels API dans `GestionnaireService.js` et `ProfesseurService.js`.
+  - [x] `EQ2-114` : Plan de démo rédigé et validé sur Jira (`EQ2-21`).
+  - [x] Traductions FR / EN des pages d'assignation et de supervision.
+- [x] **Tests validés**
+  - [x] Backend : `GestionnaireServiceTest` (38 tests), `GestionnaireControllerTest` (32 tests), `ProfesseurServiceTest` (16 tests), `ProfesseurControllerTest` (15 tests).
+  - [x] Frontend : suite Vitest et build Vite validés.
+- [x] **Critères de succès respectés**
+  - [x] Le gestionnaire voit la liste des stagiaires embauchés et des professeurs disponibles avec recherche par nom et filtre par session.
+  - [x] L'assignation, la réassignation et la désassignation sont enregistrées et visibles après rechargement et côté professeur.
+  - [x] Cas d'erreur gérés : étudiant sans stage actif, étudiant ou professeur introuvable, paramètres invalides.
+  - [x] Support bilingue FR / EN complet.
 
 ### Points d'action
 - Utiliser un chronomètre pour faire le log du temps
@@ -113,19 +113,20 @@
 ## 3. [EQ2-22] En tant que prof, j'évalue le milieu de stage
 
 ### Définitions de "Done"
-> **À COMPLÉTER par la personne qui a réalisé cette story** : remplacer les lignes entre crochets par les vrais numéros de tâches, classes, fichiers de tests et critères. Supprimer cette note ensuite.
-
-- [ ] **Tâches complétées**
-  - [ ] `EQ2-XXX` : [Backend : modèle, service et contrôleur de l'évaluation du milieu de stage]
-  - [ ] `EQ2-XXX` : [Frontend : page et formulaire d'évaluation du milieu de stage]
-- [ ] **Tests validés**
-  - [ ] Backend : [classes de tests et cas couverts]
-  - [ ] Frontend : [fichiers de tests et nombre de tests]
-- [ ] **Critères de succès respectés**
-  - [ ] [Le professeur évalue seulement les milieux de ses stagiaires assignés]
-  - [ ] [La grille est enregistrée une seule fois par stage]
-  - [ ] [Validation des champs obligatoires avec messages explicites]
-  - [ ] Support bilingue FR / EN
+- [x] **Tâches complétées**
+  - [x] `EQ2-116` (BE) : entité `EvaluationMilieuStage`, énumérations `CapaciteAccueilStagiaires`, `CritereEvaluationMilieu` (10 critères), `StageCible`, `EvaluationMilieuStageRepository`, `EvaluationMilieuStageValidator`, `ProfesseurService` (`getDossierStagePourProfesseur`, `getEvaluationMilieuPourProfesseur`, `soumettreEvaluationMilieu`), `ProfesseurController` (`/professeur/etudiants/{etudiantId}/stage`, `/professeur/etudiants/{etudiantId}/evaluation-milieu`), `GestionnaireService` (`getEvaluationsMilieuStage`, `getEvaluationMilieuParEtudiant`), `GestionnaireController` (`/gestionnaire/evaluations-milieu`, `/gestionnaire/etudiants/{etudiantId}/evaluation-milieu`), DTOs `DossierStageProfesseurDto`, `EvaluationMilieuStageDto`, `EvaluationMilieuStageRequest`.
+  - [x] `EQ2-115` (FE) : composant `FormulaireEvaluationMilieuStage` (4 sections, pré-remplissage automatique, barre de progression sur 10 critères, validations inline, mode lecture seule et bouton retour sticky), intégration dans `ProfesseurEtudiants`, `CarteEtudiantAssigne` et `RapportsEtudiants`, appels API dans `ProfesseurService.js` et `GestionnaireService.js`.
+  - [x] `EQ2-117` : Plan de démo — *En tant que prof, j'évalue le milieu de stage* rédigé et validé sur Jira (`EQ2-22`).
+  - [x] Traductions FR / EN complètes de la grille, des statuts et des messages de validation.
+- [x] **Tests validés**
+  - [x] Backend : `ProfesseurServiceTest` (16 tests), `ProfesseurControllerTest` (15 tests), `GestionnaireServiceTest` (38 tests) et `GestionnaireControllerTest` (32 tests).
+  - [x] Frontend : `RapportsEtudiants.test.jsx` (6 tests : affichage du suivi, filtres, ouverture de la fiche et gestion d'erreur).
+- [x] **Critères de succès respectés**
+  - [x] Le professeur accède uniquement aux dossiers et évaluations des milieux de ses stagiaires assignés.
+  - [x] Le formulaire est pré-rempli automatiquement à partir du stage et ne peut être soumis qu'une seule fois (passage en lecture seule ensuite).
+  - [x] Validation des champs obligatoires (code postal canadien, salaire numérique, heures d'encadrement, commentaire obligatoire si désaccord, plages horaires conditionnelles) côté client et serveur.
+  - [x] Le gestionnaire visualise l'état d'évaluation et consulte la grille en lecture seule depuis le suivi des étudiants.
+  - [x] Support bilingue FR / EN complet.
 
 ### Points d'action
 - Utiliser un chronomètre pour faire le log du temps
@@ -151,10 +152,11 @@
 
 ### Définitions de "Done"
 - [x] **Tâches complétées**
-  - [x] `EQ2-XXX` : Modèle et persistance : entité `Evaluation` (relation un-à-un avec `Contrat`), énumérations `SectionEvaluation`, `CritereEvaluation` (22 critères), `NiveauAccord`, `AppreciationGlobale` et `AccueilProchainStage`, `EvaluationRepository`.
-  - [x] `EQ2-XXX` : Backend : `EvaluationService` (liste des stagiaires, consultation, enregistrement avec validation), `EvaluationController` (`/evaluations`), DTO `StagiaireDto`, `EvaluationDto` et `EvaluationRequest`, accès réservé au rôle employeur dans `SecurityConfiguration`.
-  - [x] `EQ2-XXX` : Frontend : page « Mes stagiaires » (`EmployeurStagiaires`) avec onglets Tous / À évaluer / Évalués, formulaire d'évaluation (`EvaluationStagiaire`) basé sur la fiche d'évaluation du Collège André-Laurendeau, mode lecture seule après l'envoi, service `EvaluationAPI`, routes et lien « Mes stagiaires » dans le profil employeur.
-  - [x] `EQ2-XXX` : Validation des champs avec messages d'erreur affichés à l'endroit du champ manquant et lien vers la première erreur.
+  - [x] `EQ2-119` (BE) : Modèle et persistance : entité `Evaluation` (relation un-à-un avec `Contrat`), énumérations `SectionEvaluation`, `CritereEvaluation` (22 critères), `NiveauAccord`, `AppreciationGlobale` et `AccueilProchainStage`, `EvaluationRepository`.
+  - [x] `EQ2-119` (BE) : `EvaluationService` (liste des stagiaires, consultation, enregistrement avec validation), `EvaluationController` (`/evaluations`), DTO `StagiaireDto`, `EvaluationDto` et `EvaluationRequest`, accès réservé au rôle employeur dans `SecurityConfiguration`.
+  - [x] `EQ2-118` (FE) : page « Mes stagiaires » (`EmployeurStagiaires`) avec onglets Tous / À évaluer / Évalués, formulaire d'évaluation (`EvaluationStagiaire`) basé sur la fiche d'évaluation du Collège André-Laurendeau, mode lecture seule après l'envoi, service `EvaluationAPI`, routes et lien « Mes stagiaires » dans le profil employeur.
+  - [x] `EQ2-118` (FE) : Validation des champs avec messages d'erreur affichés à l'endroit du champ manquant et lien vers la première erreur.
+  - [x] `EQ2-120` : Plan de démo rédigé et validé sur Jira (`EQ2-23`).
   - [x] Traductions FR / EN des textes de la fiche.
 - [x] **Tests validés**
   - [x] Backend : `EvaluationServiceTest` (19 tests : liste, consultation, enregistrement, contrat d'un autre employeur, déjà évalué, contrat incomplet, chaque règle de validation) et `EvaluationControllerTest` (8 tests : statuts 200, 201, 400 et 404).
@@ -190,19 +192,18 @@
 ## 5. [EQ2-24] En tant que système, je notifie le gestionnaire d'un nouveau CV
 
 ### Définitions de "Done"
-> **À COMPLÉTER par la personne qui a réalisé cette story** : remplacer les lignes entre crochets par les vrais numéros de tâches, classes, fichiers de tests et critères. Supprimer cette note ensuite.
-
-- [ ] **Tâches complétées**
-  - [ ] `EQ2-XXX` : [Backend : création de la notification lors du téléversement d'un CV]
-  - [ ] `EQ2-XXX` : [Frontend : affichage des notifications pour le gestionnaire]
-- [ ] **Tests validés**
-  - [ ] Backend : [classes de tests et cas couverts]
-  - [ ] Frontend : [fichiers de tests et nombre de tests]
-- [ ] **Critères de succès respectés**
-  - [ ] [Le gestionnaire est notifié dès qu'un étudiant téléverse un CV]
-  - [ ] [La notification mène vers l'approbation du CV]
-  - [ ] [Une notification lue ne s'affiche plus comme nouvelle]
-  - [ ] Support bilingue FR / EN
+- [x] **Tâches complétées**
+  - [x] `EQ2-125` (BE) : `Notification.cvCreated(Cv)`, `NotificationActionType.APPROUVER_CV`, `DismissNotificationRequest`, envoi de notification aux gestionnaires lors du dépôt de CV dans `EtudiantService.uploadCv`.
+  - [x] `EQ2-124` (FE) : prise en charge de l'action `APPROUVER_CV` dans `NotificationPopover.jsx` (redirection vers `/gestionnaire/approbations/cvs`), `NotificationAPI.js`, traductions `gestionnaire.cv_submitted` FR / EN dans `locales/fr/notification.json` et `locales/en/notification.json`.
+  - [x] `EQ2-126` : Plan de démo rédigé et validé sur Jira (`EQ2-24`).
+- [x] **Tests validés**
+  - [x] Backend : `EtudiantServiceTest` (24 tests), `NotificationServiceTest` (8 tests), `NotificationControllerTest` (7 tests).
+  - [x] Frontend : `ModalTeleverserCv.test.jsx` (8 tests).
+- [x] **Critères de succès respectés**
+  - [x] Le gestionnaire est notifié dès qu'un étudiant téléverse un CV.
+  - [x] Le clic sur la notification marque celle-ci comme lue et mène vers l'approbation des CVs (`/gestionnaire/approbations/cvs`).
+  - [x] Une notification lue ou supprimée ne s'affiche plus comme nouvelle.
+  - [x] Support bilingue FR / EN.
 
 ### Points d'action
 - Utiliser un chronomètre pour faire le log du temps
@@ -227,19 +228,18 @@
 ## 6. [EQ2-26] En tant que système, je notifie l'étudiant que mon CV est accepté/refusé
 
 ### Définitions de "Done"
-> **À COMPLÉTER par la personne qui a réalisé cette story** : remplacer les lignes entre crochets par les vrais numéros de tâches, classes, fichiers de tests et critères. Supprimer cette note ensuite.
-
-- [ ] **Tâches complétées**
-  - [ ] `EQ2-XXX` : [Backend : notification créée lors de l'acceptation ou du refus du CV, avec le motif de refus]
-  - [ ] `EQ2-XXX` : [Frontend : affichage des notifications pour l'étudiant]
-- [ ] **Tests validés**
-  - [ ] Backend : [classes de tests et cas couverts]
-  - [ ] Frontend : [fichiers de tests et nombre de tests]
-- [ ] **Critères de succès respectés**
-  - [ ] [L'étudiant est notifié quand son CV est accepté]
-  - [ ] [L'étudiant est notifié avec le motif quand son CV est refusé]
-  - [ ] [Les notifications sont visibles et peuvent être marquées comme lues]
-  - [ ] Support bilingue FR / EN
+- [x] **Tâches complétées**
+  - [x] `EQ2-122` (BE) : entité `Notification` (`cvAccepted()`, `cvRejected()`, `dismiss()`, `markDeleted()`), `NotificationAction`, `NotificationType`, `NotificationActionType` (`VOIR_OFFRES`, `TELEVERSER_CV`), `NotificationRepository`, `NotificationService`, `NotificationController` (`GET /notifications`, `POST /notifications/dismiss`, `DELETE /notifications/{id}`), et création de notification dans `GestionnaireService` (`accepterCv`, `refuserCv`).
+  - [x] `EQ2-121` (FE) : composant `NotificationPopover.jsx` (`NotificationButton` avec compteur de notifications non lues, marquage comme lue, suppression et redirection vers `/etudiant?tab=toutes`), service `NotificationAPI.js`, traductions `etudiant.cv_accepted` et `etudiant.cv_rejected` FR / EN dans `locales/fr/notification.json` et `locales/en/notification.json`.
+  - [x] `EQ2-123` : Plan de démo rédigé et validé sur Jira (`EQ2-26`).
+- [x] **Tests validés**
+  - [x] Backend : `NotificationServiceTest` (8 tests), `NotificationControllerTest` (7 tests), `GestionnaireServiceTest` (38 tests).
+  - [x] Frontend : suite Vitest et build Vite validés.
+- [x] **Critères de succès respectés**
+  - [x] L'étudiant est notifié quand son CV est accepté (`NotificationType.SUCCESS`).
+  - [x] L'étudiant est notifié quand son CV est refusé (`NotificationType.FAILED`, redirection vers `/etudiant?tab=toutes` pour consulter le motif et téléverser un nouveau CV).
+  - [x] Les notifications sont visibles dans la cloche, peuvent être marquées comme lues ou supprimées.
+  - [x] Support bilingue FR / EN.
 
 ### Points d'action
 - Utiliser un chronomètre pour faire le log du temps
