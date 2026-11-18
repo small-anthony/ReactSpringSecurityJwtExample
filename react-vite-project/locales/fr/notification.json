@@ -1,7 +1,11 @@
 {
   "etudiant": {
     "cv_accepted": "Votre CV a été accepté ! Vous pouvez maintenant voir les offres de stage.",
-    "cv_rejected": "Votre CV a été refusé. Veuillez consulter les commentaires et soumettre un nouveau CV."
+    "cv_rejected": "Votre CV a été refusé. Veuillez consulter les commentaires et soumettre un nouveau CV.",
+    "contrat_created": "Un nouveau contrat de stage est prêt pour votre signature."
+  },
+  "employeur": {
+    "contrat_created": "Un nouveau contrat de stage a été créé et attend votre signature."
   },
   "gestionnaire": {
     "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver."

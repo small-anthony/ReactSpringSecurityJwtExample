@@ -49,6 +49,10 @@ export function NotificationButton() {
             navigate("/etudiant?uploadCv=true");
         } else if (notification.action?.type === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
+        } else if (notification.action?.type === "SIGNER_CONTRAT_ETUDIANT") {
+            navigate("/etudiant?tab=contrats");
+        } else if (notification.action?.type === "SIGNER_CONTRAT_EMPLOYEUR") {
+            navigate("/employeur/contrats");
         }
         setIsOpen(false);
     };
