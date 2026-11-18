@@ -43,8 +43,10 @@ export function NotificationButton() {
             );
         }
 
-        if (notification.action?.type === "VOIR_OFFRES" || notification.action?.type === "TELEVERSER_CV") {
+        if (notification.action?.type === "VOIR_OFFRES") {
             navigate("/etudiant?tab=toutes");
+        } else if (notification.action?.type === "TELEVERSER_CV") {
+            navigate("/etudiant?uploadCv=true");
         } else if (notification.action?.type === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
         }
@@ -79,7 +81,7 @@ export function NotificationButton() {
                 <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
 
-                    <div className="absolute right-0 mt-2 w-80 sm:w-96 z-50 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 z-50 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
                         <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
                             <h3 className="text-sm font-bold text-slate-900">
                                 {t('notifications.titre')}
@@ -120,7 +122,7 @@ export function NotificationButton() {
                                             </div>
 
                                             <div className="flex-1 min-w-0">
-                                                <p className={`text-xs leading-relaxed ${notif.dismissed ? "text-slate-600" : "text-slate-900 font-medium"}`}>
+                                                <p className={`text-xs leading-relaxed break-words ${notif.dismissed ? "text-slate-600" : "text-slate-900 font-medium"}`}>
                                                     {t(notif.message, { ns: 'notification' })}
                                                 </p>
                                                 <span className="text-[11px] text-slate-400 mt-1 block">

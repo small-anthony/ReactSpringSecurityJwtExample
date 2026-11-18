@@ -32,6 +32,7 @@ import {
     FilterX,
     LayoutDashboard,
     Search,
+    X,
     XCircle
 } from "lucide-react";
 
@@ -76,6 +77,7 @@ export default function OffreStagesEtudiant() {
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabFromUrl = searchParams.get("tab");
+    const uploadCvFromUrl = searchParams.get("uploadCv") === "true";
 
     const [ongletActif, setOngletActif] = useState(() => resolveTabFromParam(tabFromUrl));
     const [loading, setLoading] = useState(true);
@@ -182,6 +184,15 @@ export default function OffreStagesEtudiant() {
     useEffect(() => {
         setOngletActif(resolveTabFromParam(tabFromUrl));
     }, [tabFromUrl]);
+
+    useEffect(() => {
+        if (uploadCvFromUrl && cvState.openUpload) {
+            cvState.openUpload();
+            const next = new URLSearchParams(searchParams);
+            next.delete("uploadCv");
+            setSearchParams(next, { replace: true });
+        }
+    }, [uploadCvFromUrl, cvState.openUpload]);
 
     const changerOnglet = (nouvelOnglet) => {
         setOngletActif(nouvelOnglet);
@@ -627,7 +638,7 @@ export default function OffreStagesEtudiant() {
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
                                 <div className="lg:col-span-5 relative">
                                     <Search
-                                        className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"
+                                        className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                                         strokeWidth={1.5}
                                     />
                                     <input
@@ -635,8 +646,18 @@ export default function OffreStagesEtudiant() {
                                         placeholder={t("offres_etudiant.search_placeholder")}
                                         value={recherche}
                                         onChange={({ target }) => setRecherche(target.value)}
-                                        className="ds-input pl-10 py-2 text-xs"
+                                        className="ds-input pl-10 pr-9 py-2 text-xs"
                                     />
+                                    {recherche && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setRecherche("")}
+                                            aria-label={t("gestionnaire_dashboard.clear_search")}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200/70 transition cursor-pointer"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -775,23 +796,23 @@ export default function OffreStagesEtudiant() {
                                                     {ongletActif === "mes_candidatures" && getCandidatureBadge(id)}
                                                 </div>
 
-                                                <div className="space-y-1.5 mb-4">
-                                                    <h3 className="text-base font-bold text-slate-900 tracking-tight line-clamp-1">
+                                                <div className="space-y-1.5 mb-4 min-w-0">
+                                                    <h3 className="text-base font-bold text-slate-900 tracking-tight line-clamp-1 break-words">
                                                         {titre}
                                                     </h3>
-                                                    <p className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                                                        <Building2 className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.5} />
-                                                        <span>{nomEntreprise}</span>
+                                                    <p className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 flex-wrap min-w-0">
+                                                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" strokeWidth={1.5} />
+                                                        <span className="break-words min-w-0">{nomEntreprise}</span>
                                                         {salaire !== undefined && salaire !== null && (
                                                             <>
                                                                 <span className="text-slate-300">•</span>
-                                                                <span className="text-emerald-700 font-bold">
+                                                                <span className="text-emerald-700 font-bold break-words">
                                                                     {formaterSalaire(salaire)}
                                                                 </span>
                                                             </>
                                                         )}
                                                     </p>
-                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed pt-1">
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed pt-1 break-words">
                                                         {description}
                                                     </p>
                                                 </div>

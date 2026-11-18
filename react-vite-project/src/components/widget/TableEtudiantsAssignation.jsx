@@ -89,9 +89,9 @@ export default function TableEtudiantsAssignation({
                                                 <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                                 <span>{etudiant.nomEntreprise || "—"}</span>
                                             </div>
-                                            <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                                            <div className="flex items-center gap-1.5 text-xs text-slate-600 min-w-0">
                                                 <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                                <span className="truncate max-w-xs">{etudiant.titreOffreStage || "—"}</span>
+                                                <span className="break-words max-w-[260px]">{etudiant.titreOffreStage || "—"}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -104,7 +104,7 @@ export default function TableEtudiantsAssignation({
                                                     <div className="font-bold">
                                                         {etudiant.professeurAssigne.firstName} {etudiant.professeurAssigne.lastName}
                                                     </div>
-                                                    <div className="text-[11px] text-emerald-700">
+                                                    <div className="text-[11px] text-emerald-700 break-all">
                                                         {etudiant.professeurAssigne.email}
                                                     </div>
                                                 </div>

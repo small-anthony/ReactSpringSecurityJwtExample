@@ -696,32 +696,36 @@ export default function EvaluationStagiaire() {
                 </section>
 
                 {!lecture && (
-                    <div className="flex flex-col items-end gap-3">
-                        {identifiantsErreurs.length > 0 && (
-                            <div role="alert" className="max-w-md p-3 bg-rose-50 border-l-4 border-rose-500 text-rose-700 rounded-xl text-sm">
-                                <p className="font-semibold">
-                                    {t("evaluation.errors.summary", { nombre: identifiantsErreurs.length })}
-                                </p>
-                                <a
-                                    href={`#${identifiantsErreurs[0]}`}
-                                    className="inline-block mt-1 font-semibold underline hover:text-rose-900"
-                                >
-                                    {t("evaluation.errors.go_to_first")}
-                                </a>
-                            </div>
-                        )}
-                        {erreurServeur && (
-                            <div role="alert" className="max-w-md p-3 bg-rose-50 border-l-4 border-rose-500 text-rose-700 rounded-xl text-sm flex items-start gap-2">
-                                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                                <span>{erreurServeur}</span>
+                    <div className="flex flex-col sm:flex-row items-end sm:items-center sm:justify-end gap-3">
+                        {(identifiantsErreurs.length > 0 || erreurServeur) && (
+                            <div className="flex flex-col gap-2 min-w-0 max-w-md w-full sm:w-auto">
+                                {identifiantsErreurs.length > 0 && (
+                                    <div role="alert" className="p-3 bg-rose-50 border-l-4 border-rose-500 text-rose-700 rounded-xl text-sm break-words">
+                                        <p className="font-semibold">
+                                            {t("evaluation.errors.summary", { nombre: identifiantsErreurs.length })}
+                                        </p>
+                                        <a
+                                            href={`#${identifiantsErreurs[0]}`}
+                                            className="inline-block mt-1 font-semibold underline hover:text-rose-900"
+                                        >
+                                            {t("evaluation.errors.go_to_first")}
+                                        </a>
+                                    </div>
+                                )}
+                                {erreurServeur && (
+                                    <div role="alert" className="p-3 bg-rose-50 border-l-4 border-rose-500 text-rose-700 rounded-xl text-sm flex items-start gap-2 break-words">
+                                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                        <span className="min-w-0 flex-1">{erreurServeur}</span>
+                                    </div>
+                                )}
                             </div>
                         )}
                         <button
                             type="submit"
                             disabled={soumission}
-                            className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition cursor-pointer inline-flex items-center gap-2 shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition cursor-pointer inline-flex items-center gap-2 shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            <ClipboardCheck className="w-4 h-4" />
+                            <ClipboardCheck className="w-4 h-4 shrink-0" />
                             <span>{soumission ? t("evaluation.submitting") : t("evaluation.submit")}</span>
                         </button>
                     </div>

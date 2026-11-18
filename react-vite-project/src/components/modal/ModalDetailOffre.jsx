@@ -114,18 +114,18 @@ export default function ModalDetailOffre({
                 className="bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="px-6 py-5 border-b border-[#E2E8F0] flex justify-between items-start bg-[#F8FAFC]">
-                    <div>
+                <div className="px-6 py-5 border-b border-[#E2E8F0] flex justify-between items-start gap-3 bg-[#F8FAFC]">
+                    <div className="min-w-0 flex-1">
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] mb-2.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#2563EB]" strokeWidth={1.5} />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#2563EB] shrink-0" strokeWidth={1.5} />
                             <span>{t("offres_etudiant.modal.validated_badge")}</span>
                         </div>
-                        <h2 className="text-xl sm:text-2xl font-bold text-[#111827] tracking-tight leading-snug">
+                        <h2 className="text-xl sm:text-2xl font-bold text-[#111827] tracking-tight leading-snug break-words">
                             {titre}
                         </h2>
-                        <p className="text-sm font-medium text-[#4B5563] flex items-center gap-1.5 mt-1">
-                            <Building2 className="w-4 h-4 text-[#64748B]" strokeWidth={1.5} />
-                            <span>{nomEntreprise}</span>
+                        <p className="text-sm font-medium text-[#4B5563] flex items-center gap-1.5 mt-1 min-w-0">
+                            <Building2 className="w-4 h-4 text-[#64748B] shrink-0" strokeWidth={1.5} />
+                            <span className="break-words">{nomEntreprise}</span>
                         </p>
                     </div>
                     <button
@@ -221,22 +221,22 @@ export default function ModalDetailOffre({
                             </p>
                         </div>
 
-                        <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between">
+                        <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between min-w-0">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
-                                <Calendar className="w-4 h-4 text-[#059669]" strokeWidth={1.5} />
+                                <Calendar className="w-4 h-4 text-[#059669] shrink-0" strokeWidth={1.5} />
                                 <span>{t("offres_etudiant.modal.duration")}</span>
                             </div>
-                            <p className="text-sm font-semibold text-[#111827] leading-snug">
+                            <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
                                 {duree ? traduireDuree(duree) : t("offres_etudiant.modal.not_specified")}
                             </p>
                         </div>
 
-                        <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between">
+                        <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between min-w-0">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
-                                <DollarSign className="w-4 h-4 text-[#D97706]" strokeWidth={1.5} />
+                                <DollarSign className="w-4 h-4 text-[#D97706] shrink-0" strokeWidth={1.5} />
                                 <span>{t("offres_etudiant.modal.salary")}</span>
                             </div>
-                            <p className="text-sm font-semibold text-[#111827] leading-snug">
+                            <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
                                 {formaterSalaire(salaire)}
                             </p>
                         </div>
@@ -247,7 +247,7 @@ export default function ModalDetailOffre({
                             <h3 className="text-xs font-bold text-[#1E40AF] uppercase tracking-wider mb-1">
                                 {t("offres_etudiant.modal.requirements")}
                             </h3>
-                            <p className="text-sm text-[#1E3A8A] whitespace-pre-line leading-relaxed">
+                            <p className="text-sm text-[#1E3A8A] whitespace-pre-line leading-relaxed break-words">
                                 {exigences}
                             </p>
                         </div>
@@ -258,7 +258,7 @@ export default function ModalDetailOffre({
                             <FileText className="w-4 h-4 text-[#2563EB]" strokeWidth={1.5} />
                             <span>{t("offres_etudiant.modal.description")}</span>
                         </h3>
-                        <div className="text-sm text-[#4B5563] whitespace-pre-line leading-relaxed bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                        <div className="text-sm text-[#4B5563] whitespace-pre-line leading-relaxed bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] break-words">
                             {description || t("offres_etudiant.modal.no_description")}
                         </div>
                     </div>

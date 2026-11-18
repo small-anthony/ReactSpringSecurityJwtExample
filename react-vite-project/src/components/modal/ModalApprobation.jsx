@@ -58,11 +58,11 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
                 <div className="flex items-center gap-2">
 
                     <div className="relative flex-1">
-                        <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                         <input
                             type="text"
                             placeholder={t('approbation.offres.approbation.search_placeholder')}
-                            className="ds-input pl-9"
+                            className="ds-input pl-9 pr-9"
                             value={rechercheInput}
                             onChange={(e) => {
                                 setRechercheInput(e.target.value);
@@ -73,6 +73,21 @@ export default function ModalApprobation({ offre, onClose, onConfirm, authHeader
                             }}
                             onBlur={() => setShowDropdown(false)}
                         />
+                        {rechercheInput && (
+                            <button
+                                type="button"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => {
+                                    setRechercheInput("");
+                                    setResultats([]);
+                                    setShowDropdown(false);
+                                }}
+                                aria-label={t("gestionnaire_dashboard.clear_search")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200/70 transition cursor-pointer"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        )}
 
                         {showDropdown && resultats.length > 0 && (
                             <div className="absolute top-full left-0 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">

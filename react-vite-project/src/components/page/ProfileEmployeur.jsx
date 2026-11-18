@@ -116,7 +116,7 @@ export default function ProfileEmployeur() {
                     <Link
                         to="/employeur/stagiaires"
                         id="btn-nav-stagiaires-employeur"
-                        className="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 inline-flex items-center gap-2"
+                        className="btn-secondary"
                     >
                         <Users className="w-4 h-4 text-blue-600" />
                         {t("pagename.stagiaires", { defaultValue: "Mes stagiaires" })}
@@ -195,44 +195,44 @@ export default function ProfileEmployeur() {
             <div className="grid gap-5">
                 {offresAffichees.map((offre) => (
                     <article key={offre.id} className="p-6 sm:p-7 ds-card hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between gap-4 mb-4">
-                            <div>
-                                <h2 className="text-xl font-bold text-slate-900">{offre.titre}</h2>
-                                <p className="text-blue-600 font-semibold mt-1 flex items-center gap-1.5 pb-4 border-b border-slate-100">
-                                    <Briefcase className="w-4 h-4" strokeWidth={2} />
-                                    {offre.nomEntreprise}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                            <div className="min-w-0 flex-1">
+                                <h2 className="text-xl font-bold text-slate-900 break-words">{offre.titre}</h2>
+                                <p className="text-blue-600 font-semibold mt-1 flex items-center gap-1.5 pb-4 border-b border-slate-100 min-w-0">
+                                    <Briefcase className="w-4 h-4 shrink-0" strokeWidth={2} />
+                                    <span className="break-words">{offre.nomEntreprise}</span>
                                 </p>
                             </div>
-                            <span className={`shrink-0 px-3 py-1 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
+                            <span className={`self-start shrink-0 px-3 py-1 text-xs font-bold rounded-full border ${STATUS_STYLES[offre.status] || ""}`}>
                                 {t(`employeur_home.status.${offre.status}`)}
                             </span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div className="flex items-start gap-3">
-                                <div className="bg-blue-50 p-2 rounded-lg border border-blue-100">
+                            <div className="flex items-start gap-3 min-w-0">
+                                <div className="bg-blue-50 p-2 rounded-lg border border-blue-100 shrink-0">
                                     <GraduationCap className="w-4 h-4 text-blue-600" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.discipline')}</span>
-                                    <span className="text-slate-800 text-sm font-medium">{traduireDiscipline(offre.discipline)}</span>
+                                    <span className="block text-slate-800 text-sm font-medium break-words">{traduireDiscipline(offre.discipline)}</span>
                                 </div>
                             </div>
-                            <div className="flex items-start gap-3">
-                                <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                            <div className="flex items-start gap-3 min-w-0">
+                                <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100 shrink-0">
                                     <DollarSign className="w-4 h-4 text-emerald-600" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.salaire')}</span>
-                                    <span className="text-slate-800 text-sm font-medium">{formaterSalaire(offre.salaire)}</span>
+                                    <span className="block text-slate-800 text-sm font-medium break-words">{formaterSalaire(offre.salaire)}</span>
                                 </div>
                             </div>
-                            <div className="flex items-start gap-3">
-                                <div className="bg-amber-50 p-2 rounded-lg border border-amber-100">
+                            <div className="flex items-start gap-3 min-w-0">
+                                <div className="bg-amber-50 p-2 rounded-lg border border-amber-100 shrink-0">
                                     <Clock className="w-4 h-4 text-amber-600" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                    <span className="text-slate-800 text-sm font-medium">{traduireDuree(offre.duree)}</span>
+                                    <span className="block text-slate-800 text-sm font-medium break-words">{traduireDuree(offre.duree)}</span>
                                 </div>
                             </div>
                         </div>
@@ -240,17 +240,17 @@ export default function ProfileEmployeur() {
                         <div className="space-y-4 bg-slate-50/70 rounded-xl p-5 border border-slate-100">
                             <div>
                                 <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
-                                    <AlignLeft className="w-4 h-4 text-blue-600" />
+                                    <AlignLeft className="w-4 h-4 text-blue-600 shrink-0" />
                                     {t('approbation.offres.attributes.description')}
                                 </h4>
-                                <p className="text-slate-600 text-sm leading-relaxed pl-6">{offre.description}</p>
+                                <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.description}</p>
                             </div>
                             <div className="pt-2 border-t border-slate-200/60">
                                 <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
-                                    <ClipboardList className="w-4 h-4 text-indigo-600" />
+                                    <ClipboardList className="w-4 h-4 text-indigo-600 shrink-0" />
                                     {t('approbation.offres.attributes.exigences')}
                                 </h4>
-                                <p className="text-slate-600 text-sm leading-relaxed pl-6">{offre.exigences}</p>
+                                <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.exigences}</p>
                             </div>
                         </div>
                         {offre.status === "REFUSE" && offre.messageReponse && (

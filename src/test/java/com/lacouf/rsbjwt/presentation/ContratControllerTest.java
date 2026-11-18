@@ -277,4 +277,20 @@ public class ContratControllerTest {
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		assertNull(response.getBody());
 	}
+
+	@Test
+	void endpointsContrats_avecAnnee_devraientFiltrerParSession() {
+		Authentication auth = mock(Authentication.class);
+		when(auth.getName()).thenReturn("user@test.com");
+
+		when(contratService.getTousLesContrats(2026)).thenReturn(List.of(createDummyContratDto()));
+		when(contratService.getContratsEmployeur("user@test.com", 2026)).thenReturn(List.of(createDummyContratDto()));
+		when(contratService.getContratsEtudiant("user@test.com", 2026)).thenReturn(List.of(createDummyContratDto()));
+		when(contratService.getAnneesContratsEtudiant("user@test.com")).thenReturn(List.of(2027, 2026));
+
+		assertEquals(1, contratController.getTousLesContrats(2026).getBody().size());
+		assertEquals(1, contratController.getContratsEmployeur(2026, auth).getBody().size());
+		assertEquals(1, contratController.getContratsEtudiant(2026, auth).getBody().size());
+		assertEquals(List.of(2027, 2026), contratController.getAnneesContratsEtudiant(auth).getBody());
+	}
 }

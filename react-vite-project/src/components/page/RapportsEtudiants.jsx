@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
-import { LayoutDashboard, Search, CheckCircle, Clock, AlertTriangle, AlertCircle, Users, HelpCircle, Eye } from "lucide-react";
+import { LayoutDashboard, Search, CheckCircle, Clock, AlertTriangle, AlertCircle, Users, HelpCircle, Eye, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -105,10 +105,10 @@ export default function RapportsEtudiants() {
     }, [etudiants, filtreStatut, recherche]);
 
     return (
-        <main className="flex flex-col md:flex-row w-full min-h-screen bg-gray-50/30">
+        <main className="flex flex-col md:flex-row w-full min-w-0 min-h-screen bg-gray-50/30 overflow-x-hidden">
             <SidePanelGestionnaire activeTab="dashboard" />
 
-            <div className="flex-1 p-8 md:p-12 animate-in fade-in duration-300">
+            <div className="flex-1 min-w-0 p-4 sm:p-8 lg:p-10 animate-in fade-in duration-300">
                 {etudiantEvaluationId ? (
                     <div className="max-w-5xl mx-auto">
                         <FormulaireEvaluationMilieuStage
@@ -118,14 +118,14 @@ export default function RapportsEtudiants() {
                         />
                     </div>
                 ) : (
-                <div className="space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2.5">
-                                <LayoutDashboard className="w-7 h-7 text-blue-600" />
-                                <span>{t("gestionnaire_dashboard.title")}</span>
+                <div className="space-y-6 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
+                        <div className="min-w-0">
+                            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2.5 min-w-0">
+                                <LayoutDashboard className="w-7 h-7 text-blue-600 shrink-0" />
+                                <span className="break-words">{t("gestionnaire_dashboard.title")}</span>
                             </h1>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1 break-words">
                                 {t("gestionnaire_dashboard.subtitle")}
                             </p>
                         </div>
@@ -143,21 +143,21 @@ export default function RapportsEtudiants() {
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3 min-w-0">
                         <button
                             type="button"
                             onClick={() => setFiltreStatut("TOUS")}
-                            className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
                                 filtreStatut === "TOUS"
                                     ? "bg-gray-900 text-white border-gray-900 shadow-sm ring-2 ring-gray-900/20"
                                     : "bg-white border-gray-200 hover:border-gray-300"
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-1">
-                                <span className={`text-[11px] font-bold uppercase tracking-wider ${filtreStatut === "TOUS" ? "text-gray-200" : "text-gray-500"}`}>
+                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
+                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "TOUS" ? "text-gray-200" : "text-gray-500"}`}>
                                     {t("gestionnaire_dashboard.kpi_total")}
                                 </span>
-                                <Users className="w-4 h-4 opacity-70" />
+                                <Users className="w-4 h-4 opacity-70 shrink-0 mt-0.5" />
                             </div>
                             <div className="text-2xl font-extrabold">{stats.total}</div>
                         </button>
@@ -165,17 +165,17 @@ export default function RapportsEtudiants() {
                         <button
                             type="button"
                             onClick={() => setFiltreStatut(filtreStatut === "STAGE_TROUVE" ? "TOUS" : "STAGE_TROUVE")}
-                            className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
                                 filtreStatut === "STAGE_TROUVE"
                                     ? "bg-green-700 text-white border-green-700 shadow-sm ring-2 ring-green-600/30"
                                     : "bg-white border-green-200 hover:border-green-300"
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-1">
-                                <span className={`text-[11px] font-bold uppercase tracking-wider ${filtreStatut === "STAGE_TROUVE" ? "text-green-100" : "text-green-700"}`}>
+                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
+                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "STAGE_TROUVE" ? "text-green-100" : "text-green-700"}`}>
                                     {t("gestionnaire_dashboard.status.STAGE_TROUVE")}
                                 </span>
-                                <CheckCircle className={`w-4 h-4 ${filtreStatut === "STAGE_TROUVE" ? "text-white" : "text-green-600"}`} />
+                                <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "STAGE_TROUVE" ? "text-white" : "text-green-600"}`} />
                             </div>
                             <div className={`text-2xl font-extrabold ${filtreStatut === "STAGE_TROUVE" ? "text-white" : "text-green-700"}`}>
                                 {stats.stageTrouve}
@@ -185,17 +185,17 @@ export default function RapportsEtudiants() {
                         <button
                             type="button"
                             onClick={() => setFiltreStatut(filtreStatut === "EN_ATTENTE_REPONSE" ? "TOUS" : "EN_ATTENTE_REPONSE")}
-                            className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
                                 filtreStatut === "EN_ATTENTE_REPONSE"
                                     ? "bg-purple-700 text-white border-purple-700 shadow-sm ring-2 ring-purple-600/30"
                                     : "bg-white border-purple-200 hover:border-purple-300"
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-1">
-                                <span className={`text-[11px] font-bold uppercase tracking-wider ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-purple-100" : "text-purple-700"}`}>
+                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
+                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-purple-100" : "text-purple-700"}`}>
                                     {t("gestionnaire_dashboard.status.EN_ATTENTE_REPONSE")}
                                 </span>
-                                <HelpCircle className={`w-4 h-4 ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-white" : "text-purple-600"}`} />
+                                <HelpCircle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-white" : "text-purple-600"}`} />
                             </div>
                             <div className={`text-2xl font-extrabold ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-white" : "text-purple-700"}`}>
                                 {stats.attenteReponse}
@@ -205,17 +205,17 @@ export default function RapportsEtudiants() {
                         <button
                             type="button"
                             onClick={() => setFiltreStatut(filtreStatut === "EN_ATTENTE_ENTREVUE" ? "TOUS" : "EN_ATTENTE_ENTREVUE")}
-                            className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
                                 filtreStatut === "EN_ATTENTE_ENTREVUE"
                                     ? "bg-blue-700 text-white border-blue-700 shadow-sm ring-2 ring-blue-600/30"
                                     : "bg-white border-blue-200 hover:border-blue-300"
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-1">
-                                <span className={`text-[11px] font-bold uppercase tracking-wider ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-blue-100" : "text-blue-700"}`}>
+                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
+                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-blue-100" : "text-blue-700"}`}>
                                     {t("gestionnaire_dashboard.status.EN_ATTENTE_ENTREVUE")}
                                 </span>
-                                <Clock className={`w-4 h-4 ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-white" : "text-blue-600"}`} />
+                                <Clock className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-white" : "text-blue-600"}`} />
                             </div>
                             <div className={`text-2xl font-extrabold ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-white" : "text-blue-700"}`}>
                                 {stats.attenteEntrevue}
@@ -225,17 +225,17 @@ export default function RapportsEtudiants() {
                         <button
                             type="button"
                             onClick={() => setFiltreStatut(filtreStatut === "SANS_CONVOCATION" ? "TOUS" : "SANS_CONVOCATION")}
-                            className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
                                 filtreStatut === "SANS_CONVOCATION"
                                     ? "bg-orange-700 text-white border-orange-700 shadow-sm ring-2 ring-orange-600/30"
                                     : "bg-white border-orange-200 hover:border-orange-300"
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-1">
-                                <span className={`text-[11px] font-bold uppercase tracking-wider ${filtreStatut === "SANS_CONVOCATION" ? "text-orange-100" : "text-orange-700"}`}>
+                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
+                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "SANS_CONVOCATION" ? "text-orange-100" : "text-orange-700"}`}>
                                     {t("gestionnaire_dashboard.status.SANS_CONVOCATION")}
                                 </span>
-                                <AlertTriangle className={`w-4 h-4 ${filtreStatut === "SANS_CONVOCATION" ? "text-white" : "text-orange-600"}`} />
+                                <AlertTriangle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "SANS_CONVOCATION" ? "text-white" : "text-orange-600"}`} />
                             </div>
                             <div className={`text-2xl font-extrabold ${filtreStatut === "SANS_CONVOCATION" ? "text-white" : "text-orange-700"}`}>
                                 {stats.sansConvocation}
@@ -245,17 +245,17 @@ export default function RapportsEtudiants() {
                         <button
                             type="button"
                             onClick={() => setFiltreStatut(filtreStatut === "AUCUNE_CANDIDATURE" ? "TOUS" : "AUCUNE_CANDIDATURE")}
-                            className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
                                 filtreStatut === "AUCUNE_CANDIDATURE"
                                     ? "bg-red-700 text-white border-red-700 shadow-sm ring-2 ring-red-600/30"
                                     : "bg-white border-red-200 hover:border-red-300"
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-1">
-                                <span className={`text-[11px] font-bold uppercase tracking-wider ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-red-100" : "text-red-700"}`}>
+                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
+                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-red-100" : "text-red-700"}`}>
                                     {t("gestionnaire_dashboard.status.AUCUNE_CANDIDATURE")}
                                 </span>
-                                <AlertCircle className={`w-4 h-4 ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-white" : "text-red-600"}`} />
+                                <AlertCircle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-white" : "text-red-600"}`} />
                             </div>
                             <div className={`text-2xl font-extrabold ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-white" : "text-red-700"}`}>
                                 {stats.aucuneCandidature}
@@ -263,16 +263,26 @@ export default function RapportsEtudiants() {
                         </button>
                     </div>
 
-                    <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
-                        <div className="relative w-full sm:w-96">
-                            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                    <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between min-w-0">
+                        <div className="relative w-full sm:w-96 min-w-0">
+                            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3 pointer-events-none" />
                             <input
                                 type="text"
                                 value={recherche}
                                 onChange={(e) => setRecherche(e.target.value)}
                                 placeholder={t("gestionnaire_dashboard.search_placeholder")}
-                                className="w-full pl-9 pr-3.5 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                className="w-full pl-9 pr-9 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
                             />
+                            {recherche && (
+                                <button
+                                    type="button"
+                                    onClick={() => setRecherche("")}
+                                    aria-label={t("gestionnaire_dashboard.clear_search")}
+                                    className="absolute right-2.5 top-2 p-0.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-200/70 transition cursor-pointer"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
                         </div>
 
                         <span className="text-xs font-bold uppercase text-gray-500">

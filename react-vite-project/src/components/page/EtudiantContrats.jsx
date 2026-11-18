@@ -18,9 +18,12 @@ import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {
     getContratsEtudiant,
+    getAnneesContratsEtudiant,
     getContratDocumentBlob,
     rejeterContrat
 } from "../../services/api/ContratAPI.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
@@ -33,6 +36,10 @@ const calculerEtatSignature = (liste) => {
 export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesContratsEtudiant,
+        authService
+    );
 
     const [contrats, setContrats] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,11 +54,13 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
 
     const authHeader = authService.buildAuthHeader();
 
-    const chargerContrats = async () => {
+    const chargerContrats = async (annee = anneeChoisie) => {
         try {
             setLoading(true);
             setErreur(null);
-            const data = await getContratsEtudiant(authHeader);
+            const data = annee !== null && annee !== undefined
+                ? await getContratsEtudiant(authHeader, annee)
+                : await getContratsEtudiant(authHeader);
             const liste = data || [];
             setContrats(liste);
 
@@ -67,8 +76,9 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     };
 
     useEffect(() => {
-        chargerContrats();
-    }, []);
+        if (!anneesChargees) return;
+        chargerContrats(anneeChoisie);
+    }, [anneesChargees, anneeChoisie]);
 
     const handleVoirDocument = async (contratId) => {
         try {
@@ -303,6 +313,11 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                         </button>
                     )}
                 </div>
+                <SelecteurSession
+                    annees={annees}
+                    anneeSelectionnee={anneeChoisie}
+                    onChangementAnnee={setAnneeChoisie}
+                />
             </div>
 
             {loading && (
@@ -337,19 +352,19 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                                 {getStatusBadge(c)}
                             </div>
 
-                            <div className="mb-4 sm:pr-48">
-                                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                            <div className="mb-4 sm:pr-48 min-w-0">
+                                <h3 className="text-xl font-bold text-gray-900 mb-1 break-words">
                                     {c.titreOffre}
                                 </h3>
-                                <p className="text-blue-600 font-semibold flex items-center gap-1.5 flex-wrap text-sm">
-                                    <Briefcase className="w-4 h-4" />
-                                    <span>{c.nomEntreprise}</span>
+                                <p className="text-blue-600 font-semibold flex items-center gap-1.5 flex-wrap text-sm min-w-0">
+                                    <Briefcase className="w-4 h-4 shrink-0" />
+                                    <span className="break-words">{c.nomEntreprise}</span>
                                     {c.lieu && (
                                         <>
                                             <span className="text-gray-300">•</span>
-                                            <span className="text-gray-600 flex items-center gap-1 font-normal">
-                                                <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                                                {c.lieu}
+                                            <span className="text-gray-600 flex items-center gap-1 font-normal break-words min-w-0">
+                                                <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                <span className="break-words">{c.lieu}</span>
                                             </span>
                                         </>
                                     )}
@@ -357,29 +372,29 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-                                <div className="flex items-start gap-3 bg-gray-50/70 p-3 rounded-xl border border-gray-100">
-                                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                                <div className="flex items-start gap-3 bg-gray-50/70 p-3 rounded-xl border border-gray-100 min-w-0">
+                                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700 shrink-0">
                                         <Calendar className="w-4 h-4" />
                                     </div>
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                                             {t("contrats.table.dates")}
                                         </span>
-                                        <span className="text-gray-800 text-xs font-semibold">
+                                        <span className="block text-gray-800 text-xs font-semibold break-words">
                                             {c.dateDebut} → {c.dateFin}
                                         </span>
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-3 bg-gray-50/70 p-3 rounded-xl border border-gray-100">
-                                    <div className="bg-emerald-100 p-2 rounded-lg text-emerald-700">
+                                <div className="flex items-start gap-3 bg-gray-50/70 p-3 rounded-xl border border-gray-100 min-w-0">
+                                    <div className="bg-emerald-100 p-2 rounded-lg text-emerald-700 shrink-0">
                                         <DollarSign className="w-4 h-4" />
                                     </div>
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                                             {t("contrats.table.salary")}
                                         </span>
-                                        <span className="text-emerald-700 text-xs font-bold">
+                                        <span className="block text-emerald-700 text-xs font-bold break-words">
                                             {c.salaire}
                                         </span>
                                     </div>

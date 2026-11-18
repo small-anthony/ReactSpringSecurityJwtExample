@@ -139,6 +139,7 @@ export default function ProfesseurEtudiants() {
                         <button
                             type="button"
                             onClick={() => setRecherche("")}
+                            aria-label={t("gestionnaire_dashboard.clear_search")}
                             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                         >
                             <X className="w-4 h-4" />

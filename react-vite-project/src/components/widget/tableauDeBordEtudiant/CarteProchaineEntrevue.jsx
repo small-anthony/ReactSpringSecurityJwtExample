@@ -25,20 +25,20 @@ export default function CarteProchaineEntrevue({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-start justify-between gap-2">
-                <div>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
                     <h2 className="text-base font-extrabold text-slate-900">
                         {t("etudiant_dashboard.next_step.upcoming_interview_title")}
                     </h2>
-                    <p className="text-sm font-semibold text-slate-700 mt-0.5">
+                    <p className="text-sm font-semibold text-slate-700 mt-0.5 break-words">
                         {titrePoste}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 break-words">
                         {nomEntreprise}
                     </p>
                 </div>
                 <span
-                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 ${
+                    className={`self-start px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 ${
                         estAcceptee
                             ? "bg-emerald-100 text-emerald-800"
                             : "bg-amber-100 text-amber-800"

@@ -5,6 +5,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import EmployeurStagiaires from "../../../components/page/EmployeurStagiaires.jsx";
 import { AuthServiceContext } from "../../../services/AuthService.tsx";
 import { getStagiaires } from "../../../services/api/EvaluationAPI.js";
+import * as OffreStageService from "../../../services/api/OffreStageService.js";
 
 vi.mock("react-i18next", () => ({
     useTranslation: () => ({
@@ -15,6 +16,10 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("../../../services/api/EvaluationAPI.js", () => ({
     getStagiaires: vi.fn()
+}));
+
+vi.mock("../../../services/api/OffreStageService.js", () => ({
+    getAnneesEmployeur: vi.fn()
 }));
 
 const mockAuth = {
@@ -196,5 +201,25 @@ describe("EmployeurStagiaires", () => {
 
         // Assert
         expect(await screen.findByText("page-evaluation")).toBeInTheDocument();
+    });
+
+    it("devrait filtrer les stagiaires par session via le sélecteur", async () => {
+        // Arrange
+        OffreStageService.getAnneesEmployeur.mockResolvedValueOnce([2027, 2026]);
+        getStagiaires
+            .mockResolvedValueOnce([stagiaireAEvaluer])
+            .mockResolvedValueOnce([stagiaireEvalue]);
+
+        // Act
+        render(<MockEmployeurStagiaires />);
+
+        expect(await screen.findByText("Sophie Tremblay")).toBeInTheDocument();
+        expect(getStagiaires).toHaveBeenCalledWith({ Authorization: "Bearer token123" }, 2027);
+
+        const selectSession = screen.getByRole("combobox");
+        fireEvent.change(selectSession, { target: { value: "2026" } });
+
+        expect(await screen.findByText("Lucas Bernard")).toBeInTheDocument();
+        expect(getStagiaires).toHaveBeenCalledWith({ Authorization: "Bearer token123" }, 2026);
     });
 });

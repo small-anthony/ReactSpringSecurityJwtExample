@@ -45,13 +45,29 @@ public class ContratController {
 	}
 
 	@GetMapping(value = {"/candidatures-acceptees", "/candidatures-pour-contrat"})
-	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
+	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat(
+			@RequestParam(required = false) Integer annee) {
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getCandidaturesPourContrat(annee));
+		}
 		return ResponseEntity.ok(contratService.getCandidaturesPourContrat());
 	}
 
+	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
+		return getCandidaturesAccepteesPourContrat(null);
+	}
+
 	@GetMapping()
-	public ResponseEntity<List<ContratDto>> getTousLesContrats() {
+	public ResponseEntity<List<ContratDto>> getTousLesContrats(
+			@RequestParam(required = false) Integer annee) {
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getTousLesContrats(annee));
+		}
 		return ResponseEntity.ok(contratService.getTousLesContrats());
+	}
+
+	public ResponseEntity<List<ContratDto>> getTousLesContrats() {
+		return getTousLesContrats(null);
 	}
 
 	@GetMapping("/{id}")
@@ -64,15 +80,39 @@ public class ContratController {
 	}
 
 	@GetMapping("/etudiant")
-	public ResponseEntity<List<ContratDto>> getContratsEtudiant(Authentication authentication) {
+	public ResponseEntity<List<ContratDto>> getContratsEtudiant(
+			@RequestParam(required = false) Integer annee,
+			Authentication authentication) {
 		String email = authentication != null ? authentication.getName() : null;
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getContratsEtudiant(email, annee));
+		}
 		return ResponseEntity.ok(contratService.getContratsEtudiant(email));
 	}
 
-	@GetMapping("/employeur")
-	public ResponseEntity<List<ContratDto>> getContratsEmployeur(Authentication authentication) {
+	public ResponseEntity<List<ContratDto>> getContratsEtudiant(Authentication authentication) {
+		return getContratsEtudiant(null, authentication);
+	}
+
+	@GetMapping("/etudiant/annees")
+	public ResponseEntity<List<Integer>> getAnneesContratsEtudiant(Authentication authentication) {
 		String email = authentication != null ? authentication.getName() : null;
+		return ResponseEntity.ok(contratService.getAnneesContratsEtudiant(email));
+	}
+
+	@GetMapping("/employeur")
+	public ResponseEntity<List<ContratDto>> getContratsEmployeur(
+			@RequestParam(required = false) Integer annee,
+			Authentication authentication) {
+		String email = authentication != null ? authentication.getName() : null;
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getContratsEmployeur(email, annee));
+		}
 		return ResponseEntity.ok(contratService.getContratsEmployeur(email));
+	}
+
+	public ResponseEntity<List<ContratDto>> getContratsEmployeur(Authentication authentication) {
+		return getContratsEmployeur(null, authentication);
 	}
 
 	@PostMapping(value = "/{id}/signer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

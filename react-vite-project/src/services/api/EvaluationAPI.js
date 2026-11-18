@@ -10,8 +10,11 @@ async function lireErreur(response, messageParDefaut) {
     }
 }
 
-export async function getStagiaires(authHeader) {
-    const response = await APIHelper.get(`/evaluations/stagiaires`, authHeader);
+export async function getStagiaires(authHeader, annee = null) {
+    const url = annee !== null && annee !== undefined
+        ? `/evaluations/stagiaires?annee=${annee}`
+        : `/evaluations/stagiaires`;
+    const response = await APIHelper.get(url, authHeader);
     if (!response.ok) {
         throw new Error(await lireErreur(response, "Erreur lors de la récupération de vos stagiaires"));
     }

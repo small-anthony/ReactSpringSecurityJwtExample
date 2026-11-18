@@ -1391,6 +1391,7 @@
       "AUCUNE_CANDIDATURE": "Aucune candidature"
     },
     "search_placeholder": "Rechercher par nom, courriel ou matricule...",
+    "clear_search": "Effacer la recherche",
     "total": "Total : {{count}} étudiant",
     "total_plural": "Total : {{count}} étudiants",
     "loading": "Chargement des étudiants...",

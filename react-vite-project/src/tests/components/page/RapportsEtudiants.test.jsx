@@ -106,6 +106,14 @@ describe("RapportsEtudiants (Tableau de bord Gestionnaire)", () => {
         expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
         expect(screen.queryByText("Jean Tremblay")).not.toBeInTheDocument();
         expect(screen.queryByText("Alex Roy")).not.toBeInTheDocument();
+
+        const boutonEffacer = screen.getByRole("button", { name: /effacer la recherche/i });
+        fireEvent.click(boutonEffacer);
+
+        expect(champRecherche.value).toBe("");
+        expect(screen.getByText("Jean Tremblay")).toBeInTheDocument();
+        expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
+        expect(screen.getByText("Alex Roy")).toBeInTheDocument();
     });
 
     it("devrait afficher un message si aucun étudiant ne correspond aux critères", async () => {

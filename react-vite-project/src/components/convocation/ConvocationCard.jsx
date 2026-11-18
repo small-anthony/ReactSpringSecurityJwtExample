@@ -169,22 +169,22 @@ export default function ConvocationCard({
     <div className="ds-card overflow-hidden">
       <div className="p-5 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0 flex-1">
             <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
               {t("convocation.card_tag")}
             </span>
-            <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-0.5 break-words">
               {titreAffiche}
             </h3>
-            <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mt-1">
-              <Building className="w-4 h-4 text-slate-400" />
-              <span>{entrepriseAffichee}</span>
+            <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mt-1 min-w-0">
+              <Building className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="break-words">{entrepriseAffichee}</span>
             </div>
           </div>
-          <div className="shrink-0 flex flex-col items-end gap-1.5">
+          <div className="shrink-0 flex flex-col items-start sm:items-end gap-1.5 max-w-full">
             {getStatusBadge()}
             {statut === "EN_ATTENTE" && dateLimite && (
-              <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+              <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 break-words">
                 {t("convocation.deadline_notice")} {formatDate(dateLimite)}
               </span>
             )}
@@ -194,23 +194,23 @@ export default function ConvocationCard({
         {statut === "ACCEPTEE" && confirmedSlot && (
           <div className="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-2">
             <p className="text-xs font-bold uppercase tracking-wide text-emerald-800 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               {t("convocation.confirmed_interview")}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-              <div className="flex items-center gap-2.5 text-xs text-slate-700">
+              <div className="flex items-center gap-2.5 text-xs text-slate-700 min-w-0">
                 <Calendar className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span className="font-semibold">
+                <span className="font-semibold break-words">
                   {formatDate(dateConfirmee)} {t("common.at")} {formatTime(dateConfirmee)}
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-slate-700">
+              <div className="flex items-center gap-2.5 text-xs text-slate-700 min-w-0">
                 {isLienVirtuel(lieuConfirme) ? (
                   <Video className="w-4 h-4 text-indigo-600 shrink-0" />
                 ) : (
                   <MapPin className="w-4 h-4 text-indigo-600 shrink-0" />
                 )}
-                <span className="truncate" title={lieuConfirme}>
+                <span className="break-words min-w-0" title={lieuConfirme}>
                   {lieuConfirme || t("convocation.location_to_confirm")}
                 </span>
               </div>
@@ -249,13 +249,13 @@ export default function ConvocationCard({
                             {formatDate(dateSlot)} {t("common.at")} {formatTime(dateSlot)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600 min-w-0">
                           {isVirtuel ? (
                             <Video className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                           ) : (
                             <MapPin className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                           )}
-                          <span className="truncate" title={lieuSlot}>
+                          <span className="break-words min-w-0" title={lieuSlot}>
                             {lieuSlot || t("convocation.location_to_confirm")}
                           </span>
                         </div>
@@ -271,19 +271,19 @@ export default function ConvocationCard({
               </div>
             ) : (
               <div className="w-full p-4 bg-blue-50/50 rounded-xl border border-blue-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 text-xs font-bold text-slate-900">
+                <div className="flex items-center gap-2.5 text-xs font-bold text-slate-900 min-w-0">
                   <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-                  <span className="capitalize font-semibold text-sm">
+                  <span className="capitalize font-semibold text-sm break-words">
                     {formatDate(datePremierCreneau)} {t("common.at")} {formatTime(datePremierCreneau)}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-600 min-w-0">
                   {isLienVirtuel(lieuPremierCreneau) ? (
                     <Video className="w-4 h-4 text-indigo-600 shrink-0" />
                   ) : (
                     <MapPin className="w-4 h-4 text-indigo-600 shrink-0" />
                   )}
-                  <span className="truncate max-w-md" title={lieuPremierCreneau}>
+                  <span className="break-words min-w-0" title={lieuPremierCreneau}>
                     {lieuPremierCreneau || t("convocation.location_to_confirm")}
                   </span>
                 </div>
@@ -295,10 +295,10 @@ export default function ConvocationCard({
         {messageEmployeur && (
           <div className="p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-xs text-slate-700 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-blue-900">
-              <MessageSquare className="w-3.5 h-3.5" />
+              <MessageSquare className="w-3.5 h-3.5 shrink-0" />
               <span>{t("convocation.employer_instructions")}</span>
             </div>
-            <p className="text-slate-600 italic leading-relaxed">{messageEmployeur}</p>
+            <p className="text-slate-600 italic leading-relaxed break-words">{messageEmployeur}</p>
           </div>
         )}
 
@@ -307,7 +307,7 @@ export default function ConvocationCard({
             <p className="font-bold">
               {t("convocation.refusal_reason_label")}
             </p>
-            <p className="text-rose-700 italic">"{motifRefusAffiche}"</p>
+            <p className="text-rose-700 italic break-words">"{motifRefusAffiche}"</p>
           </div>
         )}
 

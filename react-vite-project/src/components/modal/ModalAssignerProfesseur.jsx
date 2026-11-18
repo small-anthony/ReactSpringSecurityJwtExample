@@ -75,9 +75,18 @@ export default function ModalAssignerProfesseur({
                                 placeholder={t("assignation_professeurs.modal_recherche_placeholder")}
                                 className="ds-input pl-10 pr-10"
                             />
-                            {chargementProfs && (
+                            {chargementProfs ? (
                                 <RefreshCw className="w-4 h-4 text-blue-600 animate-spin absolute right-3.5 top-1/2 -translate-y-1/2" />
-                            )}
+                            ) : rechercheProfesseur ? (
+                                <button
+                                    type="button"
+                                    onClick={() => onRechercheChange("")}
+                                    aria-label={t("gestionnaire_dashboard.clear_search")}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200/70 transition cursor-pointer"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            ) : null}
                         </div>
                     </div>
 

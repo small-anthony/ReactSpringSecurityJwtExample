@@ -14,10 +14,17 @@ import {
   getContratDocumentBlob,
   rejeterContrat
 } from "../../services/api/ContratAPI.js";
+import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 export default function GestionnaireContrats() {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
+  const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    getAnneesGestionnaire,
+    authService
+  );
 
   const [activeTab, setActiveTab] = useState("create");
   const [candidatures, setCandidatures] = useState([]);
@@ -80,13 +87,16 @@ export default function GestionnaireContrats() {
     return message;
   };
 
-  const chargerDonnees = async () => {
+  const chargerDonnees = async (annee = anneeChoisie) => {
     try {
       setLoading(true);
       setErreur(null);
+      const aAnnee = annee !== null && annee !== undefined;
       const [candsData, contratsData] = await Promise.all([
-        getCandidaturesAccepteesPourContrat(authHeader),
-        getTousLesContrats(authHeader)
+        aAnnee
+          ? getCandidaturesAccepteesPourContrat(authHeader, annee)
+          : getCandidaturesAccepteesPourContrat(authHeader),
+        aAnnee ? getTousLesContrats(authHeader, annee) : getTousLesContrats(authHeader)
       ]);
       setCandidatures(candsData || []);
       setContrats(contratsData || []);
@@ -98,8 +108,9 @@ export default function GestionnaireContrats() {
   };
 
   useEffect(() => {
-    chargerDonnees();
-  }, []);
+    if (!anneesChargees) return;
+    chargerDonnees(anneeChoisie);
+  }, [anneesChargees, anneeChoisie]);
 
   const handleCreerContrat = async (payload) => {
     setErreur(null);
@@ -217,6 +228,11 @@ export default function GestionnaireContrats() {
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
             {t("contrats.title")}
           </h2>
+          <SelecteurSession
+            annees={annees}
+            anneeSelectionnee={anneeChoisie}
+            onChangementAnnee={setAnneeChoisie}
+          />
         </div>
 
         <div className="flex border-b border-slate-200 mb-8 gap-6">

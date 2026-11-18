@@ -26,8 +26,15 @@ public class EvaluationService {
 
     @Transactional(readOnly = true)
     public List<StagiaireDto> getStagiaires(String emailEmployeur) {
+        return getStagiaires(emailEmployeur, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StagiaireDto> getStagiaires(String emailEmployeur, Integer annee) {
         return contratRepository.findByCandidatureOffreStageEmployeurEmail(emailEmployeur).stream()
                 .filter(Contrat::estComplete)
+                .filter(contrat -> annee == null
+                        || (contrat.getOffreStage() != null && annee.equals(contrat.getOffreStage().getAnnee())))
                 .map(contrat -> StagiaireDto.create(contrat, evaluationRepository.existsByContratId(contrat.getId())))
                 .toList();
     }

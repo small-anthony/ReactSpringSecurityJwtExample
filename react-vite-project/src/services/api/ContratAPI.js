@@ -1,8 +1,11 @@
 import { BASE_URL } from "../../components/config/Config.jsx";
 import APIHelper from "../../utils/APIHelper.ts";
 
-export async function getCandidaturesAccepteesPourContrat(authHeader) {
-    const response = await APIHelper.get(`/contrats/candidatures-acceptees`, authHeader);
+const avecAnnee = (endpoint, annee) =>
+    annee !== null && annee !== undefined ? `${endpoint}?annee=${annee}` : endpoint;
+
+export async function getCandidaturesAccepteesPourContrat(authHeader, annee = null) {
+    const response = await APIHelper.get(avecAnnee(`/contrats/candidatures-acceptees`, annee), authHeader);
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || "Erreur lors de la récupération des candidatures");
@@ -19,8 +22,8 @@ export async function creerContrat(data, authHeader) {
     return response.json();
 }
 
-export async function getTousLesContrats(authHeader) {
-    const response = await APIHelper.get(`/contrats`, authHeader);
+export async function getTousLesContrats(authHeader, annee = null) {
+    const response = await APIHelper.get(avecAnnee(`/contrats`, annee), authHeader);
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || "Erreur lors de la récupération des contrats");
@@ -28,8 +31,8 @@ export async function getTousLesContrats(authHeader) {
     return response.json();
 }
 
-export async function getContratsEtudiant(authHeader) {
-    const response = await APIHelper.get(`/contrats/etudiant`, authHeader);
+export async function getContratsEtudiant(authHeader, annee = null) {
+    const response = await APIHelper.get(avecAnnee(`/contrats/etudiant`, annee), authHeader);
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || "Erreur lors de la récupération de vos contrats");
@@ -37,8 +40,16 @@ export async function getContratsEtudiant(authHeader) {
     return response.json();
 }
 
-export async function getContratsEmployeur(authHeader) {
-    const response = await APIHelper.get(`/contrats/employeur`, authHeader);
+export async function getAnneesContratsEtudiant(authHeader) {
+    const response = await APIHelper.get(`/contrats/etudiant/annees`, authHeader);
+    if (!response.ok) {
+        return [];
+    }
+    return response.json();
+}
+
+export async function getContratsEmployeur(authHeader, annee = null) {
+    const response = await APIHelper.get(avecAnnee(`/contrats/employeur`, annee), authHeader);
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || "Erreur lors de la récupération de vos contrats");

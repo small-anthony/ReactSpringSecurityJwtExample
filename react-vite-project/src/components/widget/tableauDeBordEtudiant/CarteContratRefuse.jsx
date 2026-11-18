@@ -9,19 +9,19 @@ export default function CarteContratRefuse({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-start justify-between gap-2">
-                <div>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
                     <h2 className="text-base font-extrabold text-slate-900">
                         {t("etudiant_dashboard.next_step.contract_refused_title")}
                     </h2>
-                    <p className="text-sm font-semibold text-slate-700 mt-0.5">
+                    <p className="text-sm font-semibold text-slate-700 mt-0.5 break-words">
                         {titreOffre}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 break-words">
                         {nomEntreprise}
                     </p>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
+                <span className="self-start px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
                     {t("etudiant_dashboard.applications.status_contract_refused")}
                 </span>
             </div>

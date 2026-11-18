@@ -1391,6 +1391,7 @@
       "AUCUNE_CANDIDATURE": "No Application Submitted"
     },
     "search_placeholder": "Search by name, email or student ID...",
+    "clear_search": "Clear search",
     "total": "Total: {{count}} student",
     "total_plural": "Total: {{count}} students",
     "loading": "Loading students...",

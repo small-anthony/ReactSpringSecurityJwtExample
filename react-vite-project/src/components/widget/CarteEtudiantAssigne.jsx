@@ -49,35 +49,35 @@ export default function CarteEtudiantAssigne({ etudiant, onOuvrirEvaluation }) {
     return (
         <div className="ds-card hover:shadow-md transition-shadow duration-200 overflow-hidden">
             <div className="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 min-w-0 flex-1">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs shrink-0">
                         {(etudiant.firstName || "").charAt(0)}
                         {(etudiant.lastName || "").charAt(0)}
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-center gap-3 flex-wrap">
-                            <h3 className="text-lg font-bold text-slate-900">
+                            <h3 className="text-lg font-bold text-slate-900 break-words">
                                 {etudiant.firstName} {etudiant.lastName}
                             </h3>
                             <StatutStageBadge statut={etudiant.statutStage} />
                             {etudiant.aStage && (
                                 etudiant.milieuEvalue ? (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                         {t("professeur.badge_milieu_evalue")}
                                     </span>
                                 ) : (
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                                        <Clock className="w-3.5 h-3.5 text-amber-600" />
+                                        <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                                         {t("professeur.badge_milieu_a_evaluer")}
                                     </span>
                                 )
                             )}
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
-                            <span className="flex items-center gap-1">
-                                <Mail className="w-3.5 h-3.5 text-slate-400" />
-                                {etudiant.email}
+                        <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap min-w-0">
+                            <span className="flex items-center gap-1 min-w-0 break-all">
+                                <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span className="break-all">{etudiant.email}</span>
                             </span>
                             <span>•</span>
                             <span>{t("professeur.matricule_label")}: {etudiant.matricule || "—"}</span>
@@ -85,15 +85,15 @@ export default function CarteEtudiantAssigne({ etudiant, onOuvrirEvaluation }) {
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100">
-                    <div className="bg-slate-50/80 px-4 py-2.5 rounded-xl border border-slate-200/80 text-xs space-y-1">
-                        <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100 min-w-0">
+                    <div className="bg-slate-50/80 px-4 py-2.5 rounded-xl border border-slate-200/80 text-xs space-y-1 min-w-0 overflow-hidden">
+                        <div className="flex items-center gap-1.5 font-bold text-slate-900 min-w-0">
                             <Building2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                            <span>{etudiant.entrepriseStage || "—"}</span>
+                            <span className="break-words min-w-0">{etudiant.entrepriseStage || "—"}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-slate-600">
+                        <div className="flex items-center gap-1.5 text-slate-600 min-w-0">
                             <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span className="truncate max-w-xs">{etudiant.titreOffreStage || "—"}</span>
+                            <span className="break-words min-w-0">{etudiant.titreOffreStage || "—"}</span>
                         </div>
                     </div>
 
