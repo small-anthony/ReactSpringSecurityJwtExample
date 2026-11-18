@@ -4,7 +4,7 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStatutCv } from "../../services/api/EtudiantService.js";
 import { checkCvExists } from "../../services/api/EtudiantCvService.js";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Clock3, XCircle, UploadCloud, FileText, X } from "lucide-react";
+import { CheckCircle2, Clock3, XCircle, UploadCloud, FileText } from "lucide-react";
 
 export default function ModalCvEtudiant({ compact, onStatusChange }) {
     const { t } = useTranslation("main");
@@ -113,35 +113,13 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
                 )}
 
                 {afficherUploadModal && (
-                    <div
-                        className="ds-modal-backdrop"
-                        onClick={() => setAfficherUploadModal(false)}
-                    >
-                        <div
-                            className="ds-modal-panel max-w-lg p-6 space-y-4"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                                <h3 className="text-base font-bold text-slate-900">
-                                    {cvExiste ? t("modal_cv.update") : t("modal_cv.upload")}
-                                </h3>
-                                <button
-                                    type="button"
-                                    onClick={() => setAfficherUploadModal(false)}
-                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <ModalTeleverserCv
-                                onClose={() => setAfficherUploadModal(false)}
-                                onUploadSuccess={() => {
-                                    setAfficherUploadModal(false);
-                                    void chargerStatut();
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <ModalTeleverserCv
+                        onClose={() => setAfficherUploadModal(false)}
+                        onUploadSuccess={() => {
+                            setAfficherUploadModal(false);
+                            void chargerStatut();
+                        }}
+                    />
                 )}
             </>
         );

@@ -98,8 +98,12 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
     return (
         <div onDragOver={(e) => e.preventDefault()}
              onDrop={(e) => e.preventDefault()}
+             onClick={onClose}
              className="ds-modal-backdrop">
-            <div className="ds-modal-panel max-w-md p-6 sm:p-8 relative">
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="ds-modal-panel max-w-md p-6 sm:p-8 relative"
+            >
                 <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
                     <h2 className="text-xl font-bold text-slate-900">
                         {t('cv_upload.title')}
