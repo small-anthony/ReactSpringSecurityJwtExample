@@ -4,6 +4,8 @@
     "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV."
   },
   "gestionnaire": {
-    "cv_submitted": "A student submitted a new CV for approval."
+    "cv_submitted": "A student submitted a new CV for approval.",
+    "contrat_pret_signature": "A contract has been signed by both the student and the employer and is ready for your signature.",
+    "contrat_refuse": "A contract was refused by the student or the employer. Please review it and resend the contracts."
   }
 }
