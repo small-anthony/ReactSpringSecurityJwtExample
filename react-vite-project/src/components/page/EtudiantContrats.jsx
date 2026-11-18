@@ -54,6 +54,15 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
 
     const authHeader = authService.buildAuthHeader();
 
+    const estSessionCourante = (annee = anneeChoisie) =>
+        annees.length === 0 || annee === null || annee === annees[0];
+
+    const notifierChangementContrats = (liste, annee = anneeChoisie, contratMisAJour = undefined) => {
+        if (!onPendingCountChange || !estSessionCourante(annee)) return;
+        const { hasSigned, restant } = calculerEtatSignature(liste);
+        onPendingCountChange(restant, hasSigned, contratMisAJour);
+    };
+
     const chargerContrats = async (annee = anneeChoisie) => {
         try {
             setLoading(true);
@@ -63,11 +72,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                 : await getContratsEtudiant(authHeader);
             const liste = data || [];
             setContrats(liste);
-
-            const { hasSigned, restant } = calculerEtatSignature(liste);
-            if (onPendingCountChange) {
-                onPendingCountChange(restant, hasSigned);
-            }
+            notifierChangementContrats(liste, annee);
         } catch (e) {
             setErreur(e.message || t("contrats.alerts.error_load"));
         } finally {
@@ -121,10 +126,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
         setMessageRefus(null);
         const updated = contrats.map((c) => (c.id === updatedContrat.id ? updatedContrat : c));
         setContrats(updated);
-        if (onPendingCountChange) {
-            const { hasSigned, restant } = calculerEtatSignature(updated);
-            onPendingCountChange(restant, hasSigned, updatedContrat);
-        }
+        notifierChangementContrats(updated, anneeChoisie, updatedContrat);
     };
 
     const handleConfirmRefus = async () => {
@@ -138,11 +140,8 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             setSucces(null);
             const updated = contrats.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c));
             setContrats(updated);
-            if (onPendingCountChange) {
-                const { hasSigned, restant } = calculerEtatSignature(updated);
-                const contratRefuse = updated.find((c) => c.id === contratARefuser.id);
-                onPendingCountChange(restant, hasSigned, contratRefuse);
-            }
+            const contratRefuse = updated.find((c) => c.id === contratARefuser.id);
+            notifierChangementContrats(updated, anneeChoisie, contratRefuse);
             setContratARefuser(null);
         } catch (err) {
             setErreur(err.message || t("contrats_etudiant.error_refuse"));

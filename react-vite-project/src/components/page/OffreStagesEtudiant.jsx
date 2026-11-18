@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getMesCandidatures, getOffresDisponibles } from "../../services/api/EtudiantService.js";
 import { getConvocationsEtudiant } from "../../services/api/ConvocationAPI.js";
-import { getContratsEtudiant } from "../../services/api/ContratAPI.js";
+import { getAnneesContratsEtudiant, getContratsEtudiant } from "../../services/api/ContratAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
@@ -156,7 +156,12 @@ export default function OffreStagesEtudiant() {
             }
 
             try {
-                const mesContrats = await getContratsEtudiant(authHeader);
+                const anneesContrats = await getAnneesContratsEtudiant?.(authHeader);
+                const anneeCourante =
+                    Array.isArray(anneesContrats) && anneesContrats.length > 0 ? anneesContrats[0] : null;
+                const mesContrats = anneeCourante !== null
+                    ? await getContratsEtudiant(authHeader, anneeCourante)
+                    : await getContratsEtudiant(authHeader);
                 const listeContrats = mesContrats || [];
                 setContrats(listeContrats);
                 const signed = listeContrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
