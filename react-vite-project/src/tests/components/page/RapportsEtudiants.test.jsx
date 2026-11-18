@@ -75,7 +75,7 @@ describe("RapportsEtudiants (Tableau de bord Gestionnaire)", () => {
         renderComponent();
 
         expect(await screen.findByText("Suivi des étudiants")).toBeInTheDocument();
-        expect(screen.getByText("Jean Tremblay")).toBeInTheDocument();
+        expect(await screen.findByText("Jean Tremblay")).toBeInTheDocument();
         expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
         expect(screen.getByText("Alex Roy")).toBeInTheDocument();
 

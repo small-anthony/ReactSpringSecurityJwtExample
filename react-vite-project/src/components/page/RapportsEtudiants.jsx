@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getRapportEtudiants } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalCandidaturesEtudiant from "../modal/ModalCandidaturesEtudiant.jsx";
@@ -26,8 +27,10 @@ export default function RapportsEtudiants() {
     const etudiantEvaluationId = Number.isInteger(rawEvalId) && rawEvalId > 0 ? rawEvalId : null;
 
     const [etudiants, setEtudiants] = useState([]);
-    const [annees, setAnnees] = useState([]);
-    const [anneeChoisie, setAnneeChoisie] = useState(null);
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesGestionnaire,
+        authService
+    );
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
 
@@ -48,17 +51,7 @@ export default function RapportsEtudiants() {
     };
 
     useEffect(() => {
-        getAnneesGestionnaire(authService.buildAuthHeader())
-            .then((data) => {
-                setAnnees(data);
-                if (data && data.length > 0) {
-                    setAnneeChoisie(data[0]);
-                }
-            })
-            .catch(() => setAnnees([]));
-    }, [authService]);
-
-    useEffect(() => {
+        if (!anneesChargees) return;
         let isMounted = true;
         const charger = async () => {
             try {
@@ -75,7 +68,7 @@ export default function RapportsEtudiants() {
 
         void charger();
         return () => { isMounted = false; };
-    }, [authService, anneeChoisie, t]);
+    }, [authService, anneesChargees, anneeChoisie, t]);
 
     const stats = {
         total: etudiants.length,
