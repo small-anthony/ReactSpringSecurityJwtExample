@@ -6,6 +6,8 @@ import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
 import com.lacouf.rsbjwt.service.dto.ErrorResponse;
 import com.lacouf.rsbjwt.service.dto.interfaceDTO.DataTransferObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/contrats")
 public class ContratController {
+	private static final Logger log = LoggerFactory.getLogger(ContratController.class);
 	private final ContratService contratService;
 
 	public ContratController(ContratService contratService) {
@@ -32,18 +35,39 @@ public class ContratController {
 			ContratDto contrat = contratService.creerContrat(request, email);
 			return ResponseEntity.status(HttpStatus.CREATED).body(contrat);
 		} catch (Exception e) {
+			if (estErreurContrainteSql(e)) {
+				log.warn("Contrainte de base de données dépassée lors de la création du contrat : {}", e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Certains champs du contrat dépassent la longueur maximale autorisée.");
+			}
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 
 	@GetMapping(value = {"/candidatures-acceptees", "/candidatures-pour-contrat"})
-	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
+	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat(
+			@RequestParam(required = false) Integer annee) {
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getCandidaturesPourContrat(annee));
+		}
 		return ResponseEntity.ok(contratService.getCandidaturesPourContrat());
 	}
 
+	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat() {
+		return getCandidaturesAccepteesPourContrat(null);
+	}
+
 	@GetMapping()
-	public ResponseEntity<List<ContratDto>> getTousLesContrats() {
+	public ResponseEntity<List<ContratDto>> getTousLesContrats(
+			@RequestParam(required = false) Integer annee) {
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getTousLesContrats(annee));
+		}
 		return ResponseEntity.ok(contratService.getTousLesContrats());
+	}
+
+	public ResponseEntity<List<ContratDto>> getTousLesContrats() {
+		return getTousLesContrats(null);
 	}
 
 	@GetMapping("/{id}")
@@ -56,15 +80,39 @@ public class ContratController {
 	}
 
 	@GetMapping("/etudiant")
-	public ResponseEntity<List<ContratDto>> getContratsEtudiant(Authentication authentication) {
+	public ResponseEntity<List<ContratDto>> getContratsEtudiant(
+			@RequestParam(required = false) Integer annee,
+			Authentication authentication) {
 		String email = authentication != null ? authentication.getName() : null;
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getContratsEtudiant(email, annee));
+		}
 		return ResponseEntity.ok(contratService.getContratsEtudiant(email));
 	}
 
-	@GetMapping("/employeur")
-	public ResponseEntity<List<ContratDto>> getContratsEmployeur(Authentication authentication) {
+	public ResponseEntity<List<ContratDto>> getContratsEtudiant(Authentication authentication) {
+		return getContratsEtudiant(null, authentication);
+	}
+
+	@GetMapping("/etudiant/annees")
+	public ResponseEntity<List<Integer>> getAnneesContratsEtudiant(Authentication authentication) {
 		String email = authentication != null ? authentication.getName() : null;
+		return ResponseEntity.ok(contratService.getAnneesContratsEtudiant(email));
+	}
+
+	@GetMapping("/employeur")
+	public ResponseEntity<List<ContratDto>> getContratsEmployeur(
+			@RequestParam(required = false) Integer annee,
+			Authentication authentication) {
+		String email = authentication != null ? authentication.getName() : null;
+		if (annee != null) {
+			return ResponseEntity.ok(contratService.getContratsEmployeur(email, annee));
+		}
 		return ResponseEntity.ok(contratService.getContratsEmployeur(email));
+	}
+
+	public ResponseEntity<List<ContratDto>> getContratsEmployeur(Authentication authentication) {
+		return getContratsEmployeur(null, authentication);
 	}
 
 	@PostMapping(value = "/{id}/signer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -107,5 +155,19 @@ public class ContratController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
+	}
+
+	private boolean estErreurContrainteSql(Throwable error) {
+		for (Throwable current = error; current != null; current = current.getCause()) {
+			String className = current.getClass().getSimpleName();
+			String message = current.getMessage() != null ? current.getMessage().toLowerCase() : "";
+			if ("DataIntegrityViolationException".equals(className)
+					|| message.contains("could not execute statement")
+					|| message.contains("value too long")
+					|| message.contains("data truncation")) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -74,16 +74,16 @@ export default function SectionCandidaturesRecentes({
                                 key={id}
                                 className="py-3.5 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                             >
-                                <div className="min-w-0 space-y-1">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <h3 className="text-sm font-bold text-slate-900 truncate">
+                                <div className="min-w-0 flex-1 space-y-1">
+                                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                        <h3 className="text-sm font-bold text-slate-900 break-words">
                                             {titre}
                                         </h3>
                                         {renderCandidatureBadge(id)}
                                     </div>
-                                    <p className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                                    <p className="text-xs font-medium text-slate-500 flex items-center gap-1.5 flex-wrap min-w-0">
                                         <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                        <span>{nomEntreprise}</span>
+                                        <span className="break-words">{nomEntreprise}</span>
                                         {duree && (
                                             <>
                                                 <span className="text-slate-300">•</span>
@@ -92,7 +92,7 @@ export default function SectionCandidaturesRecentes({
                                         )}
                                     </p>
                                     {statut === "REFUSEE" && texteRefus && (
-                                        <p className="text-xs text-rose-600 line-clamp-1">
+                                        <p className="text-xs text-rose-600 line-clamp-1 break-words">
                                             {texteRefus}
                                         </p>
                                     )}

@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getMesCandidatures, getOffresDisponibles } from "../../services/api/EtudiantService.js";
 import { getConvocationsEtudiant } from "../../services/api/ConvocationAPI.js";
-import { getContratsEtudiant } from "../../services/api/ContratAPI.js";
+import { getAnneesContratsEtudiant, getContratsEtudiant } from "../../services/api/ContratAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
@@ -32,6 +32,7 @@ import {
     FilterX,
     LayoutDashboard,
     Search,
+    X,
     XCircle
 } from "lucide-react";
 
@@ -60,6 +61,14 @@ function contientTexte(texteSource, texteRecherche) {
     return texteSource.toLowerCase().includes(texteRecherche);
 }
 
+const ORDRE_STATUT_CANDIDATURE = {
+    EMBAUCHEE: 0,
+    ACCEPTEE: 1,
+    EN_ATTENTE_REPONSE: 2,
+    EN_ATTENTE: 3,
+    REFUSEE: 4,
+};
+
 export default function OffreStagesEtudiant() {
     const { t, i18n } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
@@ -68,6 +77,7 @@ export default function OffreStagesEtudiant() {
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabFromUrl = searchParams.get("tab");
+    const uploadCvFromUrl = searchParams.get("uploadCv") === "true";
 
     const [ongletActif, setOngletActif] = useState(() => resolveTabFromParam(tabFromUrl));
     const [loading, setLoading] = useState(true);
@@ -146,14 +156,19 @@ export default function OffreStagesEtudiant() {
             }
 
             try {
-                const mesContrats = await getContratsEtudiant(authHeader);
+                const anneesContrats = await getAnneesContratsEtudiant?.(authHeader);
+                const anneeCourante =
+                    Array.isArray(anneesContrats) && anneesContrats.length > 0 ? anneesContrats[0] : null;
+                const mesContrats = anneeCourante !== null
+                    ? await getContratsEtudiant(authHeader, anneeCourante)
+                    : await getContratsEtudiant(authHeader);
                 const listeContrats = mesContrats || [];
                 setContrats(listeContrats);
-                const signed = listeContrats.some((c) => c.signeParEtudiant);
+                const signed = listeContrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
                 setATrouveStage(signed);
-                const pendingContrats = listeContrats.filter(
-                    (c) => !c.signeParEtudiant && c.statut !== "REFUSE"
-                ).length;
+                const pendingContrats = signed
+                    ? 0
+                    : listeContrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
                 setCountPendingContrats(pendingContrats);
             } catch {
                 setContrats([]);
@@ -174,6 +189,15 @@ export default function OffreStagesEtudiant() {
     useEffect(() => {
         setOngletActif(resolveTabFromParam(tabFromUrl));
     }, [tabFromUrl]);
+
+    useEffect(() => {
+        if (uploadCvFromUrl && cvState.openUpload) {
+            cvState.openUpload();
+            const next = new URLSearchParams(searchParams);
+            next.delete("uploadCv");
+            setSearchParams(next, { replace: true });
+        }
+    }, [uploadCvFromUrl, cvState.openUpload]);
 
     const changerOnglet = (nouvelOnglet) => {
         setOngletActif(nouvelOnglet);
@@ -206,9 +230,16 @@ export default function OffreStagesEtudiant() {
         return offres.filter((o) => !idsOffresPostulees.has(o.id));
     }, [offres, idsOffresPostulees]);
 
-    const contratsASigner = useMemo(() => {
-        return contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE");
+    const aDejaContratSigne = useMemo(() => {
+        return contrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
     }, [contrats]);
+
+    const contratsASigner = useMemo(() => {
+        if (aDejaContratSigne) {
+            return [];
+        }
+        return contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE");
+    }, [contrats, aDejaContratSigne]);
 
     const contratSigneActif = useMemo(() => {
         return trouverContratSigneActif(contrats, contratsASigner);
@@ -307,6 +338,11 @@ export default function OffreStagesEtudiant() {
         });
     }, [offres]);
 
+    const offresEmbauchees = useMemo(
+        () => mesCandidaturesOffres.filter((o) => candidaturesParOffre[o.id]?.statut === "EMBAUCHEE"),
+        [mesCandidaturesOffres, candidaturesParOffre]
+    );
+
     const offresFiltrees = useMemo(() => {
         const listeBase = ongletActif === "mes_candidatures" ? mesCandidaturesOffres : offres;
         const texteRecherche = recherche.toLowerCase();
@@ -374,14 +410,34 @@ export default function OffreStagesEtudiant() {
             );
         }
 
-        const cand = candidaturesParOffre[offreId];
-        const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE";
-
-        if (statut === "EMBAUCHEE") {
+        const aSignePourCetteOffre = Boolean(
+            contratAssocie && (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE")
+        );
+        if (aSignePourCetteOffre) {
             return (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                     {t("etudiant_dashboard.applications.status_hired")}
+                </span>
+            );
+        }
+
+        const cand = candidaturesParOffre[offreId];
+        const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE";
+
+        if (statut === "EMBAUCHEE") {
+            if (contratAssocie && !contratAssocie.signeParEtudiant) {
+                return (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                        <Clock className="w-3 h-3 text-amber-600" />
+                        {t("etudiant_dashboard.applications.status_contract_to_sign")}
+                    </span>
+                );
+            }
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                    <Clock className="w-3 h-3 text-blue-600" />
+                    {t("etudiant_dashboard.applications.status_selected")}
                 </span>
             );
         }
@@ -587,7 +643,7 @@ export default function OffreStagesEtudiant() {
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
                                 <div className="lg:col-span-5 relative">
                                     <Search
-                                        className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"
+                                        className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                                         strokeWidth={1.5}
                                     />
                                     <input
@@ -595,8 +651,18 @@ export default function OffreStagesEtudiant() {
                                         placeholder={t("offres_etudiant.search_placeholder")}
                                         value={recherche}
                                         onChange={({ target }) => setRecherche(target.value)}
-                                        className="ds-input pl-10 py-2 text-xs"
+                                        className="ds-input pl-10 pr-9 py-2 text-xs"
                                     />
+                                    {recherche && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setRecherche("")}
+                                            aria-label={t("gestionnaire_dashboard.clear_search")}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200/70 transition cursor-pointer"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -735,23 +801,23 @@ export default function OffreStagesEtudiant() {
                                                     {ongletActif === "mes_candidatures" && getCandidatureBadge(id)}
                                                 </div>
 
-                                                <div className="space-y-1.5 mb-4">
-                                                    <h3 className="text-base font-bold text-slate-900 tracking-tight line-clamp-1">
+                                                <div className="space-y-1.5 mb-4 min-w-0">
+                                                    <h3 className="text-base font-bold text-slate-900 tracking-tight line-clamp-1 break-words">
                                                         {titre}
                                                     </h3>
-                                                    <p className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                                                        <Building2 className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.5} />
-                                                        <span>{nomEntreprise}</span>
+                                                    <p className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 flex-wrap min-w-0">
+                                                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" strokeWidth={1.5} />
+                                                        <span className="break-words min-w-0">{nomEntreprise}</span>
                                                         {salaire !== undefined && salaire !== null && (
                                                             <>
                                                                 <span className="text-slate-300">•</span>
-                                                                <span className="text-emerald-700 font-bold">
+                                                                <span className="text-emerald-700 font-bold break-words">
                                                                     {formaterSalaire(salaire)}
                                                                 </span>
                                                             </>
                                                         )}
                                                     </p>
-                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed pt-1">
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed pt-1 break-words">
                                                         {description}
                                                     </p>
                                                 </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     FileText,
     Clock,
@@ -21,12 +22,20 @@ import {
     getContratDocumentBlob,
     rejeterContrat
 } from "../../services/api/ContratAPI.js";
+import { getAnneesEmployeur } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
 export default function EmployeurContrats() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
+    const navigate = useNavigate();
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesEmployeur,
+        authService
+    );
 
     const [contrats, setContrats] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -41,11 +50,13 @@ export default function EmployeurContrats() {
 
     const authHeader = authService.buildAuthHeader();
 
-    const chargerContrats = async () => {
+    const chargerContrats = async (annee = anneeChoisie) => {
         try {
             setLoading(true);
             setErreur(null);
-            const data = await getContratsEmployeur(authHeader);
+            const data = annee !== null && annee !== undefined
+                ? await getContratsEmployeur(authHeader, annee)
+                : await getContratsEmployeur(authHeader);
             setContrats(data || []);
         } catch (e) {
             setErreur(e.message || t("contrats.alerts.error_load"));
@@ -55,8 +66,9 @@ export default function EmployeurContrats() {
     };
 
     useEffect(() => {
-        chargerContrats();
-    }, []);
+        if (!anneesChargees) return;
+        chargerContrats(anneeChoisie);
+    }, [anneesChargees, anneeChoisie]);
 
     const handleVoirDocument = async (contratId) => {
         try {
@@ -203,11 +215,25 @@ export default function EmployeurContrats() {
     return (
         <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-800">{t("contrats_employeur.title")}</h1>
-                    <p className="text-gray-500 mt-1">
-                        {t("contrats_employeur.subtitle")}
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <button
+                            type="button"
+                            onClick={() => navigate("/employeur")}
+                            className="btn-secondary mb-4"
+                        >
+                            {t("candidatures_offre.back")}
+                        </button>
+                        <h1 className="text-3xl font-bold text-gray-800">{t("contrats_employeur.title")}</h1>
+                        <p className="text-gray-500 mt-1">
+                            {t("contrats_employeur.subtitle")}
+                        </p>
+                    </div>
+                    <SelecteurSession
+                        annees={annees}
+                        anneeSelectionnee={anneeChoisie}
+                        onChangementAnnee={setAnneeChoisie}
+                    />
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 p-1.5 bg-gray-100 rounded-xl w-fit">
@@ -321,61 +347,61 @@ export default function EmployeurContrats() {
                                 className="bg-white rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-shadow duration-200 p-6 md:p-7 space-y-6"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <GraduationCap className="w-5 h-5 text-blue-600" />
-                                            <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+                                    <div className="space-y-1 min-w-0 flex-1">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <GraduationCap className="w-5 h-5 text-blue-600 shrink-0" />
+                                            <h2 className="text-xl font-bold text-gray-900 tracking-tight break-words">
                                                 {c.etudiantPrenom} {c.etudiantNom}
                                             </h2>
                                         </div>
-                                        <p className="text-xs text-gray-500 font-medium">
+                                        <p className="text-xs text-gray-500 font-medium break-all">
                                             {t("contrats.candidature_select.matricule")} : {c.etudiantMatricule}
                                             {c.etudiantEmail && ` • ${c.etudiantEmail}`}
                                         </p>
-                                        <p className="text-sm text-blue-700 font-semibold flex items-center gap-1.5 pt-1">
-                                            <Briefcase className="w-4 h-4 text-blue-500" />
-                                            <span>{c.titreOffre}</span>
+                                        <p className="text-sm text-blue-700 font-semibold flex items-start gap-1.5 pt-1 min-w-0">
+                                            <Briefcase className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                            <span className="break-words min-w-0">{c.titreOffre}</span>
                                         </p>
                                     </div>
-                                    <div>{getStatusBadge(c)}</div>
+                                    <div className="shrink-0">{getStatusBadge(c)}</div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
+                                    <div className="flex items-start gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 shrink-0">
                                             <Calendar className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("contrats.table.dates")}
                                             </span>
-                                            <span className="text-xs font-semibold text-gray-800">
+                                            <span className="block text-xs font-semibold text-gray-800 break-words">
                                                 {c.dateDebut} → {c.dateFin}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600">
+                                    <div className="flex items-start gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 shrink-0">
                                             <DollarSign className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("contrats.table.salary")}
                                             </span>
-                                            <span className="text-xs font-bold text-emerald-700">{c.salaire}</span>
+                                            <span className="block text-xs font-bold text-emerald-700 break-words">{c.salaire}</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+                                    <div className="flex items-start gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600 shrink-0">
                                             <Clock className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("contrats.form.horaire")}
                                             </span>
-                                            <span className="text-xs font-medium text-gray-700 truncate">{c.horaire}</span>
+                                            <span className="block text-xs font-medium text-gray-700 break-words leading-relaxed">{c.horaire}</span>
                                         </div>
                                     </div>
                                 </div>

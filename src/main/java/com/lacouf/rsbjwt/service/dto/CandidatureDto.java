@@ -19,6 +19,7 @@ public record CandidatureDto(int id,
                              String titreOffre,
                              String nomEntreprise,
                              String messageRefusConvocation,
+                             Integer anneeOffre,
                              ConvocationResumeDto convocation) {
 
     public CandidatureDto(int id,
@@ -27,7 +28,7 @@ public record CandidatureDto(int id,
                           EtudiantDto etudiant,
                           String messageReponse,
                           LocalDateTime dateDecision) {
-        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, null, null, null, null);
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, null, null, null, null, null);
     }
 
     public CandidatureDto(int id,
@@ -38,7 +39,7 @@ public record CandidatureDto(int id,
                           LocalDateTime dateDecision,
                           String titreOffre,
                           String nomEntreprise) {
-        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, null, null);
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, null, null, null);
     }
 
     public CandidatureDto(int id,
@@ -50,7 +51,7 @@ public record CandidatureDto(int id,
                           String titreOffre,
                           String nomEntreprise,
                           String messageRefusConvocation) {
-        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, messageRefusConvocation, null);
+        this(id, statut, dateCandidature, etudiant, messageReponse, dateDecision, titreOffre, nomEntreprise, messageRefusConvocation, null, null);
     }
 
     public static CandidatureDto create(Candidature candidature) {
@@ -67,7 +68,7 @@ public record CandidatureDto(int id,
                 .orElse(null);
 
         return new CandidatureDto(
-                candidature.getId().intValue(),
+                candidature.getId() != null ? candidature.getId().intValue() : 0,
                 candidature.getStatut(),
                 candidature.getDateCandidature(),
                 EtudiantDto.create(etudiant),
@@ -76,6 +77,7 @@ public record CandidatureDto(int id,
                 offre != null ? offre.getTitre() : null,
                 offre != null ? offre.getNomEntreprise() : null,
                 messageRefus,
+                candidature.getAnneeOffre(),
                 convocation
         );
     }

@@ -1,5 +1,9 @@
 {
   "etudiant": {
-    "cv_accepted": "Ton CV a été accepté! Vous pouviez maintenant voir les offres de stage."
+    "cv_accepted": "Votre CV a été accepté ! Vous pouvez maintenant voir les offres de stage.",
+    "cv_rejected": "Votre CV a été refusé. Veuillez consulter les commentaires et soumettre un nouveau CV."
+  },
+  "gestionnaire": {
+    "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver."
   }
 }

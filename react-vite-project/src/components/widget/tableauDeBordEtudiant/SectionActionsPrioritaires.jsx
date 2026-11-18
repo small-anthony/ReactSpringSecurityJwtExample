@@ -49,18 +49,18 @@ export default function SectionActionsPrioritaires({ actionsPrioritaires, t }) {
                                     >
                                         <Icon className="w-4 h-4" />
                                     </div>
-                                    <div className="space-y-1 min-w-0">
+                                    <div className="space-y-1 min-w-0 flex-1">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span
-                                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${badgeTone}`}
+                                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider max-w-full ${badgeTone}`}
                                             >
                                                 {badge}
                                             </span>
-                                            <h3 className="text-sm font-bold text-slate-900">
+                                            <h3 className="text-sm font-bold text-slate-900 break-words">
                                                 {title}
                                             </h3>
                                         </div>
-                                        <p className="text-xs text-slate-600 leading-relaxed">
+                                        <p className="text-xs text-slate-600 leading-relaxed break-words">
                                             {desc}
                                         </p>
                                     </div>

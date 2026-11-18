@@ -1,16 +1,18 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.AcceptationOffreDto;
+import com.lacouf.rsbjwt.presentation.RequestDto.AssignationProfesseurRequest;
+import com.lacouf.rsbjwt.presentation.RequestDto.DecisionCvRequest;
 import com.lacouf.rsbjwt.presentation.RequestDto.RejetOffreDto;
 import com.lacouf.rsbjwt.service.ConvocationService;
-import com.lacouf.rsbjwt.service.dto.ConvocationDto;
+import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import com.lacouf.rsbjwt.service.GestionnaireService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -19,6 +21,7 @@ public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
     private final ConvocationService convocationService;
 
+    @Autowired
     public GestionnaireController(GestionnaireService gestionnaireService, ConvocationService convocationService) {
         this.gestionnaireService = gestionnaireService;
         this.convocationService = convocationService;
@@ -28,7 +31,6 @@ public class GestionnaireController {
     public ResponseEntity<Object> acceptCv(@RequestBody DecisionCvRequest request) {
         try {
             CvDto cvDto = gestionnaireService.accepterCv(request.id());
-
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -39,7 +41,6 @@ public class GestionnaireController {
     public ResponseEntity<Object> refuseCv(@RequestBody DecisionCvRequest request) {
         try {
             CvDto cvDto = gestionnaireService.refuserCv(request.id(), request.message());
-
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -125,6 +126,11 @@ public class GestionnaireController {
         }
     }
 
+    @GetMapping("/rapports/etudiants")
+    public ResponseEntity<List<RapportEtudiantDto>> getRapportEtudiants(@RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getRapportEtudiants(annee));
+    }
+
     @GetMapping("/rapports/etudiants-inscrits")
     public ResponseEntity<List<RapportEtudiantDto>> getTousLesEtudiants() {
         return ResponseEntity.ok(gestionnaireService.getTousLesEtudiants());
@@ -150,6 +156,66 @@ public class GestionnaireController {
         return ResponseEntity.ok(gestionnaireService.getEtudiantsTrouveStage(annee));
     }
 
-}
+    @GetMapping("/rapports/stages-non-evalues-professeur")
+    public ResponseEntity<List<RapportEtudiantDto>> getEtudiantsStageNonEvalueParProfesseur(
+            @RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsStageNonEvalueParProfesseur(annee));
+    }
 
-    
+    @GetMapping("/evaluations-milieu")
+    public ResponseEntity<List<EvaluationMilieuStageDto>> getEvaluationsMilieuStage() {
+        return ResponseEntity.ok(gestionnaireService.getEvaluationsMilieuStage());
+    }
+
+    @GetMapping("/etudiants/{etudiantId}/evaluation-milieu")
+    public ResponseEntity<?> getEvaluationMilieuParEtudiant(@PathVariable Long etudiantId) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.getEvaluationMilieuParEtudiant(etudiantId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Évaluation du milieu de stage introuvable.");
+        }
+    }
+
+    @GetMapping("/assignation-professeurs/etudiants")
+    public ResponseEntity<List<EtudiantPourAssignationDto>> getEtudiantsPourAssignation(
+            @RequestParam(required = false) Integer annee) {
+        return ResponseEntity.ok(gestionnaireService.getEtudiantsPourAssignation(annee));
+    }
+
+    @GetMapping("/assignation-professeurs/professeurs")
+    public ResponseEntity<List<ProfesseurPourAssignationDto>> getProfesseursPourAssignation(
+            @RequestParam(required = false) String nom) {
+        return ResponseEntity.ok(gestionnaireService.getProfesseursPourAssignation(nom));
+    }
+
+    @PostMapping("/assignation-professeurs")
+    public ResponseEntity<?> assignerProfesseur(
+            @RequestBody AssignationProfesseurRequest request) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.assignerProfesseur(
+                    request.etudiantId(), request.professeurId(), request.professeurNom()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/assignation-professeurs")
+    public ResponseEntity<?> modifierAssignationProfesseur(
+            @RequestBody AssignationProfesseurRequest request) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.assignerProfesseur(
+                    request.etudiantId(), request.professeurId(), request.professeurNom()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/assignation-professeurs/{etudiantId}")
+    public ResponseEntity<?> desassignerProfesseur(@PathVariable Long etudiantId) {
+        try {
+            return ResponseEntity.ok(gestionnaireService.desassignerProfesseur(etudiantId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+}

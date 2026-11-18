@@ -1,19 +1,31 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.Contrat;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
+import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDto;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
+import com.lacouf.rsbjwt.model.Professeur;
+import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
+import com.lacouf.rsbjwt.model.ENUM.CapaciteAccueilStagiaires;
+import com.lacouf.rsbjwt.model.ENUM.StageCible;
+import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
+import com.lacouf.rsbjwt.repository.ProfesseurRepository;
+import com.lacouf.rsbjwt.service.dto.AssignationProfesseurResponseDto;
+import com.lacouf.rsbjwt.service.dto.EtudiantPourAssignationDto;
+import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
+import com.lacouf.rsbjwt.service.dto.ProfesseurPourAssignationDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.RapportEtudiantDto;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
@@ -22,7 +34,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,8 +65,16 @@ public class GestionnaireServiceTest {
     private CandidatureRepository candidatureRepository;
 
     @Mock
+    private ProfesseurRepository professeurRepository;
+
+    @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private EvaluationMilieuStageRepository evaluationMilieuStageRepository;
+
+    @Mock
+    private ContratRepository contratRepository;
     @Test
     void getCvEnAttente_shouldReturnListCvEnAttente() {
 //        ARRANGE
@@ -185,7 +209,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void accepterOffreStage_offreDejaTraitee_lanceException() throws Exception {
+    void accepterOffreStage_offreDejaTraitee_lanceException() {
         // ARRANGE
         OffreStage offre = new OffreStage("Titre", "Desc", "CGI");
         offre.setId(1L);
@@ -283,7 +307,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void getTousLesEtudiants_succes() {
+    void getRapportEtudiants_succes() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
@@ -292,30 +316,90 @@ public class GestionnaireServiceTest {
         when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
 
         // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getTousLesEtudiants();
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants();
 
         // ASSERT
         assertEquals(1, resultat.size());
         assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("AUCUNE_CANDIDATURE", resultat.getFirst().statutStage());
         assertTrue(resultat.getFirst().candidatures().isEmpty());
     }
 
     @Test
-    void getEtudiantsSansConvocation_succes() {
+    void getRapportEtudiants_avecAnneeSpecifique() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
-        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
 
-        when(etudiantRepository.findEtudiantsSansConvocation(anneeActuelle)).thenReturn(List.of(etudiant));
+        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2025);
+        Candidature candidature = new Candidature(etudiant, offre2025);
+        candidature.setId(10L);
+        candidature.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(candidature));
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
+        when(contratRepository.findByCandidatureId(10L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiant, candidature)));
 
         // ACT
-        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsSansConvocation();
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2025);
 
         // ASSERT
         assertEquals(1, resultat.size());
         assertEquals("Jean", resultat.getFirst().firstName());
+        assertEquals("STAGE_TROUVE", resultat.getFirst().statutStage());
+        assertEquals(1, resultat.getFirst().candidatures().size());
+        assertEquals("Stage 2025", resultat.getFirst().candidatures().getFirst().titreOffre());
+    }
+
+    @Test
+    void getRapportEtudiants_candidatureEmbaucheeSansContratSigne_nestPasStageTrouve() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2026);
+        Candidature candidature = new Candidature(etudiant, offre2026);
+        candidature.setId(15L);
+        candidature.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(candidature));
+
+        Contrat contratNonSigne = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
+        when(contratRepository.findByCandidatureId(15L)).thenReturn(Optional.of(contratNonSigne));
+
+        // ACT
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2026);
+
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("EN_ATTENTE_REPONSE", resultat.getFirst().statutStage());
+    }
+
+    @Test
+    void getRapportEtudiants_avecAnneeDifferente_filtreCandidatures() {
+        // ARRANGE
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        OffreStage offre2024 = new OffreStage("Stage 2024", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2024);
+        Candidature candidature = new Candidature(etudiant, offre2024);
+        candidature.setId(10L);
+        candidature.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(candidature));
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
+
+        // ACT
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2025);
+
+        // ASSERT
+        assertEquals(1, resultat.size());
+        assertEquals("AUCUNE_CANDIDATURE", resultat.getFirst().statutStage());
         assertTrue(resultat.getFirst().candidatures().isEmpty());
     }
 
@@ -415,5 +499,309 @@ public class GestionnaireServiceTest {
         assertNotNull(resultat);
         assertTrue(resultat.isEmpty());
         verify(etudiantRepository).findEtudiantsTrouveStage(anneeArchive);
+    }
+
+    @Test
+    void getEtudiantsPourAssignation_avecAnnee() {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        when(etudiantRepository.findEtudiantsTrouveStage(2026)).thenReturn(List.of(etudiant));
+
+        // Act
+        List<EtudiantPourAssignationDto> resultat = gestionnaireService.getEtudiantsPourAssignation(2026);
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals("Sophie", resultat.getFirst().firstName());
+        verify(etudiantRepository).findEtudiantsTrouveStage(2026);
+    }
+
+    @Test
+    void getEtudiantsPourAssignation_sansAnnee() {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Luc", "Belanger", new Credentials("luc@test.com", "pass", Role.ETUDIANT), 654321, "info");
+        etudiant.setId(2L);
+        when(etudiantRepository.findEtudiantsTrouveStage()).thenReturn(List.of(etudiant));
+
+        // Act
+        List<EtudiantPourAssignationDto> resultat = gestionnaireService.getEtudiantsPourAssignation(null);
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals("Luc", resultat.getFirst().firstName());
+        verify(etudiantRepository).findEtudiantsTrouveStage();
+    }
+
+    @Test
+    void getProfesseursPourAssignation_avecNom() {
+        // Arrange
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        when(professeurRepository.findByNom("Martin")).thenReturn(List.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(2L);
+
+        // Act
+        List<ProfesseurPourAssignationDto> resultat = gestionnaireService.getProfesseursPourAssignation("Martin");
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals("Martin", resultat.getFirst().firstName());
+        assertEquals(2L, resultat.getFirst().nombreEtudiantsAssignes());
+        assertFalse(resultat.getFirst().tropEtudiants());
+    }
+
+    @Test
+    void getProfesseursPourAssignation_sansNom() {
+        // Arrange
+        Professeur prof = new Professeur("Chantal", "Gagnon", new Credentials("chantal@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(20L);
+        when(professeurRepository.findAll()).thenReturn(List.of(prof));
+        when(etudiantRepository.countByProfesseurId(20L)).thenReturn(6L);
+
+        // Act
+        List<ProfesseurPourAssignationDto> resultat = gestionnaireService.getProfesseursPourAssignation(null);
+
+        // Assert
+        assertEquals(1, resultat.size());
+        assertEquals(6L, resultat.getFirst().nombreEtudiantsAssignes());
+        assertTrue(resultat.getFirst().tropEtudiants());
+    }
+
+    private Contrat creerContratSigneParEtudiant(Etudiant etudiant, Candidature candidature) {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        contrat.signer(new Signature<>(etudiant, "sig".getBytes()));
+        return contrat;
+    }
+
+    private Etudiant createEtudiantAvecStage(Long id, String prenom, String nom, String email, int matricule) {
+        Etudiant etudiant = new Etudiant(prenom, nom, new Credentials(email, "pass", Role.ETUDIANT), matricule, "info");
+        etudiant.setId(id);
+        OffreStage offre = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
+        offre.setId(1L);
+        Candidature cand = new Candidature(etudiant, offre);
+        cand.setId(1L);
+        cand.setStatut(StatutCandidature.EMBAUCHEE);
+        etudiant.setCandidatures(List.of(cand));
+        return etudiant;
+    }
+
+    @Test
+    void assignerProfesseur_avecProfesseurId_succes() throws Exception {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(1L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiant, etudiant.getCandidatures().getFirst())));
+        when(professeurRepository.findById(10L)).thenReturn(Optional.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(2L);
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        AssignationProfesseurResponseDto reponse = gestionnaireService.assignerProfesseur(1L, 10L, null);
+
+        // Assert
+        assertNotNull(reponse);
+        assertTrue(reponse.success());
+        assertEquals("Sophie", reponse.etudiant().firstName());
+        assertEquals("Martin", reponse.professeur().firstName());
+        assertNull(reponse.avertissement());
+    }
+
+    @Test
+    void assignerProfesseur_avecProfesseurNom_succes() throws Exception {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(2L, "Luc", "Belanger", "luc@test.com", 654321);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        when(etudiantRepository.findById(2L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(1L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiant, etudiant.getCandidatures().getFirst())));
+        when(professeurRepository.findByNom("Martin Tremblay")).thenReturn(List.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(1L);
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        AssignationProfesseurResponseDto reponse = gestionnaireService.assignerProfesseur(2L, null, "Martin Tremblay");
+
+        // Assert
+        assertNotNull(reponse);
+        assertTrue(reponse.success());
+        assertEquals("Martin", reponse.professeur().firstName());
+    }
+
+    @Test
+    void assignerProfesseur_depasseSeuilCharge_retourneAvertissement() throws Exception {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(1L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiant, etudiant.getCandidatures().getFirst())));
+        when(professeurRepository.findById(10L)).thenReturn(Optional.of(prof));
+        when(etudiantRepository.countByProfesseurId(10L)).thenReturn(6L);
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        AssignationProfesseurResponseDto reponse = gestionnaireService.assignerProfesseur(1L, 10L, null);
+
+        // Assert
+        assertNotNull(reponse);
+        assertNotNull(reponse.avertissement());
+        assertTrue(reponse.avertissement().contains("seuil recommandé"));
+    }
+
+    @Test
+    void assignerProfesseur_etudiantSansStage_lanceException() {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(1L, 10L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("L'étudiant n'a pas encore trouvé de stage"));
+    }
+
+    @Test
+    void assignerProfesseur_candidatureEmbaucheeSansContratSigne_lanceException() {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(1L, 10L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("L'étudiant n'a pas encore trouvé de stage"));
+    }
+
+    @Test
+    void assignerProfesseur_etudiantNonTrouve_lanceException() {
+        // Arrange
+        when(etudiantRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(99L, 10L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("Étudiant non trouvé"));
+    }
+
+    @Test
+    void assignerProfesseur_professeurNonTrouve_lanceException() {
+        // Arrange
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(1L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiant, etudiant.getCandidatures().getFirst())));
+        when(professeurRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.assignerProfesseur(1L, 99L, null)
+        );
+
+        assertTrue(exception.getMessage().contains("Professeur non trouvé"));
+    }
+
+    @Test
+    void desassignerProfesseur_succes() throws Exception {
+        // Arrange
+        Etudiant etudiant = new Etudiant("Sophie", "Martin", new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
+        etudiant.setId(1L);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        etudiant.setProfesseur(prof);
+
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        EtudiantPourAssignationDto resultat = gestionnaireService.desassignerProfesseur(1L);
+
+        // Assert
+        assertNotNull(resultat);
+        assertNull(resultat.professeurAssigne());
+        assertFalse(resultat.estAssigne());
+    }
+
+    @Test
+    void desassignerProfesseur_etudiantNonTrouve_lanceException() {
+        // Arrange
+        when(etudiantRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                gestionnaireService.desassignerProfesseur(99L)
+        );
+
+        assertTrue(exception.getMessage().contains("Étudiant non trouvé"));
+    }
+
+    @Test
+    void getEtudiantsStageNonEvalueParProfesseur_filtreEvalues() {
+        Etudiant etudiantEvalue = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        etudiantEvalue.getCandidatures().getFirst().setId(10L);
+
+        Etudiant etudiantNonEvalue = createEtudiantAvecStage(2L, "Luc", "Belanger", "luc@test.com", 654321);
+        etudiantNonEvalue.getCandidatures().getFirst().setId(20L);
+
+        when(etudiantRepository.findEtudiantsTrouveStage(2026)).thenReturn(List.of(etudiantEvalue, etudiantNonEvalue));
+        when(contratRepository.findByCandidatureId(10L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiantEvalue, etudiantEvalue.getCandidatures().getFirst())));
+        when(contratRepository.findByCandidatureId(20L))
+                .thenReturn(Optional.of(creerContratSigneParEtudiant(etudiantNonEvalue, etudiantNonEvalue.getCandidatures().getFirst())));
+        when(evaluationMilieuStageRepository.existsByCandidatureId(10L)).thenReturn(true);
+        when(evaluationMilieuStageRepository.existsByCandidatureId(20L)).thenReturn(false);
+
+        List<RapportEtudiantDto> resultat = gestionnaireService.getEtudiantsStageNonEvalueParProfesseur(2026);
+
+        assertEquals(1, resultat.size());
+        assertEquals("Luc", resultat.getFirst().firstName());
+        assertFalse(resultat.getFirst().milieuEvalue());
+    }
+
+    @Test
+    void getEvaluationMilieuParEtudiant_succes() throws Exception {
+        Etudiant etudiant = createEtudiantAvecStage(1L, "Sophie", "Martin", "sophie@test.com", 123456);
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        EvaluationMilieuStage eval = new EvaluationMilieuStage(
+                etudiant.getCandidatures().getFirst(), etudiant, prof,
+                "CGI", "Valentin", "123 rue", "Montréal", "H3G 1T4", "514-555-1234", "",
+                "Sophie Martin", "2026-05-18 → 2026-08-21", 1, Map.of(),
+                4.0, 4.0, 4.0, "24.00", "",
+                StageCible.PREMIER_STAGE, CapaciteAccueilStagiaires.UN, true, false,
+                "", "", "", "", "", "", "Martin Tremblay", LocalDate.now()
+        );
+        eval.setId(77L);
+
+        when(evaluationMilieuStageRepository.findByEtudiantIdOrderByDateEvaluationDesc(1L)).thenReturn(List.of(eval));
+
+        EvaluationMilieuStageDto dto = gestionnaireService.getEvaluationMilieuParEtudiant(1L);
+
+        assertEquals(77L, dto.id());
+        assertEquals("CGI", dto.nomEntreprise());
+    }
+
+    @Test
+    void getEvaluationMilieuParEtudiant_nonTrouvee_lanceException() {
+        when(evaluationMilieuStageRepository.findByEtudiantIdOrderByDateEvaluationDesc(99L)).thenReturn(List.of());
+
+        assertThrows(Exception.class, () ->
+                gestionnaireService.getEvaluationMilieuParEtudiant(99L));
     }
 }

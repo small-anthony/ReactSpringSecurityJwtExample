@@ -47,7 +47,6 @@ function Header({ user }) {
   };
 
   const isEtudiant = roleTexte === "ROLE_ETUDIANT";
-  const isEmployeur = roleTexte === "ROLE_EMPLOYEUR";
 
   const getHomeRoute = () => {
     if (!user) return "/";
@@ -102,16 +101,6 @@ function Header({ user }) {
                 </NavLink>
                 <NavLink to="/about" className={navLinkClasses}>
                   {t("pagename.about")}
-                </NavLink>
-              </>
-            )}
-            {isEmployeur && (
-              <>
-                <NavLink to="/employeur" className={navLinkClasses} end>
-                  {t("pagename.voir_offres")}
-                </NavLink>
-                <NavLink to="/employeur/contrats" className={navLinkClasses}>
-                  {t("pagename.contrats_employeur")}
                 </NavLink>
               </>
             )}
@@ -277,26 +266,6 @@ function Header({ user }) {
                 className={mobileNavLinkClasses}
               >
                 {t("pagename.contrats")}
-              </NavLink>
-            </>
-          )}
-
-          {isEmployeur && (
-            <>
-              <NavLink
-                to="/employeur"
-                onClick={() => setMobileMenuOpen(false)}
-                className={mobileNavLinkClasses}
-                end
-              >
-                {t("pagename.voir_offres")}
-              </NavLink>
-              <NavLink
-                to="/employeur/contrats"
-                onClick={() => setMobileMenuOpen(false)}
-                className={mobileNavLinkClasses}
-              >
-                {t("pagename.contrats_employeur")}
               </NavLink>
             </>
           )}

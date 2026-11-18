@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   FileText,
   PlusCircle,
@@ -6,17 +6,24 @@ import {
   Building,
   User,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Calendar,
+  Clock,
+  DollarSign
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+const MAX_HORAIRE_LENGTH = 255;
+const MAX_TEXT_LENGTH = 5000;
+
 export default function FormulaireCreationContrat({
-  candidatures,
-  submitting,
+  candidatures = [],
+  submitting = false,
   onCreerContrat,
   onErreur
 }) {
-  const { t } = useTranslation("main");
+  const { t, i18n } = useTranslation("main");
+  const isEn = i18n.language?.startsWith("en");
 
   const [selectedCandidatureId, setSelectedCandidatureId] = useState("");
   const [dateDebut, setDateDebut] = useState("");
@@ -25,39 +32,228 @@ export default function FormulaireCreationContrat({
   const [salaire, setSalaire] = useState("");
   const [descriptionTaches, setDescriptionTaches] = useState("");
   const [conditions, setConditions] = useState("");
+  const [errors, setErrors] = useState({});
 
-  const selectedCandidature = candidatures.find(
-    (c) => String(c.candidatureId) === String(selectedCandidatureId)
-  );
+  const candidaturesDisponibles = useMemo(() => {
+    const dejaContractesParCompagnie = new Set(
+      candidatures
+        .filter((c) => c.contratExiste)
+        .map((c) => `${c.etudiantId}::${c.employeurEmail || c.nomEntreprise || ""}`)
+    );
+
+    return candidatures.filter((c) => {
+      if (c.contratExiste) return false;
+      const cle = `${c.etudiantId}::${c.employeurEmail || c.nomEntreprise || ""}`;
+      return !dejaContractesParCompagnie.has(cle);
+    });
+  }, [candidatures]);
+
+  const selectedCandidature = useMemo(() => {
+    return candidaturesDisponibles.find(
+      (c) => String(c.candidatureId) === String(selectedCandidatureId)
+    );
+  }, [candidaturesDisponibles, selectedCandidatureId]);
+
+  const nombreSemaines = useMemo(() => {
+    if (!dateDebut || !dateFin) return null;
+    const debut = new Date(dateDebut);
+    const fin = new Date(dateFin);
+    const diffDays = Math.ceil((fin - debut) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 0) return null;
+    return Math.max(1, Math.round(diffDays / 7));
+  }, [dateDebut, dateFin]);
+
+  const clearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleCandidatureChange = (e) => {
+    const candId = e.target.value;
+    setSelectedCandidatureId(candId);
+    clearError("candidature");
+
+    const cand = candidaturesDisponibles.find((c) => String(c.candidatureId) === String(candId));
+    if (cand) {
+      if (cand.salaireOffre) {
+        const match = cand.salaireOffre.match(/\d+([.,]\d+)?/);
+        if (match) {
+          const num = parseFloat(match[0].replace(",", "."));
+          if (!isNaN(num)) {
+            setSalaire(num.toFixed(2));
+          } else {
+            setSalaire("");
+          }
+        } else {
+          setSalaire("");
+        }
+      } else {
+        setSalaire("");
+      }
+
+      if (cand.descriptionOffre) {
+        setDescriptionTaches(cand.descriptionOffre);
+        if (cand.descriptionOffre.trim().length > MAX_TEXT_LENGTH) {
+          setErrors((prev) => ({ ...prev, descriptionTaches: "maxLength" }));
+        } else {
+          clearError("descriptionTaches");
+        }
+      } else {
+        setDescriptionTaches("");
+        clearError("descriptionTaches");
+      }
+    } else {
+      setSalaire("");
+      setDescriptionTaches("");
+    }
+  };
+
+  const handleDateDebutChange = (e) => {
+    setDateDebut(e.target.value);
+    clearError("dateDebut");
+    if (errors.dateFin === "order") {
+      clearError("dateFin");
+    }
+  };
+
+  const handleDateFinChange = (e) => {
+    setDateFin(e.target.value);
+    clearError("dateFin");
+  };
+
+  const handleHoraireChange = (e) => {
+    const val = e.target.value;
+    setHoraire(val);
+    if (val.trim().length > MAX_HORAIRE_LENGTH) {
+      setErrors((prev) => ({ ...prev, horaire: "maxLength" }));
+    } else {
+      clearError("horaire");
+    }
+  };
+
+  const handleSalaireChange = (e) => {
+    let val = e.target.value;
+
+    if (val.length > 6) {
+      val = val.slice(0, 6);
+    }
+
+    setSalaire(val);
+
+    if (val !== "") {
+      const montant = parseFloat(val);
+      if (isNaN(montant) || montant < 0 || montant > 50) {
+        setErrors((prev) => ({ ...prev, salaire: "format" }));
+      } else {
+        clearError("salaire");
+      }
+    } else {
+      clearError("salaire");
+    }
+  };
+
+  const handleSalaireBlur = () => {
+    if (!salaire) return;
+    const montant = parseFloat(salaire);
+    if (isNaN(montant) || montant < 0 || montant > 50) {
+      setErrors((prev) => ({ ...prev, salaire: "format" }));
+    } else {
+      setSalaire(montant.toFixed(2));
+      clearError("salaire");
+    }
+  };
+
+  const handleTachesChange = (e) => {
+    const val = e.target.value;
+    setDescriptionTaches(val);
+    if (val.trim().length > MAX_TEXT_LENGTH) {
+      setErrors((prev) => ({ ...prev, descriptionTaches: "maxLength" }));
+    } else {
+      clearError("descriptionTaches");
+    }
+  };
+
+  const handleConditionsChange = (e) => {
+    const val = e.target.value;
+    setConditions(val);
+    if (val.trim().length > MAX_TEXT_LENGTH) {
+      setErrors((prev) => ({ ...prev, conditions: "maxLength" }));
+    } else {
+      clearError("conditions");
+    }
+  };
+
+  const getValidationErrors = () => {
+    const newErrors = {};
+
+    if (!selectedCandidatureId) {
+      newErrors.candidature = "required";
+    } else if (selectedCandidature?.contratExiste) {
+      newErrors.candidature = "already_exists";
+    }
+
+    if (!dateDebut) {
+      newErrors.dateDebut = "required";
+    }
+
+    if (!dateFin) {
+      newErrors.dateFin = "required";
+    } else if (dateDebut && new Date(dateFin) < new Date(dateDebut)) {
+      newErrors.dateFin = "order";
+    }
+
+    if (!horaire.trim()) {
+      newErrors.horaire = "required";
+    } else if (horaire.trim().length > MAX_HORAIRE_LENGTH) {
+      newErrors.horaire = "maxLength";
+    }
+
+    if (!salaire.toString().trim()) {
+      newErrors.salaire = "required";
+    } else {
+      const montant = parseFloat(salaire);
+      if (isNaN(montant) || montant < 0 || montant > 50) {
+        newErrors.salaire = "format";
+      }
+    }
+
+    if (!descriptionTaches.trim()) {
+      newErrors.descriptionTaches = "required";
+    } else if (descriptionTaches.trim().length < 20) {
+      newErrors.descriptionTaches = "minLength";
+    } else if (descriptionTaches.trim().length > MAX_TEXT_LENGTH) {
+      newErrors.descriptionTaches = "maxLength";
+    }
+
+    if (!conditions.trim()) {
+      newErrors.conditions = "required";
+    } else if (conditions.trim().length > MAX_TEXT_LENGTH) {
+      newErrors.conditions = "maxLength";
+    }
+
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedCandidatureId) {
-      onErreur(t("contrats.alerts.error_missing_fields"));
+    const newErrors = getValidationErrors();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      const hasLengthError = Object.values(newErrors).includes("maxLength");
+      onErreur?.(
+        hasLengthError
+          ? t("contrats.alerts.error_value_too_long")
+          : t("contrats.alerts.error_missing_fields")
+      );
       return;
     }
 
-    if (selectedCandidature?.contratExiste) {
-      onErreur(t("contrats.alerts.error_already_exists"));
-      return;
-    }
-
-    if (
-      !dateDebut ||
-      !dateFin ||
-      !horaire.trim() ||
-      !salaire.trim() ||
-      !descriptionTaches.trim() ||
-      !conditions.trim()
-    ) {
-      onErreur(t("contrats.alerts.error_missing_fields"));
-      return;
-    }
-
-    if (new Date(dateFin) < new Date(dateDebut)) {
-      onErreur(t("contrats.alerts.error_date_order"));
-      return;
+    let finalSalaire = salaire.toString().trim();
+    if (finalSalaire && !finalSalaire.toLowerCase().includes("h")) {
+      finalSalaire = finalSalaire.replace("$", "").trim() + " $/h";
     }
 
     const ok = await onCreerContrat({
@@ -65,7 +261,7 @@ export default function FormulaireCreationContrat({
       dateDebut,
       dateFin,
       horaire: horaire.trim(),
-      salaire: salaire.trim(),
+      salaire: finalSalaire,
       descriptionTaches: descriptionTaches.trim(),
       conditions: conditions.trim()
     });
@@ -78,52 +274,74 @@ export default function FormulaireCreationContrat({
       setSalaire("");
       setDescriptionTaches("");
       setConditions("");
+      setErrors({});
     }
   };
 
   return (
-    <div className="ds-card p-6 sm:p-8">
-      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <PlusCircle className="w-5 h-5 text-blue-600" />
-        {t("contrats.tabs.create")}
-      </h3>
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+      <div className="flex items-center justify-between pb-5 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+            <PlusCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+              {t("contrats.tabs.create")}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500">
+              {t("contrats.form.title")}
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <div>
           <label
             htmlFor="select-candidature"
-            className="ds-label"
+            className="block text-sm font-semibold text-slate-700 mb-1.5"
           >
-            {t("contrats.candidature_select.label")} *
+            {t("contrats.candidature_select.label")} <span className="text-red-500">*</span>
           </label>
           <select
             id="select-candidature"
             value={selectedCandidatureId}
-            onChange={(e) => setSelectedCandidatureId(e.target.value)}
-            className="ds-input"
-            required
+            onChange={handleCandidatureChange}
+            className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors bg-white ${
+              errors.candidature
+                ? "border-red-500 bg-red-50 text-slate-900"
+                : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            }`}
           >
             <option value="">
               {t("contrats.candidature_select.placeholder")}
             </option>
-            {candidatures.map((c) => (
+            {candidaturesDisponibles.map((c) => (
               <option key={c.candidatureId} value={c.candidatureId}>
-                {c.etudiantPrenom} {c.etudiantNom} ({c.etudiantMatricule}) — {c.nomEntreprise} ({c.titreOffre}){" "}
-                {c.contratExiste ? `— [${t("contrats.candidature_select.already_contracted")}]` : ""}
+                {c.etudiantPrenom} {c.etudiantNom} ({c.etudiantMatricule}) — {c.nomEntreprise} ({c.titreOffre})
               </option>
             ))}
           </select>
-          <p className="mt-1.5 text-xs text-slate-500">
-            {t("contrats.candidature_select.help")}
-          </p>
+          {errors.candidature ? (
+            <p className="text-red-500 text-xs mt-1.5">
+              {errors.candidature === "already_exists"
+                ? t("contrats.form.errors.already_exists")
+                : t("contrats.form.errors.candidature")}
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-slate-500">
+              {t("contrats.candidature_select.help")}
+            </p>
+          )}
         </div>
 
         {selectedCandidature && (
           <div
             id="candidature-selected-card"
-            className={`p-5 rounded-xl border ${
+            className={`p-5 rounded-xl border transition-all ${
               selectedCandidature.contratExiste
-                ? "bg-amber-50 border-amber-200"
+                ? "bg-amber-50/80 border-amber-200"
                 : "bg-blue-50/60 border-blue-100"
             }`}
           >
@@ -176,112 +394,226 @@ export default function FormulaireCreationContrat({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label
-              htmlFor="contrat-date-debut"
-              className="ds-label"
-            >
-              {t("contrats.form.dateDebut")} *
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label
+                htmlFor="contrat-date-debut"
+                className="block text-sm font-semibold text-slate-700"
+              >
+                {t("contrats.form.dateDebut")} <span className="text-red-500">*</span>
+              </label>
+            </div>
             <input
               id="contrat-date-debut"
               type="date"
               value={dateDebut}
-              onChange={(e) => setDateDebut(e.target.value)}
-              className="ds-input"
-              required
+              onChange={handleDateDebutChange}
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
+                errors.dateDebut
+                  ? "border-red-500 bg-red-50 text-slate-900"
+                  : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              }`}
             />
+            {errors.dateDebut && (
+              <p className="text-red-500 text-xs mt-1">
+                {t("contrats.form.errors.dateDebut")}
+              </p>
+            )}
           </div>
 
           <div>
-            <label
-              htmlFor="contrat-date-fin"
-              className="ds-label"
-            >
-              {t("contrats.form.dateFin")} *
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label
+                htmlFor="contrat-date-fin"
+                className="block text-sm font-semibold text-slate-700"
+              >
+                {t("contrats.form.dateFin")} <span className="text-red-500">*</span>
+              </label>
+              {nombreSemaines && nombreSemaines > 0 && (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100">
+                  <Calendar className="w-3 h-3" />
+                  {t("contrats.form.duree_calculee", { count: nombreSemaines })}
+                </span>
+              )}
+            </div>
             <input
               id="contrat-date-fin"
               type="date"
               value={dateFin}
-              onChange={(e) => setDateFin(e.target.value)}
-              className="ds-input"
-              required
+              onChange={handleDateFinChange}
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
+                errors.dateFin
+                  ? "border-red-500 bg-red-50 text-slate-900"
+                  : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              }`}
             />
+            {errors.dateFin && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.dateFin === "order"
+                  ? t("contrats.form.errors.date_order")
+                  : t("contrats.form.errors.dateFin")}
+              </p>
+            )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label
-              htmlFor="contrat-horaire"
-              className="ds-label"
-            >
-              {t("contrats.form.horaire")} *
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label
+                htmlFor="contrat-horaire"
+                className="block text-sm font-semibold text-slate-700"
+              >
+                {t("contrats.form.horaire")} <span className="text-red-500">*</span>
+              </label>
+              {horaire.length > 0 && (
+                <span className={`text-xs ${
+                  horaire.trim().length > MAX_HORAIRE_LENGTH ? "text-red-600 font-semibold" : "text-slate-400"
+                }`}>
+                  {horaire.length} / {MAX_HORAIRE_LENGTH}
+                </span>
+              )}
+            </div>
             <input
               id="contrat-horaire"
               type="text"
               value={horaire}
-              onChange={(e) => setHoraire(e.target.value)}
+              onChange={handleHoraireChange}
               placeholder={t("contrats.form.horaire_placeholder")}
-              className="ds-input"
-              required
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
+                errors.horaire === "maxLength"
+                  ? "border-red-500 border-b-2 bg-red-50 text-slate-900 ring-1 ring-red-400"
+                  : errors.horaire
+                  ? "border-red-500 bg-red-50 text-slate-900"
+                  : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              }`}
             />
+            {errors.horaire && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.horaire === "maxLength"
+                  ? t("contrats.form.errors.horaireMaxLength")
+                  : t("contrats.form.errors.horaire")}
+              </p>
+            )}
           </div>
 
           <div>
             <label
               htmlFor="contrat-salaire"
-              className="ds-label"
+              className="block text-sm font-semibold text-slate-700 mb-1"
             >
-              {t("contrats.form.salaire")} *
+              {t("contrats.form.salaire")} <span className="text-red-500">*</span>
             </label>
-            <input
-              id="contrat-salaire"
-              type="text"
-              value={salaire}
-              onChange={(e) => setSalaire(e.target.value)}
-              placeholder={t("contrats.form.salaire_placeholder")}
-              className="ds-input"
-              required
-            />
+            <div className="flex items-stretch w-full flex-nowrap">
+              {isEn && (
+                <span className={`inline-flex items-center px-3.5 text-sm font-medium bg-slate-100 border border-r-0 rounded-l-xl select-none ${
+                  errors.salaire ? "border-red-500 bg-red-50 text-red-500" : "border-slate-300 text-slate-600"
+                }`}>$</span>
+              )}
+              <input
+                id="contrat-salaire"
+                type="number"
+                step="0.01"
+                min="0"
+                max="50"
+                name="salaire"
+                value={salaire}
+                onChange={handleSalaireChange}
+                onBlur={handleSalaireBlur}
+                placeholder={t("contrats.form.salaire_placeholder")}
+                className={`min-w-0 flex-1 px-4 py-2.5 border text-sm transition-colors ${
+                  isEn ? "rounded-none" : "rounded-l-xl"
+                } ${errors.salaire ? "border-red-500 bg-red-50 text-slate-900" : "border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"}`}
+              />
+              <span className={`inline-flex items-center px-3.5 text-sm font-medium bg-slate-100 border border-l-0 rounded-r-xl whitespace-nowrap select-none ${
+                errors.salaire ? "border-red-500 bg-red-50 text-red-500" : "border-slate-300 text-slate-600"
+              }`}>
+                {isEn ? "/h" : "$/h"}
+              </span>
+            </div>
+            {errors.salaire && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.salaire === "required"
+                  ? t("contrats.form.errors.salaire.required")
+                  : t("contrats.form.errors.salaire.format")}
+              </p>
+            )}
           </div>
         </div>
 
         <div>
-          <label
-            htmlFor="contrat-taches"
-            className="ds-label"
-          >
-            {t("contrats.form.taches")} *
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label
+              htmlFor="contrat-taches"
+              className="block text-sm font-semibold text-slate-700"
+            >
+              {t("contrats.form.taches")} <span className="text-red-500">*</span>
+            </label>
+            <span className={`text-xs ${
+              descriptionTaches.trim().length > MAX_TEXT_LENGTH ? "text-red-600 font-semibold" : "text-slate-400"
+            }`}>
+              {descriptionTaches.length} / {MAX_TEXT_LENGTH}
+            </span>
+          </div>
           <textarea
             id="contrat-taches"
             rows={4}
             value={descriptionTaches}
-            onChange={(e) => setDescriptionTaches(e.target.value)}
+            onChange={handleTachesChange}
             placeholder={t("contrats.form.taches_placeholder")}
-            className="ds-input"
-            required
+            className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
+              errors.descriptionTaches === "maxLength"
+                ? "border-red-500 border-b-2 bg-red-50 text-slate-900 ring-1 ring-red-400"
+                : errors.descriptionTaches
+                ? "border-red-500 bg-red-50 text-slate-900"
+                : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            }`}
           />
+          {errors.descriptionTaches && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.descriptionTaches === "minLength"
+                ? t("contrats.form.errors.tachesLength")
+                : errors.descriptionTaches === "maxLength"
+                ? t("contrats.form.errors.tachesMaxLength")
+                : t("contrats.form.errors.taches")}
+            </p>
+          )}
         </div>
 
         <div>
-          <label
-            htmlFor="contrat-conditions"
-            className="ds-label"
-          >
-            {t("contrats.form.conditions")} *
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label
+              htmlFor="contrat-conditions"
+              className="block text-sm font-semibold text-slate-700"
+            >
+              {t("contrats.form.conditions")} <span className="text-red-500">*</span>
+            </label>
+            <span className={`text-xs ${
+              conditions.trim().length > MAX_TEXT_LENGTH ? "text-red-600 font-semibold" : "text-slate-400"
+            }`}>
+              {conditions.length} / {MAX_TEXT_LENGTH}
+            </span>
+          </div>
           <textarea
             id="contrat-conditions"
             rows={3}
             value={conditions}
-            onChange={(e) => setConditions(e.target.value)}
+            onChange={handleConditionsChange}
             placeholder={t("contrats.form.conditions_placeholder")}
-            className="ds-input"
-            required
+            className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
+              errors.conditions === "maxLength"
+                ? "border-red-500 border-b-2 bg-red-50 text-slate-900 ring-1 ring-red-400"
+                : errors.conditions
+                ? "border-red-500 bg-red-50 text-slate-900"
+                : "border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            }`}
           />
+          {errors.conditions && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.conditions === "maxLength"
+                ? t("contrats.form.errors.conditionsMaxLength")
+                : t("contrats.form.errors.conditions")}
+            </p>
+          )}
         </div>
 
         <div className="pt-2 flex justify-end">
@@ -289,7 +621,7 @@ export default function FormulaireCreationContrat({
             id="contrat-submit-btn"
             type="submit"
             disabled={submitting || (selectedCandidature && selectedCandidature.contratExiste)}
-            className="btn-primary px-6 py-3"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
           >
             {submitting ? (
               <>
@@ -308,4 +640,3 @@ export default function FormulaireCreationContrat({
     </div>
   );
 }
-

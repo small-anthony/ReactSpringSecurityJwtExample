@@ -98,17 +98,17 @@ export function construireActionsPrioritaires({
         });
     });
 
-    if (contrats.length === 0 && candidaturesEmbauchees.length > 0) {
+    if (!aTrouveStage && contrats.length === 0 && candidaturesEmbauchees.length > 0) {
         const embauche = candidaturesEmbauchees[0];
         const { id, nomEntreprise, titre } = embauche;
         items.push({
             id: `hired-${id}`,
             priority: "info",
-            badge: t("etudiant_dashboard.applications.status_hired"),
-            tone: "border-emerald-200 bg-emerald-50/40",
-            badgeTone: "bg-emerald-100 text-emerald-800",
+            badge: t("etudiant_dashboard.applications.status_selected"),
+            tone: "border-blue-200 bg-blue-50/40",
+            badgeTone: "bg-blue-100 text-blue-800",
             icon: CheckCircle2,
-            iconTone: "bg-emerald-100 text-emerald-600",
+            iconTone: "bg-blue-100 text-blue-600",
             title: t("etudiant_dashboard.todo.hired_notice_title", {
                 entreprise: nomEntreprise,
                 poste: titre

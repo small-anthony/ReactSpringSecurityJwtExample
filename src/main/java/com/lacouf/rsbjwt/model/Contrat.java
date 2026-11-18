@@ -30,16 +30,18 @@ public class Contrat {
 	@Immutable
 	private LocalDate dateFin;
 	@Immutable
+	@Column(length = 255)
 	private String horaire;
 	@Immutable
+	@Column(length = 100)
 	private String salaire;
 
 	@Immutable
-	@Column(length = 2000)
+	@Column(columnDefinition = "TEXT")
 	private String descriptionTaches;
 
 	@Immutable
-	@Column(length = 2000)
+	@Column(columnDefinition = "TEXT")
 	private String conditions;
 
 	@Enumerated(EnumType.STRING)

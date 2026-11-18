@@ -153,4 +153,16 @@ public class EvaluationControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertInstanceOf(DataTransferObject.class, response.getBody());
     }
+
+    @Test
+    void getStagiaires_avecAnnee_shouldFiltreParAnnee() {
+        Authentication authentication = authentification();
+        List<StagiaireDto> stagiaires = List.of(stagiaire());
+        when(evaluationService.getStagiaires(EMAIL, 2026)).thenReturn(stagiaires);
+
+        ResponseEntity<List<StagiaireDto>> response = evaluationController.getStagiaires(2026, authentication);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(stagiaires, response.getBody());
+    }
 }

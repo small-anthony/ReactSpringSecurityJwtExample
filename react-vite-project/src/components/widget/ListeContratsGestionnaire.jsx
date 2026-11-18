@@ -108,72 +108,72 @@ export default function ListeContratsGestionnaire({
           key={c.id}
           className="relative p-6 sm:p-7 ds-card hover:shadow-md transition-shadow"
         >
-          <div className="absolute top-6 right-6 sm:top-7 sm:right-7">
+          <div className="mb-4 sm:mb-0 sm:absolute sm:top-7 sm:right-7">
             {getStatusBadge(c.statut)}
           </div>
 
-          <div className="mb-4 pr-44">
-            <h3 className="text-xl font-bold text-slate-900 mb-0.5">
+          <div className="mb-4 sm:pr-44 min-w-0">
+            <h3 className="text-xl font-bold text-slate-900 mb-0.5 break-words">
               {c.etudiantPrenom} {c.etudiantNom}
             </h3>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="text-sm text-slate-500 font-medium break-words">
               {t("contrats.candidature_select.matricule")} : {c.etudiantMatricule}
             </p>
             {c.etudiantEmail && (
               <a
                 href={`mailto:${c.etudiantEmail}`}
-                className="inline-block text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                className="inline-block max-w-full text-sm text-slate-500 hover:text-blue-600 transition-colors break-all"
               >
                 {c.etudiantEmail}
               </a>
             )}
           </div>
 
-          <p className="text-blue-600 font-medium mb-5 flex items-center gap-1.5 pb-4 border-b border-slate-100 flex-wrap">
-            <Briefcase className="w-4 h-4" strokeWidth={2} />
-            <span className="font-semibold text-slate-900">{c.nomEntreprise}</span>
+          <p className="text-blue-600 font-medium mb-5 flex items-center gap-1.5 pb-4 border-b border-slate-100 flex-wrap min-w-0">
+            <Briefcase className="w-4 h-4 shrink-0" strokeWidth={2} />
+            <span className="font-semibold text-slate-900 break-words">{c.nomEntreprise}</span>
             <span className="text-slate-300">•</span>
-            <span className="text-slate-700">{c.titreOffre}</span>
+            <span className="text-slate-700 break-words">{c.titreOffre}</span>
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-50 p-2 rounded-lg border border-blue-100">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="bg-blue-50 p-2 rounded-lg border border-blue-100 shrink-0">
                 <Calendar className="w-4 h-4 text-blue-600" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
                   {t("contrats.table.dates")}
                 </span>
-                <span className="text-slate-800 text-sm font-medium">
+                <span className="block text-slate-800 text-sm font-medium break-words">
                   {c.dateDebut} → {c.dateFin}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="bg-emerald-50 p-2 rounded-lg border border-emerald-100 shrink-0">
                 <DollarSign className="w-4 h-4 text-emerald-600" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
                   {t("contrats.table.salary")}
                 </span>
-                <span className="text-emerald-700 text-sm font-bold">
+                <span className="block text-emerald-700 text-sm font-bold break-words">
                   {c.salaire}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100">
-                <Clock className="w-4 h-4 text-indigo-600" />
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="bg-purple-50 p-2 rounded-lg border border-purple-100 shrink-0">
+                <Clock className="w-4 h-4 text-purple-600" />
               </div>
-              <div>
-                <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+              <div className="min-w-0 flex-1">
+                <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                   {t("contrats.form.horaire")}
                 </span>
-                <span className="text-slate-800 text-sm font-medium">
+                <span className="block text-gray-800 text-sm font-medium break-words leading-relaxed">
                   {c.horaire}
                 </span>
               </div>

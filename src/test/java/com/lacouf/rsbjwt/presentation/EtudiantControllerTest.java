@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.service.EtudiantService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -39,6 +40,19 @@ public class EtudiantControllerTest {
     @InjectMocks
     private EtudiantController etudiantController;
 
+    private EtudiantDto createDummyEtudiantDto() {
+        return new EtudiantDto(1, "Peter", "Parker", "test@gmail.com", Role.ETUDIANT, 12345, "Informatique", false, StatusAcceptation.EN_ATTENTE, null);
+    }
+
+    private OffreStageDto createDummyOffreStageDto() {
+        return new OffreStageDto(
+                1, "Dev Web", "Description", "CGI",
+                StatusAcceptation.EN_ATTENTE, null,
+                "informatique", "25$/h", "15 sem", "Java",
+                List.of(), 2026
+        );
+    }
+
     @Test
     void signUpEtudiant_shouldReturnCreated() throws Exception {
         // ARRANGE
@@ -51,7 +65,7 @@ public class EtudiantControllerTest {
         request.put("password", "password");
         request.put("confirmPassword", "password");
 
-        EtudiantDto etudiantDto = mock(EtudiantDto.class);
+        EtudiantDto etudiantDto = createDummyEtudiantDto();
 
         when(userAppService.registerStudent(
                 "Peter",
@@ -188,7 +202,7 @@ public class EtudiantControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(email);
 
-        OffreStageDto offreDto = mock(OffreStageDto.class);
+        OffreStageDto offreDto = createDummyOffreStageDto();
         when(etudiantService.getOffresDisponibles(email)).thenReturn(List.of(offreDto));
 
         // ACT
@@ -207,7 +221,7 @@ public class EtudiantControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(email);
 
-        OffreStageDto offreDto = mock(OffreStageDto.class);
+        OffreStageDto offreDto = createDummyOffreStageDto();
         when(etudiantService.getOffreDetail(1L, email)).thenReturn(offreDto);
 
         // ACT
@@ -224,7 +238,7 @@ public class EtudiantControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("etudiant@test.com");
 
-        OffreStageDto offreDto = mock(OffreStageDto.class);
+        OffreStageDto offreDto = createDummyOffreStageDto();
         when(etudiantService.postuler(10L, "etudiant@test.com")).thenReturn(offreDto);
 //        ACT
         ResponseEntity<Object> response = etudiantController.postuler(10L, authentication);
@@ -338,7 +352,7 @@ public class EtudiantControllerTest {
     @Test
     void rechercherEtudiants_shouldReturnOk() {
         //ARRANGE
-        EtudiantDto etudiantDto = mock (EtudiantDto.class);
+        EtudiantDto etudiantDto = createDummyEtudiantDto();
         when(etudiantService.rechercherEtudiants("Peter")).thenReturn(List.of(etudiantDto));
 
         //ACT

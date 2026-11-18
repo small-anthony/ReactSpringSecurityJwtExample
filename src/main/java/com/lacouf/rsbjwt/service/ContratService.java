@@ -15,9 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -35,15 +41,55 @@ public class ContratService {
         this.userAppRepository = userAppRepository;
     }
 
+    private record EtudiantEmployeurAnnee(Long etudiantId, Long employeurId, int annee) {
+    }
+
     @Transactional(readOnly = true)
     public List<CandidaturePourContratDto> getCandidaturesPourContrat() {
+        return getCandidaturesPourContrat(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CandidaturePourContratDto> getCandidaturesPourContrat(Integer annee) {
         List<Candidature> candidatures = new ArrayList<>();
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE));
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE));
-        return candidatures.stream()
-                .distinct()
-                .map(c -> CandidaturePourContratDto.create(c, contratRepository.findByCandidatureId(c.getId())))
+
+        List<Candidature> distinctCandidatures = candidatures.stream().distinct().toList();
+        Set<EtudiantEmployeurAnnee> contratsExistants = new HashSet<>();
+        List<Candidature> sansContrat = new ArrayList<>();
+
+        for (Candidature c : distinctCandidatures) {
+            Optional<Contrat> contratOpt = contratRepository.findByCandidatureId(c.getId());
+            if (contratOpt.isPresent()) {
+                EtudiantEmployeurAnnee cle = cleContrat(c);
+                if (cle != null) {
+                    contratsExistants.add(cle);
+                }
+            } else {
+                sansContrat.add(c);
+            }
+        }
+
+        return sansContrat.stream()
+                .filter(c -> {
+                    EtudiantEmployeurAnnee cle = cleContrat(c);
+                    return (cle == null || !contratsExistants.contains(cle))
+                            && (annee == null || (c.getOffreStage() != null && annee.equals(c.getOffreStage().getAnnee())));
+                })
+                .map(c -> CandidaturePourContratDto.create(c, Optional.empty()))
                 .toList();
+    }
+
+    private EtudiantEmployeurAnnee cleContrat(Candidature c) {
+        Etudiant etudiant = c.getEtudiant();
+        OffreStage offre = c.getOffreStage();
+        Employeur employeur = c.getEmployeur();
+        if (etudiant == null || offre == null || employeur == null
+                || etudiant.getId() == null || employeur.getId() == null) {
+            return null;
+        }
+        return new EtudiantEmployeurAnnee(etudiant.getId(), employeur.getId(), offre.getAnnee());
     }
 
     public ContratDto creerContrat(CreationContratRequest request, String gestionnaireEmail) throws Exception {
@@ -118,7 +164,12 @@ public class ContratService {
 
     @Transactional(readOnly = true)
     public List<ContratDto> getTousLesContrats() {
-        return ContratDto.create(contratRepository.findAllByOrderByDateCreationDesc());
+        return getTousLesContrats(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ContratDto> getTousLesContrats(Integer annee) {
+        return ContratDto.create(filtrerContratsParAnnee(contratRepository.findAllByOrderByDateCreationDesc(), annee));
     }
 
     @Transactional(readOnly = true)
@@ -137,13 +188,51 @@ public class ContratService {
 
     @Transactional(readOnly = true)
     public List<ContratDto> getContratsEtudiant(String email) {
-        return ContratDto.create(contratRepository.findByCandidatureEtudiantEmail(email));
+        return getContratsEtudiant(email, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ContratDto> getContratsEtudiant(String email, Integer annee) {
+        return ContratDto.create(filtrerContratsParAnnee(contratRepository.findByCandidatureEtudiantEmail(email), annee));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Integer> getAnneesContratsEtudiant(String email) {
+        Set<Integer> annees = new TreeSet<>(Collections.reverseOrder());
+        annees.add(AcademicSessionUtils.getAnneeActuelle());
+        List<Contrat> contrats = contratRepository.findByCandidatureEtudiantEmail(email);
+        if (contrats != null) {
+            for (Contrat contrat : contrats) {
+                if (contrat.getOffreStage() != null) {
+                    annees.add(contrat.getOffreStage().getAnnee());
+                }
+            }
+        }
+        return new ArrayList<>(annees);
     }
 
     @Transactional(readOnly = true)
     public List<ContratDto> getContratsEmployeur(String email) {
-        return ContratDto.create(contratRepository.findByCandidatureOffreStageEmployeurEmail(email));
+        return getContratsEmployeur(email, null);
     }
+
+    @Transactional(readOnly = true)
+    public List<ContratDto> getContratsEmployeur(String email, Integer annee) {
+        return ContratDto.create(filtrerContratsParAnnee(contratRepository.findByCandidatureOffreStageEmployeurEmail(email), annee));
+    }
+
+    private List<Contrat> filtrerContratsParAnnee(List<Contrat> contrats, Integer annee) {
+        if (contrats == null || annee == null) {
+            return contrats != null ? contrats : List.of();
+        }
+        return contrats.stream()
+                .filter(c -> c.getOffreStage() != null && annee.equals(c.getOffreStage().getAnnee()))
+                .toList();
+    }
+
+    private static final int MAX_HORAIRE_LENGTH = 255;
+    private static final int MAX_SALAIRE_LENGTH = 100;
+    private static final int MAX_TEXT_LENGTH = 5000;
 
     private void validerRequeteContrat(CreationContratRequest request) throws Exception {
         if (request == null || request.candidatureId() == null
@@ -154,6 +243,18 @@ public class ContratService {
         }
         if (request.dateFin().isBefore(request.dateDebut())) {
             throw new Exception("La date de fin ne peut pas être antérieure à la date de début.");
+        }
+        if (request.horaire().trim().length() > MAX_HORAIRE_LENGTH) {
+            throw new Exception("L'horaire de travail ne peut pas dépasser " + MAX_HORAIRE_LENGTH + " caractères.");
+        }
+        if (request.salaire().trim().length() > MAX_SALAIRE_LENGTH) {
+            throw new Exception("Le salaire ne peut pas dépasser " + MAX_SALAIRE_LENGTH + " caractères.");
+        }
+        if (request.descriptionTaches().trim().length() > MAX_TEXT_LENGTH) {
+            throw new Exception("La description des tâches ne peut pas dépasser " + MAX_TEXT_LENGTH + " caractères.");
+        }
+        if (request.conditions().trim().length() > MAX_TEXT_LENGTH) {
+            throw new Exception("Les conditions de travail ne peuvent pas dépasser " + MAX_TEXT_LENGTH + " caractères.");
         }
     }
 
@@ -189,6 +290,9 @@ public class ContratService {
             if (contrat.isSigneParEtudiant()) {
                 throw new Exception("signature existe déjà");
             }
+            if (aDejaSigneUnAutreContrat(etudiant, contrat)) {
+                throw new Exception("Vous avez déjà signé un contrat de stage et ne pouvez pas en signer plusieurs.");
+            }
         } else if (utilisateur instanceof Employeur employeur) {
             if (!Objects.equals(employeur.getId(), contrat.getEmployeur().getId())) {
                 throw new Exception("signataire est invalide");
@@ -222,5 +326,21 @@ public class ContratService {
         } else if (!(utilisateur instanceof Gestionnaire)) {
             throw new Exception("signataire inconnu");
         }
+    }
+
+    private boolean aDejaSigneUnAutreContrat(Etudiant etudiant, Contrat contratActuel) {
+        List<Contrat> contratsEtudiant = contratRepository.findByCandidatureEtudiantEmail(etudiant.getEmail());
+        if (contratsEtudiant == null) {
+            return false;
+        }
+        int anneeContrat = contratActuel.getOffreStage() != null
+                ? contratActuel.getOffreStage().getAnnee()
+                : AcademicSessionUtils.getAnneeActuelle();
+        return contratsEtudiant.stream()
+                .anyMatch(c -> c != contratActuel
+                        && (contratActuel.getId() == null || !Objects.equals(c.getId(), contratActuel.getId()))
+                        && c.isSigneParEtudiant()
+                        && c.getStatut() != StatutContrat.REFUSE
+                        && (c.getOffreStage() == null || c.getOffreStage().getAnnee() == anneeContrat));
     }
 }

@@ -5,9 +5,13 @@ import { BrowserRouter } from "react-router-dom";
 import GestionnaireContrats from "../../../components/page/GestionnaireContrats.jsx";
 import { AuthServiceContext } from "../../../services/AuthService.tsx";
 import * as ContratAPI from "../../../services/api/ContratAPI.js";
+import * as OffreStageService from "../../../services/api/OffreStageService.js";
 import i18n from "../../../../i18n.config.js";
 
 vi.mock("../../../services/api/ContratAPI.js");
+vi.mock("../../../services/api/OffreStageService.js", () => ({
+    getAnneesGestionnaire: vi.fn()
+}));
 
 vi.mock("../../../components/modal/ModalCvPdf.jsx", () => ({
     default: ({ titre, onClose }) => (
@@ -73,6 +77,7 @@ const mockContrats = [
 describe("GestionnaireContrats", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        OffreStageService.getAnneesGestionnaire.mockResolvedValue([]);
         i18n.changeLanguage("fr");
         globalThis.URL.createObjectURL = vi.fn(() => "blob:http://localhost/test");
         globalThis.URL.revokeObjectURL = vi.fn();

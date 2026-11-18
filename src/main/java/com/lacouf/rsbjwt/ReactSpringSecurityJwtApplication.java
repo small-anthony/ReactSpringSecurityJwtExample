@@ -36,6 +36,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         private final CandidatureRepository candidatureRepository;
         private final ConvocationRepository convocationRepository;
         private final ContratRepository contratRepository;
+        private final ProfesseurRepository professeurRepository;
         private final PasswordEncoder passwordEncoder;
 
         public ReactSpringSecurityJwtApplication(
@@ -46,6 +47,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         CandidatureRepository candidatureRepository,
                         ConvocationRepository convocationRepository,
                         ContratRepository contratRepository,
+                        ProfesseurRepository professeurRepository,
                         PasswordEncoder passwordEncoder) {
                 this.gestionnaireRepository = gestionnaireRepository;
                 this.etudiantRepository = etudiantRepository;
@@ -53,6 +55,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 this.candidatureRepository = candidatureRepository;
                 this.convocationRepository = convocationRepository;
                 this.contratRepository = contratRepository;
+                this.professeurRepository = professeurRepository;
                 this.passwordEncoder = passwordEncoder;
         }
 
@@ -69,8 +72,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         @Override
         public void run(String... args) throws Exception {
                 try {
-                        String bibPass = passwordEncoder != null ? passwordEncoder.encode("bib") : "bib";
-                        String defaultPass = passwordEncoder != null ? passwordEncoder.encode("password") : "password";
+                        String bibPass = "bib";
+                        String defaultPass = "password";
+                        if (passwordEncoder != null) {
+                                String encBib = passwordEncoder.encode("bib");
+                                if (encBib != null) bibPass = encBib;
+                                String encDefault = passwordEncoder.encode("password");
+                                if (encDefault != null) defaultPass = encDefault;
+                        }
 
                         byte[] cvBytes = chargerCvDemo();
 
@@ -90,6 +99,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Larry", "Page",
                                         new Credentials("valentin@test.com", defaultPass, Role.EMPLOYEUR),
                                         "Google", "514-111-1111");
+                        Professeur profMartin = new Professeur("Martin", "Tremblay",
+                                        new Credentials("professeur@test.com", defaultPass, Role.PROFESSEUR));
+                        professeurRepository.save(profMartin);
+
+                        Professeur profChantal = new Professeur("Chantal", "Gagnon",
+                                        new Credentials("chantal@test.com", defaultPass, Role.PROFESSEUR));
+                        professeurRepository.save(profChantal);
 
                         // Étudiants
                         Etudiant hatim = new Etudiant("Hatim", "Fakhour",
@@ -132,6 +148,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         new Credentials("daniil@test.com", defaultPass, Role.ETUDIANT),
                                         1234578, "Techniques de l'informatique");
                         etudiantRepository.save(daniil);
+
+                        Etudiant claire = new Etudiant("Claire", "Lavoie",
+                                        new Credentials("claire@test.com", defaultPass, Role.ETUDIANT),
+                                        8887776, "Techniques de l'informatique");
+                        claire.setCv(cvBytes);
+                        claire.getCv().accepterApprobation();
+                        claire = etudiantRepository.save(claire);
 
                         // =========================================================================
                         // 2. OFFRES DE STAGE (Courantes et Historiques)
@@ -264,8 +287,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqHatimGoogle = new CreationContratRequest(
                                         candHatimGoogle.getId(),
-                                        LocalDate.of(2026, 5, 11),
-                                        LocalDate.of(2026, 8, 28),
+                                        LocalDate.of(anneeCourante, 5, 11),
+                                        LocalDate.of(anneeCourante, 8, 28),
                                         "Du lundi au vendredi, 9h à 17h (35h/semaine)",
                                         "28.00$/h",
                                         "Développement de composants UI React modernes et intégration aux APIs REST.",
@@ -290,8 +313,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqSophie = new CreationContratRequest(
                                         candSophieCgi.getId(),
-                                        LocalDate.of(2026, 5, 18),
-                                        LocalDate.of(2026, 8, 21),
+                                        LocalDate.of(anneeCourante, 5, 18),
+                                        LocalDate.of(anneeCourante, 8, 21),
                                         "Du lundi au vendredi, 8h30 à 16h30 (35h/semaine)",
                                         "24.00$/h",
                                         "Développement full-stack de microservices Spring Boot et interfaces utilisateur.",
@@ -319,8 +342,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqLuc = new CreationContratRequest(
                                         candLucGoogle.getId(),
-                                        LocalDate.of(2026, 5, 25),
-                                        LocalDate.of(2026, 8, 28),
+                                        LocalDate.of(anneeCourante, 5, 25),
+                                        LocalDate.of(anneeCourante, 8, 28),
                                         "Du lundi au vendredi, 9h à 17h (35h/semaine)",
                                         "25.00$/h",
                                         "Automatisation de tests E2E avec Playwright et validation continue des livrables.",
@@ -344,8 +367,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqEmmaComp = new CreationContratRequest(
                                         candEmmaComplete.getId(),
-                                        LocalDate.of(2026, 5, 11),
-                                        LocalDate.of(2026, 8, 21),
+                                        LocalDate.of(anneeCourante, 5, 11),
+                                        LocalDate.of(anneeCourante, 8, 21),
                                         "35h/semaine", "25.00$/h",
                                         "Assurance qualité logicielle",
                                         "Matériel fourni");
@@ -360,6 +383,34 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         contratCompleteImprime.signer(new Signature<>(john, "sig_john".getBytes()));
                         contratCompleteImprime.setData(ContratPdfGenerator.mettreAJour(contratCompleteImprime, "John Gestion"));
                         contratRepository.save(contratCompleteImprime);
+
+                        // -------------------------------------------------------------------------
+                        // EQ2-23 : En tant qu'employeur, j'évalue un stagiaire de la session courante
+                        // Employeur : employeur@test.com (CGI Inc.) -> "Mes stagiaires" -> "Évaluer"
+                        // Contrat complété (COMPLETE) dans la session courante (anneeCourante)
+                        // -------------------------------------------------------------------------
+                        Candidature candClaireCgiComplete = new Candidature(claire, offreCgiDev);
+                        candClaireCgiComplete.setStatut(StatutCandidature.EMBAUCHEE);
+                        candidatureRepository.save(candClaireCgiComplete);
+
+                        CreationContratRequest reqClaireComp = new CreationContratRequest(
+                                        candClaireCgiComplete.getId(),
+                                        LocalDate.of(anneeCourante, 5, 11),
+                                        LocalDate.of(anneeCourante, 8, 21),
+                                        "35h/semaine", "24.00$/h",
+                                        "Développement Full Stack Web avec React et Spring Boot",
+                                        "Télétravail hybride");
+                        byte[] pdfClaireComp = ContratPdfGenerator.generer(candClaireCgiComplete, reqClaireComp, "John Gestion");
+                        Contrat contratClaireCgiComplete = new Contrat(
+                                        candClaireCgiComplete, pdfClaireComp,
+                                        reqClaireComp.dateDebut(), reqClaireComp.dateFin(),
+                                        reqClaireComp.horaire(), reqClaireComp.salaire(),
+                                        reqClaireComp.descriptionTaches(), reqClaireComp.conditions());
+                        contratClaireCgiComplete.signer(new Signature<>(claire, "sig_claire".getBytes()));
+                        contratClaireCgiComplete.signer(new Signature<>(cgi, "sig_cgi_claire".getBytes()));
+                        contratClaireCgiComplete.signer(new Signature<>(john, "sig_john_claire".getBytes()));
+                        contratClaireCgiComplete.setData(ContratPdfGenerator.mettreAJour(contratClaireCgiComplete, "John Gestion"));
+                        contratRepository.save(contratClaireCgiComplete);
 
                         // -------------------------------------------------------------------------
                         // EQ2-105 : Gestion des données historique (nouvelle fonctionnalité)

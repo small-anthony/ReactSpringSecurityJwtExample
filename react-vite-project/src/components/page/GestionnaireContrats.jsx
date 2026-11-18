@@ -14,10 +14,17 @@ import {
   getContratDocumentBlob,
   rejeterContrat
 } from "../../services/api/ContratAPI.js";
+import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 export default function GestionnaireContrats() {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
+  const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    getAnneesGestionnaire,
+    authService
+  );
 
   const [activeTab, setActiveTab] = useState("create");
   const [candidatures, setCandidatures] = useState([]);
@@ -34,13 +41,62 @@ export default function GestionnaireContrats() {
 
   const authHeader = authService.buildAuthHeader();
 
-  const chargerDonnees = async () => {
+  const traduireErreurContrat = (message) => {
+    if (!message) return "";
+    const msg = String(message).trim();
+    if (msg.startsWith("contrats.alerts.")) {
+      return t(msg);
+    }
+    const lower = msg.toLowerCase();
+    if (lower.includes("informations obligatoires manquent") || lower.includes("mandatory information is missing")) {
+      return t("contrats.alerts.error_missing_fields");
+    }
+    if (lower.includes("date de fin") && (lower.includes("antérieure") || lower.includes("anterieure") || lower.includes("avant") || lower.includes("earlier") || lower.includes("before"))) {
+      return t("contrats.alerts.error_date_order");
+    }
+    if (lower.includes("un contrat existe") || lower.includes("contract already exists")) {
+      return t("contrats.alerts.error_already_exists");
+    }
+    if (lower.includes("pas été embauché") || lower.includes("pas ete embauche") || lower.includes("was not hired")) {
+      return t("contrats.alerts.error_not_hired");
+    }
+    if (lower.includes("candidature introuvable") || lower.includes("chargement des données") || lower.includes("loading contract data")) {
+      return t("contrats.alerts.error_load");
+    }
+    if (lower.includes("téléchargement") || lower.includes("telechargement") || lower.includes("downloading")) {
+      return t("contrats.alerts.error_download");
+    }
+    if (lower.includes("ouverture") || lower.includes("opening")) {
+      return t("contrats.alerts.error_open");
+    }
+    if (lower.includes("horaire de travail") && lower.includes("dépasser")) {
+      return t("contrats.form.errors.horaireMaxLength");
+    }
+    if (lower.includes("description des tâches") && lower.includes("dépasser")) {
+      return t("contrats.form.errors.tachesMaxLength");
+    }
+    if (lower.includes("conditions de travail") && lower.includes("dépasser")) {
+      return t("contrats.form.errors.conditionsMaxLength");
+    }
+    if (lower.includes("value too long") || lower.includes("could not execute statement") || lower.includes("longueur maximale")) {
+      return t("contrats.alerts.error_value_too_long");
+    }
+    if (lower.includes("refus") || lower.includes("refusing") || lower.includes("refuse")) {
+      return t("contrats.alerts.error_refuse");
+    }
+    return message;
+  };
+
+  const chargerDonnees = async (annee = anneeChoisie) => {
     try {
       setLoading(true);
       setErreur(null);
+      const aAnnee = annee !== null && annee !== undefined;
       const [candsData, contratsData] = await Promise.all([
-        getCandidaturesAccepteesPourContrat(authHeader),
-        getTousLesContrats(authHeader)
+        aAnnee
+          ? getCandidaturesAccepteesPourContrat(authHeader, annee)
+          : getCandidaturesAccepteesPourContrat(authHeader),
+        aAnnee ? getTousLesContrats(authHeader, annee) : getTousLesContrats(authHeader)
       ]);
       setCandidatures(candsData || []);
       setContrats(contratsData || []);
@@ -52,8 +108,9 @@ export default function GestionnaireContrats() {
   };
 
   useEffect(() => {
-    chargerDonnees();
-  }, []);
+    if (!anneesChargees) return;
+    chargerDonnees(anneeChoisie);
+  }, [anneesChargees, anneeChoisie]);
 
   const handleCreerContrat = async (payload) => {
     setErreur(null);
@@ -171,6 +228,11 @@ export default function GestionnaireContrats() {
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
             {t("contrats.title")}
           </h2>
+          <SelecteurSession
+            annees={annees}
+            anneeSelectionnee={anneeChoisie}
+            onChangementAnnee={setAnneeChoisie}
+          />
         </div>
 
         <div className="flex border-b border-slate-200 mb-8 gap-6">
@@ -211,7 +273,7 @@ export default function GestionnaireContrats() {
             className="mb-6 ds-alert-error flex items-center justify-between"
             role="alert"
           >
-            <span>{erreur}</span>
+            <span>{traduireErreurContrat(erreur)}</span>
             <button
               onClick={() => setErreur(null)}
               className="text-red-500 hover:text-red-700 p-1 cursor-pointer"

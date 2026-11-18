@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.model.ENUM.NiveauAccord;
 import com.lacouf.rsbjwt.model.ENUM.SectionEvaluation;
 import com.lacouf.rsbjwt.model.Contrat;
 import com.lacouf.rsbjwt.model.Evaluation;
+import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationRequest;
 import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.EvaluationRepository;
@@ -323,5 +324,27 @@ class EvaluationServiceTest {
 
         assertEquals(7L, dto.contratId());
         verify(evaluationRepository).save(any(Evaluation.class));
+    }
+
+    @Test
+    void getStagiaires_filtreParSessionLorsqueAnneeEstFournie() {
+        Contrat contrat2027 = contrat(1L, true);
+        OffreStage offre2027 = mock(OffreStage.class);
+        when(offre2027.getAnnee()).thenReturn(2027);
+        when(contrat2027.getOffreStage()).thenReturn(offre2027);
+
+        Contrat contrat2026 = contrat(2L, true);
+        OffreStage offre2026 = mock(OffreStage.class);
+        when(offre2026.getAnnee()).thenReturn(2026);
+        when(contrat2026.getOffreStage()).thenReturn(offre2026);
+
+        when(contratRepository.findByCandidatureOffreStageEmployeurEmail(EMAIL))
+                .thenReturn(List.of(contrat2027, contrat2026));
+        when(evaluationRepository.existsByContratId(1L)).thenReturn(false);
+
+        List<StagiaireDto> stagiaires2027 = evaluationService.getStagiaires(EMAIL, 2027);
+
+        assertEquals(1, stagiaires2027.size());
+        assertEquals(1L, stagiaires2027.get(0).contratId());
     }
 }

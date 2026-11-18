@@ -1,5 +1,69 @@
+# Rapport des Définitions de « Done » (Sprint 5)
+
+## Scrum master : Alrik
+## Modèle Général de Définition de "Done"
+- [x] Tâches complétées
+- [x] Tests validés
+- [x] Critères de succès respectés
+
+### Points d'action
+- Utiliser un chronomètre pour faire le log du temps
+  - [x] Respecté
+  - [ ] Aidé
+  - [x] Préservé
+
+- Vérifier les plans de démo la veille pour corriger les incohérences
+  - [x] Respecté
+  - [ ] Aidé
+  - [x] Préservé
+
+- Créer un daily virtuel sur discord.
+  - [ ] Respecté
+  - [x] Aidé
+  - [x] Préservé
+
+- Ping tous les membres d'équipe lorsqu'on a une réunion sur discord.
+  - [x] Respecté
+  - [x] Aidé
+  - [x] Préservé
+
+---
+
+# Rapport des Définitions de « Done » (Sprint 4)
+
+## Scrum master : Valentin
+## Modèle Général de Définition de "Done"
+- [x] Tâches complétées
+- [x] Tests validés
+- [x] Critères de succès respectés
+
+### Points d'action
+- Utiliser un chronomètre pour faire le log du temps
+  - [x] Respecté
+  - [ ] Aidé
+  - [x] Préservé
+
+- Vérifier les plans de démo la veille pour corriger les incohérences
+  - [x] Respecté
+  - [ ] Aidé
+  - [x] Préservé
+  
+- Chaque membre essaye de finir un story à la première semaine.
+  -[x] Respecté
+  -[ ] Aidé
+  -[x] Préservé
+  
+- On fait des petits merges pour mieux avancer et updater notre branche quotidiennement.
+  -[x] Respecté
+  -[x]Aidé
+  -[x] Préservé
+
+---
+
+
 # Rapport des Définitions de « Done » (Sprint 3)
 
+## Scrum master : Anthony
 ## Modèle Général de Définition de "Done"
 - [x] Tâches complétées 
 - [x] Tests validés
@@ -16,7 +80,7 @@
   - [ ] Aidé
   - [x] Préservé
 
----
+
 
 ## 1. [EQ2-69] FIX-Sprint2 (Modification et suppression d'une offre)
 
@@ -42,6 +106,8 @@
   - [x] Respecté 
   - [ ] Aidé
   - [x] Préservé
+  
+
 
 ---
 

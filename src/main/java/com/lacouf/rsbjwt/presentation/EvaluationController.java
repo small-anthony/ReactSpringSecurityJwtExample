@@ -21,8 +21,17 @@ public class EvaluationController {
     }
 
     @GetMapping("/stagiaires")
-    public ResponseEntity<List<StagiaireDto>> getStagiaires(Authentication authentication) {
+    public ResponseEntity<List<StagiaireDto>> getStagiaires(
+            @RequestParam(required = false) Integer annee,
+            Authentication authentication) {
+        if (annee != null) {
+            return ResponseEntity.ok(evaluationService.getStagiaires(emailDe(authentication), annee));
+        }
         return ResponseEntity.ok(evaluationService.getStagiaires(emailDe(authentication)));
+    }
+
+    public ResponseEntity<List<StagiaireDto>> getStagiaires(Authentication authentication) {
+        return getStagiaires(null, authentication);
     }
 
     @GetMapping("/stagiaires/{contratId}")

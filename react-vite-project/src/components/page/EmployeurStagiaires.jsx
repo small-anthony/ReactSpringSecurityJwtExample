@@ -15,11 +15,18 @@ import {
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStagiaires } from "../../services/api/EvaluationAPI.js";
+import { getAnneesEmployeur } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import SelecteurSession from "../widget/SelecteurSession.jsx";
 
 export default function EmployeurStagiaires() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const navigate = useNavigate();
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesEmployeur,
+        authService
+    );
 
     const [stagiaires, setStagiaires] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,20 +34,28 @@ export default function EmployeurStagiaires() {
     const [filtre, setFiltre] = useState("TOUS");
 
     useEffect(() => {
+        if (!anneesChargees) return;
+        let actif = true;
         const charger = async () => {
             try {
                 setLoading(true);
                 setErreur(null);
-                const data = await getStagiaires(authService.buildAuthHeader());
-                setStagiaires(data || []);
+                const header = authService.buildAuthHeader();
+                const data = anneeChoisie !== null && anneeChoisie !== undefined
+                    ? await getStagiaires(header, anneeChoisie)
+                    : await getStagiaires(header);
+                if (actif) setStagiaires(data || []);
             } catch (e) {
-                setErreur(e.message || t("stagiaires.error_load", { defaultValue: "Erreur lors du chargement de vos stagiaires" }));
+                if (actif) setErreur(e.message || t("stagiaires.error_load", { defaultValue: "Erreur lors du chargement de vos stagiaires" }));
             } finally {
-                setLoading(false);
+                if (actif) setLoading(false);
             }
         };
         charger();
-    }, []);
+        return () => {
+            actif = false;
+        };
+    }, [anneesChargees, anneeChoisie]);
 
     const aEvaluerCount = stagiaires.filter((s) => !s.evalue).length;
     const evaluesCount = stagiaires.filter((s) => s.evalue).length;
@@ -76,15 +91,29 @@ export default function EmployeurStagiaires() {
     return (
         <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-800">
-                        {t("stagiaires.title", { defaultValue: "Mes stagiaires" })}
-                    </h1>
-                    <p className="text-gray-500 mt-1">
-                        {t("stagiaires.subtitle", {
-                            defaultValue: "Consultez vos stagiaires et remplissez leur fiche d'évaluation.",
-                        })}
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <button
+                            type="button"
+                            onClick={() => navigate("/employeur")}
+                            className="btn-secondary mb-4"
+                        >
+                            {t("candidatures_offre.back")}
+                        </button>
+                        <h1 className="text-3xl font-bold text-gray-800">
+                            {t("stagiaires.title", { defaultValue: "Mes stagiaires" })}
+                        </h1>
+                        <p className="text-gray-500 mt-1">
+                            {t("stagiaires.subtitle", {
+                                defaultValue: "Consultez vos stagiaires et remplissez leur fiche d'évaluation.",
+                            })}
+                        </p>
+                    </div>
+                    <SelecteurSession
+                        annees={annees}
+                        anneeSelectionnee={anneeChoisie}
+                        onChangementAnnee={setAnneeChoisie}
+                    />
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 p-1.5 bg-gray-100 rounded-xl w-fit">
@@ -141,44 +170,44 @@ export default function EmployeurStagiaires() {
                                 className="bg-white rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-shadow duration-200 p-6 md:p-7 space-y-6"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <GraduationCap className="w-5 h-5 text-blue-600" />
-                                            <h2 className="text-xl font-bold text-gray-900 tracking-tight">{s.nomEtudiant}</h2>
+                                    <div className="space-y-1 min-w-0 flex-1">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <GraduationCap className="w-5 h-5 text-blue-600 shrink-0" />
+                                            <h2 className="text-xl font-bold text-gray-900 tracking-tight break-words">{s.nomEtudiant}</h2>
                                         </div>
-                                        <p className="text-xs text-gray-500 font-medium">{s.discipline}</p>
-                                        <p className="text-sm text-blue-700 font-semibold flex items-center gap-1.5 pt-1">
-                                            <Briefcase className="w-4 h-4 text-blue-500" />
-                                            <span>{s.titreOffre}</span>
+                                        <p className="text-xs text-gray-500 font-medium break-words">{s.discipline}</p>
+                                        <p className="text-sm text-blue-700 font-semibold flex items-start gap-1.5 pt-1 min-w-0">
+                                            <Briefcase className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                            <span className="break-words">{s.titreOffre}</span>
                                         </p>
                                     </div>
-                                    <div>{getStatusBadge(s)}</div>
+                                    <div className="shrink-0">{getStatusBadge(s)}</div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
+                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 shrink-0">
                                             <Calendar className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("stagiaires.period", { defaultValue: "Période" })}
                                             </span>
-                                            <span className="text-xs font-semibold text-gray-800">
+                                            <span className="block text-xs font-semibold text-gray-800 break-words">
                                                 {s.dateDebut} → {s.dateFin}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+                                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 min-w-0">
+                                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600 shrink-0">
                                             <Building2 className="w-4 h-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                 {t("stagiaires.company", { defaultValue: "Entreprise" })}
                                             </span>
-                                            <span className="text-xs font-semibold text-gray-800">{s.entreprise}</span>
+                                            <span className="block text-xs font-semibold text-gray-800 break-words">{s.entreprise}</span>
                                         </div>
                                     </div>
                                 </div>

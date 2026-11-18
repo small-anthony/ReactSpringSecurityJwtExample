@@ -205,7 +205,7 @@ export default function CandidaturesOffre() {
     if (categorie === "refusees") candidaturesAffichees = candidaturesRefusees;
 
     return (
-        <main className="w-full max-w-7xl mx-auto my-8 sm:my-10 px-4">
+        <main className="w-full max-w-5xl mx-auto my-10 px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
                 <button
                     type="button"

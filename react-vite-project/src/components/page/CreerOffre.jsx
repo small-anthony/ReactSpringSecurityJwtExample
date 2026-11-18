@@ -50,6 +50,13 @@ export default function CreerOffre() {
   return (
       <div className="max-w-xl mx-auto my-8 sm:my-12 p-6 sm:p-8 ds-card">
         <div className="mb-6 pb-4 border-b border-slate-100">
+          <button
+              type="button"
+              onClick={() => navigate("/employeur")}
+              className="btn-secondary mb-4"
+          >
+            {t("candidatures_offre.back")}
+          </button>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{t("creer_offre.title")}</h2>
         </div>
 
