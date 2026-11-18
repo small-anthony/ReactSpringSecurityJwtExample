@@ -88,6 +88,8 @@ public class SecurityConfiguration {
                                 Role.EMPLOYEUR.name(),
                                 Role.GESTIONNAIRE.name())
 
+                        .requestMatchers("/evaluations/**").hasAuthority(Role.EMPLOYEUR.name())
+
                         .anyRequest().authenticated()
 
                 )

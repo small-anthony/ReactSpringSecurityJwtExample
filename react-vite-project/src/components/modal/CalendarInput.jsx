@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useId } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -74,11 +75,13 @@ export default function CalendarInput({
                                         placeholder = "...",
                                         disabled = false,
                                         required = false,
-                                        locale = "en-US",
+                                        locale,
                                         closeOnSelect = true,
                                         allowClear = true,
                                         formatDate,
                                       }) {
+  const { t, i18n } = useTranslation("main");
+  const activeLocale = locale || (i18n.language?.startsWith("en") ? "en-US" : "fr-CA");
   const generatedId = useId();
   const inputId = customId || `calendar-input-${generatedId}`;
 
@@ -204,7 +207,7 @@ export default function CalendarInput({
 
   const formattedMonthYear = useMemo(() => {
     try {
-      const formatter = new Intl.DateTimeFormat(locale, {
+      const formatter = new Intl.DateTimeFormat(activeLocale, {
         month: "long",
         year: "numeric",
       });
@@ -213,7 +216,7 @@ export default function CalendarInput({
     } catch {
       return `${viewDate.getMonth() + 1} / ${viewDate.getFullYear()}`;
     }
-  }, [viewDate, locale]);
+  }, [viewDate, activeLocale]);
 
   const weekDays = useMemo(() => {
     const days = [];
@@ -221,7 +224,7 @@ export default function CalendarInput({
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
       try {
-        const name = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(d);
+        const name = new Intl.DateTimeFormat(activeLocale, { weekday: "short" }).format(d);
         const cleanName = name.replace(".", "");
         days.push(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
       } catch {
@@ -229,7 +232,7 @@ export default function CalendarInput({
       }
     }
     return days;
-  }, [locale]);
+  }, [activeLocale]);
 
   const calendarCells = useMemo(() => {
     const year = viewDate.getFullYear();
@@ -271,7 +274,7 @@ export default function CalendarInput({
     if (!selectedDate) return "";
     if (formatDate) return formatDate(selectedDate);
     try {
-      return new Intl.DateTimeFormat(locale, {
+      return new Intl.DateTimeFormat(activeLocale, {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -279,7 +282,7 @@ export default function CalendarInput({
     } catch {
       return toIsoDateString(selectedDate);
     }
-  }, [selectedDate, formatDate, locale]);
+  }, [selectedDate, formatDate, activeLocale]);
 
   const today = useMemo(() => normalizeDate(new Date()), []);
 
@@ -347,7 +350,7 @@ export default function CalendarInput({
                 <span
                     role="button"
                     tabIndex={0}
-                    aria-label="Effacer la date"
+                    aria-label={t("calendar.clear", { defaultValue: "Effacer la date" })}
                     onClick={handleClear}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -379,7 +382,7 @@ export default function CalendarInput({
               <div
                   ref={dropdownRef}
                   role="dialog"
-                  aria-label="Calendrier"
+                  aria-label={t("calendar.calendar", { defaultValue: "Calendrier" })}
                   tabIndex={-1}
                   className="fixed mt-2 z-50 w-10 min-w-[290px] sm:min-w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 outline-none animate-in fade-in zoom-in-95 duration-150"
                   style={{
@@ -397,7 +400,7 @@ export default function CalendarInput({
                         type="button"
                         onClick={handlePrevMonth}
                         disabled={isPrevMonthDisabled}
-                        aria-label="Mois précédent"
+                        aria-label={t("calendar.prev_month", { defaultValue: "Mois précédent" })}
                         className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -407,7 +410,7 @@ export default function CalendarInput({
                         type="button"
                         onClick={handleNextMonth}
                         disabled={isNextMonthDisabled}
-                        aria-label="Mois suivant"
+                        aria-label={t("calendar.next_month", { defaultValue: "Mois suivant" })}
                         className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     >
                       <ChevronRight className="w-4 h-4" />

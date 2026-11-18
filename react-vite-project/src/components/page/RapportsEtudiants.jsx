@@ -1,13 +1,14 @@
-import React, {useState, useEffect, useContext, useMemo} from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { LayoutDashboard, Search, CheckCircle, Clock, AlertTriangle, AlertCircle, Users, HelpCircle, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getRapportEtudiants } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalCandidaturesEtudiant from "../modal/ModalCandidaturesEtudiant.jsx";
-import { useOffreFormater } from "../../hooks/useOffreFormater.js";
+import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
 
 const COULEURS_STATUT = {
     STAGE_TROUVE: "bg-green-100 text-green-800 border-green-200",
@@ -20,7 +21,9 @@ const COULEURS_STATUT = {
 export default function RapportsEtudiants() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const { traduireDiscipline } = useOffreFormater();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const rawEvalId = Number(searchParams.get("etudiantEvaluationId"));
+    const etudiantEvaluationId = Number.isInteger(rawEvalId) && rawEvalId > 0 ? rawEvalId : null;
 
     const [etudiants, setEtudiants] = useState([]);
     const [annees, setAnnees] = useState([]);
@@ -31,6 +34,18 @@ export default function RapportsEtudiants() {
     const [recherche, setRecherche] = useState("");
     const [filtreStatut, setFiltreStatut] = useState("TOUS");
     const [etudiantSelectionne, setEtudiantSelectionne] = useState(null);
+
+    const ouvrirEvaluation = (id) => {
+        const next = new URLSearchParams(searchParams);
+        next.set("etudiantEvaluationId", String(id));
+        setSearchParams(next);
+    };
+
+    const fermerEvaluation = () => {
+        const next = new URLSearchParams(searchParams);
+        next.delete("etudiantEvaluationId");
+        setSearchParams(next, { replace: true });
+    };
 
     useEffect(() => {
         getAnneesGestionnaire(authService.buildAuthHeader())
@@ -94,6 +109,15 @@ export default function RapportsEtudiants() {
             <SidePanelGestionnaire activeTab="dashboard" />
 
             <div className="flex-1 p-8 md:p-12 animate-in fade-in duration-300">
+                {etudiantEvaluationId ? (
+                    <div className="max-w-5xl mx-auto">
+                        <FormulaireEvaluationMilieuStage
+                            mode="gestionnaire"
+                            etudiantId={etudiantEvaluationId}
+                            onRetour={fermerEvaluation}
+                        />
+                    </div>
+                ) : (
                 <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
@@ -275,6 +299,7 @@ export default function RapportsEtudiants() {
                                             <th className="px-6 py-4">{t("gestionnaire_dashboard.th_student")}</th>
                                             <th className="px-6 py-4">{t("gestionnaire_dashboard.th_status")}</th>
                                             <th className="px-6 py-4">{t("gestionnaire_dashboard.th_offers")}</th>
+                                            <th className="px-6 py-4">{t("rapports_etudiants.th_milieu_evaluation")}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -316,6 +341,33 @@ export default function RapportsEtudiants() {
                                                         </span>
                                                     )}
                                                 </td>
+                                                <td className="px-6 py-4">
+                                                    {etudiant.statutStage === "STAGE_TROUVE" ? (
+                                                        etudiant.milieuEvalue ? (
+                                                            <div className="flex flex-wrap items-center gap-2">
+                                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                                                    <CheckCircle className="w-3.5 h-3.5" />
+                                                                    <span>{t("rapports_etudiants.milieu_evalue_badge")}</span>
+                                                                </span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => ouvrirEvaluation(etudiant.id)}
+                                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 rounded-lg transition cursor-pointer"
+                                                                >
+                                                                    <Eye className="w-3.5 h-3.5" />
+                                                                    <span>{t("rapports_etudiants.voir_evaluation_milieu")}</span>
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                                                                <Clock className="w-3.5 h-3.5" />
+                                                                <span>{t("rapports_etudiants.milieu_non_evalue_badge")}</span>
+                                                            </span>
+                                                        )
+                                                    ) : (
+                                                        <span className="text-xs text-gray-400">—</span>
+                                                    )}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -324,6 +376,7 @@ export default function RapportsEtudiants() {
                         )}
                     </div>
                 </div>
+                )}
             </div>
 
             {etudiantSelectionne && (

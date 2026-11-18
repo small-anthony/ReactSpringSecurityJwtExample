@@ -5,7 +5,10 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -19,6 +22,9 @@ public abstract class UserApp  {
     @Embedded
     private Credentials credentials;
 
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Notification> notifications = new ArrayList<>();
+
     protected UserApp() {
     }
 
@@ -30,9 +36,15 @@ public abstract class UserApp  {
 
     public Long getId() { return id; }
 
+    public void setId(Long id) { this.id = id; }
+
     public String getFirstName() { return this.firstName; }
 
     public String getLastName() { return this.lastName; }
+
+    public String nomComplet() {
+        return firstName + " " + lastName;
+    }
 
     public String getEmail(){
         return credentials.getUsername();
@@ -51,10 +63,16 @@ public abstract class UserApp  {
         return credentials.getRole();
     }
 
-    public void setId(Long id) { this.id = id; }
-
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
     }
 
+    public List<Notification> getNotifications() {
+        return Collections.unmodifiableList(notifications);
+    }
+
+    public void addNotification(Notification notification) {
+        notifications.add(notification);
+        notification.setOwner(this);
+    }
 }

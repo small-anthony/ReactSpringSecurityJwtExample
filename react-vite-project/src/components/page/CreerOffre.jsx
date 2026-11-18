@@ -48,8 +48,17 @@ export default function CreerOffre() {
   };
 
   return (
-      <div className="max-w-xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md border">
-        <h2 className="text-2xl font-bold mb-4">{t("creer_offre.title")}</h2>
+      <div className="max-w-xl mx-auto my-8 sm:my-12 p-6 sm:p-8 ds-card">
+        <div className="mb-6 pb-4 border-b border-slate-100">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{t("creer_offre.title")}</h2>
+        </div>
+
+        {serverError && (
+            <div className="mb-5 ds-alert-error" role="alert">
+              <strong>{t("creer_offre.errorPrefix")} </strong>
+              {serverError === "defaultError" ? t("creer_offre.defaultError") : serverError}
+            </div>
+        )}
 
         <OffreForm
             id="formCreerOffre"
@@ -57,22 +66,16 @@ export default function CreerOffre() {
             onSubmit={handleSubmit}
         />
 
-        <div className="mt-4">
+        <div className="mt-6 pt-4 border-t border-slate-100">
           <button
               type="submit"
               form="formCreerOffre"
-              className="w-full py-3 px-4 font-bold rounded-lg text-white bg-blue-600 hover:bg-blue-700"
+              disabled={isLoading}
+              className="btn-primary w-full py-3"
           >
             {isLoading ? t("creer_offre.submitting") : t("creer_offre.submit")}
           </button>
         </div>
-
-        {serverError && (
-            <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
-              <strong>{t("creer_offre.errorPrefix")} </strong>
-              {serverError}
-            </div>
-        )}
 
         <ModalConfirmation
             isOpen={isSuccess}

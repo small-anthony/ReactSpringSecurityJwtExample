@@ -9,6 +9,7 @@ export default function SidePanelGestionnaire({ activeTab = "dashboard" }) {
         { key: "approbationsOffres", label: t('sidepanel.offres'), to: "/gestionnaire/approbations/offres" },
         { key: "approbationsCvs", label: t('sidepanel.cvs'), to: "/gestionnaire/approbations/cvs" },
         { key: "contrats", label: t('sidepanel.contrats'), to: "/gestionnaire/contrats" },
+        { key: "assignationProfesseurs", label: t('sidepanel.assignation_professeurs'), to: "/gestionnaire/assignation-professeurs" },
     ];
 
     return (

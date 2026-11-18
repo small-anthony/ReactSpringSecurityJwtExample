@@ -26,7 +26,11 @@
     "voir_offres": "Voir offres",
     "logout": "Déconnexion",
     "contrats": "Mes contrats",
-    "contrats_employeur": "Mes contrats"
+    "contrats_employeur": "Mes contrats",
+    "stagiaires": "Mes stagiaires",
+    "mes_etudiants": "Mes étudiants",
+    "dashboard": "Tableau de bord",
+    "assignation_professeurs": "Assignation des professeurs"
   },
   "home": {
     "title": "Stagify",
@@ -218,7 +222,8 @@
     "successTitle": "Offre créée avec succès",
     "success": "Votre offre de stage a été créée avec succès !",
     "submit": "Créer l'offre",
-    "submitting": "Création en cours..."
+    "submitting": "Création en cours...",
+    "defaultError": "Une erreur est survenue lors de la création de l'offre."
   },
   "signup_professeur": {
     "title": "Inscription Professeur",
@@ -390,7 +395,6 @@
       "en_attente": "Convocation envoyée. En attente de la réponse de l'étudiant parmi ces créneaux :"
     }
   },
-
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "En attente de réponse de l'employeur",
@@ -411,11 +415,12 @@
   },
   "sidepanel": {
     "title": "Tableau de bord",
+    "dashboard": "Tableau de bord",
     "cvs": "Approbations des CVs",
     "offres": "Approbations des offres",
     "contrats": "Contrats de stage",
     "rapports": "Rapports étudiants",
-    "dashboard": "Tableau de bord"
+    "assignation_professeurs": "Assignation des professeurs"
   },
   "rapports_etudiants": {
     "title": "Rapports des étudiants",
@@ -431,12 +436,17 @@
     "th_email": "Courriel",
     "th_discipline": "Discipline",
     "th_offers": "Poste & Entreprise",
+    "th_milieu_evaluation": "Évaluation du milieu",
+    "voir_evaluation_milieu": "Voir l'évaluation du milieu",
+    "milieu_evalue_badge": "Évalué",
+    "milieu_non_evalue_badge": "Non évalué",
     "types": {
       "etudiants-inscrits": "Étudiants inscrits sur la plate-forme",
       "etudiants-sans-convocation": "Étudiants n'ayant aucune convocation à une entrevue",
       "etudiants-attente-entrevue": "Étudiants en attente d'entrevue",
       "etudiants-attente-reponse": "Étudiants en attente d'une réponse d'entrevue",
-      "etudiants-trouve-stage": "Étudiants ayant trouvé un stage"
+      "etudiants-trouve-stage": "Étudiants ayant trouvé un stage",
+      "stages-non-evalues-professeur": "Stages non évalués par le professeur"
     }
   },
   "convocation": {
@@ -471,6 +481,9 @@
     "success_accepted": "Félicitations ! L'entrevue a été confirmée et ajoutée à votre profil.",
     "success_refused": "La convocation a été refusée. L'employeur en a été notifié.",
     "success_conflict": "Votre proposition de nouvelle date a été envoyée avec succès à l'employeur !",
+    "error_load": "Erreur lors du chargement des convocations",
+    "error_accept": "Erreur lors de l'acceptation",
+    "error_refuse": "Erreur lors du refus de la convocation",
     "status": {
       "en_attente": "En attente de votre réponse",
       "acceptee": "Acceptée",
@@ -779,7 +792,7 @@
   "placeholder": {
     "rendezvous": "Créez un rendez-vous...",
     "lieu": "Choisissez un lieu...",
-    "message": "Entrez une message...",
+    "message": "Entrez un message...",
     "message_optionnel": "Message optionnel..."
   },
   "signature_pad": {
@@ -794,7 +807,8 @@
     "confirm": "Confirmer et signer le contrat",
     "error_blob": "Impossible de capturer la signature.",
     "error_sign": "Erreur lors de la signature du contrat.",
-    "signataire_label": "L'étudiant(e)"
+    "signataire_label": "L'étudiant(e)",
+    "watermark": "✕ Signature"
   },
   "contrats_etudiant": {
     "title": "Mes Contrats de Stage",
@@ -823,9 +837,7 @@
     "error_refuse": "Erreur lors du refus du contrat.",
     "status_stage_trouve": "STAGE TROUVÉ",
     "status_refused": "Contrat refusé",
-    "refused_badge_text": "Contrat refusé — Gestionnaire notifié",
-    "banner_stage_trouve_title": "Statut sur la plateforme : STAGE TROUVÉ",
-    "banner_stage_trouve_desc": "Félicitations ! Votre entente de stage a été signée électroniquement. Votre gestionnaire de stage et l'employeur en ont été informés."
+    "refused_badge_text": "Contrat refusé — Gestionnaire notifié"
   },
   "contrats_employeur": {
     "title": "Contrats de stage",
@@ -857,9 +869,509 @@
       "confirm": "Confirmer le refus"
     }
   },
+  "stagiaires": {
+    "title": "Mes stagiaires",
+    "subtitle": "Consultez vos stagiaires et remplissez leur fiche d'évaluation.",
+    "loading": "Chargement de vos stagiaires...",
+    "error_load": "Erreur lors du chargement de vos stagiaires",
+    "period": "Période",
+    "company": "Entreprise",
+    "tabs": {
+      "all": "Tous mes stagiaires",
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalués"
+    },
+    "status": {
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalué"
+    },
+    "actions": {
+      "evaluate": "Évaluer le stagiaire",
+      "view": "Voir l'évaluation"
+    },
+    "empty": {
+      "title": "Aucun stagiaire trouvé",
+      "subtitle": "Vos stagiaires apparaîtront ici lorsque leur contrat aura été signé par toutes les parties."
+    }
+  },
+  "evaluation": {
+    "back": "Retour à mes stagiaires",
+    "title": "Fiche d'évaluation du stagiaire",
+    "title_view": "Évaluation du stagiaire",
+    "subtitle": "Cochez les comportements observés chez le stagiaire et formulez des commentaires s'il y a lieu.",
+    "loading": "Chargement de la fiche d'évaluation...",
+    "error_load": "Erreur lors du chargement de la fiche d'évaluation",
+    "error_submit": "Erreur lors de l'enregistrement de l'évaluation",
+    "success": "L'évaluation a été enregistrée avec succès.",
+    "submitted_on": "Évaluation soumise le {{date}}",
+    "student_info": {
+      "student": "Nom de l'élève",
+      "program": "Programme d'études",
+      "company": "Nom de l'entreprise",
+      "supervisor": "Nom du superviseur",
+      "phone": "Téléphone",
+      "position": "Poste",
+      "period": "Période"
+    },
+    "able_to": "Le stagiaire a été en mesure de :",
+    "comments": "Commentaires",
+    "levels": {
+      "TOTALEMENT_EN_ACCORD": "Totalement en accord",
+      "PLUTOT_EN_ACCORD": "Plutôt en accord",
+      "PLUTOT_EN_DESACCORD": "Plutôt en désaccord",
+      "TOTALEMENT_EN_DESACCORD": "Totalement en désaccord",
+      "NON_APPLICABLE": "N/A"
+    },
+    "sections": {
+      "PRODUCTIVITE": {
+        "title": "1. Productivité",
+        "description": "Capacité d'optimiser son rendement au travail"
+      },
+      "QUALITE_TRAVAIL": {
+        "title": "2. Qualité du travail",
+        "description": "Capacité de s'acquitter des tâches sous sa responsabilité en s'imposant personnellement des normes de qualité"
+      },
+      "RELATIONS_INTERPERSONNELLES": {
+        "title": "3. Qualité des relations interpersonnelles",
+        "description": "Capacité d'établir des interrelations harmonieuses dans son milieu de travail"
+      },
+      "HABILETES_PERSONNELLES": {
+        "title": "4. Habiletés personnelles",
+        "description": "Capacité de faire preuve d'attitudes ou de comportements matures et responsables"
+      }
+    },
+    "criteres": {
+      "PLANIFIER_ORGANISER": "planifier et organiser son travail de façon efficace",
+      "COMPRENDRE_DIRECTIVES": "comprendre rapidement les directives relatives à son travail",
+      "RYTHME_SOUTENU": "maintenir un rythme de travail soutenu",
+      "ETABLIR_PRIORITES": "établir ses priorités",
+      "RESPECTER_ECHEANCIERS": "respecter ses échéanciers",
+      "RESPECTER_MANDATS": "respecter les mandats qui lui ont été confiés",
+      "ATTENTION_DETAILS": "porter attention aux détails dans la réalisation de ses tâches",
+      "VERIFIER_TRAVAIL": "vérifier son travail, s'assurer que rien n'a été oublié",
+      "OCCASIONS_PERFECTIONNEMENT": "rechercher des occasions de se perfectionner",
+      "ANALYSE_PROBLEMES": "faire une bonne analyse des problèmes rencontrés",
+      "CONTACTS_FACILES": "établir facilement des contacts avec les gens",
+      "TRAVAIL_EQUIPE": "contribuer activement au travail d'équipe",
+      "CULTURE_ENTREPRISE": "s'adapter facilement à la culture de l'entreprise",
+      "CRITIQUES_CONSTRUCTIVES": "accepter les critiques constructives",
+      "RESPECT_ENVERS_LES_GENS": "être respectueux envers les gens",
+      "ECOUTE_ACTIVE": "faire preuve d'écoute active en essayant de comprendre le point de vue de l'autre",
+      "INTERET_MOTIVATION": "démontrer de l'intérêt et de la motivation au travail",
+      "EXPRIMER_IDEES": "exprimer clairement ses idées",
+      "INITIATIVE": "faire preuve d'initiative",
+      "TRAVAIL_SECURITAIRE": "travailler de façon sécuritaire",
+      "SENS_RESPONSABILITES": "démontrer un bon sens des responsabilités ne requérant qu'un minimum de supervision",
+      "PONCTUALITE_ASSIDUITE": "être ponctuel et assidu à son travail"
+    },
+    "overall": {
+      "title": "Appréciation globale du stagiaire",
+      "precision": "Précisez votre appréciation",
+      "options": {
+        "DEPASSENT_DE_BEAUCOUP_LES_ATTENTES": "Les habiletés démontrées dépassent de beaucoup les attentes",
+        "DEPASSENT_LES_ATTENTES": "Les habiletés démontrées dépassent les attentes",
+        "REPONDENT_PLEINEMENT_AUX_ATTENTES": "Les habiletés démontrées répondent pleinement aux attentes",
+        "REPONDENT_PARTIELLEMENT_AUX_ATTENTES": "Les habiletés démontrées répondent partiellement aux attentes",
+        "NE_REPONDENT_PAS_AUX_ATTENTES": "Les habiletés démontrées ne répondent pas aux attentes"
+      }
+    },
+    "discussed": {
+      "label": "Cette évaluation a été discutée avec le stagiaire",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "hours": {
+      "label": "Nombre d'heures réel par semaine d'encadrement accordé au stagiaire",
+      "placeholder": "Ex: 7,5"
+    },
+    "next_internship": {
+      "label": "L'entreprise aimerait accueillir cet élève pour son prochain stage",
+      "options": {
+        "OUI": "Oui",
+        "NON": "Non",
+        "PEUT_ETRE": "Peut-être"
+      }
+    },
+    "technical_training": {
+      "label": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage ?",
+      "placeholder": "Votre réponse..."
+    },
+    "signatory": {
+      "title": "Signataire",
+      "name": "Nom (en lettres moulées)",
+      "role": "Fonction",
+      "name_placeholder": "Ex: Jimmy Donaldson",
+      "role_placeholder": "Ex: Directeur des technologies"
+    },
+    "submit": "Enregistrer l'évaluation",
+    "submitting": "Enregistrement...",
+    "errors": {
+      "incomplete": "Veuillez évaluer tous les critères : il en reste {{nombre}}.",
+      "overall": "Veuillez choisir une appréciation globale.",
+      "discussed": "Veuillez indiquer si l'évaluation a été discutée avec le stagiaire.",
+      "hours": "Veuillez entrer un nombre d'heures d'encadrement valide.",
+      "next_internship": "Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage.",
+      "name": "Le nom du signataire est obligatoire.",
+      "role": "La fonction du signataire est obligatoire.",
+      "criterion": "Veuillez choisir une réponse.",
+      "summary": "Le formulaire contient {{nombre}} erreur(s).",
+      "go_to_first": "Aller à la première erreur"
+    }
+  },
   "session": {
     "toutes": "Toutes les sessions",
     "libelle": "Hiver {{annee}}"
+  },
+  "calendar": {
+    "clear": "Effacer la date",
+    "calendar": "Calendrier",
+    "prev_month": "Mois précédent",
+    "next_month": "Mois suivant"
+  },
+  "quick_login": {
+    "valentin_desc": "Planification d'entrevue, embauche, signature de contrat et archives",
+    "john_desc": "Rapports d'étudiants, création de contrat, signature et impression",
+    "hatim_desc": "Signature de contrat de stage, entrevue acceptée",
+    "sophie_desc": "Convocation refusée (reconvoquer), contrat signé",
+    "luc_desc": "Candidature à convoquer, contrat signé prêt pour gestionnaire",
+    "emma_desc": "Étudiante embauchée prête pour contrat, contrat complété",
+    "daniil_desc": "Sans convocation / Sans CV (rapports gestionnaire)",
+    "company_cegep": "Cégep",
+    "company_student_m": "Étudiant",
+    "company_student_f": "Étudiante",
+    "martin_desc": "Supervision des étudiants assignés et suivi des demandes de stage",
+    "company_professeur": "Cégep - Professeur"
+  },
+  "etudiant_dashboard": {
+    "greeting": "Bonjour, {{name}}",
+    "greeting_default": "Mon espace étudiant",
+    "subtitle_question": "Voici l'état actuel de votre parcours et vos priorités du jour.",
+    "tabs": {
+      "dashboard": "Tableau de bord",
+      "explore": "Explorer les stages",
+      "applications": "Mes candidatures",
+      "interviews": "Convocations",
+      "stage": "Mon stage & Contrats"
+    },
+    "journey_status": {
+      "contract_validated": "Stage confirmé • Contrat validé",
+      "stage_found": "Stage trouvé • Contrat signé",
+      "contract_to_sign": "Action requise • Contrat à signer",
+      "contract_refused": "Contrat refusé • En attente du gestionnaire",
+      "hired_waiting_contract": "Candidature retenue • Contrat en préparation",
+      "interview_pending": "Action requise • Convocation d'entrevue",
+      "interview_confirmed": "Entrevue programmée",
+      "applications_in_progress": "Candidatures en cours d'évaluation",
+      "cv_required": "Action requise • CV à déposer ou corriger",
+      "searching": "En recherche active de stage"
+    },
+    "todo": {
+      "title": "À faire en priorité",
+      "urgent_badge": "Urgent",
+      "important_badge": "Prioritaire",
+      "refused_badge": "Contrat refusé",
+      "action_badge": "Recommandé",
+      "all_caught_up_title": "Aucune action urgente requise",
+      "all_caught_up_desc": "Votre dossier est à jour. Nous vous notifierons dès qu'une réponse ou convocation arrivera.",
+      "cv_missing_title": "Déposer votre CV pour pouvoir postuler",
+      "cv_missing_desc": "Votre profil ne contient aucun CV. Déposez-le en format PDF pour qu'il soit validé par votre gestionnaire.",
+      "cv_refused_title": "Corriger et remplacer votre CV refusé",
+      "cv_pending_info": "Votre CV est en cours de validation par le gestionnaire.",
+      "contract_to_sign_title": "Signer votre contrat de stage — {{poste}}",
+      "contract_to_sign_desc": "L'entente de stage avec {{entreprise}} est prête et attend votre signature électronique.",
+      "contract_sign_cta": "Examiner et signer",
+      "contract_refused_title": "Entente de stage refusée — {{poste}}",
+      "contract_refused_desc": "Vous avez refusé cette entente chez {{entreprise}}. Votre gestionnaire de stage a été notifié pour faire le suivi.",
+      "contract_refused_cta": "Consulter le contrat",
+      "interview_to_respond_title": "Répondre à la convocation — {{poste}}",
+      "interview_to_respond_desc": "{{entreprise}} vous invite en entrevue. Confirmez ou refusez le créneau proposé.",
+      "interview_respond_cta": "Répondre à l'invitation",
+      "hired_notice_title": "Candidature retenue chez {{entreprise}} ({{poste}})",
+      "hired_notice_desc": "L'employeur a retenu votre candidature. Votre contrat de stage sera généré par le gestionnaire.",
+      "first_application_title": "Explorer les {{count}} offres disponibles et postuler",
+      "first_application_desc": "Votre CV est prêt. Consultez les stages disponibles pour envoyer vos premières candidatures.",
+      "explore_cta": "Explorer les stages"
+    },
+    "next_step": {
+      "label": "Prochaine étape",
+      "stage_confirmed_title": "Mon stage confirmé",
+      "stage_confirmed_complete": "Entente signée par les 3 parties (Étudiant, Employeur, Gestionnaire)",
+      "stage_confirmed_waiting_others": "Signé par vous • En attente des autres signatures officielles",
+      "contract_refused_title": "Poursuivre vos démarches de stage",
+      "contract_refused_status": "Entente chez {{entreprise}} refusée",
+      "contract_refused_desc": "Votre gestionnaire de stage a été notifié pour faire le suivi de votre dossier. Continuez à explorer les offres pour trouver votre stage.",
+      "view_contract_cta": "Consulter mon contrat",
+      "upcoming_interview_title": "Prochaine entrevue programmée",
+      "manage_interviews_cta": "Voir les détails de la convocation",
+      "no_application_title": "Lancez vos candidatures",
+      "no_application_desc": "{{count}} offres de stage validées sont actuellement ouvertes aux candidatures.",
+      "in_progress_title": "Suivi de vos {{count}} candidature(s)",
+      "in_progress_desc": "Vos candidatures ont été transmises aux employeurs. Continuez à postuler pour maximiser vos chances.",
+      "view_applications_cta": "Voir mes candidatures"
+    },
+    "applications": {
+      "title": "Mes candidatures récentes",
+      "view_all": "Voir tout ({{count}})",
+      "empty_title": "Aucune candidature envoyée pour le moment",
+      "empty_desc": "Parcourez les offres disponibles pour soumettre votre première candidature.",
+      "status_hired": "Embauché(e)",
+      "status_contract_refused": "Contrat refusé",
+      "status_interview": "Convoqué(e)",
+      "status_pending": "En attente",
+      "status_refused": "Non retenue"
+    },
+    "discover": {
+      "title": "Offres de stage à découvrir",
+      "view_all": "Explorer les {{count}} offres"
+    },
+    "cv_pill": {
+      "validated": "CV validé",
+      "pending": "CV en révision",
+      "refused": "CV refusé",
+      "missing": "Aucun CV",
+      "replace": "Remplacer",
+      "upload": "Déposer"
+    }
+  },
+  "notifications": {
+    "titre": "Mes notifications",
+    "non_lues_count": "{{count}} nouvelle(s)",
+    "tout_lu": "Tout est à jour",
+    "vide_titre": "Aucune notification",
+    "vide_description": "Vous êtes à jour pour le moment.",
+    "ouvrir": "Consulter"
+  },
+  "assignation_professeurs": {
+    "badge_section": "Supervision des stages",
+    "titre": "Assignation des professeurs",
+    "description": "Assignez un professeur superviseur aux étudiants ayant trouvé un stage ou modifiez les assignations existantes.",
+    "stats_total": "Étudiants avec stage",
+    "stats_assignes": "Professeur assigné",
+    "stats_non_assignes": "À assigner",
+    "recherche_placeholder": "Rechercher par nom, matricule, entreprise, poste...",
+    "filtre_tous": "Tous",
+    "filtre_non_assignes": "Non assignés",
+    "filtre_assignes": "Assignés",
+    "chargement": "Chargement des étudiants...",
+    "aucun_etudiant": "Aucun étudiant trouvé",
+    "aucun_resultat_filtre": "Modifiez votre recherche ou vos filtres pour voir d'autres étudiants.",
+    "aucun_etudiant_stage": "Aucun étudiant n'a encore été embauché pour un stage pour cette session.",
+    "th_etudiant": "Étudiant",
+    "th_stage": "Stage obtenu",
+    "th_professeur": "Professeur superviseur",
+    "th_action": "Action",
+    "non_assigne": "Non assigné",
+    "btn_assigner": "Assigner",
+    "btn_modifier": "Modifier",
+    "btn_desassigner": "Désassigner",
+    "modal_titre_assigner": "Assigner un professeur superviseur",
+    "modal_titre_modifier": "Modifier le superviseur",
+    "modal_label_recherche": "Rechercher un professeur par nom",
+    "modal_recherche_placeholder": "Tapez un nom de professeur (ex. Martin, Tremblay)...",
+    "modal_label_liste": "Professeurs disponibles",
+    "modal_seuil_info": "Seuil recommandé : 5 étudiants",
+    "aucun_professeur": "Aucun professeur ne correspond à ce nom.",
+    "etudiants_abrege": "étudiants",
+    "avertissement_charge_titre": "Avertissement de charge",
+    "avertissement_charge_message": "Le professeur {{nom}} a déjà {{count}} étudiants assignés (seuil recommandé : {{seuil}}). L'assignation est permise, mais veillez à équilibrer la charge.",
+    "btn_confirmer_assignation": "Confirmer l'assignation",
+    "btn_confirmer_modification": "Confirmer la modification",
+    "succes_assignation": "L'assignation du professeur a été enregistrée avec succès.",
+    "erreur_assignation": "Erreur lors de l'assignation du professeur.",
+    "erreur_chargement": "Erreur lors du chargement des données.",
+    "titre_modal_desassigner": "Désassigner le professeur ?",
+    "confirmation_desassigner": "Voulez-vous retirer le professeur superviseur pour {{etudiant}} ? L'étudiant redeviendra disponible pour une nouvelle assignation.",
+    "btn_retirer": "Retirer l'assignation",
+    "succes_desassignation": "Le professeur a été retiré avec succès.",
+    "erreur_desassignation": "Erreur lors du retrait du professeur.",
+    "matricule_label": "Matricule",
+    "modal_stage_chez": "Stage chez {{entreprise}} ({{titre}})"
+  },
+  "professeur": {
+    "mes_etudiants": "Mes étudiants assignés",
+    "badge_role": "Espace Professeur Superviseur",
+    "titre_page": "Mes étudiants supervisés",
+    "bienvenue": "Bonjour {{nom}}, suivez l'état des stages et des demandes de vos étudiants assignés.",
+    "total_etudiants": "{{count}} étudiant(s) supervisé(s)",
+    "chargement": "Chargement de vos étudiants assignés...",
+    "aucun_etudiant_titre": "Aucun étudiant assigné",
+    "aucun_etudiant_description": "Le gestionnaire de stage ne vous a pas encore assigné d'étudiant pour cette session. Les étudiants apparaîtront ici dès leur assignation.",
+    "aucun_resultat_recherche": "Aucun étudiant ne correspond à vos critères de recherche.",
+    "recherche_placeholder": "Rechercher par nom, matricule, entreprise...",
+    "btn_demandes": "Demandes ({{count}})",
+    "historique_demandes": "Historique des demandes de stage",
+    "matricule_label": "Matricule",
+    "entreprise_defaut": "Entreprise non spécifiée",
+    "offre_stage_defaut": "Offre de stage",
+    "postule_le": "Postulé le {{date}}",
+    "erreur_chargement": "Erreur lors du chargement de vos étudiants.",
+    "tabs": {
+      "all": "Tous",
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalués"
+    },
+    "contact_label": "Superviseur / Contact",
+    "phone_label": "Téléphone",
+    "periode_label": "Dates du stage",
+    "non_specifie": "Non précisé",
+    "badge_milieu_evalue": "Milieu évalué",
+    "badge_milieu_a_evaluer": "Milieu à évaluer",
+    "btn_evaluer_milieu": "Évaluer le milieu de stage",
+    "btn_voir_evaluation_milieu": "Voir l'évaluation du milieu",
+    "statut": {
+      "EMBAUCHEE": "Embauché(e)",
+      "ACCEPTEE": "Offre acceptée",
+      "EN_ATTENTE": "En attente",
+      "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "REFUSEE": "Refusée",
+      "EN_RECHERCHE": "En recherche de stage",
+      "REFUSE": "Refusée"
+    }
+  },
+  "evaluation_milieu": {
+    "back_professeur": "Retour à mes étudiants supervisés",
+    "back_gestionnaire": "Retour aux rapports étudiants",
+    "title": "Évaluation du milieu de stage",
+    "title_view": "Évaluation du milieu de stage (Consultable)",
+    "subtitle": "Formulaire officiel d'évaluation du milieu de stage par l'enseignant responsable.",
+    "program_header": "Techniques de l'informatique — Alternance travail-études",
+    "loading": "Chargement du formulaire d'évaluation du milieu de stage...",
+    "error_load": "Impossible de charger le dossier d'évaluation du milieu de stage.",
+    "error_submit": "Erreur lors de la soumission de l'évaluation du milieu de stage.",
+    "success": "L'évaluation du milieu de stage a été enregistrée et transmise au gestionnaire de stage avec succès.",
+    "submitted_on": "Évaluation soumise le {{date}} par {{professeur}}",
+    "readonly_notice": "Cette évaluation a été soumise et verrouillée en lecture seule.",
+    "summary_card": {
+      "student": "Stagiaire",
+      "program": "Programme",
+      "company": "Entreprise",
+      "position": "Poste",
+      "period": "Période du contrat"
+    },
+    "section1": {
+      "title": "1. Identification de l'entreprise",
+      "nom_entreprise": "Nom de l'entreprise",
+      "personne_contact": "Personne contact",
+      "adresse": "Adresse",
+      "adresse_placeholder": "Ex: 1350 boul. René-Lévesque Ouest",
+      "ville": "Ville",
+      "ville_placeholder": "Ex: Montréal",
+      "code_postal": "Code postal",
+      "code_postal_placeholder": "Ex: H3G 1T4",
+      "telephone": "Téléphone",
+      "telecopieur": "Télécopieur (facultatif)",
+      "telecopieur_placeholder": "Ex: 514-555-9999"
+    },
+    "section2": {
+      "title": "2. Identification du stagiaire",
+      "nom_stagiaire": "Nom du stagiaire",
+      "date_stage": "Date du stage",
+      "date_stage_placeholder": "Ex: 2026-05-18 → 2026-08-21",
+      "numero_stage": "Stage",
+      "stage_1": "Stage 1",
+      "stage_2": "Stage 2"
+    },
+    "section3": {
+      "title": "3. Évaluation du milieu de stage",
+      "subtitle": "Évaluez chacun des dix critères ci-dessous selon votre observation du milieu.",
+      "progress_label": "Progression : {{repondus}} / {{total}} critères",
+      "asterisk_note": "* Toute réponse « Plutôt en désaccord » ou « Totalement en désaccord » doit être expliquée dans la section Commentaires.",
+      "levels": {
+        "TOTALEMENT_EN_ACCORD": "Totalement en accord",
+        "PLUTOT_EN_ACCORD": "Plutôt en accord",
+        "PLUTOT_EN_DESACCORD": "Plutôt en désaccord *",
+        "TOTALEMENT_EN_DESACCORD": "Totalement en désaccord *",
+        "NON_APPLICABLE": "Impossible de se prononcer"
+      },
+      "criteres": {
+        "TACHES_CONFORMES": "Les tâches confiées au stagiaire sont conformes aux tâches annoncées dans l'entente de stage.",
+        "MESURES_ACCUEIL": "Des mesures d'accueil facilitent l'intégration du nouveau stagiaire.",
+        "TEMPS_ENCADREMENT_SUFFISANT": "Le temps réel consacré à l'encadrement du stagiaire est suffisant.",
+        "ENVIRONNEMENT_SECURITAIRE": "L'environnement de travail respecte les normes d'hygiène et de sécurité au travail.",
+        "CLIMAT_TRAVAIL_AGREABLE": "Le climat de travail est agréable.",
+        "ACCESSIBLE_TRANSPORT_COMMUN": "Le milieu de stage est accessible par transport en commun.",
+        "SALAIRE_INTERESSANT": "Le salaire offert est intéressant pour le stagiaire.",
+        "COMMUNICATION_SUPERVISEUR": "La communication avec le superviseur de stage facilite le déroulement du stage.",
+        "EQUIPEMENT_ADEQUAT": "L'équipement fourni est adéquat pour réaliser les tâches confiées.",
+        "VOLUME_TRAVAIL_ACCEPTABLE": "Le volume de travail est acceptable."
+      },
+      "heures_encadrement": {
+        "titre": "Préciser le nombre d'heures d'encadrement par semaine :",
+        "mois1": "Premier mois (h/sem)",
+        "mois2": "Deuxième mois (h/sem)",
+        "mois3": "Troisième mois (h/sem)",
+        "placeholder": "Ex: 5"
+      },
+      "salaire": {
+        "label": "Préciser le salaire horaire offert :",
+        "placeholder": "Ex: 24.00",
+        "unite": "$ / heure"
+      },
+      "commentaires": {
+        "label": "Commentaires",
+        "obligatoire_badge": "Justification requise (*)",
+        "placeholder": "Rédigez vos observations ou justifiez les réponses en désaccord..."
+      }
+    },
+    "section4": {
+      "title": "4. Observations générales",
+      "milieu_privilegier": {
+        "label": "Ce milieu est à privilégier pour le :",
+        "PREMIER_STAGE": "Premier stage",
+        "DEUXIEME_STAGE": "Deuxième stage"
+      },
+      "capacite_accueil": {
+        "label": "Ce milieu est ouvert à accueillir :",
+        "UN": "Un stagiaire",
+        "DEUX": "Deux stagiaires",
+        "TROIS": "Trois stagiaires",
+        "PLUS_DE_TROIS": "Plus de trois"
+      },
+      "meme_stagiaire": {
+        "label": "Ce milieu désire accueillir le même stagiaire pour un prochain stage :",
+        "oui": "Oui",
+        "non": "Non"
+      },
+      "quarts_variables": {
+        "label": "Ce milieu offre des quarts de travail variables :",
+        "oui": "Oui",
+        "non": "Non",
+        "plages_label": "Préciser les plages horaires des quarts de travail :",
+        "plage": "Plage {{index}}",
+        "de": "De",
+        "a": "à"
+      },
+      "signature_label": "Signature de l'enseignant responsable du stagiaire",
+      "signature_placeholder": "Nom complet de l'enseignant responsable",
+      "date_label": "Date de l'évaluation"
+    },
+    "submit": "Soumettre l'évaluation du milieu",
+    "submitting": "Envoi en cours...",
+    "errors": {
+      "banner": "Veuillez corriger les champs en erreur avant de soumettre le formulaire.",
+      "nom_entreprise": "Le nom de l'entreprise est obligatoire.",
+      "personne_contact": "La personne contact est obligatoire.",
+      "adresse": "L'adresse de l'entreprise est obligatoire.",
+      "ville": "La ville est obligatoire.",
+      "code_postal_required": "Le code postal est obligatoire.",
+      "code_postal_format": "Le code postal doit respecter le format canadien (ex. H3G 1T4).",
+      "telephone": "Le numéro de téléphone est obligatoire.",
+      "nom_stagiaire": "Le nom du stagiaire est obligatoire.",
+      "date_stage": "La date du stage est obligatoire.",
+      "numero_stage": "Veuillez sélectionner le numéro du stage (1 ou 2).",
+      "criteres_incomplets": "Veuillez répondre à tous les critères : {{nombre}} critère(s) restant(s).",
+      "critere_requis": "Veuillez sélectionner une réponse pour ce critère.",
+      "heures_mois": "Veuillez entrer un nombre d'heures valide (0 ou plus).",
+      "salaire": "Veuillez saisir un salaire horaire valide (chiffres uniquement, ex. 24.50).",
+      "commentaires_requis": "Veuillez expliquer dans les commentaires les critères évalués en désaccord (*).",
+      "milieu_privilegier": "Veuillez indiquer pour quel stage ce milieu est à privilégier.",
+      "capacite_accueil": "Veuillez indiquer le nombre de stagiaires que le milieu peut accueillir.",
+      "meme_stagiaire": "Veuillez indiquer si le milieu désire accueillir le même stagiaire.",
+      "quarts_variables": "Veuillez indiquer si le milieu offre des quarts de travail variables.",
+      "quart1_requis": "Veuillez préciser au moins la première plage horaire (début et fin).",
+      "quart_paire": "Veuillez renseigner l'heure de début et l'heure de fin pour chaque plage horaire utilisée.",
+      "signature": "La signature de l'enseignant responsable est obligatoire."
+    }
   },
   "gestionnaire_dashboard": {
     "title": "Suivi des étudiants",
@@ -867,6 +1379,7 @@
     "kpi_total": "Total inscrits",
     "status": {
       "STAGE_TROUVE": "Stage trouvé",
+      "NON_EVALUE_PROFESSEUR": "À évaluer (prof.)",
       "EN_ATTENTE_REPONSE": "Attente réponse",
       "EN_ATTENTE_ENTREVUE": "Attente entrevue",
       "SANS_CONVOCATION": "Sans convocation",
@@ -883,7 +1396,11 @@
     "th_email": "Courriel",
     "th_discipline": "Discipline",
     "th_status": "Statut de stage",
+    "th_evaluation": "Évaluation du milieu",
     "th_offers": "Candidatures",
+    "milieu_evalue": "Milieu évalué",
+    "en_attente_professeur": "En attente du professeur",
+    "voir_evaluation": "Voir l'évaluation",
     "application": "candidature",
     "applications_plural": "candidatures",
     "no_application": "Aucune candidature",

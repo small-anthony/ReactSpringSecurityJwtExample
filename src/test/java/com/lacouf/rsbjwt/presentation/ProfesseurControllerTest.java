@@ -1,17 +1,26 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.ENUM.CapaciteAccueilStagiaires;
+import com.lacouf.rsbjwt.model.ENUM.StageCible;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationMilieuStageRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.service.dto.DossierStageProfesseurDto;
+import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.service.dto.ProfesseurDto;
+import com.lacouf.rsbjwt.service.ProfesseurService;
+import com.lacouf.rsbjwt.service.dto.EtudiantSuperviseDto;
+import org.springframework.security.core.Authentication;
+import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,9 +30,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -40,8 +51,18 @@ class ProfesseurControllerTest {
     @Mock
     private CandidatureRepository candidatureRepository;
 
+    @Mock
+    private ProfesseurService professeurService;
+
     @InjectMocks
     private ProfesseurController professeurController;
+
+    private EtudiantSuperviseDto createDummyEtudiantSuperviseDto() {
+        return new EtudiantSuperviseDto(
+                1L, "Sophie", "Martin", "sophie@test.com", 123456, "informatique",
+                "EMBAUCHEE", "CGI", "Dev Web", List.of()
+        );
+    }
 
     @Test
     void signUpProfesseur_avecDonneesValides_retourne201EtLeDto() throws Exception {
@@ -178,6 +199,68 @@ class ProfesseurControllerTest {
     }
 
     @Test
+    void getMesEtudiants_succes_retourneListe() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        List<EtudiantSuperviseDto> liste = List.of(createDummyEtudiantSuperviseDto());
+        when(professeurService.getEtudiantsAssignes("martin@test.com", 2026)).thenReturn(liste);
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMesEtudiants(auth, 2026);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(liste, response.getBody());
+    }
+
+    @Test
+    void getMesEtudiants_erreur_retourneBadRequest() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getEtudiantsAssignes("martin@test.com", 2026)).thenThrow(new Exception("Erreur"));
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMesEtudiants(auth, 2026);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Erreur", response.getBody());
+    }
+
+    @Test
+    void getMonEtudiantDetail_succes_retourneEtudiant() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        EtudiantSuperviseDto dto = createDummyEtudiantSuperviseDto();
+        when(professeurService.getEtudiantDetail(1L, "martin@test.com")).thenReturn(dto);
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMonEtudiantDetail(1L, auth);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void getMonEtudiantDetail_erreur_retourneBadRequest() throws Exception {
+        // Arrange
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getEtudiantDetail(1L, "martin@test.com")).thenThrow(new Exception("Non trouvé"));
+
+        // Act
+        ResponseEntity<?> response = professeurController.getMonEtudiantDetail(1L, auth);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Non trouvé", response.getBody());
+    }
+
+    @Test
     void getAnnees_retourneAnneesTriees() {
 //        Arrange
         when(offreStageRepository.findDistinctAnnees()).thenReturn(List.of(2025));
@@ -188,5 +271,71 @@ class ProfesseurControllerTest {
 //        Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertInstanceOf(List.class, response.getBody());
+    }
+
+    @Test
+    void getDossierStage_succes_retourne200() throws Exception {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        DossierStageProfesseurDto dto = new DossierStageProfesseurDto(
+                1L, 3L, 5L, "CGI", "Valentin", "514-555-1234", "emp@test.com",
+                "Sophie Martin", "info", "Dev Web", "2026-05-18", "2026-08-21",
+                "2026-05-18 → 2026-08-21", "24.00", "Martin Tremblay", false, null
+        );
+        when(professeurService.getDossierStagePourProfesseur("martin@test.com", 1L)).thenReturn(dto);
+
+        ResponseEntity<?> response = professeurController.getDossierStage(1L, auth);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void getDossierStage_accesRefuse_retourne400() throws Exception {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getDossierStagePourProfesseur("martin@test.com", 1L))
+                .thenThrow(new Exception("Accès refusé"));
+
+        ResponseEntity<?> response = professeurController.getDossierStage(1L, auth);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void getEvaluationMilieu_nonTrouvee_retourne400() throws Exception {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        when(professeurService.getEvaluationMilieuPourProfesseur("martin@test.com", 1L))
+                .thenThrow(new Exception("Aucune évaluation"));
+
+        ResponseEntity<?> response = professeurController.getEvaluationMilieu(1L, auth);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void soumettreEvaluationMilieu_succes_retourne201() throws Exception {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("martin@test.com");
+        EvaluationMilieuStageRequest req = new EvaluationMilieuStageRequest(
+                "CGI", "Valentin", "123 rue", "Montréal", "H3G 1T4", "514-555-1234", "",
+                "Sophie Martin", "2026-05-18 → 2026-08-21", 1, Map.of(),
+                5.0, 4.0, 3.0, "24.00", "", StageCible.PREMIER_STAGE, CapaciteAccueilStagiaires.UN,
+                true, false, "", "", "", "", "", "", "Martin Tremblay", LocalDate.now()
+        );
+        EvaluationMilieuStageDto dto = new EvaluationMilieuStageDto(
+                42L, 1L, 3L, 10L, "Martin Tremblay", "CGI", "Valentin", "123 rue",
+                "Montréal", "H3G 1T4", "514-555-1234", "", "Sophie Martin",
+                "2026-05-18 → 2026-08-21", 1, Map.of(), 5.0, 4.0, 3.0, "24.00", "",
+                StageCible.PREMIER_STAGE, CapaciteAccueilStagiaires.UN, true, false,
+                "", "", "", "", "", "", "Martin Tremblay", LocalDate.now()
+        );
+        when(professeurService.soumettreEvaluationMilieu("martin@test.com", 1L, req)).thenReturn(dto);
+
+        ResponseEntity<?> response = professeurController.soumettreEvaluationMilieu(1L, req, auth);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(dto, response.getBody());
     }
 }

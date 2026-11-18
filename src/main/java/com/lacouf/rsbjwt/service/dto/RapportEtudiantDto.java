@@ -15,17 +15,73 @@ public record RapportEtudiantDto(
         int matricule,
         String discipline,
         String statutStage,
-        List<CandidatureDto> candidatures
+        List<CandidatureDto> candidatures,
+        boolean milieuEvalue,
+        Long evaluationMilieuId
 ) {
-    public static RapportEtudiantDto create(Etudiant etudiant, Integer annee) {
-        List<Candidature> cands = etudiant.getCandidatures();
+    public RapportEtudiantDto(
+            int id,
+            String firstName,
+            String lastName,
+            String email,
+            int matricule,
+            String discipline,
+            List<CandidatureDto> candidatures
+    ) {
+        this(id, firstName, lastName, email, matricule, discipline, null, candidatures, false, null);
+    }
 
+    public RapportEtudiantDto(
+            int id,
+            String firstName,
+            String lastName,
+            String email,
+            int matricule,
+            String discipline,
+            String statutStage,
+            List<CandidatureDto> candidatures
+    ) {
+        this(id, firstName, lastName, email, matricule, discipline, statutStage, candidatures, false, null);
+    }
+
+    public RapportEtudiantDto(
+            int id,
+            String firstName,
+            String lastName,
+            String email,
+            int matricule,
+            String discipline,
+            List<CandidatureDto> candidatures,
+            boolean milieuEvalue,
+            Long evaluationMilieuId
+    ) {
+        this(id, firstName, lastName, email, matricule, discipline, null, candidatures, milieuEvalue, evaluationMilieuId);
+    }
+
+    public static RapportEtudiantDto create(Etudiant etudiant) {
+        return create(etudiant, false, null);
+    }
+
+    public static RapportEtudiantDto create(Etudiant etudiant, Integer annee) {
+        return create(etudiant, annee, false, null);
+    }
+
+    public static RapportEtudiantDto create(Etudiant etudiant, boolean milieuEvalue, Long evaluationMilieuId) {
+        return create(etudiant, null, milieuEvalue, evaluationMilieuId);
+    }
+
+    public static RapportEtudiantDto create(
+            Etudiant etudiant,
+            Integer annee,
+            boolean milieuEvalue,
+            Long evaluationMilieuId
+    ) {
+        List<Candidature> cands = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
         if (annee != null) {
             cands = cands.stream()
-                    .filter(c -> c.getOffreStage().getAnnee() == annee)
+                    .filter(c -> c.getOffreStage() != null && c.getOffreStage().getAnnee() == annee)
                     .toList();
         }
-
         return new RapportEtudiantDto(
                 etudiant.getId().intValue(),
                 etudiant.getFirstName(),
@@ -34,12 +90,27 @@ public record RapportEtudiantDto(
                 etudiant.getMatricule(),
                 etudiant.getDiscipline(),
                 determinerStatut(cands),
-                CandidatureDto.create(cands)
+                CandidatureDto.create(cands),
+                milieuEvalue,
+                evaluationMilieuId
         );
     }
 
+    public static RapportEtudiantDto createFilteredByAnnee(Etudiant etudiant, int annee) {
+        return create(etudiant, annee, false, null);
+    }
+
+    public static RapportEtudiantDto createFilteredByAnnee(
+            Etudiant etudiant,
+            int annee,
+            boolean milieuEvalue,
+            Long evaluationMilieuId
+    ) {
+        return create(etudiant, annee, milieuEvalue, evaluationMilieuId);
+    }
+
     private static String determinerStatut(List<Candidature> candidatures) {
-        if (candidatures.isEmpty()) {
+        if (candidatures == null || candidatures.isEmpty()) {
             return "AUCUNE_CANDIDATURE";
         }
         boolean stageTrouve = candidatures.stream().anyMatch(c ->
@@ -48,23 +119,20 @@ public record RapportEtudiantDto(
         if (stageTrouve) {
             return "STAGE_TROUVE";
         }
-
         boolean attenteReponse = candidatures.stream().anyMatch(c ->
                 c.getStatut() == StatutCandidature.EN_ATTENTE_REPONSE
         );
         if (attenteReponse) {
             return "EN_ATTENTE_REPONSE";
         }
-
         boolean attenteEntrevue = candidatures.stream().anyMatch(c ->
-                c.getConvocations().stream().anyMatch(conv ->
+                c.getConvocations() != null && c.getConvocations().stream().anyMatch(conv ->
                         conv.getStatut() == StatutConvocation.EN_ATTENTE
                 )
         );
         if (attenteEntrevue) {
             return "EN_ATTENTE_ENTREVUE";
         }
-
         return "SANS_CONVOCATION";
     }
 }

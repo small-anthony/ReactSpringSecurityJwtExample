@@ -1,18 +1,19 @@
 import { useTranslation } from "react-i18next";
 
-export default function SelecteurSession({ annees = [], anneeSelectionnee, onChangementAnnee }) {
+export default function SelecteurSession({ annees, anneeSelectionnee, onChangementAnnee }) {
     const { t } = useTranslation("main");
+    const listeAnnees = Array.isArray(annees) ? annees : [];
     return (
         <div className="flex items-center gap-2">
             <select
                 value={anneeSelectionnee || ""}
-                onChange={(e) => onChangementAnnee(e.target.value ? parseInt(e.target.value, 10) : null)}
-                className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                onChange={({ target }) => onChangementAnnee(target.value ? parseInt(target.value, 10) : null)}
+                className="ds-input py-2 px-3.5 w-auto cursor-pointer font-medium"
             >
-                <option value="">{t("session.toutes", "Toutes les sessions")}</option>
-                {annees.map((annee) => (
+                <option value="">{t("session.toutes")}</option>
+                {listeAnnees.map((annee) => (
                     <option key={annee} value={annee}>
-                        {t("session.libelle", { annee, defaultValue: `Hiver ${annee}` })}
+                        {t("session.libelle", { annee })}
                     </option>
                 ))}
             </select>

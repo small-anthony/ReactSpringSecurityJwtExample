@@ -57,24 +57,24 @@ export default function ModalModifierOffre({ offre, onClose, onOffreModifiee }) 
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-                    <h2 className="text-xl font-bold text-gray-900">
+        <div className="ds-modal-backdrop">
+            <div className="ds-modal-panel max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <h2 className="text-xl font-bold text-slate-900">
                         {t("employeur_home.modal_edit_title")}
                     </h2>
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={isLoading}
-                        className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                        className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer"
                     >
                         <X className="h-5 w-5" />
                     </button>
                 </div>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+                    <div className="mb-4 ds-alert-error" role="alert">
                         {error}
                     </div>
                 )}
@@ -85,18 +85,19 @@ export default function ModalModifierOffre({ offre, onClose, onOffreModifiee }) 
                     onSubmit={handleSubmit}
                 />
 
-                <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-100">
+                <div className="flex justify-end gap-2.5 mt-5 pt-4 border-t border-slate-100">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 border rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                        className="btn-secondary"
                     >
                         {t("employeur_home.cancel")}
                     </button>
                     <button
                         type="submit"
                         form="formModifierOffre"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
+                        disabled={isLoading}
+                        className="btn-primary"
                     >
                         {isLoading ? t("employeur_home.saving") : t("employeur_home.save")}
                     </button>

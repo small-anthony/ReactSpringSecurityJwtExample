@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 
 const COULEURS = {
-    EN_ATTENTE: "bg-gray-100 text-gray-800",
-    ACCEPTEE: "bg-green-100 text-green-800",
-    REFUSEE: "bg-red-100 text-red-800",
-    EN_ATTENTE_REPONSE: "bg-blue-100 text-blue-800",
-    EMBAUCHEE: "bg-emerald-100 text-emerald-800",
+    EN_ATTENTE: "bg-slate-100 text-slate-800 border border-slate-200",
+    ACCEPTEE: "bg-emerald-50 text-emerald-800 border border-emerald-200",
+    REFUSEE: "bg-red-50 text-red-800 border border-red-200",
+    EN_ATTENTE_REPONSE: "bg-blue-50 text-blue-800 border border-blue-200",
+    EMBAUCHEE: "bg-emerald-50 text-emerald-800 border border-emerald-200",
 };
 
 export default function CandidatureStatut({ candidature }) {

@@ -232,4 +232,17 @@ describe("ProfileEmployeur - Modifier et Supprimer une offre d'emploi", () => {
         expect(await screen.findByText("Erreur serveur lors de la mise à jour")).toBeInTheDocument();
         expect(screen.getByRole("heading", { name: /modifier l'offre/i })).toBeInTheDocument();
     });
+
+    it("devrait afficher le lien Mes stagiaires qui mène à la page des stagiaires", async () => {
+        // Arrange
+        OffreStageService.getOffresStages.mockResolvedValueOnce(mockOffres);
+
+        // Act
+        render(<MockProfileEmployeur />);
+        expect(await screen.findByText("Développeur Front-End React")).toBeInTheDocument();
+
+        // Assert
+        const lienStagiaires = screen.getByRole("link", { name: /mes stagiaires/i });
+        expect(lienStagiaires).toHaveAttribute("href", "/employeur/stagiaires");
+    });
 });

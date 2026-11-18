@@ -56,13 +56,13 @@ export default function ModalConfirmation({
     const currentType = typeConfig[type] || typeConfig.warning;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-            <div className="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+        <div className="ds-modal-backdrop animate-in fade-in duration-200">
+            <div className="relative ds-modal-panel max-w-md p-6">
                 {onClose && !loading && (
                     <button
                         type="button"
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition cursor-pointer"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -76,28 +76,28 @@ export default function ModalConfirmation({
                         {currentType.icon}
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900 leading-tight">
+                        <h3 className="text-lg font-bold text-slate-900 leading-tight">
                             {displayTitle}
                         </h3>
                         {!isSuccess && message && (
-                            <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                            <p className="text-sm text-slate-600 mt-1 leading-relaxed">
                                 {message}
                             </p>
                         )}
                     </div>
                 </div>
                 {isSuccess && message && (
-                    <p className="text-sm text-gray-600 text-center mb-6 leading-relaxed">
+                    <p className="text-sm text-slate-600 text-center mb-6 leading-relaxed">
                         {message}
                     </p>
                 )}
                 {details && (
-                    <div className="my-4 p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm font-semibold text-gray-800">
+                    <div className="my-4 p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800">
                         {details}
                     </div>
                 )}
                 <div
-                    className={`flex items-center gap-3 pt-4 border-t border-gray-100 ${
+                    className={`flex items-center gap-3 pt-4 border-t border-slate-100 ${
                         isSuccess ? "justify-center" : "justify-end"
                     }`}
                 >
@@ -106,7 +106,7 @@ export default function ModalConfirmation({
                             type="button"
                             onClick={onClose}
                             disabled={loading}
-                            className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition cursor-pointer disabled:opacity-50"
+                            className="btn-secondary"
                         >
                             {cancelText || t("common.cancel")}
                         </button>
@@ -117,7 +117,7 @@ export default function ModalConfirmation({
                         disabled={loading}
                         className={`${
                             isSuccess ? "w-full" : ""
-                        } px-5 py-2 text-sm font-semibold rounded-xl shadow-xs transition cursor-pointer disabled:opacity-50 ${
+                        } px-5 py-2.5 text-sm font-semibold rounded-lg shadow-xs transition cursor-pointer disabled:opacity-50 ${
                             currentType.btnBg
                         }`}
                     >
