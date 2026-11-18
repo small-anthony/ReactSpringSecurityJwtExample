@@ -22,113 +22,12 @@
   - [x] Aidé
   - [x] Préservé
 
-- Ping tout les membres d'équipe lorsque il a une réunion vocal sur discord.
-  - [x] Respecté
-  - [x] Aidé
-  - [x] Préservé
-
-
-
-  - [x] Un stagiaire ne peut être évalué qu'une seule fois ; l'évaluation est ensuite consultable en lecture seule (badge « Évalué », bouton « Voir l'évaluation »).
-  - [x] Un employeur ne peut évaluer que les stagiaires de ses propres contrats.
-  - [x] Support bilingue FR / EN complet.
-
-### Points d'action
-- Utiliser un chronomètre pour faire le log du temps
-  - [x] Respecté
-  - [ ] Aidé
-  - [x] Préservé
-- Vérifier les plans de démo la veille pour corriger les incohérences
-  - [x] Respecté
-  - [ ] Aidé
-  - [x] Préservé
-- Créer un daily virtuel sur discord.
-  - [ ] Respecté
-  - [x] Aidé
-  - [x] Préservé
-- Avoir plus de communication avec tous les membres d'équipe sur discord.
+- Ping tous les membres d'équipe lorsqu'on a une réunion sur discord.
   - [x] Respecté
   - [x] Aidé
   - [x] Préservé
 
 ---
-
-## 5. [EQ2-24] En tant que système, je notifie le gestionnaire d'un nouveau CV
-
-### Définitions de "Done"
-> **À COMPLÉTER par la personne qui a réalisé cette story** : remplacer les lignes entre crochets par les vrais numéros de tâches, classes, fichiers de tests et critères. Supprimer cette note ensuite.
-
-- [ ] **Tâches complétées**
-  - [ ] `EQ2-XXX` : [Backend : création de la notification lors du téléversement d'un CV]
-  - [ ] `EQ2-XXX` : [Frontend : affichage des notifications pour le gestionnaire]
-- [ ] **Tests validés**
-  - [ ] Backend : [classes de tests et cas couverts]
-  - [ ] Frontend : [fichiers de tests et nombre de tests]
-- [ ] **Critères de succès respectés**
-  - [ ] [Le gestionnaire est notifié dès qu'un étudiant téléverse un CV]
-  - [ ] [La notification mène vers l'approbation du CV]
-  - [ ] [Une notification lue ne s'affiche plus comme nouvelle]
-  - [ ] Support bilingue FR / EN
-
-### Points d'action
-- Utiliser un chronomètre pour faire le log du temps
-  - [x] Respecté
-  - [ ] Aidé
-  - [x] Préservé
-- Vérifier les plans de démo la veille pour corriger les incohérences
-  - [x] Respecté
-  - [ ] Aidé
-  - [x] Préservé
-- Créer un daily virtuel sur discord.
-  - [ ] Respecté
-  - [x] Aidé
-  - [x] Préservé
-- Avoir plus de communication avec tous les membres d'équipe sur discord.
-  - [x] Respecté
-  - [x] Aidé
-  - [x] Préservé
-
----
-
-## 6. [EQ2-26] En tant que système, je notifie l'étudiant que mon CV est accepté/refusé
-
-### Définitions de "Done"
-> **À COMPLÉTER par la personne qui a réalisé cette story** : remplacer les lignes entre crochets par les vrais numéros de tâches, classes, fichiers de tests et critères. Supprimer cette note ensuite.
-
-- [ ] **Tâches complétées**
-  - [ ] `EQ2-XXX` : [Backend : notification créée lors de l'acceptation ou du refus du CV, avec le motif de refus]
-  - [ ] `EQ2-XXX` : [Frontend : affichage des notifications pour l'étudiant]
-- [ ] **Tests validés**
-  - [ ] Backend : [classes de tests et cas couverts]
-  - [ ] Frontend : [fichiers de tests et nombre de tests]
-- [ ] **Critères de succès respectés**
-  - [ ] [L'étudiant est notifié quand son CV est accepté]
-  - [ ] [L'étudiant est notifié avec le motif quand son CV est refusé]
-  - [ ] [Les notifications sont visibles et peuvent être marquées comme lues]
-  - [ ] Support bilingue FR / EN
-
-### Points d'action
-- Utiliser un chronomètre pour faire le log du temps
-  - [x] Respecté
-  - [ ] Aidé
-  - [x] Préservé
-- Vérifier les plans de démo la veille pour corriger les incohérences
-  - [x] Respecté
-  - [ ] Aidé
-  - [x] Préservé
-- Créer un daily virtuel sur discord.
-  - [ ] Respecté
-  - [x] Aidé
-  - [x] Préservé
-- Avoir plus de communication avec tous les membres d'équipe sur discord.
-  - [x] Respecté
-  - [x] Aidé
-  - [x] Préservé
-
----
-
-
-
 
 # Rapport des Définitions de « Done » (Sprint 4)
 
@@ -148,12 +47,18 @@
   - [x] Respecté
   - [ ] Aidé
   - [x] Préservé
+  
+- Chaque membre essaye de finir un story à la première semaine.
+  -[x] Respecté
+  -[ ] Aidé
+  -[x] Préservé
+  
+- On fait des petits merges pour mieux avancer et updater notre branche quotidiennement.
+  -[x] Respecté
+  -[x]Aidé
+  -[x] Préservé
 
 ---
-
-
-
-
 
 
 # Rapport des Définitions de « Done » (Sprint 3)
@@ -201,6 +106,8 @@
   - [x] Respecté 
   - [ ] Aidé
   - [x] Préservé
+  
+
 
 ---
 
