@@ -4,5 +4,6 @@ public enum NotificationActionType {
 	NONE,
 	VOIR_OFFRES,
 	TELEVERSER_CV,
-	APPROUVER_CV
+	APPROUVER_CV,
+	VOIR_CONVOCATIONS
 }

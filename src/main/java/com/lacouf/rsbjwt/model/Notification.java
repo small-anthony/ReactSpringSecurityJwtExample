@@ -106,6 +106,14 @@ public class Notification {
 		);
 	}
 
+	public static Notification convocationRecue() {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.VOIR_CONVOCATIONS),
+				"etudiant.convocation_received"
+		);
+	}
+
 	public static Notification cvCreated(Cv cv) {
 		return new Notification(
 				NotificationType.ACTION_REQUIRED,

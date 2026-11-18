@@ -1,0 +1,10 @@
+{
+  "etudiant": {
+    "cv_accepted": "Your CV was accepted! You can now browse internship offers.",
+    "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV.",
+    "convocation_received": "You have received an interview invitation. Open it to choose a time slot."
+  },
+  "gestionnaire": {
+    "cv_submitted": "A student submitted a new CV for approval."
+  }
+}
