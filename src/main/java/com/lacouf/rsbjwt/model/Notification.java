@@ -113,4 +113,12 @@ public class Notification {
 				"gestionnaire.cv_submitted"
 		);
 	}
+
+	public static Notification offreCreated(OffreStage offre) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.APPROUVER_OFFRE, offre.getId()),
+				"gestionnaire.offre_submitted"
+		);
+	}
 }
