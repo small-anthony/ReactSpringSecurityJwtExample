@@ -3,6 +3,8 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationActionType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
@@ -39,6 +41,9 @@ public class ContratServiceTest {
 
     @Mock
     private UserAppRepository userAppRepository;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ContratService contratService;
@@ -517,5 +522,29 @@ public class ContratServiceTest {
         // Assert
         assertTrue(resultat.signeParEtudiant());
         assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT, resultat.statut());
+    }
+
+    @Test
+    void creerContrat_devraitNotifierEtudiantEtEmployeur() throws Exception {
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(userAppRepository.findUserAppByEmail("gestion@test.com")).thenReturn(Optional.of(gestionnaire));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        contratService.creerContrat(requestValide, "gestion@test.com");
+
+        org.mockito.ArgumentCaptor<Notification> notifEtudiant = org.mockito.ArgumentCaptor.forClass(Notification.class);
+        org.mockito.ArgumentCaptor<Notification> notifEmployeur = org.mockito.ArgumentCaptor.forClass(Notification.class);
+
+        verify(notificationService).pushNotification(notifEtudiant.capture(), eq(10L));
+        verify(notificationService).pushNotification(notifEmployeur.capture(), eq(20L));
+
+        assertEquals(NotificationType.ACTION_REQUIRED, notifEtudiant.getValue().getType());
+        assertEquals("etudiant.contrat_created", notifEtudiant.getValue().getMessage());
+        assertEquals(NotificationActionType.SIGNER_CONTRAT_ETUDIANT, notifEtudiant.getValue().getAction().getType());
+
+        assertEquals(NotificationType.ACTION_REQUIRED, notifEmployeur.getValue().getType());
+        assertEquals("employeur.contrat_created", notifEmployeur.getValue().getMessage());
+        assertEquals(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, notifEmployeur.getValue().getAction().getType());
     }
 }

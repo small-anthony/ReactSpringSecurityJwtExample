@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,13 +33,23 @@ public class ContratService {
     private final ContratRepository contratRepository;
     private final CandidatureRepository candidatureRepository;
     private final UserAppRepository userAppRepository;
+    private final NotificationService notificationService;
+
+    @Autowired
+    public ContratService(ContratRepository contratRepository,
+                          CandidatureRepository candidatureRepository,
+                          UserAppRepository userAppRepository,
+                          NotificationService notificationService) {
+        this.contratRepository = contratRepository;
+        this.candidatureRepository = candidatureRepository;
+        this.userAppRepository = userAppRepository;
+        this.notificationService = notificationService;
+    }
 
     public ContratService(ContratRepository contratRepository,
                           CandidatureRepository candidatureRepository,
                           UserAppRepository userAppRepository) {
-        this.contratRepository = contratRepository;
-        this.candidatureRepository = candidatureRepository;
-        this.userAppRepository = userAppRepository;
+        this(contratRepository, candidatureRepository, userAppRepository, null);
     }
 
     private record EtudiantEmployeurAnnee(Long etudiantId, Long employeurId, int annee) {
@@ -118,7 +129,21 @@ public class ContratService {
                 request.descriptionTaches().trim(),
                 request.conditions().trim());
 
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat savedContrat = contratRepository.save(contrat);
+        if (notificationService != null) {
+            if (candidature.getEtudiant() != null && candidature.getEtudiant().getId() != null) {
+                notificationService.pushNotification(
+                        Notification.contratCreatedForEtudiant(savedContrat),
+                        candidature.getEtudiant().getId());
+            }
+            if (candidature.getEmployeur() != null && candidature.getEmployeur().getId() != null) {
+                notificationService.pushNotification(
+                        Notification.contratCreatedForEmployeur(savedContrat),
+                        candidature.getEmployeur().getId());
+            }
+        }
+
+        return ContratDto.create(savedContrat);
     }
 
     public ContratDto signerContrat(Long contratId, String actorEmail, MultipartFile signatureFile) throws Exception {

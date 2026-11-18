@@ -113,4 +113,20 @@ public class Notification {
 				"gestionnaire.cv_submitted"
 		);
 	}
+
+	public static Notification contratCreatedForEtudiant(Contrat contrat) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.SIGNER_CONTRAT_ETUDIANT, contrat.getId()),
+				"etudiant.contrat_created"
+		);
+	}
+
+	public static Notification contratCreatedForEmployeur(Contrat contrat) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, contrat.getId()),
+				"employeur.contrat_created"
+		);
+	}
 }
