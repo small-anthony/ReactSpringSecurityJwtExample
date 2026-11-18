@@ -1,5 +1,5 @@
 import {BellIcon, CheckCircle2, Info, AlertTriangle, XCircle, X,} from "lucide-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -27,13 +27,24 @@ export function NotificationButton() {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
+    const chargerNotifications = useCallback(() => {
         if (!authService.isAuthed()) return;
 
         getNotifications(authService.buildAuthHeader())
             .then((data) => setNotifications(data || []))
             .catch(() => setNotifications([]));
     }, [authService]);
+
+    useEffect(() => {
+        chargerNotifications();
+    }, [chargerNotifications]);
+
+    useEffect(() => {
+        if (!authService.isAuthed()) return;
+        const onFocus = () => chargerNotifications();
+        window.addEventListener("focus", onFocus);
+        return () => window.removeEventListener("focus", onFocus);
+    }, [authService, chargerNotifications]);
 
     const handleAction = async (notification) => {
         if (!notification.dismissed) {
@@ -70,7 +81,13 @@ export function NotificationButton() {
         <div className="relative">
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => {
+                    const prochainEtat = !isOpen;
+                    setIsOpen(prochainEtat);
+                    if (prochainEtat) {
+                        chargerNotifications();
+                    }
+                }}
                 className={`flex items-center gap-1.5 h-8 px-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                     nbNonLues > 0
                         ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
