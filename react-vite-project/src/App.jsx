@@ -21,6 +21,7 @@ import EmployeurStagiaires from "./components/page/EmployeurStagiaires.jsx";
 import EvaluationStagiaire from "./components/page/EvaluationStagiaire.jsx";
 import FormulaireEvaluationMilieuStage from "./components/widget/FormulaireEvaluationMilieuStage.jsx";
 import AssignationProfesseurs from "./components/page/AssignationProfesseurs.jsx";
+import ProfesseurEtudiants from "./components/page/ProfesseurEtudiants.jsx";
 
 function App() {
     const authService = useContext(AuthServiceContext);

@@ -1,9 +1,11 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.Contrat;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
@@ -11,6 +13,7 @@ import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
+import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.CvRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
@@ -34,6 +37,7 @@ public class GestionnaireService {
     private final ProfesseurRepository professeurRepository;
     private final NotificationService notificationService;
     private final EvaluationMilieuStageRepository evaluationMilieuStageRepository;
+    private final ContratRepository contratRepository;
 
     @Autowired
     public GestionnaireService(CvRepository cvRepository,
@@ -42,7 +46,8 @@ public class GestionnaireService {
                               CandidatureRepository candidatureRepository,
                               ProfesseurRepository professeurRepository,
                               NotificationService notificationService,
-                              EvaluationMilieuStageRepository evaluationMilieuStageRepository) {
+                              EvaluationMilieuStageRepository evaluationMilieuStageRepository,
+                              ContratRepository contratRepository) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
@@ -50,6 +55,17 @@ public class GestionnaireService {
         this.professeurRepository = professeurRepository;
         this.notificationService = notificationService;
         this.evaluationMilieuStageRepository = evaluationMilieuStageRepository;
+        this.contratRepository = contratRepository;
+    }
+
+    public GestionnaireService(CvRepository cvRepository,
+                              OffreStageRepository offreStageRepository,
+                              EtudiantRepository etudiantRepository,
+                              CandidatureRepository candidatureRepository,
+                              ProfesseurRepository professeurRepository,
+                              NotificationService notificationService,
+                              EvaluationMilieuStageRepository evaluationMilieuStageRepository) {
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, notificationService, evaluationMilieuStageRepository, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
@@ -58,7 +74,7 @@ public class GestionnaireService {
                               CandidatureRepository candidatureRepository,
                               ProfesseurRepository professeurRepository,
                               NotificationService notificationService) {
-        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, notificationService, null);
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, notificationService, null, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
@@ -66,14 +82,14 @@ public class GestionnaireService {
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository,
                               ProfesseurRepository professeurRepository) {
-        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null, null);
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null, null, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
                               OffreStageRepository offreStageRepository,
                               EtudiantRepository etudiantRepository,
                               CandidatureRepository candidatureRepository) {
-        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null, null);
+        this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null, null, null);
     }
 
     public CvDto accepterCv(Long cvId) throws Exception {
@@ -192,7 +208,7 @@ public class GestionnaireService {
     public List<RapportEtudiantDto> getTousLesEtudiants() {
         return etudiantRepository.findAll()
                 .stream()
-                .map(RapportEtudiantDto::create)
+                .map(e -> toRapportEtudiantDto(e, null))
                 .toList();
     }
 
@@ -204,13 +220,13 @@ public class GestionnaireService {
         if (annee == null) {
             return etudiantRepository.findEtudiantsSansConvocation()
                     .stream()
-                    .map(RapportEtudiantDto::create)
+                    .map(e -> RapportEtudiantDto.create(e, null, false, null, this::aContratSignePourCandidature))
                     .toList();
         }
 
         return etudiantRepository.findEtudiantsSansConvocation(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee, false, null, this::aContratSignePourCandidature))
                 .toList();
     }
 
@@ -222,13 +238,13 @@ public class GestionnaireService {
         if (annee == null) {
             return etudiantRepository.findEtudiantsEnAttenteEntrevue()
                     .stream()
-                    .map(RapportEtudiantDto::create)
+                    .map(e -> RapportEtudiantDto.create(e, null, false, null, this::aContratSignePourCandidature))
                     .toList();
         }
 
         return etudiantRepository.findEtudiantsEnAttenteEntrevue(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee, false, null, this::aContratSignePourCandidature))
                 .toList();
     }
 
@@ -240,13 +256,13 @@ public class GestionnaireService {
         if (annee == null) {
             return etudiantRepository.findEtudiantsEnAttenteReponse()
                     .stream()
-                    .map(RapportEtudiantDto::create)
+                    .map(e -> RapportEtudiantDto.create(e, null, false, null, this::aContratSignePourCandidature))
                     .toList();
         }
 
         return etudiantRepository.findEtudiantsEnAttenteReponse(annee)
                 .stream()
-                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee))
+                .map(e -> RapportEtudiantDto.createFilteredByAnnee(e, annee, false, null, this::aContratSignePourCandidature))
                 .toList();
     }
 
@@ -269,9 +285,7 @@ public class GestionnaireService {
                 : etudiantRepository.findEtudiantsTrouveStage(annee);
         return etudiants.stream()
                 .filter(e -> !estMilieuEvalue(e, annee))
-                .map(e -> annee == null
-                        ? RapportEtudiantDto.create(e, false, null)
-                        : RapportEtudiantDto.createFilteredByAnnee(e, annee, false, null))
+                .map(e -> RapportEtudiantDto.create(e, annee, false, null, this::aContratSignePourCandidature))
                 .toList();
     }
 
@@ -302,10 +316,16 @@ public class GestionnaireService {
         boolean milieuEvalue = evaluationOpt.isPresent();
         Long evaluationMilieuId = evaluationOpt.map(EvaluationMilieuStage::getId).orElse(null);
 
-        if (annee == null) {
-            return RapportEtudiantDto.create(etudiant, milieuEvalue, evaluationMilieuId);
+        return RapportEtudiantDto.create(etudiant, annee, milieuEvalue, evaluationMilieuId, this::aContratSignePourCandidature);
+    }
+
+    private boolean aContratSignePourCandidature(Candidature candidature) {
+        if (contratRepository == null || candidature == null || candidature.getId() == null) {
+            return false;
         }
-        return RapportEtudiantDto.createFilteredByAnnee(etudiant, annee, milieuEvalue, evaluationMilieuId);
+        return contratRepository.findByCandidatureId(candidature.getId())
+                .map(contrat -> contrat.isSigneParEtudiant() && contrat.getStatut() != StatutContrat.REFUSE)
+                .orElse(false);
     }
 
     private boolean estMilieuEvalue(Etudiant etudiant, Integer annee) {
@@ -323,12 +343,9 @@ public class GestionnaireService {
                 : candidatures;
 
         return filtrees.stream()
-                .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
+                .filter(this::aContratSignePourCandidature)
                 .findFirst()
-                .orElseGet(() -> filtrees.stream()
-                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
-                        .findFirst()
-                        .orElse(null));
+                .orElse(null);
     }
 
     public List<EtudiantPourAssignationDto> getEtudiantsPourAssignation(Integer annee) {
@@ -370,9 +387,8 @@ public class GestionnaireService {
         Etudiant etudiant = etudiantRepository.findById(etudiantId)
                 .orElseThrow(() -> new Exception("Étudiant non trouvé avec l'id : " + etudiantId));
 
-        boolean aTrouveStage = etudiant.getCandidatures() != null && etudiant.getCandidatures().stream().anyMatch(c ->
-                c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE
-        );
+        boolean aTrouveStage = etudiant.getCandidatures() != null && etudiant.getCandidatures().stream()
+                .anyMatch(this::aContratSignePourCandidature);
         if (!aTrouveStage) {
             throw new Exception("L'étudiant n'a pas encore trouvé de stage. L'assignation d'un professeur n'est pas possible.");
         }
@@ -445,13 +461,7 @@ public class GestionnaireService {
                 ? candidatures.stream().filter(c -> annee.equals(c.getAnneeOffre())).toList()
                 : candidatures;
 
-        Candidature stage = candidaturesFiltrees.stream()
-                .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
-                .findFirst()
-                .orElseGet(() -> candidaturesFiltrees.stream()
-                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
-                        .findFirst()
-                        .orElse(null));
+        Candidature stage = trouverStageActif(etudiant, annee);
 
         boolean aTrouve = stage != null;
         String titre = stage != null ? stage.getTitreOffre() : null;

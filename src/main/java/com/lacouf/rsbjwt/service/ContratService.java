@@ -242,6 +242,9 @@ public class ContratService {
             if (contrat.isSigneParEtudiant()) {
                 throw new Exception("signature existe déjà");
             }
+            if (aDejaSigneUnAutreContrat(etudiant, contrat)) {
+                throw new Exception("Vous avez déjà signé un contrat de stage et ne pouvez pas en signer plusieurs.");
+            }
         } else if (utilisateur instanceof Employeur employeur) {
             if (!Objects.equals(employeur.getId(), contrat.getEmployeur().getId())) {
                 throw new Exception("signataire est invalide");
@@ -275,5 +278,17 @@ public class ContratService {
         } else if (!(utilisateur instanceof Gestionnaire)) {
             throw new Exception("signataire inconnu");
         }
+    }
+
+    private boolean aDejaSigneUnAutreContrat(Etudiant etudiant, Contrat contratActuel) {
+        List<Contrat> contratsEtudiant = contratRepository.findByCandidatureEtudiantEmail(etudiant.getEmail());
+        if (contratsEtudiant == null) {
+            return false;
+        }
+        return contratsEtudiant.stream()
+                .anyMatch(c -> c != contratActuel
+                        && (contratActuel.getId() == null || !Objects.equals(c.getId(), contratActuel.getId()))
+                        && c.isSigneParEtudiant()
+                        && c.getStatut() != StatutContrat.REFUSE);
     }
 }

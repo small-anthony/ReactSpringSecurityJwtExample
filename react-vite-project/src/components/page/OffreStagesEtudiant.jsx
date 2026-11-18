@@ -157,11 +157,11 @@ export default function OffreStagesEtudiant() {
                 const mesContrats = await getContratsEtudiant(authHeader);
                 const listeContrats = mesContrats || [];
                 setContrats(listeContrats);
-                const signed = listeContrats.some((c) => c.signeParEtudiant);
+                const signed = listeContrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
                 setATrouveStage(signed);
-                const pendingContrats = listeContrats.filter(
-                    (c) => !c.signeParEtudiant && c.statut !== "REFUSE"
-                ).length;
+                const pendingContrats = signed
+                    ? 0
+                    : listeContrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
                 setCountPendingContrats(pendingContrats);
             } catch {
                 setContrats([]);
@@ -214,9 +214,16 @@ export default function OffreStagesEtudiant() {
         return offres.filter((o) => !idsOffresPostulees.has(o.id));
     }, [offres, idsOffresPostulees]);
 
-    const contratsASigner = useMemo(() => {
-        return contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE");
+    const aDejaContratSigne = useMemo(() => {
+        return contrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
     }, [contrats]);
+
+    const contratsASigner = useMemo(() => {
+        if (aDejaContratSigne) {
+            return [];
+        }
+        return contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE");
+    }, [contrats, aDejaContratSigne]);
 
     const contratSigneActif = useMemo(() => {
         return trouverContratSigneActif(contrats, contratsASigner);
@@ -387,14 +394,34 @@ export default function OffreStagesEtudiant() {
             );
         }
 
-        const cand = candidaturesParOffre[offreId];
-        const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE";
-
-        if (statut === "EMBAUCHEE") {
+        const aSignePourCetteOffre = Boolean(
+            contratAssocie && (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE")
+        );
+        if (aSignePourCetteOffre) {
             return (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                     {t("etudiant_dashboard.applications.status_hired")}
+                </span>
+            );
+        }
+
+        const cand = candidaturesParOffre[offreId];
+        const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE";
+
+        if (statut === "EMBAUCHEE") {
+            if (contratAssocie && !contratAssocie.signeParEtudiant) {
+                return (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                        <Clock className="w-3 h-3 text-amber-600" />
+                        {t("etudiant_dashboard.applications.status_contract_to_sign")}
+                    </span>
+                );
+            }
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                    <Clock className="w-3 h-3 text-blue-600" />
+                    {t("etudiant_dashboard.applications.status_selected")}
                 </span>
             );
         }

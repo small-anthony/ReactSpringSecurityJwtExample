@@ -6,6 +6,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.Etudiant;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public record RapportEtudiantDto(
         int id,
@@ -76,6 +77,16 @@ public record RapportEtudiantDto(
             boolean milieuEvalue,
             Long evaluationMilieuId
     ) {
+        return create(etudiant, annee, milieuEvalue, evaluationMilieuId, null);
+    }
+
+    public static RapportEtudiantDto create(
+            Etudiant etudiant,
+            Integer annee,
+            boolean milieuEvalue,
+            Long evaluationMilieuId,
+            Predicate<Candidature> aContratSigne
+    ) {
         List<Candidature> cands = etudiant.getCandidatures() != null ? etudiant.getCandidatures() : List.of();
         if (annee != null) {
             cands = cands.stream()
@@ -89,7 +100,7 @@ public record RapportEtudiantDto(
                 etudiant.getEmail(),
                 etudiant.getMatricule(),
                 etudiant.getDiscipline(),
-                determinerStatut(cands),
+                determinerStatut(cands, aContratSigne),
                 CandidatureDto.create(cands),
                 milieuEvalue,
                 evaluationMilieuId
@@ -97,7 +108,7 @@ public record RapportEtudiantDto(
     }
 
     public static RapportEtudiantDto createFilteredByAnnee(Etudiant etudiant, int annee) {
-        return create(etudiant, annee, false, null);
+        return create(etudiant, annee, false, null, null);
     }
 
     public static RapportEtudiantDto createFilteredByAnnee(
@@ -106,29 +117,39 @@ public record RapportEtudiantDto(
             boolean milieuEvalue,
             Long evaluationMilieuId
     ) {
-        return create(etudiant, annee, milieuEvalue, evaluationMilieuId);
+        return create(etudiant, annee, milieuEvalue, evaluationMilieuId, null);
     }
 
-    private static String determinerStatut(List<Candidature> candidatures) {
+    public static RapportEtudiantDto createFilteredByAnnee(
+            Etudiant etudiant,
+            int annee,
+            boolean milieuEvalue,
+            Long evaluationMilieuId,
+            Predicate<Candidature> aContratSigne
+    ) {
+        return create(etudiant, annee, milieuEvalue, evaluationMilieuId, aContratSigne);
+    }
+
+    private static String determinerStatut(List<Candidature> candidatures, Predicate<Candidature> aContratSigne) {
         if (candidatures == null || candidatures.isEmpty()) {
             return "AUCUNE_CANDIDATURE";
         }
-        boolean stageTrouve = candidatures.stream().anyMatch(c ->
-                c.getStatut() == StatutCandidature.EMBAUCHEE || c.getStatut() == StatutCandidature.ACCEPTEE
-        );
+        boolean stageTrouve = aContratSigne != null && candidatures.stream().anyMatch(aContratSigne);
         if (stageTrouve) {
             return "STAGE_TROUVE";
         }
         boolean attenteReponse = candidatures.stream().anyMatch(c ->
                 c.getStatut() == StatutCandidature.EN_ATTENTE_REPONSE
+                        || c.getStatut() == StatutCandidature.EMBAUCHEE
         );
         if (attenteReponse) {
             return "EN_ATTENTE_REPONSE";
         }
         boolean attenteEntrevue = candidatures.stream().anyMatch(c ->
-                c.getConvocations() != null && c.getConvocations().stream().anyMatch(conv ->
-                        conv.getStatut() == StatutConvocation.EN_ATTENTE
-                )
+                c.getStatut() == StatutCandidature.ACCEPTEE
+                        || (c.getConvocations() != null && c.getConvocations().stream().anyMatch(conv ->
+                                conv.getStatut() == StatutConvocation.EN_ATTENTE
+                        ))
         );
         if (attenteEntrevue) {
             return "EN_ATTENTE_ENTREVUE";

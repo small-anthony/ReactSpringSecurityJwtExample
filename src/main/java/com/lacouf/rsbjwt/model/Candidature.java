@@ -115,15 +115,7 @@ public class Candidature {
         return etudiant.aPourCourriel(courriel);
     }
 
-    public String getSalaireOffre() {
-        return offreStage.getSalaire();
-    }
-
     public String getDescriptionOffre() {
         return offreStage.getDescription();
-    }
-
-    public String getTitreOffre() {
-        return offreStage.getTitre();
     }
 }

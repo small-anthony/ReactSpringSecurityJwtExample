@@ -453,4 +453,69 @@ public class ContratServiceTest {
         // Act & Assert
         assertThrows(Exception.class, () -> contratService.rejeterContrat(99L, "jean@test.com"));
     }
+
+    @Test
+    void signerContrat_etudiantDejaSigneAutreContrat_lanceException() throws Exception {
+        // Arrange
+        Contrat contratDejaSigne = new Contrat(candidature, "doc1".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contratDejaSigne.signer(new Signature<>(etudiant, "sig1".getBytes()));
+
+        OffreStage autreOffre = new OffreStage("Autre poste", "Desc", "Google");
+        autreOffre.setId(6L);
+        autreOffre.setEmployeur(employeur);
+        Candidature autreCandidature = new Candidature(etudiant, autreOffre);
+        autreCandidature.setId(2L);
+        autreCandidature.setStatut(StatutCandidature.EMBAUCHEE);
+        Contrat nouveauContrat = new Contrat(autreCandidature, "doc2".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "desc", "cond");
+
+        MultipartFile signatureFile = mock(MultipartFile.class);
+        when(signatureFile.isEmpty()).thenReturn(false);
+        when(signatureFile.getBytes()).thenReturn("sig2".getBytes());
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(2L)).thenReturn(Optional.of(nouveauContrat));
+        when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com"))
+                .thenReturn(List.of(contratDejaSigne, nouveauContrat));
+
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.signerContrat(2L, "jean@test.com", signatureFile));
+
+        assertEquals("Vous avez déjà signé un contrat de stage et ne pouvez pas en signer plusieurs.", exception.getMessage());
+        assertFalse(nouveauContrat.isSigneParEtudiant());
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    void signerContrat_etudiantAutreContratRefuse_succes() throws Exception {
+        // Arrange
+        Contrat contratRefuse = new Contrat(candidature, "doc1".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contratRefuse.signer(new Signature<>(etudiant, "sig1".getBytes()));
+        contratRefuse.rejeter(employeur);
+
+        OffreStage autreOffre = new OffreStage("Autre poste", "Desc", "Google");
+        autreOffre.setId(6L);
+        autreOffre.setEmployeur(employeur);
+        Candidature autreCandidature = new Candidature(etudiant, autreOffre);
+        autreCandidature.setId(2L);
+        autreCandidature.setStatut(StatutCandidature.EMBAUCHEE);
+        Contrat nouveauContrat = new Contrat(autreCandidature, "doc2".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "desc", "cond");
+
+        MultipartFile signatureFile = mock(MultipartFile.class);
+        when(signatureFile.isEmpty()).thenReturn(false);
+        when(signatureFile.getBytes()).thenReturn("sig2".getBytes());
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(2L)).thenReturn(Optional.of(nouveauContrat));
+        when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com"))
+                .thenReturn(List.of(contratRefuse, nouveauContrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        ContratDto resultat = contratService.signerContrat(2L, "jean@test.com", signatureFile);
+
+        // Assert
+        assertTrue(resultat.signeParEtudiant());
+        assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT, resultat.statut());
+    }
 }

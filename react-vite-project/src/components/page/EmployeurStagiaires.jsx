@@ -77,6 +77,13 @@ export default function EmployeurStagiaires() {
         <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto space-y-6">
                 <div>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/employeur")}
+                        className="btn-secondary mb-4"
+                    >
+                        {t("candidatures_offre.back")}
+                    </button>
                     <h1 className="text-3xl font-bold text-gray-800">
                         {t("stagiaires.title", { defaultValue: "Mes stagiaires" })}
                     </h1>

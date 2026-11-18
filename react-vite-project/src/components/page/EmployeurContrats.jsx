@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     FileText,
     Clock,
@@ -27,6 +28,7 @@ import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 export default function EmployeurContrats() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
+    const navigate = useNavigate();
 
     const [contrats, setContrats] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -204,6 +206,13 @@ export default function EmployeurContrats() {
         <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto space-y-6">
                 <div>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/employeur")}
+                        className="btn-secondary mb-4"
+                    >
+                        {t("candidatures_offre.back")}
+                    </button>
                     <h1 className="text-3xl font-bold text-gray-800">{t("contrats_employeur.title")}</h1>
                     <p className="text-gray-500 mt-1">
                         {t("contrats_employeur.subtitle")}

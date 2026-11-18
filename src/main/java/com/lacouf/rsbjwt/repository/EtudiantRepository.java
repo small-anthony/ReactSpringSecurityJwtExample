@@ -42,9 +42,11 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         JOIN FETCH e.candidatures c
         JOIN c.convocations conv
         WHERE conv.statut = com.lacouf.rsbjwt.model.ENUM.StatutConvocation.EN_ATTENTE
-        AND e.id NOT IN (
-            SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE)
+        AND NOT EXISTS (
+            SELECT ct FROM Contrat ct
+            WHERE ct.candidature.etudiant = e
+            AND ct.signatureEtudiant.valid = true
+            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteEntrevue();
@@ -55,10 +57,12 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         JOIN c.convocations conv
         WHERE conv.statut = StatutConvocation.EN_ATTENTE
         AND c.offreStage.annee = :annee
-        AND e.id NOT IN (
-            SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut IN (StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE)
-            AND c2.offreStage.annee = :annee
+        AND NOT EXISTS (
+            SELECT ct FROM Contrat ct
+            WHERE ct.candidature.etudiant = e
+            AND ct.candidature.offreStage.annee = :annee
+            AND ct.signatureEtudiant.valid = true
+            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteEntrevue(@Param("annee") int annee);
@@ -66,10 +70,12 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
-        AND e.id NOT IN (
-            SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut IN (StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE)
+        WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE)
+        AND NOT EXISTS (
+            SELECT ct FROM Contrat ct
+            WHERE ct.candidature.etudiant = e
+            AND ct.signatureEtudiant.valid = true
+            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse();
@@ -77,12 +83,14 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut = StatutCandidature.EN_ATTENTE_REPONSE
+        WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE)
         AND c.offreStage.annee = :annee
-        AND e.id NOT IN (
-            SELECT c2.etudiant.id FROM Candidature c2
-            WHERE c2.statut IN (StatutCandidature.ACCEPTEE, StatutCandidature.EMBAUCHEE)
-            AND c2.offreStage.annee = :annee
+        AND NOT EXISTS (
+            SELECT ct FROM Contrat ct
+            WHERE ct.candidature.etudiant = e
+            AND ct.candidature.offreStage.annee = :annee
+            AND ct.signatureEtudiant.valid = true
+            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse(@Param("annee") int annee);
@@ -91,7 +99,12 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         SELECT DISTINCT e FROM Etudiant e
         LEFT JOIN FETCH e.professeur
         JOIN FETCH e.candidatures c
-        WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE)
+        WHERE EXISTS (
+            SELECT ct FROM Contrat ct
+            WHERE ct.candidature = c
+            AND ct.signatureEtudiant.valid = true
+            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+        )
     """)
     List<Etudiant> findEtudiantsTrouveStage();
 
@@ -99,8 +112,13 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         SELECT DISTINCT e FROM Etudiant e
         LEFT JOIN FETCH e.professeur
         JOIN FETCH e.candidatures c
-        WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE)
-        AND c.offreStage.annee = :annee
+        WHERE c.offreStage.annee = :annee
+        AND EXISTS (
+            SELECT ct FROM Contrat ct
+            WHERE ct.candidature = c
+            AND ct.signatureEtudiant.valid = true
+            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+        )
     """)
     List<Etudiant> findEtudiantsTrouveStage(@Param("annee") int annee);
 

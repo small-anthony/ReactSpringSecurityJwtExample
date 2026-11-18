@@ -56,10 +56,12 @@ export default function ModalDetailOffre({
         (c) => c.offreId === idOffre || String(c.offreId) === String(idOffre)
     );
     const aRefuseContrat = contratAssocie && contratAssocie.statut === "REFUSE";
-    const aSigneContrat =
+    const aSigneContrat = Boolean(
         contratAssocie &&
-        (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE");
-    const estEmbauchee = statutCand === "EMBAUCHEE" && !aRefuseContrat;
+        (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE") &&
+        !aRefuseContrat
+    );
+    const estRetenueSansSignature = statutCand === "EMBAUCHEE" && !aSigneContrat && !aRefuseContrat;
 
     useEffect(() => {
         setHasApplied(aPostule);
@@ -147,14 +149,20 @@ export default function ModalDetailOffre({
                 {aSigneContrat && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" strokeWidth={1.5} />
-                        <span className="font-semibold">{t("contrats_etudiant.status_stage_trouve")}</span>
+                        <span className="font-semibold">
+                            {t("contrats_etudiant.status_stage_trouve")} — {t("candidature_etudiant.status.EMBAUCHEE")}
+                        </span>
                     </div>
                 )}
 
-                {estEmbauchee && !aSigneContrat && (
-                    <div className="mx-6 mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" strokeWidth={1.5} />
-                        <span className="font-semibold">{t("candidature_etudiant.status.EMBAUCHEE")}</span>
+                {estRetenueSansSignature && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-sm flex items-center gap-2.5">
+                        <AlertCircle className="w-5 h-5 text-blue-600 shrink-0" strokeWidth={1.5} />
+                        <span className="font-semibold">
+                            {contratAssocie
+                                ? t("candidature_etudiant.status_contract_pending_signature")
+                                : t("candidature_etudiant.status_selected_waiting_contract")}
+                        </span>
                     </div>
                 )}
 
@@ -265,7 +273,7 @@ export default function ModalDetailOffre({
                         {t("offres_etudiant.modal.close")}
                     </button>
 
-                    {!hasApplied && !estRefusee && !estEmbauchee && (
+                    {!hasApplied && !estRefusee && !estRetenueSansSignature && !aSigneContrat && (
                         <button
                             type="button"
                             onClick={handlePostuler}

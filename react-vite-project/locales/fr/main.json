@@ -408,6 +408,8 @@
     "badge_EMBAUCHEE": "Embauché(e)",
     "hired_on": "Embauché(e) le {{date}}",
     "status_entrevue_confirmee": "Entrevue confirmée — En attente de décision",
+    "status_selected_waiting_contract": "Votre candidature a été retenue par l'employeur. Vous serez embauché(e) dès que vous aurez signé votre contrat de stage.",
+    "status_contract_pending_signature": "Votre candidature a été retenue — Un contrat attend votre signature pour officialiser votre embauche.",
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
     "modal_refused_no_reason": "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
@@ -837,7 +839,8 @@
     "error_refuse": "Erreur lors du refus du contrat.",
     "status_stage_trouve": "STAGE TROUVÉ",
     "status_refused": "Contrat refusé",
-    "refused_badge_text": "Contrat refusé — Gestionnaire notifié"
+    "refused_badge_text": "Contrat refusé — Gestionnaire notifié",
+    "already_signed_other_contract": "Vous avez déjà signé un contrat de stage. Il est impossible d'en signer plusieurs."
   },
   "contrats_employeur": {
     "title": "Contrats de stage",
@@ -1087,7 +1090,7 @@
       "interview_to_respond_desc": "{{entreprise}} vous invite en entrevue. Confirmez ou refusez le créneau proposé.",
       "interview_respond_cta": "Répondre à l'invitation",
       "hired_notice_title": "Candidature retenue chez {{entreprise}} ({{poste}})",
-      "hired_notice_desc": "L'employeur a retenu votre candidature. Votre contrat de stage sera généré par le gestionnaire.",
+      "hired_notice_desc": "L'employeur a retenu votre candidature. Vous serez embauché(e) dès que vous aurez signé le contrat généré par le gestionnaire.",
       "first_application_title": "Explorer les {{count}} offres disponibles et postuler",
       "first_application_desc": "Votre CV est prêt. Consultez les stages disponibles pour envoyer vos premières candidatures.",
       "explore_cta": "Explorer les stages"
@@ -1115,6 +1118,8 @@
       "empty_title": "Aucune candidature envoyée pour le moment",
       "empty_desc": "Parcourez les offres disponibles pour soumettre votre première candidature.",
       "status_hired": "Embauché(e)",
+      "status_selected": "Candidature retenue",
+      "status_contract_to_sign": "Contrat à signer",
       "status_contract_refused": "Contrat refusé",
       "status_interview": "Convoqué(e)",
       "status_pending": "En attente",

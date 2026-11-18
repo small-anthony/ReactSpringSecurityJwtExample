@@ -93,7 +93,7 @@ export default function ProfileEmployeur() {
     if (categorie === "refuse") offresAffichees = offresRefusees;
 
     return (
-        <main className="w-full max-w-5xl mx-auto my-10 px-4">
+        <main className="w-full max-w-5xl mx-auto my-10 px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{t("employeur_home.title")}</h1>

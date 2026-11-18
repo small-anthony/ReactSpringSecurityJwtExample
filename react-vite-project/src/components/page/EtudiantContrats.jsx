@@ -24,6 +24,12 @@ import {
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
+const calculerEtatSignature = (liste) => {
+    const hasSigned = liste.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
+    const restant = hasSigned ? 0 : liste.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
+    return { hasSigned, restant };
+};
+
 export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
@@ -49,10 +55,9 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             const liste = data || [];
             setContrats(liste);
 
-            const aSignerCount = liste.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
-            const hasSigned = liste.some((c) => c.signeParEtudiant);
+            const { hasSigned, restant } = calculerEtatSignature(liste);
             if (onPendingCountChange) {
-                onPendingCountChange(aSignerCount, hasSigned);
+                onPendingCountChange(restant, hasSigned);
             }
         } catch (e) {
             setErreur(e.message || t("contrats.alerts.error_load"));
@@ -107,8 +112,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
         const updated = contrats.map((c) => (c.id === updatedContrat.id ? updatedContrat : c));
         setContrats(updated);
         if (onPendingCountChange) {
-            const restant = updated.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
-            const hasSigned = updated.some((c) => c.signeParEtudiant);
+            const { hasSigned, restant } = calculerEtatSignature(updated);
             onPendingCountChange(restant, hasSigned, updatedContrat);
         }
     };
@@ -125,8 +129,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             const updated = contrats.map((c) => (c.id === contratARefuser.id ? { ...c, statut: "REFUSE" } : c));
             setContrats(updated);
             if (onPendingCountChange) {
-                const restant = updated.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
-                const hasSigned = updated.some((c) => c.signeParEtudiant);
+                const { hasSigned, restant } = calculerEtatSignature(updated);
                 const contratRefuse = updated.find((c) => c.id === contratARefuser.id);
                 onPendingCountChange(restant, hasSigned, contratRefuse);
             }
@@ -178,8 +181,11 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
         return true;
     });
 
-    const countASigner = contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
-    const countSignes = contrats.filter((c) => c.signeParEtudiant).length;
+    const aDejaSigneUnContrat = contrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
+    const countASigner = aDejaSigneUnContrat
+        ? 0
+        : contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
+    const countSignes = contrats.filter((c) => c.signeParEtudiant && c.statut !== "REFUSE").length;
     const countRefuses = contrats.filter((c) => c.statut === "REFUSE").length;
 
     const content = (
@@ -432,7 +438,12 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                                         <span>{t("contrats_etudiant.refused_badge_text")}</span>
                                     </div>
                                 ) : !c.signeParEtudiant ? (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center justify-end gap-2">
+                                        {aDejaSigneUnContrat && (
+                                            <span className="text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
+                                                {t("contrats_etudiant.already_signed_other_contract")}
+                                            </span>
+                                        )}
                                         <button
                                             type="button"
                                             id={`btn-refuser-contrat-${c.id}`}
@@ -447,7 +458,11 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                                             type="button"
                                             id={`btn-signer-contrat-${c.id}`}
                                             onClick={() => setSigningContrat(c)}
-                                            className="btn-primary py-2.5 px-5"
+                                            disabled={aDejaSigneUnContrat}
+                                            title={aDejaSigneUnContrat ? t("contrats_etudiant.already_signed_other_contract") : undefined}
+                                            className={`btn-primary py-2.5 px-5 ${
+                                                aDejaSigneUnContrat ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
                                         >
                                             <PenTool className="w-4 h-4" />
                                             <span>{t("contrats_etudiant.sign_button")}</span>
