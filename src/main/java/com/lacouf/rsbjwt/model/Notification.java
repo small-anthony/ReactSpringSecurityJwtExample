@@ -121,4 +121,20 @@ public class Notification {
 				"gestionnaire.cv_submitted"
 		);
 	}
+
+	public static Notification contratPretPourSignatureGestionnaire(Contrat contrat) {
+		return new Notification(
+				NotificationType.SUCCESS,
+				new NotificationAction(NotificationActionType.SIGNER_CONTRAT, contrat.getId()),
+				"gestionnaire.contrat_pret_signature"
+		);
+	}
+
+	public static Notification contratRefuse(Contrat contrat) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.REVISER_CONTRAT, contrat.getId()),
+				"gestionnaire.contrat_refuse"
+		);
+	}
 }
