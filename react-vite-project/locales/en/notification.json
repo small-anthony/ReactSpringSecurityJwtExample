@@ -5,7 +5,7 @@
     "contrat_created": "A new internship contract is ready for your signature."
   },
   "employeur": {
-    "contrat_created": "A new internship contract was created and is awaiting your signature."
+    "contrat_created": "A new internship contract was created and is awaiting your signature.",
     "convocation_received": "You have received an interview invitation. Open it to choose a time slot."
   },
   "gestionnaire": {

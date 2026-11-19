@@ -5,7 +5,7 @@
     "contrat_created": "Un nouveau contrat de stage est prêt pour votre signature."
   },
   "employeur": {
-    "contrat_created": "Un nouveau contrat de stage a été créé et attend votre signature."
+    "contrat_created": "Un nouveau contrat de stage a été créé et attend votre signature.",
     "convocation_received": "Vous avez reçu une convocation à une entrevue. Consultez-la pour choisir un créneau."
   },
   "gestionnaire": {

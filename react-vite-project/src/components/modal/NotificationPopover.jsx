@@ -39,13 +39,6 @@ export function NotificationButton() {
         chargerNotifications();
     }, [chargerNotifications]);
 
-    useEffect(() => {
-        if (!authService.isAuthed()) return;
-        const onFocus = () => chargerNotifications();
-        window.addEventListener("focus", onFocus);
-        return () => window.removeEventListener("focus", onFocus);
-    }, [authService, chargerNotifications]);
-
     const handleAction = async (notification) => {
         if (!notification.dismissed) {
             await dismissNotificationApi(notification.id, authService.buildAuthHeader());
