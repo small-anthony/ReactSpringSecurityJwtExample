@@ -1,5 +1,5 @@
 import {BellIcon, CheckCircle2, Info, AlertTriangle, XCircle, X,} from "lucide-react";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -27,17 +27,17 @@ export function NotificationButton() {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    const chargerNotifications = useCallback(() => {
+    const chargerNotifications = () => {
         if (!authService.isAuthed()) return;
 
         getNotifications(authService.buildAuthHeader())
             .then((data) => setNotifications(data || []))
             .catch(() => setNotifications([]));
-    }, [authService]);
+    };
 
     useEffect(() => {
         chargerNotifications();
-    }, [chargerNotifications]);
+    }, [authService]);
 
     const handleAction = async (notification) => {
         if (!notification.dismissed) {
