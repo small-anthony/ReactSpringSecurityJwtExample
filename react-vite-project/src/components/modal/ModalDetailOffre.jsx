@@ -61,7 +61,7 @@ export default function ModalDetailOffre({
         (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE") &&
         !aRefuseContrat
     );
-    const estRetenueSansSignature = statutCand === "EMBAUCHEE" && !aSigneContrat && !aRefuseContrat;
+    const estRetenueSansSignature = ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(statutCand) && !aSigneContrat && !aRefuseContrat;
 
     useEffect(() => {
         setHasApplied(aPostule);

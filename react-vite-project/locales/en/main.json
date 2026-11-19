@@ -360,6 +360,12 @@
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
+      "EN_ATTENTE_CONVOCATION": "Pending",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Selected (student choice)",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "ACCEPTE": "Accepted",
       "ACCEPTEE": "Interview accepted",
       "REFUSE": "Rejected",
@@ -398,6 +404,12 @@
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "Awaiting employer's decision",
+      "EN_ATTENTE_CONVOCATION": "Awaiting employer's decision",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Invited to an interview",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Interview confirmed",
+      "EN_ATTENTE_CHOIX_STAGE": "Selected — awaiting your choice",
+      "EN_ATTENTE_SIGNATURE": "Contract awaiting signature",
       "ACCEPTE": "Invited to an interview",
       "ACCEPTEE": "Invited to an interview",
       "REFUSE": "Application rejected. Click \"View details\" for more information.",
@@ -1413,6 +1425,12 @@
     "modal_applications_empty": "This student has not applied to any offers for this session.",
     "statut_candidature": {
       "EN_ATTENTE": "Pending",
+      "EN_ATTENTE_CONVOCATION": "Pending",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Selected (student choice)",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "ACCEPTEE": "Accepted",
       "REFUSEE": "Rejected",
       "EMBAUCHEE": "Hired"

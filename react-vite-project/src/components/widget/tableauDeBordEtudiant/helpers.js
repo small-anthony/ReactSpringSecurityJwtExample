@@ -100,7 +100,7 @@ export function estConvocationActive(convocation, contrats = [], candidaturesPar
             return false;
         }
         const candidature = candidaturesParOffre[offreId];
-        if (candidature && (candidature.statut === "EMBAUCHEE" || candidature.statut === "REFUSEE")) {
+        if (candidature && ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE", "REFUSEE"].includes(candidature.statut)) {
             return false;
         }
     }
@@ -116,7 +116,7 @@ export function extrairePremiereCandidature(offre) {
 
 export function obtenirStatutCandidature(offre, candidaturesParOffre, contrats = []) {
     if (!offre) {
-        return "EN_ATTENTE";
+        return "EN_ATTENTE_CONVOCATION";
     }
     const contratAssocie = contrats.find(
         (c) => c.offreId === offre.id || String(c.offreId) === String(offre.id)
@@ -126,7 +126,7 @@ export function obtenirStatutCandidature(offre, candidaturesParOffre, contrats =
     }
     const candidature = candidaturesParOffre[offre.id] || extrairePremiereCandidature(offre);
     if (!candidature || !candidature.statut) {
-        return "EN_ATTENTE";
+        return "EN_ATTENTE_CONVOCATION";
     }
     return candidature.statut;
 }
@@ -161,9 +161,9 @@ export function trouverContratSigneActif(contrats, contratsASigner) {
 }
 
 export function calculerScoreStatut(statut) {
-    if (statut === "EMBAUCHEE") return 4;
-    if (statut === "ACCEPTE" || statut === "ACCEPTEE") return 3;
-    if (statut === "EN_ATTENTE" || statut === "EN_ATTENTE_REPONSE") return 2;
+    if (["EMBAUCHEE", "EN_ATTENTE_SIGNATURE", "EN_ATTENTE_CHOIX_STAGE"].includes(statut)) return 4;
+    if (statut === "EN_ATTENTE_ENTREVUE") return 3;
+    if (["EN_ATTENTE_CONVOCATION", "EN_ATTENTE_CONFIRMATION_ENTREVUE", "ENTREVUE_REFUSEE"].includes(statut)) return 2;
     if (statut === "REFUSEE" || statut === "REFUSE") return 1;
     return 0;
 }
@@ -177,7 +177,7 @@ export function aDesCandidaturesEnCours(mesCandidaturesOffres = [], candidatures
             return false;
         }
         const statut = obtenirStatutCandidature(offre, candidaturesParOffre, contrats);
-        return statut === "EN_ATTENTE" || statut === "EN_ATTENTE_REPONSE";
+        return ["EN_ATTENTE_CONVOCATION", "EN_ATTENTE_CONFIRMATION_ENTREVUE", "ENTREVUE_REFUSEE"].includes(statut);
     });
 }
 

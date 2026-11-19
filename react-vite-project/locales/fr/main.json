@@ -360,6 +360,12 @@
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
+      "EN_ATTENTE_CONVOCATION": "En attente",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "Retenu (choix étudiant)",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "ACCEPTE": "Acceptée",
       "ACCEPTEE": "Entrevue acceptée",
       "REFUSE": "Refusée",
@@ -398,6 +404,12 @@
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "En attente de réponse de l'employeur",
+      "EN_ATTENTE_CONVOCATION": "En attente de réponse de l'employeur",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convoqué(e) à une entrevue",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "Entrevue confirmée",
+      "EN_ATTENTE_CHOIX_STAGE": "Retenu(e) — en attente de votre choix",
+      "EN_ATTENTE_SIGNATURE": "Contrat en attente de signature",
       "ACCEPTE": "Convoqué(e) à une entrevue",
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
@@ -1413,6 +1425,12 @@
     "modal_applications_empty": "Cet étudiant n'a postulé à aucune offre pour cette session.",
     "statut_candidature": {
       "EN_ATTENTE": "En attente",
+      "EN_ATTENTE_CONVOCATION": "En attente",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "Retenu (choix étudiant)",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "ACCEPTEE": "Acceptée",
       "REFUSEE": "Refusée",
       "EMBAUCHEE": "Embauché"
