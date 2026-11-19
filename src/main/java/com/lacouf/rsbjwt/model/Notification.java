@@ -113,4 +113,12 @@ public class Notification {
 				"gestionnaire.cv_submitted"
 		);
 	}
+
+	public static Notification nouvelleCandidature(OffreStage offre) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.VOIR_CANDIDATURES, offre.getId()),
+				"employeur.nouvelle_candidature"
+		);
+	}
 }

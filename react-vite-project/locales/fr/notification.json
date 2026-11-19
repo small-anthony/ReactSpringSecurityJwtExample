@@ -5,5 +5,8 @@
   },
   "gestionnaire": {
     "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver."
+  },
+  "employeur": {
+    "nouvelle_candidature": "Un étudiant a postulé à votre offre : {{titre}}."
   }
 }
