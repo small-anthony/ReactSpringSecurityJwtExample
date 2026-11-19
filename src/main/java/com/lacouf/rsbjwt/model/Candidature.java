@@ -48,6 +48,7 @@ public class Candidature {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Etudiant getEtudiant() { return etudiant; }
+    public Long getEtudiantId() { return etudiant != null ? etudiant.getId() : null; }
     public Employeur getEmployeur() { return offreStage.getEmployeur(); }
     public OffreStage getOffreStage() { return offreStage; }
     public LocalDateTime getDateCandidature() { return dateCandidature; }

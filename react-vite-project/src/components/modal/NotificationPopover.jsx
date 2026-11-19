@@ -54,6 +54,8 @@ export function NotificationButton() {
             navigate("/etudiant?uploadCv=true");
         } else if (actionType === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
+        } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
+            navigate("/etudiant?tab=convocations");
         } else if (actionsContrat[actionType]) {
             const contratId = notification.action?.referenceId;
             navigate(
