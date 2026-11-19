@@ -1,12 +1,17 @@
 {
   "etudiant": {
     "cv_accepted": "Your CV was accepted! You can now browse internship offers.",
-    "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV."
+    "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV.",
+    "convocation_received": "You have received an interview invitation. Open it to choose a time slot."
   },
   "gestionnaire": {
     "cv_submitted": "A student submitted a new CV for approval."
   },
   "employeur": {
-    "nouvelle_candidature": "A student applied to your offer: {{titre}}."
+    "nouvelle_candidature": "A student applied to your offer: {{titre}}.",
+    "cv_submitted": "A student submitted a new CV for approval.",
+    "offre_submitted": "An employer submitted a new internship offer for approval.",
+    "contrat_pret_signature": "A contract has been signed by both the student and the employer and is ready for your signature.",
+    "contrat_refuse": "A contract was refused by the student or the employer. Please review it and resend the contracts."
   }
 }

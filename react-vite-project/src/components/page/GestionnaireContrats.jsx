@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FileText, PlusCircle, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import FormulaireCreationContrat from "../widget/FormulaireCreationContrat.jsx";
@@ -21,12 +22,13 @@ import SelecteurSession from "../widget/SelecteurSession.jsx";
 export default function GestionnaireContrats() {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
+  const [searchParams, setSearchParams] = useSearchParams();
   const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
     getAnneesGestionnaire,
     authService
   );
 
-  const [activeTab, setActiveTab] = useState("create");
+  const [activeTab, setActiveTab] = useState(() => (searchParams.get("contratId") ? "list" : "create"));
   const [candidatures, setCandidatures] = useState([]);
   const [contrats, setContrats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,6 +113,25 @@ export default function GestionnaireContrats() {
     if (!anneesChargees) return;
     chargerDonnees(anneeChoisie);
   }, [anneesChargees, anneeChoisie]);
+
+  useEffect(() => {
+    const rawContratId = searchParams.get("contratId");
+    if (!rawContratId || loading) return;
+
+    setActiveTab("list");
+    const contratId = Number(rawContratId);
+    const action = searchParams.get("action");
+    const cible = contrats.find((c) => c.id === contratId);
+
+    if (cible && action === "signer" && cible.statut === "SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR") {
+      setSigningContrat(cible);
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.delete("contratId");
+    next.delete("action");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, loading, contrats, setSearchParams]);
 
   const handleCreerContrat = async (payload) => {
     setErreur(null);

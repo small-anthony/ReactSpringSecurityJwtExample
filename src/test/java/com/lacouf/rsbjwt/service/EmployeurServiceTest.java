@@ -5,11 +5,16 @@ import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.Gestionnaire;
+import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationActionType;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.EmployeurRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.model.UserApp;
@@ -39,6 +44,10 @@ public class EmployeurServiceTest {
     private OffreStageRepository offreStageRepository;
     @Mock
     private CandidatureRepository candidatureRepository;
+    @Mock
+    private NotificationService notificationService;
+    @Mock
+    private GestionnaireRepository gestionnaireRepository;
     @InjectMocks
     private EmployeurService employeurService;
 
@@ -695,5 +704,37 @@ public class EmployeurServiceTest {
 
         //ASSERT
         assertEquals("Offre introuvable pour cet employeur", exception.getMessage());
+    }
+
+    @Test
+    void createOffreStage_devraitNotifierTousLesGestionnaires() throws Exception {
+        String email = "employeur@entreprise.com";
+        preparerEmployeur(email);
+
+        Gestionnaire gest1 = new Gestionnaire("John", "Gestion",
+                new Credentials("gest1@test.com", "pass", Role.GESTIONNAIRE));
+        gest1.setId(10L);
+        Gestionnaire gest2 = new Gestionnaire("Marie", "Gestion",
+                new Credentials("gest2@test.com", "pass", Role.GESTIONNAIRE));
+        gest2.setId(20L);
+
+        when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(inv -> {
+            OffreStage saved = inv.getArgument(0);
+            saved.setId(77L);
+            return saved;
+        });
+        when(gestionnaireRepository.findAll()).thenReturn(List.of(gest1, gest2));
+
+        employeurService.createOffreStage("Développeur Java", "CGI", "Stage backend", email);
+
+        org.mockito.ArgumentCaptor<Notification> notifCaptor = org.mockito.ArgumentCaptor.forClass(Notification.class);
+        verify(notificationService).pushNotification(notifCaptor.capture(), eq(10L));
+        verify(notificationService).pushNotification(any(Notification.class), eq(20L));
+
+        Notification notif = notifCaptor.getValue();
+        assertEquals(NotificationType.ACTION_REQUIRED, notif.getType());
+        assertEquals("gestionnaire.offre_submitted", notif.getMessage());
+        assertEquals(NotificationActionType.APPROUVER_OFFRE, notif.getAction().getType());
+        assertEquals(77L, notif.getAction().getReferenceId());
     }
 }

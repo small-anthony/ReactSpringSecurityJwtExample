@@ -59,7 +59,13 @@ export function NotificationButton() {
             );
         }
 
+        const actionsContrat = {
+            SIGNER_CONTRAT: "signer",
+            REVISER_CONTRAT: "reviser",
+        };
+      
         const actionType = notification.action?.type;
+      
         if (actionType === "VOIR_OFFRES") {
             navigate("/etudiant?tab=toutes");
         } else if (actionType === "TELEVERSER_CV") {
@@ -69,6 +75,17 @@ export function NotificationButton() {
         } else if (actionType === "VOIR_CANDIDATURES") {
             const offreId = notification.action?.referenceId;
             navigate(offreId ? `/employeur/offres/${offreId}/candidatures` : "/employeur");
+        } else if (notification.action?.type === "APPROUVER_OFFRE") {
+            navigate("/gestionnaire/approbations/offres");
+        } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
+            navigate("/etudiant?tab=convocations");
+        } else if (actionsContrat[actionType]) {
+            const contratId = notification.action?.referenceId;
+            navigate(
+                contratId
+                    ? `/gestionnaire/contrats?contratId=${contratId}&action=${actionsContrat[actionType]}`
+                    : "/gestionnaire/contrats"
+            );
         }
         setIsOpen(false);
     };
