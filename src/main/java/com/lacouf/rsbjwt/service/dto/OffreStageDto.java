@@ -22,7 +22,9 @@ public record OffreStageDto(
         String duree,
         String exigences,
         List<CandidatureDto> candidatures,
-        int annee
+        int annee,
+        String adresse,
+        String telephone
 ) implements DataTransferObject {
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
@@ -52,6 +54,14 @@ public record OffreStageDto(
                 discipline, salaire, duree, exigences, candidatures, AcademicSessionUtils.getAnneeActuelle());
     }
 
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
+                         StatusAcceptation status, String messageReponse,
+                         String discipline, String salaire, String duree, String exigences,
+                         List<CandidatureDto> candidatures, int annee) {
+        this(id, titre, description, nomEntreprise, status, messageReponse,
+                discipline, salaire, duree, exigences, candidatures, annee, null, null);
+    }
+
     public static OffreStageDto create(OffreStage offreStage) {
         return new OffreStageDto(
                 offreStage.getId() != null ? offreStage.getId().intValue() : 0,
@@ -65,7 +75,9 @@ public record OffreStageDto(
                 offreStage.getDuree(),
                 offreStage.getExigences(),
                 offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>(),
-                offreStage.getAnnee()
+                offreStage.getAnnee(),
+                offreStage.getAdresse(),
+                offreStage.getTelephone()
         );
     }
 
@@ -91,7 +103,9 @@ public record OffreStageDto(
                                 .filter(candidat -> candidat.getEtudiant().equals(etudiant))
                                 .toList() : List.of()
                 ),
-                offreStage.getAnnee()
+                offreStage.getAnnee(),
+                offreStage.getAdresse(),
+                offreStage.getTelephone()
         );
     }
 

@@ -169,6 +169,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "24$/h", "15 semaines",
                                         "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie.");
                         offreCgiDev.setAnnee(anneeCourante);
+                        offreCgiDev.setAdresse("1350 boulevard René-Lévesque Ouest, Montréal, QC H3G 1T4");
+                        offreCgiDev.setTelephone("514-555-0101");
                         offreCgiDev.accepter();
                         cgi.ajouterOffre(offreCgiDev);
 
@@ -178,6 +180,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "27$/h", "15 semaines",
                                         "Intérêt pour la sécurité web, OWASP et les tests d'intrusion.");
                         offreCgiSecu.setAnnee(anneeCourante);
+                        offreCgiSecu.setAdresse("1350 boulevard René-Lévesque Ouest, Montréal, QC H3G 1T4");
+                        offreCgiSecu.setTelephone("514-555-0101");
                         offreCgiSecu.accepter();
                         cgi.ajouterOffre(offreCgiSecu);
 
@@ -188,6 +192,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "26$/h", "15 semaines",
                                         "Connaissance de Linux, Git et Docker.");
                         offreCgiDevOpsHisto.setAnnee(anneeHistorique);
+                        offreCgiDevOpsHisto.setAdresse("1350 boulevard René-Lévesque Ouest, Montréal, QC H3G 1T4");
+                        offreCgiDevOpsHisto.setTelephone("514-555-0101");
                         offreCgiDevOpsHisto.accepter();
                         cgi.ajouterOffre(offreCgiDevOpsHisto);
 
@@ -200,6 +206,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Google", "Techniques de l'informatique", "28$/h", "16 semaines",
                                         "Maîtrise de React, JavaScript moderne et Git.");
                         offreGoogleFront.setAnnee(anneeCourante);
+                        offreGoogleFront.setAdresse("1253 avenue McGill College, Montréal, QC H3B 2Y5");
+                        offreGoogleFront.setTelephone("514-555-0202");
                         offreGoogleFront.accepter();
                         google.ajouterOffre(offreGoogleFront);
 
@@ -209,6 +217,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Google", "Techniques de l'informatique", "25$/h", "15 semaines",
                                         "Connaissance de tests d'intégration, JavaScript et rigueur méthodique.");
                         offreGoogleQa.setAnnee(anneeCourante);
+                        offreGoogleQa.setAdresse("1253 avenue McGill College, Montréal, QC H3B 2Y5");
+                        offreGoogleQa.setTelephone("514-555-0202");
                         offreGoogleQa.accepter();
                         google.ajouterOffre(offreGoogleQa);
 

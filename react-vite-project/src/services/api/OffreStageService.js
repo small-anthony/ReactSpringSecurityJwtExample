@@ -1,7 +1,7 @@
 import { BASE_URL } from "../../components/config/Config";
 import APIHelper from "../../utils/APIHelper.ts";
 
-export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, duree, salaire, exigences, authHeader) {
+export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, duree, salaire, exigences, adresse, telephone, authHeader) {
   let bodyData;
   let headers;
 
@@ -20,6 +20,8 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
       duree,
       salaire,
       exigences,
+      adresse,
+      telephone,
     };
     headers = authHeader;
   }

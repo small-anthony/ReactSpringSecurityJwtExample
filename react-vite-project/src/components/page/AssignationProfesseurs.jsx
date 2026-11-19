@@ -15,6 +15,7 @@ import {
     desassignerProfesseur
 } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import StatsAssignationProfesseurs from "../widget/StatsAssignationProfesseurs.jsx";
@@ -28,8 +29,10 @@ export default function AssignationProfesseurs() {
 
     const [etudiants, setEtudiants] = useState([]);
     const [professeurs, setProfesseurs] = useState([]);
-    const [annees, setAnnees] = useState([]);
-    const [anneeChoisie, setAnneeChoisie] = useState(null);
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesGestionnaire,
+        authService
+    );
 
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
@@ -47,9 +50,11 @@ export default function AssignationProfesseurs() {
 
     const [etudiantADesassigner, setEtudiantADesassigner] = useState(null);
 
-    const chargerDonnees = async () => {
+    const chargerDonnees = async ({ silencieux = false } = {}) => {
         try {
-            setLoading(true);
+            if (!silencieux) {
+                setLoading(true);
+            }
             setErreur(null);
             const authHeader = authService.buildAuthHeader();
 
@@ -63,24 +68,16 @@ export default function AssignationProfesseurs() {
         } catch (err) {
             setErreur(err.message || t("assignation_professeurs.erreur_chargement"));
         } finally {
-            setLoading(false);
+            if (!silencieux) {
+                setLoading(false);
+            }
         }
     };
 
     useEffect(() => {
+        if (!anneesChargees) return;
         chargerDonnees();
-    }, [authService, anneeChoisie]);
-
-    useEffect(() => {
-        getAnneesGestionnaire(authService.buildAuthHeader())
-            .then((data) => {
-                setAnnees(data || []);
-                if (data && data.length > 0 && anneeChoisie === null) {
-                    setAnneeChoisie(data[0]);
-                }
-            })
-            .catch(() => setAnnees([]));
-    }, [authService]);
+    }, [authService, anneesChargees, anneeChoisie]);
 
     useEffect(() => {
         if (!modalOuvert) return;
@@ -166,8 +163,9 @@ export default function AssignationProfesseurs() {
 
             fermerModalAssignation();
             setMessageSucces(t("assignation_professeurs.succes_assignation"));
-            await chargerDonnees();
+            await chargerDonnees({ silencieux: true });
         } catch (err) {
+            fermerModalAssignation();
             setErreur(err.message || t("assignation_professeurs.erreur_assignation"));
         } finally {
             setSoumissionEnCours(false);
@@ -187,7 +185,7 @@ export default function AssignationProfesseurs() {
             await desassignerProfesseur(etudiantADesassigner.id, authHeader);
             setEtudiantADesassigner(null);
             setMessageSucces(t("assignation_professeurs.succes_desassignation"));
-            await chargerDonnees();
+            await chargerDonnees({ silencieux: true });
         } catch (err) {
             setErreur(err.message || t("assignation_professeurs.erreur_desassignation"));
             setEtudiantADesassigner(null);
@@ -198,7 +196,7 @@ export default function AssignationProfesseurs() {
         <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
             <SidePanelGestionnaire activeTab="assignationProfesseurs" />
 
-            <main className="flex-1 p-6 sm:p-10 space-y-6">
+            <main className="flex-1 min-w-0 p-6 sm:p-10 space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
@@ -250,53 +248,39 @@ export default function AssignationProfesseurs() {
                     </div>
                 )}
 
-                <StatsAssignationProfesseurs stats={stats} />
+                <StatsAssignationProfesseurs
+                    stats={stats}
+                    filtreStatut={filtreStatut}
+                    onChangeFiltre={setFiltreStatut}
+                />
 
-                <div className="ds-card p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="relative flex-1">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between min-w-0">
+                    <div className="relative w-full sm:w-96 min-w-0">
+                        <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3 pointer-events-none" />
                         <input
                             type="text"
                             value={rechercheEtudiant}
                             onChange={(e) => setRechercheEtudiant(e.target.value)}
                             placeholder={t("assignation_professeurs.recherche_placeholder")}
-                            className="ds-input pl-10 pr-10"
+                            className="w-full pl-9 pr-9 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
                         />
                         {rechercheEtudiant && (
                             <button
                                 type="button"
                                 onClick={() => setRechercheEtudiant("")}
                                 aria-label={t("gestionnaire_dashboard.clear_search")}
-                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                className="absolute right-2.5 top-2 p-0.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-200/70 transition cursor-pointer"
                             >
                                 <X className="w-4 h-4" />
                             </button>
                         )}
                     </div>
 
-                    <div className="ds-tabs-bar shrink-0">
-                        <button
-                            type="button"
-                            onClick={() => setFiltreStatut("tous")}
-                            className={`ds-tab ${filtreStatut === "tous" ? "ds-tab-active" : "ds-tab-inactive"}`}
-                        >
-                            {t("assignation_professeurs.filtre_tous")} ({stats.total})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFiltreStatut("non_assignes")}
-                            className={`ds-tab ${filtreStatut === "non_assignes" ? "ds-tab-active !text-amber-700" : "ds-tab-inactive"}`}
-                        >
-                            {t("assignation_professeurs.filtre_non_assignes")} ({stats.nonAssignes})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFiltreStatut("assignes")}
-                            className={`ds-tab ${filtreStatut === "assignes" ? "ds-tab-active !text-emerald-700" : "ds-tab-inactive"}`}
-                        >
-                            {t("assignation_professeurs.filtre_assignes")} ({stats.assignes})
-                        </button>
-                    </div>
+                    <span className="text-xs font-bold uppercase text-gray-500">
+                        {t(etudiantsFiltres.length > 1 ? "gestionnaire_dashboard.total_plural" : "gestionnaire_dashboard.total", {
+                            count: etudiantsFiltres.length
+                        })}
+                    </span>
                 </div>
 
                 <TableEtudiantsAssignation

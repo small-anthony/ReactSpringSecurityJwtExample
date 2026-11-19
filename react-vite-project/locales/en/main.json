@@ -192,6 +192,8 @@
     "discipline": "Field / Discipline",
     "duree": "Internship Duration",
     "salaire": "Compensation / Salary",
+    "adresse": "Work location address",
+    "telephone": "Contact phone number",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
     "weeks": "{{count}} weeks",
@@ -201,6 +203,8 @@
       "discipline": "-- Select a discipline --",
       "duree": "-- Select a duration --",
       "salaire": "22.50",
+      "adresse": "Ex: 1350 René-Lévesque Blvd West, Montréal, QC",
+      "telephone": "Ex: 514-555-1234",
       "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
     },
@@ -212,6 +216,11 @@
       "salaire": {
         "required": "Salary is required.",
         "format": "Invalid salary format."
+      },
+      "adresse": "Address is required.",
+      "telephone": {
+        "required": "Phone number is required.",
+        "format": "Invalid phone number (at least 10 digits)."
       },
       "exigences": "Requirements are required.",
       "description": "Description is required.",
@@ -576,7 +585,9 @@
         "discipline": "Discipline",
         "salaire": "Salary",
         "duree": "Duration",
-        "exigences": "Requirements"
+        "exigences": "Requirements",
+        "adresse": "Address",
+        "telephone": "Phone"
       },
       "errors": {
         "fetch": "Unable to load offers at this time.",
@@ -652,6 +663,8 @@
       "duration": "Duration",
       "salary": "Compensation",
       "not_specified": "Not specified",
+      "address": "Work location address",
+      "phone": "Phone",
       "requirements": "Special requirements",
       "description": "Internship description",
       "no_description": "No description provided.",
