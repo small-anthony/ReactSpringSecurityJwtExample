@@ -1,13 +1,17 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Employeur;
+import com.lacouf.rsbjwt.model.Gestionnaire;
+import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.repository.EmployeurRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,13 +29,29 @@ public class EmployeurService {
     private final EmployeurRepository employeurRepository;
     private final OffreStageRepository offreStageRepository;
     private final CandidatureRepository candidatureRepository;
+    private final NotificationService notificationService;
+    private final GestionnaireRepository gestionnaireRepository;
 
-    public EmployeurService(UserAppRepository userAppRepository, EmployeurRepository employeurRepository, OffreStageRepository offreStageRepository,
-                            CandidatureRepository candidatureRepository) {
+    @Autowired
+    public EmployeurService(UserAppRepository userAppRepository,
+                            EmployeurRepository employeurRepository,
+                            OffreStageRepository offreStageRepository,
+                            CandidatureRepository candidatureRepository,
+                            NotificationService notificationService,
+                            GestionnaireRepository gestionnaireRepository) {
         this.userAppRepository = userAppRepository;
         this.employeurRepository = employeurRepository;
         this.offreStageRepository = offreStageRepository;
         this.candidatureRepository = candidatureRepository;
+        this.notificationService = notificationService;
+        this.gestionnaireRepository = gestionnaireRepository;
+    }
+
+    public EmployeurService(UserAppRepository userAppRepository,
+                            EmployeurRepository employeurRepository,
+                            OffreStageRepository offreStageRepository,
+                            CandidatureRepository candidatureRepository) {
+        this(userAppRepository, employeurRepository, offreStageRepository, candidatureRepository, null, null);
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
@@ -85,7 +105,15 @@ public class EmployeurService {
 
         employeur.ajouterOffre(offreStage);
 
-        return OffreStageDto.create(offreStageRepository.save(offreStage));
+        OffreStage savedOffre = offreStageRepository.save(offreStage);
+        if (notificationService != null && gestionnaireRepository != null) {
+            List<Gestionnaire> gestionnaires = gestionnaireRepository.findAll();
+            gestionnaires.forEach(gestionnaire ->
+                    notificationService.pushNotification(Notification.offreCreated(savedOffre), gestionnaire.getId())
+            );
+        }
+
+        return OffreStageDto.create(savedOffre);
     }
 
     public List<OffreStageDto> getOffres(String emailEmployeur) throws Exception {

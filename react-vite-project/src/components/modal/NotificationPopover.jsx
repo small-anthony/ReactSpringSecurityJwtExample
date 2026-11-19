@@ -62,6 +62,8 @@ export function NotificationButton() {
             navigate("/etudiant?tab=contrats");
         } else if (notification.action?.type === "SIGNER_CONTRAT_EMPLOYEUR") {
             navigate("/employeur/contrats");
+        } else if (notification.action?.type === "APPROUVER_OFFRE") {
+            navigate("/gestionnaire/approbations/offres");
         } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
             navigate("/etudiant?tab=convocations");
         } else if (actionsContrat[actionType]) {

@@ -135,6 +135,17 @@ public class Notification {
 				NotificationType.ACTION_REQUIRED,
 				new NotificationAction(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, contrat.getId()),
 				"employeur.contrat_created"
+    );
+  }
+  
+	public static Notification offreCreated(OffreStage offre) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.APPROUVER_OFFRE, offre.getId()),
+				"gestionnaire.offre_submitted"
+    );
+  }
+  
 	public static Notification contratPretPourSignatureGestionnaire(Contrat contrat) {
 		return new Notification(
 				NotificationType.SUCCESS,
