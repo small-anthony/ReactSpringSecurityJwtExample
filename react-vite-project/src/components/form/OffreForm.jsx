@@ -17,6 +17,8 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
         duree: initialValues.duree || "",
         salaire: initialValues.salaire ? (initialValues.salaire.toString().match(/\d+([.,]\d+)?/)?.[0] || "") : "",
         exigences: initialValues.exigences || "",
+        adresse: initialValues.adresse || "",
+        telephone: initialValues.telephone || "",
         description: initialValues.description || "",
     });
 
@@ -55,6 +57,18 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
 
         if (!formData.duree.trim()) newErrors.duree = "duree";
         if (!formData.exigences.trim()) newErrors.exigences = "exigences";
+
+        if (!formData.adresse.trim()) newErrors.adresse = "adresse";
+
+        if (!formData.telephone.trim()) {
+            newErrors.telephone = "required";
+        } else {
+            const chiffres = formData.telephone.replace(/\D/g, "");
+            const caracteresValides = /^\+?[0-9 ().-]+$/.test(formData.telephone.trim());
+            if (!caracteresValides || chiffres.length < 10 || chiffres.length > 15) {
+                newErrors.telephone = "format";
+            }
+        }
 
         if (!formData.description.trim()) {
             newErrors.description = "description";
@@ -195,6 +209,48 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                         </p>
                     )}
                 </div>
+            </div>
+
+            <div>
+                <label className="ds-label">
+                    {t("creer_offre.adresse")} <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="adresse"
+                    value={formData.adresse}
+                    onChange={handleChange}
+                    placeholder={t("creer_offre.placeholders.adresse")}
+                    className={`ds-input ${
+                        errors.adresse ? "ds-input-error" : ""
+                    }`}
+                />
+                {errors.adresse && (
+                    <p className="ds-error-text">
+                        {t(`creer_offre.errors.${errors.adresse}`)}
+                    </p>
+                )}
+            </div>
+
+            <div>
+                <label className="ds-label">
+                    {t("creer_offre.telephone")} <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="tel"
+                    name="telephone"
+                    value={formData.telephone}
+                    onChange={handleChange}
+                    placeholder={t("creer_offre.placeholders.telephone")}
+                    className={`ds-input ${
+                        errors.telephone ? "ds-input-error" : ""
+                    }`}
+                />
+                {errors.telephone && (
+                    <p className="ds-error-text">
+                        {t(`creer_offre.errors.telephone.${errors.telephone}`)}
+                    </p>
+                )}
             </div>
 
             <div>

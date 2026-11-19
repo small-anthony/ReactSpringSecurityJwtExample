@@ -20,6 +20,8 @@ public class OffreStage {
     private String salaire;
     private String duree;
     private String exigences;
+    private String adresse;
+    private String telephone;
     private LocalDate dateSuppression = null;
 
     @Column(nullable = false)
@@ -170,6 +172,14 @@ public class OffreStage {
         return exigences;
     }
 
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
     public int getAnnee() {
         return annee;
     }
@@ -196,6 +206,14 @@ public class OffreStage {
 
     public void setExigences(String exigences) {
         this.exigences = exigences;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public void setTitre (String titre) {

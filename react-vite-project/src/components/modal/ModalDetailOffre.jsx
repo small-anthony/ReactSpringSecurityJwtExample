@@ -1,4 +1,4 @@
-import { X, XCircle, Building2, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
+import { X, XCircle, Building2, MapPin, Phone, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -74,7 +74,7 @@ export default function ModalDetailOffre({
 
     if (!offre) return null;
 
-    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description } = offre;
+    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, telephone } = offre;
 
     const handlePostuler = async () => {
         try {
@@ -241,6 +241,33 @@ export default function ModalDetailOffre({
                             </p>
                         </div>
                     </div>
+
+                    {(adresse || telephone) && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {adresse && (
+                                <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] min-w-0">
+                                    <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
+                                        <MapPin className="w-4 h-4 text-[#DC2626] shrink-0" strokeWidth={1.5} />
+                                        <span>{t("offres_etudiant.modal.address")}</span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
+                                        {adresse}
+                                    </p>
+                                </div>
+                            )}
+                            {telephone && (
+                                <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] min-w-0">
+                                    <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
+                                        <Phone className="w-4 h-4 text-[#059669] shrink-0" strokeWidth={1.5} />
+                                        <span>{t("offres_etudiant.modal.phone")}</span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
+                                        {telephone}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {exigences && (
                         <div className="bg-[#EFF6FF] border-l-[3px] border-l-[#2563EB] rounded-r-xl p-4">

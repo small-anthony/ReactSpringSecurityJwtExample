@@ -34,18 +34,9 @@ public class EmployeurService {
         this.candidatureRepository = candidatureRepository;
     }
 
-    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur, null);
-    }
-
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
-                                          String emailEmployeur) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences, emailEmployeur, null);
-    }
-
-    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
-                                          String discipline, String duree, String salaire, String exigences,
+                                          String adresse, String telephone,
                                           String emailEmployeur, Integer annee) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
@@ -58,6 +49,8 @@ public class EmployeurService {
         if (description == null || description.trim().isEmpty()) {
             throw new Exception("La description est obligatoire");
         }
+
+        validerAdresseEtTelephone(adresse, telephone);
 
         if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
             throw new Exception("Le courriel de l'employeur est obligatoire");
@@ -78,6 +71,8 @@ public class EmployeurService {
                 duree != null && !duree.trim().isEmpty() ? duree.trim() : null,
                 exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
         );
+        offreStage.setAdresse(adresse.trim());
+        offreStage.setTelephone(telephone.trim());
 
         if (annee != null && annee > 0) {
             offreStage.setAnnee(annee);
@@ -220,6 +215,7 @@ public class EmployeurService {
 
     public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
+                                          String adresse, String telephone,
                                           String emailEmployeur) throws Exception {
 
         if (titre == null || titre.trim().isEmpty()) {
@@ -234,6 +230,8 @@ public class EmployeurService {
             throw new Exception("La description est obligatoire");
         }
 
+        validerAdresseEtTelephone(adresse, telephone);
+
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
@@ -247,9 +245,27 @@ public class EmployeurService {
         offre.setDuree(duree != null && !duree.trim().isEmpty() ? duree.trim() : null);
         offre.setSalaire(salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null);
         offre.setExigences(exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null);
+        offre.setAdresse(adresse.trim());
+        offre.setTelephone(telephone.trim());
 
         offre.reinitialiserApprobation();
 
         return OffreStageDto.create(offreStageRepository.save(offre));
+    }
+
+    private void validerAdresseEtTelephone(String adresse, String telephone) throws Exception {
+        if (adresse == null || adresse.trim().isEmpty()) {
+            throw new Exception("L'adresse est obligatoire");
+        }
+
+        if (telephone == null || telephone.trim().isEmpty()) {
+            throw new Exception("Le téléphone est obligatoire");
+        }
+
+        String chiffres = telephone.replaceAll("\\D", "");
+        boolean caracteresValides = telephone.trim().matches("^\\+?[0-9 ().-]+$");
+        if (!caracteresValides || chiffres.length() < 10 || chiffres.length() > 15) {
+            throw new Exception("Le numéro de téléphone est invalide");
+        }
     }
 }
