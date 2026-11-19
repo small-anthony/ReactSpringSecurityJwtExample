@@ -2,6 +2,10 @@
   "etudiant": {
     "cv_accepted": "Your CV was accepted! You can now browse internship offers.",
     "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV.",
+    "contrat_created": "A new internship contract is ready for your signature."
+  },
+  "employeur": {
+    "contrat_created": "A new internship contract was created and is awaiting your signature.",
     "convocation_received": "You have received an interview invitation. Open it to choose a time slot."
   },
   "gestionnaire": {

@@ -37,12 +37,17 @@ export function NotificationButton() {
     const [offres, setOffres] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
+    const chargerNotifications = () => {
         if (!authService.isAuthed()) return;
 
         getNotifications(authService.buildAuthHeader())
             .then((data) => setNotifications(data || []))
             .catch(() => setNotifications([]));
+    };
+
+    useEffect(() => {
+        chargerNotifications();
+    }, [authService]);
 
         if (userData?.role === "ROLE_EMPLOYEUR") {
             getOffresStages(authService.buildAuthHeader())
@@ -72,6 +77,10 @@ export function NotificationButton() {
             navigate("/etudiant?uploadCv=true");
         } else if (actionType === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
+        } else if (notification.action?.type === "SIGNER_CONTRAT_ETUDIANT") {
+            navigate("/etudiant?tab=contrats");
+        } else if (notification.action?.type === "SIGNER_CONTRAT_EMPLOYEUR") {
+            navigate("/employeur/contrats");
         } else if (actionType === "VOIR_CANDIDATURES") {
             const offreId = notification.action?.referenceId;
             navigate(offreId ? `/employeur/offres/${offreId}/candidatures` : "/employeur");
@@ -103,7 +112,13 @@ export function NotificationButton() {
         <div className="relative">
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => {
+                    const prochainEtat = !isOpen;
+                    setIsOpen(prochainEtat);
+                    if (prochainEtat) {
+                        chargerNotifications();
+                    }
+                }}
                 className={`flex items-center gap-1.5 h-8 px-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                     nbNonLues > 0
                         ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"

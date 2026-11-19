@@ -530,6 +530,27 @@ public class ContratServiceTest {
     }
 
     @Test
+    void creerContrat_devraitNotifierEtudiantEtEmployeur() throws Exception {
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(userAppRepository.findUserAppByEmail("gestion@test.com")).thenReturn(Optional.of(gestionnaire));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        contratService.creerContrat(requestValide, "gestion@test.com");
+
+        org.mockito.ArgumentCaptor<Notification> notifEtudiant = org.mockito.ArgumentCaptor.forClass(Notification.class);
+        org.mockito.ArgumentCaptor<Notification> notifEmployeur = org.mockito.ArgumentCaptor.forClass(Notification.class);
+
+        verify(notificationService).pushNotification(notifEtudiant.capture(), eq(10L));
+        verify(notificationService).pushNotification(notifEmployeur.capture(), eq(20L));
+
+        assertEquals(NotificationType.ACTION_REQUIRED, notifEtudiant.getValue().getType());
+        assertEquals("etudiant.contrat_created", notifEtudiant.getValue().getMessage());
+        assertEquals(NotificationActionType.SIGNER_CONTRAT_ETUDIANT, notifEtudiant.getValue().getAction().getType());
+
+        assertEquals(NotificationType.ACTION_REQUIRED, notifEmployeur.getValue().getType());
+        assertEquals("employeur.contrat_created", notifEmployeur.getValue().getMessage());
+        assertEquals(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, notifEmployeur.getValue().getAction().getType());
     void signerContrat_premiereSignatureSeulement_aucuneNotificationGestionnaire() throws Exception {
         Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         contrat.setId(5L);

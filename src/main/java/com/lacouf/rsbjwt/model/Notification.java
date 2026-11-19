@@ -122,6 +122,22 @@ public class Notification {
 		);
 	}
 
+	public static Notification contratCreatedForEtudiant(Contrat contrat) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.SIGNER_CONTRAT_ETUDIANT, contrat.getId()),
+				"etudiant.contrat_created"
+		);
+	}
+
+	public static Notification contratCreatedForEmployeur(Contrat contrat) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, contrat.getId()),
+				"employeur.contrat_created"
+    );
+  }
+  
 	public static Notification nouvelleCandidature(OffreStage offre) {
 		return new Notification(
 				NotificationType.ACTION_REQUIRED,
