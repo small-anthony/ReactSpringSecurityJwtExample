@@ -15,6 +15,7 @@ import {
     desassignerProfesseur
 } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import StatsAssignationProfesseurs from "../widget/StatsAssignationProfesseurs.jsx";
@@ -28,8 +29,10 @@ export default function AssignationProfesseurs() {
 
     const [etudiants, setEtudiants] = useState([]);
     const [professeurs, setProfesseurs] = useState([]);
-    const [annees, setAnnees] = useState([]);
-    const [anneeChoisie, setAnneeChoisie] = useState(null);
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesGestionnaire,
+        authService
+    );
 
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
@@ -47,9 +50,11 @@ export default function AssignationProfesseurs() {
 
     const [etudiantADesassigner, setEtudiantADesassigner] = useState(null);
 
-    const chargerDonnees = async () => {
+    const chargerDonnees = async ({ silencieux = false } = {}) => {
         try {
-            setLoading(true);
+            if (!silencieux) {
+                setLoading(true);
+            }
             setErreur(null);
             const authHeader = authService.buildAuthHeader();
 
@@ -63,24 +68,16 @@ export default function AssignationProfesseurs() {
         } catch (err) {
             setErreur(err.message || t("assignation_professeurs.erreur_chargement"));
         } finally {
-            setLoading(false);
+            if (!silencieux) {
+                setLoading(false);
+            }
         }
     };
 
     useEffect(() => {
+        if (!anneesChargees) return;
         chargerDonnees();
-    }, [authService, anneeChoisie]);
-
-    useEffect(() => {
-        getAnneesGestionnaire(authService.buildAuthHeader())
-            .then((data) => {
-                setAnnees(data || []);
-                if (data && data.length > 0 && anneeChoisie === null) {
-                    setAnneeChoisie(data[0]);
-                }
-            })
-            .catch(() => setAnnees([]));
-    }, [authService]);
+    }, [authService, anneesChargees, anneeChoisie]);
 
     useEffect(() => {
         if (!modalOuvert) return;
@@ -166,8 +163,9 @@ export default function AssignationProfesseurs() {
 
             fermerModalAssignation();
             setMessageSucces(t("assignation_professeurs.succes_assignation"));
-            await chargerDonnees();
+            await chargerDonnees({ silencieux: true });
         } catch (err) {
+            fermerModalAssignation();
             setErreur(err.message || t("assignation_professeurs.erreur_assignation"));
         } finally {
             setSoumissionEnCours(false);
@@ -187,7 +185,7 @@ export default function AssignationProfesseurs() {
             await desassignerProfesseur(etudiantADesassigner.id, authHeader);
             setEtudiantADesassigner(null);
             setMessageSucces(t("assignation_professeurs.succes_desassignation"));
-            await chargerDonnees();
+            await chargerDonnees({ silencieux: true });
         } catch (err) {
             setErreur(err.message || t("assignation_professeurs.erreur_desassignation"));
             setEtudiantADesassigner(null);
