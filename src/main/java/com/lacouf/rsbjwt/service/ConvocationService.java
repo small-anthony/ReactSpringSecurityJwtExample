@@ -20,13 +20,14 @@ public class ConvocationService {
 
     private final ConvocationRepository convocationRepository;
     private final CandidatureRepository candidatureRepository;
-
+    private final NotificationService notificationService;
 
     public ConvocationService(ConvocationRepository convocationRepository,
-                              CandidatureRepository candidatureRepository) {
+                              CandidatureRepository candidatureRepository,
+                              NotificationService notificationService) {
         this.convocationRepository = convocationRepository;
         this.candidatureRepository = candidatureRepository;
-
+        this.notificationService = notificationService;
     }
 
     @Transactional()
@@ -92,6 +93,7 @@ public class ConvocationService {
         StatutCandidature ancienStatut = candidature.getStatut();
         candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
         convocation = convocationRepository.save(convocation);
+        notificationService.pushNotification(Notification.convocationRecue(), convocation.getEtudiantId());
 
         return ConvocationDto.create(convocation);
     }
@@ -129,7 +131,7 @@ public class ConvocationService {
         }
         if (convocation.estResolu()) {
             throw new Exception("La convocation est deja resolue");
-		}
+        }
         if (!convocation.estDestineAEtudiant(actorEmail)) {
             throw new AuthenticationException("Non autorise");
         }

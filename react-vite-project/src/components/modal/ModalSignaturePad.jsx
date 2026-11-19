@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { X, Check, RotateCcw, PenTool, ShieldCheck, AlertCircle } from "lucide-react";
 import { signerContrat } from "../../services/api/ContratAPI.js";
+import { AuthServiceContext } from "../../services/AuthService.tsx";
 
-export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess, authHeader, roleLabel }) {
+export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess, authHeader, roleLabel, nomSignataire }) {
     const { t, i18n } = useTranslation("main");
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -118,7 +119,18 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
 
     if (!isOpen || !contrat) return null;
 
-    const nomCompletEtudiant = `${contrat.etudiantPrenom || ""} ${contrat.etudiantNom || ""}`.trim();
+    const authService = useContext(AuthServiceContext);
+    const userData = authService?.getUserData ? authService.getUserData() : null;
+    const nomConnecte = userData?.firstName || userData?.lastName
+        ? `${userData.firstName || ""} ${userData.lastName || ""}`.trim()
+        : null;
+
+    const nomSignataireAffiche = nomSignataire
+        || nomConnecte
+        || (roleLabel?.toLowerCase().includes("employeur") ? (contrat.employeurNom || contrat.nomEntreprise) : null)
+        || (roleLabel?.toLowerCase().includes("gestionnaire") ? roleLabel : null)
+        || `${contrat.etudiantPrenom || ""} ${contrat.etudiantNom || ""}`.trim();
+
     const dateAujourdhui = new Date().toLocaleDateString(i18n.language?.startsWith("en") ? "en-US" : "fr-CA");
 
     return (
@@ -164,7 +176,7 @@ export default function ModalSignaturePad({ isOpen, onClose, contrat, onSuccess,
                             <p className="font-medium text-gray-500">
                                 {t("signature_pad.signer")}
                             </p>
-                            <p className="font-bold text-gray-900 text-sm">{nomCompletEtudiant}</p>
+                            <p className="font-bold text-gray-900 text-sm">{nomSignataireAffiche}</p>
                         </div>
                         <div className="text-right">
                             <p className="font-medium text-gray-500">
