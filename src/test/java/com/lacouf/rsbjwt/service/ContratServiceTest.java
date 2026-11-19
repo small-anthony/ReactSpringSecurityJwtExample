@@ -11,12 +11,14 @@ import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ContratRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,6 +43,9 @@ public class ContratServiceTest {
 
     @Mock
     private UserAppRepository userAppRepository;
+
+    @Mock
+    private GestionnaireRepository gestionnaireRepository;
 
     @Mock
     private NotificationService notificationService;
@@ -546,5 +551,86 @@ public class ContratServiceTest {
         assertEquals(NotificationType.ACTION_REQUIRED, notifEmployeur.getValue().getType());
         assertEquals("employeur.contrat_created", notifEmployeur.getValue().getMessage());
         assertEquals(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, notifEmployeur.getValue().getAction().getType());
+    void signerContrat_premiereSignatureSeulement_aucuneNotificationGestionnaire() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contrat.setId(5L);
+
+        MultipartFile signatureFile = mock(MultipartFile.class);
+        when(signatureFile.isEmpty()).thenReturn(false);
+        when(signatureFile.getBytes()).thenReturn("sig".getBytes());
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(5L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com")).thenReturn(List.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        contratService.signerContrat(5L, "jean@test.com", signatureFile);
+
+        verify(notificationService, never()).pushNotification(any(), any());
+    }
+
+    @Test
+    void signerContrat_etudiantEtEmployeurOntSigne_notifieGestionnaires() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contrat.setId(5L);
+        contrat.signer(new Signature<>(etudiant, "sigEtudiant".getBytes()));
+
+        MultipartFile signatureFile = mock(MultipartFile.class);
+        when(signatureFile.isEmpty()).thenReturn(false);
+        when(signatureFile.getBytes()).thenReturn("sigEmployeur".getBytes());
+
+        when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
+        when(contratRepository.findById(5L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(gestionnaireRepository.findAll()).thenReturn(List.of(gestionnaire));
+
+        ContratDto resultat = contratService.signerContrat(5L, "bob@cgi.com", signatureFile);
+
+        assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR, resultat.statut());
+        ArgumentCaptor<Notification> notifCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationService).pushNotification(notifCaptor.capture(), eq(gestionnaire.getId()));
+        Notification notif = notifCaptor.getValue();
+        assertEquals(NotificationType.SUCCESS, notif.getType());
+        assertEquals(NotificationActionType.SIGNER_CONTRAT, notif.getAction().getType());
+        assertEquals(5L, notif.getAction().getReferenceId());
+        assertEquals("gestionnaire.contrat_pret_signature", notif.getMessage());
+    }
+
+    @Test
+    void rejeterContrat_parEtudiant_notifieGestionnaires() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contrat.setId(7L);
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(7L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(gestionnaireRepository.findAll()).thenReturn(List.of(gestionnaire));
+
+        ContratDto resultat = contratService.rejeterContrat(7L, "jean@test.com");
+
+        assertEquals(StatutContrat.REFUSE, resultat.statut());
+        ArgumentCaptor<Notification> notifCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationService).pushNotification(notifCaptor.capture(), eq(gestionnaire.getId()));
+        Notification notif = notifCaptor.getValue();
+        assertEquals(NotificationType.ACTION_REQUIRED, notif.getType());
+        assertEquals(NotificationActionType.REVISER_CONTRAT, notif.getAction().getType());
+        assertEquals(7L, notif.getAction().getReferenceId());
+        assertEquals("gestionnaire.contrat_refuse", notif.getMessage());
+    }
+
+    @Test
+    void rejeterContrat_parEmployeur_notifieGestionnaires() throws Exception {
+        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contrat.setId(8L);
+
+        when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
+        when(contratRepository.findById(8L)).thenReturn(Optional.of(contrat));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(gestionnaireRepository.findAll()).thenReturn(List.of(gestionnaire));
+
+        ContratDto resultat = contratService.rejeterContrat(8L, "bob@cgi.com");
+
+        assertEquals(StatutContrat.REFUSE, resultat.statut());
+        verify(notificationService).pushNotification(any(Notification.class), eq(gestionnaire.getId()));
     }
 }

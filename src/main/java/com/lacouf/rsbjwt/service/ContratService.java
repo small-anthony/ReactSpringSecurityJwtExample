@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ContratRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
@@ -23,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 
@@ -33,12 +35,14 @@ public class ContratService {
     private final ContratRepository contratRepository;
     private final CandidatureRepository candidatureRepository;
     private final UserAppRepository userAppRepository;
+    private final GestionnaireRepository gestionnaireRepository;
     private final NotificationService notificationService;
 
     @Autowired
     public ContratService(ContratRepository contratRepository,
                           CandidatureRepository candidatureRepository,
                           UserAppRepository userAppRepository,
+                          GestionnaireRepository gestionnaireRepository,
                           NotificationService notificationService) {
         this.contratRepository = contratRepository;
         this.candidatureRepository = candidatureRepository;
@@ -50,6 +54,8 @@ public class ContratService {
                           CandidatureRepository candidatureRepository,
                           UserAppRepository userAppRepository) {
         this(contratRepository, candidatureRepository, userAppRepository, null);
+        this.gestionnaireRepository = gestionnaireRepository;
+        this.notificationService = notificationService;
     }
 
     private record EtudiantEmployeurAnnee(Long etudiantId, Long employeurId, int annee) {
@@ -172,7 +178,13 @@ public class ContratService {
         byte[] pdfMisAJour = ContratPdfGenerator.mettreAJour(contrat, getNomGestionnaire());
         contrat.setData(pdfMisAJour);
 
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat contratSauvegarde = contratRepository.save(contrat);
+        if (!(utilisateur instanceof Gestionnaire)
+                && contratSauvegarde.getStatut() == StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR) {
+            notifierGestionnaires(() -> Notification.contratPretPourSignatureGestionnaire(contratSauvegarde));
+        }
+
+        return ContratDto.create(contratSauvegarde);
     }
 
     public ContratDto rejeterContrat(Long contratId, String actorEmail) throws Exception {
@@ -184,7 +196,17 @@ public class ContratService {
 
         validerSignatairePourRejet(contrat, utilisateur);
         contrat.rejeter(utilisateur);
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat contratSauvegarde = contratRepository.save(contrat);
+        if (utilisateur instanceof Etudiant || utilisateur instanceof Employeur) {
+            notifierGestionnaires(() -> Notification.contratRefuse(contratSauvegarde));
+        }
+        return ContratDto.create(contratSauvegarde);
+    }
+
+    private void notifierGestionnaires(Supplier<Notification> notificationFactory) {
+        gestionnaireRepository.findAll().forEach(gestionnaire ->
+                notificationService.pushNotification(notificationFactory.get(), gestionnaire.getId())
+        );
     }
 
     @Transactional(readOnly = true)

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import GestionnaireContrats from "../../../components/page/GestionnaireContrats.jsx";
 import { AuthServiceContext } from "../../../services/AuthService.tsx";
 import * as ContratAPI from "../../../services/api/ContratAPI.js";
@@ -181,5 +181,21 @@ describe("GestionnaireContrats", () => {
         await waitFor(() => {
             expect(ContratAPI.rejeterContrat).toHaveBeenCalledWith(201, expect.any(Object));
         });
+    });
+
+    it("devrait ouvrir directement l'onglet Liste et le modal de signature depuis une notification SIGNER_CONTRAT", async () => {
+        vi.spyOn(ContratAPI, "getCandidaturesAccepteesPourContrat").mockResolvedValue([]);
+        vi.spyOn(ContratAPI, "getTousLesContrats").mockResolvedValue(mockContrats);
+
+        render(
+            <AuthServiceContext.Provider value={mockAuth}>
+                <MemoryRouter initialEntries={["/gestionnaire/contrats?contratId=201&action=signer"]}>
+                    <GestionnaireContrats />
+                </MemoryRouter>
+            </AuthServiceContext.Provider>
+        );
+
+        expect(await screen.findByText(/Luc Bélanger/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Signer le contrat de stage/i)).toBeInTheDocument();
     });
 });

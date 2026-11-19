@@ -106,6 +106,14 @@ public class Notification {
 		);
 	}
 
+	public static Notification convocationRecue() {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.VOIR_CONVOCATIONS),
+				"etudiant.convocation_received"
+		);
+	}
+
 	public static Notification cvCreated(Cv cv) {
 		return new Notification(
 				NotificationType.ACTION_REQUIRED,
@@ -127,6 +135,19 @@ public class Notification {
 				NotificationType.ACTION_REQUIRED,
 				new NotificationAction(NotificationActionType.SIGNER_CONTRAT_EMPLOYEUR, contrat.getId()),
 				"employeur.contrat_created"
+	public static Notification contratPretPourSignatureGestionnaire(Contrat contrat) {
+		return new Notification(
+				NotificationType.SUCCESS,
+				new NotificationAction(NotificationActionType.SIGNER_CONTRAT, contrat.getId()),
+				"gestionnaire.contrat_pret_signature"
+		);
+	}
+
+	public static Notification contratRefuse(Contrat contrat) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.REVISER_CONTRAT, contrat.getId()),
+				"gestionnaire.contrat_refuse"
 		);
 	}
 }
