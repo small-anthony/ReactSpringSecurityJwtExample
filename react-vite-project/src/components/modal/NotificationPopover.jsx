@@ -1,9 +1,17 @@
-import {BellIcon, CheckCircle2, Info, AlertTriangle, XCircle, X,} from "lucide-react";
+import {
+    BellIcon,
+    CheckCircle2,
+    Info,
+    AlertTriangle,
+    XCircle,
+    X,
+} from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getNotifications, dismissNotificationApi, deleteNotificationApi } from "../../services/api/NotificationAPI.js";
+import { getOffresStages } from "../../services/api/OffreStageService.js";
 import i18n from "i18next";
 
 function getIconStyle(type) {
@@ -23,8 +31,10 @@ export function NotificationButton() {
     const { t } = useTranslation(['main', 'notification']);
     const navigate = useNavigate();
     const authService = useContext(AuthServiceContext);
+    const userData = authService.getUserData();
 
     const [notifications, setNotifications] = useState([]);
+    const [offres, setOffres] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
     const chargerNotifications = () => {
@@ -39,6 +49,13 @@ export function NotificationButton() {
         chargerNotifications();
     }, [authService]);
 
+        if (userData?.role === "ROLE_EMPLOYEUR") {
+            getOffresStages(authService.buildAuthHeader())
+                .then((data) => setOffres(data || []))
+                .catch(() => setOffres([]));
+        }
+    }, [authService, userData?.role]);
+
     const handleAction = async (notification) => {
         if (!notification.dismissed) {
             await dismissNotificationApi(notification.id, authService.buildAuthHeader());
@@ -51,7 +68,9 @@ export function NotificationButton() {
             SIGNER_CONTRAT: "signer",
             REVISER_CONTRAT: "reviser",
         };
+      
         const actionType = notification.action?.type;
+      
         if (actionType === "VOIR_OFFRES") {
             navigate("/etudiant?tab=toutes");
         } else if (actionType === "TELEVERSER_CV") {
@@ -62,6 +81,9 @@ export function NotificationButton() {
             navigate("/etudiant?tab=contrats");
         } else if (notification.action?.type === "SIGNER_CONTRAT_EMPLOYEUR") {
             navigate("/employeur/contrats");
+        } else if (actionType === "VOIR_CANDIDATURES") {
+            const offreId = notification.action?.referenceId;
+            navigate(offreId ? `/employeur/offres/${offreId}/candidatures` : "/employeur");
         } else if (notification.action?.type === "APPROUVER_OFFRE") {
             navigate("/gestionnaire/approbations/offres");
         } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
@@ -137,6 +159,11 @@ export function NotificationButton() {
                                         timeStyle: "short",
                                     }).format(new Date(notif.dateCreation));
 
+                                    let titreOffre = "";
+                                    if (notif.action?.type === "VOIR_CANDIDATURES") {
+                                        titreOffre = offres.find((o) => o.id === notif.action.referenceId)?.titre || "";
+                                    }
+
                                     return (
                                         <div
                                             key={notif.id}
@@ -153,7 +180,7 @@ export function NotificationButton() {
 
                                             <div className="flex-1 min-w-0">
                                                 <p className={`text-xs leading-relaxed break-words ${notif.dismissed ? "text-slate-600" : "text-slate-900 font-medium"}`}>
-                                                    {t(notif.message, { ns: 'notification' })}
+                                                    {t(notif.message, { ns: 'notification', titre: titreOffre })}
                                                 </p>
                                                 <span className="text-[11px] text-slate-400 mt-1 block">
                                                     {date}

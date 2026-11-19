@@ -9,6 +9,10 @@
     "convocation_received": "You have received an interview invitation. Open it to choose a time slot."
   },
   "gestionnaire": {
+    "cv_submitted": "A student submitted a new CV for approval."
+  },
+  "employeur": {
+    "nouvelle_candidature": "A student applied to your offer: {{titre}}.",
     "cv_submitted": "A student submitted a new CV for approval.",
     "offre_submitted": "An employer submitted a new internship offer for approval.",
     "contrat_pret_signature": "A contract has been signed by both the student and the employer and is ready for your signature.",

@@ -138,6 +138,14 @@ public class Notification {
     );
   }
   
+	public static Notification nouvelleCandidature(OffreStage offre) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.VOIR_CANDIDATURES, offre.getId()),
+				"employeur.nouvelle_candidature"
+    );
+  }
+  
 	public static Notification offreCreated(OffreStage offre) {
 		return new Notification(
 				NotificationType.ACTION_REQUIRED,
