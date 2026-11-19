@@ -5,6 +5,10 @@
     "convocation_received": "Vous avez reçu une convocation à une entrevue. Consultez-la pour choisir un créneau."
   },
   "gestionnaire": {
+    "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver."
+  },
+  "employeur": {
+    "nouvelle_candidature": "Un étudiant a postulé à votre offre : {{titre}}.",
     "cv_submitted": "Un étudiant a soumis un nouveau CV à approuver.",
     "offre_submitted": "Un employeur a déposé une nouvelle offre de stage à approuver.",
     "contrat_pret_signature": "Un contrat a été signé par l'étudiant et l'employeur et est prêt pour votre signature.",
