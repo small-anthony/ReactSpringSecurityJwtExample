@@ -90,7 +90,7 @@ public class ConvocationService {
         candidature.addConvocation(convocation);
 
         StatutCandidature ancienStatut = candidature.getStatut();
-        candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE);
         convocation = convocationRepository.save(convocation);
 
         return ConvocationDto.create(convocation);

@@ -156,15 +156,15 @@ public class EmployeurService {
     public CandidatureDto refuserCandidature(Long candidatureId, String message, String emailEmployeur) throws Exception {
         String messageNettoye = (message == null || message.trim().isEmpty()) ? null : message.trim();
         return repondre(candidatureId, emailEmployeur,
-                EnumSet.of(StatutCandidature.EN_ATTENTE, StatutCandidature.EN_ATTENTE_REPONSE, StatutCandidature.ACCEPTEE),
+                EnumSet.of(StatutCandidature.EN_ATTENTE_CONVOCATION, StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE, StatutCandidature.ENTREVUE_REFUSEE, StatutCandidature.EN_ATTENTE_ENTREVUE, StatutCandidature.EN_ATTENTE_CHOIX_STAGE),
                 StatutCandidature.REFUSEE, messageNettoye,
                 "Cette candidature a déjà reçu une réponse");
     }
 
     public CandidatureDto embaucherCandidature(Long candidatureId, String emailEmployeur) throws Exception {
         return repondre(candidatureId, emailEmployeur,
-                EnumSet.of(StatutCandidature.ACCEPTEE),
-                StatutCandidature.EMBAUCHEE, null,
+                EnumSet.of(StatutCandidature.EN_ATTENTE_ENTREVUE),
+                StatutCandidature.EN_ATTENTE_CHOIX_STAGE, null,
                 "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
     }
 
@@ -205,7 +205,7 @@ public class EmployeurService {
 
         List<Candidature> candidatures = candidatureRepository.findByOffreStage(offre);
         for (Candidature candidature : candidatures) {
-            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE) {
+            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE_CONVOCATION) {
                 refuserCandidature(candidature.getId(), "L'offre a été supprimée par l'employeur", emailEmployeur);
             }
         }

@@ -86,7 +86,7 @@ class ConvocationServiceTest {
         assertNotNull(dto);
         assertEquals(StatutConvocation.ACCEPTEE, dto.statut());
         assertEquals(StatutConvocation.ACCEPTEE, convocation.getStatut());
-        assertEquals(StatutCandidature.ACCEPTEE, convocation.getCandidature().getStatut());
+        assertEquals(StatutCandidature.EN_ATTENTE_ENTREVUE, convocation.getCandidature().getStatut());
 
         verify(convocationRepository).save(convocation);
     }
@@ -124,7 +124,7 @@ class ConvocationServiceTest {
         assertNotNull(dto);
         assertEquals(StatutConvocation.REFUSEE, dto.statut());
         assertEquals(raison, convocation.getReponseEtudiant());
-        assertEquals(StatutCandidature.EN_ATTENTE, convocation.getCandidature().getStatut());
+        assertEquals(StatutCandidature.ENTREVUE_REFUSEE, convocation.getCandidature().getStatut());
 
         verify(convocationRepository).save(convocation);
     }
@@ -215,7 +215,7 @@ class ConvocationServiceTest {
 //                ACT
                 convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "Pas dispo le matin");
 
-                assertEquals(StatutCandidature.EN_ATTENTE, candidature.getStatut());
+                assertEquals(StatutCandidature.ENTREVUE_REFUSEE, candidature.getStatut());
                 assertEquals("Pas dispo le matin", candidature.getConvocations().get(0).getReponseEtudiant());
 
                 when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
@@ -226,7 +226,7 @@ class ConvocationServiceTest {
 //                ASSERT
                 assertNotNull(nouvelleDto);
                 assertEquals(StatutConvocation.EN_ATTENTE, nouvelleDto.statut());
-                assertEquals(StatutCandidature.EN_ATTENTE_REPONSE, candidature.getStatut());
+                assertEquals(StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE, candidature.getStatut());
                 assertEquals(2, candidature.getConvocations().size());
         }
 

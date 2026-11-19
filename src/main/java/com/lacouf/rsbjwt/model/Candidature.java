@@ -27,7 +27,7 @@ public class Candidature {
     private LocalDateTime dateCandidature = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    private StatutCandidature statut = StatutCandidature.EN_ATTENTE;
+    private StatutCandidature statut = StatutCandidature.EN_ATTENTE_CONVOCATION;
 
     @Column(length = 1000)
     private String messageReponse;

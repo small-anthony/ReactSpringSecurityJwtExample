@@ -67,7 +67,7 @@ public class ContratServiceTest {
 
         candidature = new Candidature(etudiant, offreStage);
         candidature.setId(1L);
-        candidature.setStatut(StatutCandidature.ACCEPTEE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
 
         requestValide = new CreationContratRequest(
                 1L,
@@ -165,7 +165,7 @@ public class ContratServiceTest {
     @Test
     void creerContrat_etudiantNonEmbauche_lanceException() {
         // Arrange
-        candidature.setStatut(StatutCandidature.EN_ATTENTE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CONVOCATION);
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
 
         // Act & Assert
@@ -327,7 +327,7 @@ public class ContratServiceTest {
     void getCandidaturesPourContrat_succes() {
         // Arrange
         when(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE)).thenReturn(List.of());
-        when(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE)).thenReturn(List.of(candidature));
+        when(candidatureRepository.findByStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE)).thenReturn(List.of(candidature));
         when(contratRepository.findByCandidatureId(1L)).thenReturn(Optional.empty());
 
         // Act
@@ -426,6 +426,8 @@ public class ContratServiceTest {
         // Assert
         assertEquals(StatutContrat.REFUSE, result.statut());
         assertFalse(result.signeParEtudiant());
+        assertEquals(StatutCandidature.REFUSEE, candidature.getStatut());
+        verify(candidatureRepository).save(candidature);
     }
 
     @Test

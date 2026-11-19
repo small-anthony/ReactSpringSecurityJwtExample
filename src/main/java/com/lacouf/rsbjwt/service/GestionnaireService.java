@@ -324,7 +324,7 @@ public class GestionnaireService {
             return false;
         }
         return contratRepository.findByCandidatureId(candidature.getId())
-                .map(contrat -> contrat.isSigneParEtudiant() && contrat.getStatut() != StatutContrat.REFUSE)
+                .map(contrat -> contrat.getStatut() == StatutContrat.COMPLETE)
                 .orElse(false);
     }
 

@@ -66,14 +66,14 @@ public class Convocation {
 
     public void accepter(RendezVous rendezVous, String message) {
         this.statut = StatutConvocation.ACCEPTEE;
-        this.candidature.setStatut(StatutCandidature.ACCEPTEE);
+        this.candidature.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
         this.rendezVousSelection = rendezVous;
         this.reponseEtudiant = message;
     }
 
     public void refuser(String motif) {
         this.statut = StatutConvocation.REFUSEE;
-        this.candidature.setStatut(StatutCandidature.EN_ATTENTE);
+        this.candidature.setStatut(StatutCandidature.ENTREVUE_REFUSEE);
         this.reponseEtudiant = motif;
     }
 

@@ -390,7 +390,7 @@ public class EmployeurServiceTest {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
-        candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE);
         when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
         when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -405,7 +405,7 @@ public class EmployeurServiceTest {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
-        candidature.setStatut(StatutCandidature.ACCEPTEE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
         when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
         when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -413,6 +413,21 @@ public class EmployeurServiceTest {
 
         assertEquals(StatutCandidature.REFUSEE, resultat.statut());
         assertEquals("Profil non retenu après l'entrevue", resultat.messageReponse());
+    }
+
+    @Test
+    void refuserCandidature_enAttenteChoixStage_refuseLaCandidature() throws Exception {
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+        Candidature candidature = creerCandidature(100L);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
+        when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        CandidatureDto resultat = employeurService.refuserCandidature(100L, "Poste comblé entre-temps", email);
+
+        assertEquals(StatutCandidature.REFUSEE, resultat.statut());
+        assertEquals("Poste comblé entre-temps", resultat.messageReponse());
     }
 
     @Test
@@ -435,13 +450,13 @@ public class EmployeurServiceTest {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
-        candidature.setStatut(StatutCandidature.ACCEPTEE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
         when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
         when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> inv.getArgument(0));
 
         CandidatureDto resultat = employeurService.embaucherCandidature(100L, email);
 
-        assertEquals(StatutCandidature.EMBAUCHEE, resultat.statut());
+        assertEquals(StatutCandidature.EN_ATTENTE_CHOIX_STAGE, resultat.statut());
         assertNull(resultat.messageReponse());
     }
 
@@ -450,7 +465,7 @@ public class EmployeurServiceTest {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
-        candidature.setStatut(StatutCandidature.EN_ATTENTE_REPONSE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE);
         when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
 
         Exception exception = assertThrows(Exception.class, () ->
