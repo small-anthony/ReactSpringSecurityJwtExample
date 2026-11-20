@@ -23,9 +23,9 @@ public class ProfesseurService {
     private final ContratRepository contratRepository;
     private final EvaluationMilieuStageRepository evaluationMilieuStageRepository;
     private final CandidatureRepository candidatureRepository;
+    private final NotificationService notificationService;
 
     private final Duration EVALUATION_REMINDER_DELAY = Duration.of(2, ChronoUnit.DAYS);
-    private NotificationService notificationService;
 
     @Autowired
     public ProfesseurService(
@@ -33,14 +33,14 @@ public class ProfesseurService {
             EtudiantRepository etudiantRepository,
             ContratRepository contratRepository,
             EvaluationMilieuStageRepository evaluationMilieuStageRepository,
-            NotificationService notificationService,
-            CandidatureRepository candidatureRepository) {
+            CandidatureRepository candidatureRepository,
+            NotificationService notificationService) {
         this.professeurRepository = professeurRepository;
         this.etudiantRepository = etudiantRepository;
         this.contratRepository = contratRepository;
         this.evaluationMilieuStageRepository = evaluationMilieuStageRepository;
-        this.notificationService = notificationService;
         this.candidatureRepository = candidatureRepository;
+        this.notificationService = notificationService;
     }
 
     public ProfesseurService(ProfesseurRepository professeurRepository, EtudiantRepository etudiantRepository) {
@@ -49,7 +49,7 @@ public class ProfesseurService {
 
     private record AccesProfesseurEtudiant(Professeur professeur, Etudiant etudiant) {}
 
-    public void pushEvaluationNotifications(Instant now, boolean immediate) {
+    public void pushEvaluationNotifications(Instant now) {
         List<Candidature> candidatures = candidatureRepository.findAllByEvaluationNeeded(now.minus(EVALUATION_REMINDER_DELAY));
 
         for(Candidature candidature : candidatures) {
