@@ -65,38 +65,21 @@ public class EmployeurController {
                 } catch (Exception ignored) {}
             }
 
-            OffreStageDto offreCree;
-            if (annee != null) {
-                offreCree = employeurService.createOffreStage(
-                        request.get("titre"),
-                        request.get("nomEntreprise"),
-                        request.get("description"),
-                        discipline,
-                        duree,
-                        salaire,
-                        exigences,
-                        email,
-                        annee
-                );
-            } else if (discipline != null || duree != null || salaire != null || exigences != null) {
-                offreCree = employeurService.createOffreStage(
-                        request.get("titre"),
-                        request.get("nomEntreprise"),
-                        request.get("description"),
-                        discipline,
-                        duree,
-                        salaire,
-                        exigences,
-                        email
-                );
-            } else {
-                offreCree = employeurService.createOffreStage(
-                        request.get("titre"),
-                        request.get("nomEntreprise"),
-                        request.get("description"),
-                        email
-                );
-            }
+            OffreStageDto offreCree = employeurService.createOffreStage(
+                    request.get("titre"),
+                    request.get("nomEntreprise"),
+                    request.get("description"),
+                    discipline,
+                    duree,
+                    salaire,
+                    exigences,
+                    request.get("adresse"),
+                    request.get("ville"),
+                    request.get("codePostal"),
+                    request.get("telephone"),
+                    email,
+                    annee
+            );
             return ResponseEntity.status(HttpStatus.CREATED).body(offreCree);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -228,6 +211,10 @@ public class EmployeurController {
                     request.duree(),
                     request.salaire(),
                     request.exigences(),
+                    request.adresse(),
+                    request.ville(),
+                    request.codePostal(),
+                    request.telephone(),
                     email
             );
             return ResponseEntity.ok(offreModifiee);

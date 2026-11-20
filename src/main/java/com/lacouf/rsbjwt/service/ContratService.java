@@ -52,8 +52,8 @@ public class ContratService {
     @Transactional(readOnly = true)
     public List<CandidaturePourContratDto> getCandidaturesPourContrat(Integer annee) {
         List<Candidature> candidatures = new ArrayList<>();
+        candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE));
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE));
-        candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE));
 
         List<Candidature> distinctCandidatures = candidatures.stream().distinct().toList();
         Set<EtudiantEmployeurAnnee> contratsExistants = new HashSet<>();
@@ -98,7 +98,8 @@ public class ContratService {
         Candidature candidature = candidatureRepository.findById(request.candidatureId())
                 .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
-        if (candidature.getStatut() != StatutCandidature.EMBAUCHEE && candidature.getStatut() != StatutCandidature.ACCEPTEE) {
+        if (candidature.getStatut() != StatutCandidature.EN_ATTENTE_CHOIX_STAGE
+                && candidature.getStatut() != StatutCandidature.EMBAUCHEE) {
             throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
         }
 
@@ -118,6 +119,8 @@ public class ContratService {
                 request.descriptionTaches().trim(),
                 request.conditions().trim());
 
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        candidatureRepository.save(candidature);
         return ContratDto.create(contratRepository.save(contrat));
     }
 
@@ -143,6 +146,10 @@ public class ContratService {
         }
         validerSignatairePourContrat(contrat, utilisateur);
         contrat.signer(signature);
+        if (contrat.getStatut() == StatutContrat.COMPLETE && contrat.getCandidature() != null) {
+            contrat.getCandidature().setStatut(StatutCandidature.EMBAUCHEE);
+            candidatureRepository.save(contrat.getCandidature());
+        }
 
         byte[] pdfMisAJour = ContratPdfGenerator.mettreAJour(contrat, getNomGestionnaire());
         contrat.setData(pdfMisAJour);
@@ -159,6 +166,10 @@ public class ContratService {
 
         validerSignatairePourRejet(contrat, utilisateur);
         contrat.rejeter(utilisateur);
+        if (contrat.getCandidature() != null) {
+            contrat.getCandidature().setStatut(StatutCandidature.REFUSEE);
+            candidatureRepository.save(contrat.getCandidature());
+        }
         return ContratDto.create(contratRepository.save(contrat));
     }
 

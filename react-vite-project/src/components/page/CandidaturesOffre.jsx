@@ -14,11 +14,12 @@ import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
 import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
 import { DISCIPLINES } from "../../constants/disciplines.js";
 
-const peutConvoquer = (candidature) => candidature.statut === "EN_ATTENTE";
-const peutEmbaucher = (candidature) => candidature.statut === "ACCEPTEE";
+const peutConvoquer = (candidature) =>
+    ["EN_ATTENTE_CONVOCATION", "ENTREVUE_REFUSEE"].includes(candidature.statut);
+const peutEmbaucher = (candidature) => candidature.statut === "EN_ATTENTE_ENTREVUE";
 const peutRefuser = (candidature) =>
-    ["EN_ATTENTE", "EN_ATTENTE_REPONSE", "ACCEPTEE"].includes(candidature.statut);
-const aUnBadge = (candidature) => candidature.statut !== "EN_ATTENTE";
+    ["EN_ATTENTE_CONVOCATION", "EN_ATTENTE_CONFIRMATION_ENTREVUE", "ENTREVUE_REFUSEE", "EN_ATTENTE_ENTREVUE", "EN_ATTENTE_CHOIX_STAGE"].includes(candidature.statut);
+const aUnBadge = (candidature) => candidature.statut !== "EN_ATTENTE_CONVOCATION";
 
 const aConvocationRefusee = (candidat) => {
     if (candidat?.messageRefusConvocation !== null && candidat?.messageRefusConvocation !== undefined) {
@@ -36,19 +37,22 @@ const getMotifRefusConvocation = (candidat) => {
 };
 
 const aEntrevueConfirmee = (candidat) =>
-    candidat.statut === "ACCEPTEE" &&
+    candidat.statut === "EN_ATTENTE_ENTREVUE" &&
     candidat.convocation?.statut === "ACCEPTEE" &&
     Boolean(candidat.convocation?.rendezVousSelection);
 
 const aConvocationEnAttente = (candidat) =>
-    candidat.statut === "EN_ATTENTE_REPONSE" && candidat.convocation?.statut === "EN_ATTENTE";
+    candidat.statut === "EN_ATTENTE_CONFIRMATION_ENTREVUE" && candidat.convocation?.statut === "EN_ATTENTE";
 
 const formaterDateHeure = (date, langue) =>
     new Date(date).toLocaleString(langue, { dateStyle: "full", timeStyle: "short" });
 
 const COULEURS_BADGE = {
-    EN_ATTENTE_REPONSE: "bg-amber-50 text-amber-800 border border-amber-200",
-    ACCEPTEE: "bg-blue-50 text-blue-800 border border-blue-200",
+    EN_ATTENTE_CONFIRMATION_ENTREVUE: "bg-amber-50 text-amber-800 border border-amber-200",
+    ENTREVUE_REFUSEE: "bg-orange-50 text-orange-800 border border-orange-200",
+    EN_ATTENTE_ENTREVUE: "bg-blue-50 text-blue-800 border border-blue-200",
+    EN_ATTENTE_CHOIX_STAGE: "bg-indigo-50 text-indigo-800 border border-indigo-200",
+    EN_ATTENTE_SIGNATURE: "bg-purple-50 text-purple-800 border border-purple-200",
     EMBAUCHEE: "bg-emerald-50 text-emerald-800 border border-emerald-200",
     REFUSEE: "bg-red-50 text-red-800 border border-red-200",
 };
@@ -192,11 +196,15 @@ export default function CandidaturesOffre() {
         setMessageRefus("");
     };
 
-    const candidaturesEnAttente = candidatures.filter((c) => c.statut === "EN_ATTENTE");
-    const candidaturesEntrevues = candidatures.filter((c) =>
-        ["EN_ATTENTE_REPONSE", "ACCEPTEE"].includes(c.statut)
+    const candidaturesEnAttente = candidatures.filter((c) =>
+        ["EN_ATTENTE_CONVOCATION", "ENTREVUE_REFUSEE"].includes(c.statut)
     );
-    const candidaturesEmbauchees = candidatures.filter((c) => c.statut === "EMBAUCHEE");
+    const candidaturesEntrevues = candidatures.filter((c) =>
+        ["EN_ATTENTE_CONFIRMATION_ENTREVUE", "EN_ATTENTE_ENTREVUE"].includes(c.statut)
+    );
+    const candidaturesEmbauchees = candidatures.filter((c) =>
+        ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(c.statut)
+    );
     const candidaturesRefusees = candidatures.filter((c) => c.statut === "REFUSEE");
 
     let candidaturesAffichees = candidaturesEnAttente;

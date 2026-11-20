@@ -431,7 +431,7 @@ public class EtudiantServiceTest {
 
                 assertEquals(1, offreResultat.candidatures().size());
                 CandidatureDto candidatureResultat = offreResultat.candidatures().getFirst();
-                assertEquals(StatutCandidature.EN_ATTENTE, candidatureResultat.statut());
+                assertEquals(StatutCandidature.EN_ATTENTE_CONVOCATION, candidatureResultat.statut());
                 assertEquals(100, candidatureResultat.id());
 
                 EtudiantDto etudiantResultat = candidatureResultat.etudiant();

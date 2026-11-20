@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
     ClipboardCheck, ArrowLeft, AlertCircle, CheckCircle2, Check,
-    GraduationCap, Building2, Briefcase, Calendar, Lock, Clock, DollarSign
+    GraduationCap, Building2, Briefcase, Calendar, Lock, Clock, DollarSign, User, MapPin, Phone
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -80,6 +80,9 @@ const formulaireDepuisDossier = (d) => ({
     ...FORMULAIRE_INITIAL,
     nomEntreprise: d.nomEntreprise || "",
     personneContact: d.personneContact || "",
+    adresse: d.adresseEntreprise || "",
+    ville: d.villeEntreprise || "",
+    codePostal: d.codePostalEntreprise || "",
     telephone: d.telephoneEntreprise || "",
     nomStagiaire: d.nomStagiaire || "",
     dateStage: d.dateStage || "",
@@ -415,13 +418,17 @@ export default function FormulaireEvaluationMilieuStage({ etudiantId, mode = "pr
                             { icon: <GraduationCap className="w-4 h-4" />, label: "student", val: dossier.nomStagiaire },
                             { icon: <Building2 className="w-4 h-4" />, label: "company", val: dossier.nomEntreprise },
                             { icon: <Briefcase className="w-4 h-4" />, label: "position", val: dossier.titreOffre },
-                            { icon: <Calendar className="w-4 h-4" />, label: "period", val: dossier.dateStage }
+                            { icon: <Calendar className="w-4 h-4" />, label: "period", val: dossier.dateStage },
+                            { icon: <User className="w-4 h-4" />, label: "contact", val: dossier.personneContact },
+                            { icon: <MapPin className="w-4 h-4" />, label: "address", val: [dossier.adresseEntreprise, dossier.villeEntreprise, dossier.codePostalEntreprise].filter(Boolean).join(", ") },
+                            { icon: <Phone className="w-4 h-4" />, label: "phone", val: dossier.telephoneEntreprise },
+                            { icon: <DollarSign className="w-4 h-4" />, label: "salary", val: dossier.salaireHoraire }
                         ].map(({ icon, label, val }) => (
                             <div key={label} className="flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
                                 <div className="p-2 rounded-lg bg-blue-100 text-blue-600 shrink-0">{icon}</div>
                                 <div className="min-w-0">
                                     <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t(`evaluation_milieu.summary_card.${label}`)}</span>
-                                    <span className="block text-xs font-semibold text-gray-800 truncate">{val || "—"}</span>
+                                    <span className="block text-xs font-semibold text-gray-800 break-words">{val || "—"}</span>
                                 </div>
                             </div>
                         ))}

@@ -45,8 +45,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         AND NOT EXISTS (
             SELECT ct FROM Contrat ct
             WHERE ct.candidature.etudiant = e
-            AND ct.signatureEtudiant.valid = true
-            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+            AND ct.statut = com.lacouf.rsbjwt.model.ENUM.StatutContrat.COMPLETE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteEntrevue();
@@ -61,8 +60,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
             SELECT ct FROM Contrat ct
             WHERE ct.candidature.etudiant = e
             AND ct.candidature.offreStage.annee = :annee
-            AND ct.signatureEtudiant.valid = true
-            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+            AND ct.statut = com.lacouf.rsbjwt.model.ENUM.StatutContrat.COMPLETE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteEntrevue(@Param("annee") int annee);
@@ -70,12 +68,15 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE)
+        WHERE c.statut IN (
+            com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE,
+            com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_CHOIX_STAGE,
+            com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_SIGNATURE
+        )
         AND NOT EXISTS (
             SELECT ct FROM Contrat ct
             WHERE ct.candidature.etudiant = e
-            AND ct.signatureEtudiant.valid = true
-            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+            AND ct.statut = com.lacouf.rsbjwt.model.ENUM.StatutContrat.COMPLETE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse();
@@ -83,14 +84,17 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("""
         SELECT DISTINCT e FROM Etudiant e
         JOIN FETCH e.candidatures c
-        WHERE c.statut IN (com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_REPONSE, com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE)
+        WHERE c.statut IN (
+            com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE,
+            com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_CHOIX_STAGE,
+            com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_SIGNATURE
+        )
         AND c.offreStage.annee = :annee
         AND NOT EXISTS (
             SELECT ct FROM Contrat ct
             WHERE ct.candidature.etudiant = e
             AND ct.candidature.offreStage.annee = :annee
-            AND ct.signatureEtudiant.valid = true
-            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+            AND ct.statut = com.lacouf.rsbjwt.model.ENUM.StatutContrat.COMPLETE
         )
     """)
     List<Etudiant> findEtudiantsEnAttenteReponse(@Param("annee") int annee);
@@ -102,8 +106,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         WHERE EXISTS (
             SELECT ct FROM Contrat ct
             WHERE ct.candidature = c
-            AND ct.signatureEtudiant.valid = true
-            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+            AND ct.statut = com.lacouf.rsbjwt.model.ENUM.StatutContrat.COMPLETE
         )
     """)
     List<Etudiant> findEtudiantsTrouveStage();
@@ -116,8 +119,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         AND EXISTS (
             SELECT ct FROM Contrat ct
             WHERE ct.candidature = c
-            AND ct.signatureEtudiant.valid = true
-            AND ct.statut <> com.lacouf.rsbjwt.model.ENUM.StatutContrat.REFUSE
+            AND ct.statut = com.lacouf.rsbjwt.model.ENUM.StatutContrat.COMPLETE
         )
     """)
     List<Etudiant> findEtudiantsTrouveStage(@Param("annee") int annee);

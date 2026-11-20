@@ -65,7 +65,7 @@ vi.mock("react-i18next", () => ({
 
 const candidatureEnAttente = {
     id: 1,
-    statut: "EN_ATTENTE",
+    statut: "EN_ATTENTE_CONVOCATION",
     messageReponse: null,
     dateDecision: null,
     etudiant: {
@@ -147,7 +147,7 @@ describe("CandidaturesOffre", () => {
         expect(screen.queryByText("candidatures_offre.hire")).not.toBeInTheDocument();
         expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
         expect(screen.getByText("Marc Dubois")).toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.status.EN_ATTENTE")).not.toBeInTheDocument();
+        expect(screen.queryByText("candidatures_offre.status.EN_ATTENTE_CONVOCATION")).not.toBeInTheDocument();
     });
 
     it("affiche un message quand il n'y a aucune candidature", async () => {
@@ -162,7 +162,7 @@ describe("CandidaturesOffre", () => {
         const user = userEvent.setup();
         getCandidatures
             .mockResolvedValueOnce([candidatureEnAttente])
-            .mockResolvedValueOnce([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+            .mockResolvedValueOnce([{ ...candidatureEnAttente, statut: "EN_ATTENTE_CONFIRMATION_ENTREVUE" }]);
         proposeConvocation.mockResolvedValue({ statut: "EN_ATTENTE" });
 
         afficherPage();
@@ -173,7 +173,7 @@ describe("CandidaturesOffre", () => {
 
         await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
 
-        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_REPONSE")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_CONFIRMATION_ENTREVUE")).toBeInTheDocument();
         expect(proposeConvocation).toHaveBeenCalledWith(1, null, expect.any(Array), {});
         expect(screen.queryByTestId("modal-convocation")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
@@ -196,13 +196,13 @@ describe("CandidaturesOffre", () => {
 
     it("convocation envoyée : badge affiché, seul le bouton Refuser reste", async () => {
         const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_CONFIRMATION_ENTREVUE" }]);
 
         afficherPage();
 
         await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
 
-        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_REPONSE")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_CONFIRMATION_ENTREVUE")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.refuse")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.hire")).not.toBeInTheDocument();
@@ -210,13 +210,13 @@ describe("CandidaturesOffre", () => {
 
     it("entrevue acceptée : badge affiché avec les boutons Embaucher et Refuser", async () => {
         const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_ENTREVUE" }]);
 
         afficherPage();
 
         await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
 
-        expect(await screen.findByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_ENTREVUE")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.hire")).toBeInTheDocument();
         expect(screen.getByText("candidatures_offre.refuse")).toBeInTheDocument();
         expect(screen.queryByText("candidatures_offre.convoquer")).not.toBeInTheDocument();
@@ -225,7 +225,7 @@ describe("CandidaturesOffre", () => {
     it("convocation en attente : affiche la boîte avec les créneaux proposés", async () => {
         const user = userEvent.setup();
         getCandidatures.mockResolvedValue([
-            { ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE", convocation: convocationEnAttente },
+            { ...candidatureEnAttente, statut: "EN_ATTENTE_CONFIRMATION_ENTREVUE", convocation: convocationEnAttente },
         ]);
 
         afficherPage();
@@ -241,7 +241,7 @@ describe("CandidaturesOffre", () => {
     it("entrevue acceptée par l'étudiant : affiche la date et le lieu choisis", async () => {
         const user = userEvent.setup();
         getCandidatures.mockResolvedValue([
-            { ...candidatureEnAttente, statut: "ACCEPTEE", convocation: convocationAcceptee },
+            { ...candidatureEnAttente, statut: "EN_ATTENTE_ENTREVUE", convocation: convocationAcceptee },
         ]);
 
         afficherPage();
@@ -256,13 +256,13 @@ describe("CandidaturesOffre", () => {
 
     it("candidature acceptée sans convocation : aucune boîte d'entrevue", async () => {
         const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE", convocation: null }]);
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_ENTREVUE", convocation: null }]);
 
         afficherPage();
 
         await user.click(await screen.findByText(/candidatures_offre\.tabs\.interviews/i));
 
-        expect(await screen.findByText("candidatures_offre.status.ACCEPTEE")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_ENTREVUE")).toBeInTheDocument();
         expect(screen.queryByText(/candidatures_offre\.entrevue\.confirmee/)).not.toBeInTheDocument();
         expect(screen.queryByText(/candidatures_offre\.entrevue\.en_attente/)).not.toBeInTheDocument();
     });
@@ -282,10 +282,10 @@ describe("CandidaturesOffre", () => {
         expect(screen.queryByText(/Salle 204/)).not.toBeInTheDocument();
     });
 
-    it("embauche un candidat : le badge Embauché apparaît et les boutons disparaissent", async () => {
+    it("embauche un candidat : le badge En attente de choix apparaît, Embaucher disparaît et Refuser reste disponible", async () => {
         const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
-        embaucherCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "EMBAUCHEE" });
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_ENTREVUE" }]);
+        embaucherCandidature.mockResolvedValue({ ...candidatureEnAttente, statut: "EN_ATTENTE_CHOIX_STAGE" });
 
         afficherPage();
 
@@ -294,10 +294,10 @@ describe("CandidaturesOffre", () => {
 
         await user.click(await screen.findByText(/candidatures_offre\.tabs\.hired/i));
 
-        expect(await screen.findByText("candidatures_offre.status.EMBAUCHEE")).toBeInTheDocument();
+        expect(await screen.findByText("candidatures_offre.status.EN_ATTENTE_CHOIX_STAGE")).toBeInTheDocument();
         expect(embaucherCandidature).toHaveBeenCalledWith(1, {});
         expect(screen.queryByText("candidatures_offre.hire")).not.toBeInTheDocument();
-        expect(screen.queryByText("candidatures_offre.refuse")).not.toBeInTheDocument();
+        expect(screen.getByText("candidatures_offre.refuse")).toBeInTheDocument();
     });
 
     it("affiche une candidature déjà embauchée avec son badge et sans boutons", async () => {
@@ -316,7 +316,7 @@ describe("CandidaturesOffre", () => {
 
     it("affiche l'erreur du serveur quand l'embauche échoue et garde les boutons", async () => {
         const user = userEvent.setup();
-        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "ACCEPTEE" }]);
+        getCandidatures.mockResolvedValue([{ ...candidatureEnAttente, statut: "EN_ATTENTE_ENTREVUE" }]);
         embaucherCandidature.mockRejectedValue(
             new Error("L'entrevue doit être confirmée par l'étudiant avant l'embauche")
         );
@@ -429,7 +429,7 @@ describe("CandidaturesOffre", () => {
         };
         getCandidatures
             .mockResolvedValueOnce([candidatureAvecRefus])
-            .mockResolvedValueOnce([{ ...candidatureEnAttente, statut: "EN_ATTENTE_REPONSE" }]);
+            .mockResolvedValueOnce([{ ...candidatureEnAttente, statut: "EN_ATTENTE_CONFIRMATION_ENTREVUE" }]);
         proposeConvocation.mockResolvedValue({ statut: "EN_ATTENTE" });
 
         afficherPage();

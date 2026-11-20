@@ -137,7 +137,7 @@ public class ProfesseurService {
                 .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
                 .findFirst()
                 .orElseGet(() -> candidatures.stream()
-                        .filter(c -> c.getStatut() == StatutCandidature.ACCEPTEE)
+                        .filter(c -> c.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE)
                         .findFirst()
                         .orElse(null));
     }

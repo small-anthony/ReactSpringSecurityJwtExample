@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {deleteOffreStage, getOffresStages, getAnneesEmployeur} from "../../services/api/OffreStageService.js";
 import {useTranslation} from "react-i18next";
-import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText,Users } from "lucide-react";
+import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText,Users, MapPin, Phone } from "lucide-react";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
@@ -251,6 +251,20 @@ export default function ProfileEmployeur() {
                                     {t('approbation.offres.attributes.exigences')}
                                 </h4>
                                 <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.exigences}</p>
+                            </div>
+                            <div className="pt-2 border-t border-slate-200/60">
+                                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
+                                    <MapPin className="w-4 h-4 text-red-600 shrink-0" />
+                                    {t('approbation.offres.attributes.adresse')}
+                                </h4>
+                                <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{[offre.adresse, offre.ville, offre.codePostal].filter(Boolean).join(", ")}</p>
+                            </div>
+                            <div className="pt-2 border-t border-slate-200/60">
+                                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
+                                    <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    {t('approbation.offres.attributes.telephone')}
+                                </h4>
+                                <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.telephone}</p>
                             </div>
                         </div>
                         {offre.status === "REFUSE" && offre.messageReponse && (

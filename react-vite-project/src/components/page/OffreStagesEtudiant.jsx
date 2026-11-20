@@ -63,10 +63,13 @@ function contientTexte(texteSource, texteRecherche) {
 
 const ORDRE_STATUT_CANDIDATURE = {
     EMBAUCHEE: 0,
-    ACCEPTEE: 1,
-    EN_ATTENTE_REPONSE: 2,
-    EN_ATTENTE: 3,
-    REFUSEE: 4,
+    EN_ATTENTE_SIGNATURE: 1,
+    EN_ATTENTE_CHOIX_STAGE: 2,
+    EN_ATTENTE_ENTREVUE: 3,
+    EN_ATTENTE_CONFIRMATION_ENTREVUE: 4,
+    ENTREVUE_REFUSEE: 5,
+    EN_ATTENTE_CONVOCATION: 6,
+    REFUSEE: 7,
 };
 
 export default function OffreStagesEtudiant() {
@@ -263,7 +266,9 @@ export default function OffreStagesEtudiant() {
 
     const candidaturesEmbauchees = useMemo(() => {
         return mesCandidaturesOffres.filter(
-            (offre) => obtenirStatutCandidature(offre, candidaturesParOffre, contrats) === "EMBAUCHEE"
+            (offre) => ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(
+                obtenirStatutCandidature(offre, candidaturesParOffre, contrats)
+            )
         );
     }, [mesCandidaturesOffres, candidaturesParOffre, contrats]);
 

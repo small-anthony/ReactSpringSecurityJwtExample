@@ -169,6 +169,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "24$/h", "15 semaines",
                                         "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie.");
                         offreCgiDev.setAnnee(anneeCourante);
+                        offreCgiDev.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreCgiDev.setVille("Montréal");
+                        offreCgiDev.setCodePostal("H3G 1T4");
+                        offreCgiDev.setTelephone("514-555-0101");
                         offreCgiDev.accepter();
                         cgi.ajouterOffre(offreCgiDev);
 
@@ -178,6 +182,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "27$/h", "15 semaines",
                                         "Intérêt pour la sécurité web, OWASP et les tests d'intrusion.");
                         offreCgiSecu.setAnnee(anneeCourante);
+                        offreCgiSecu.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreCgiSecu.setVille("Montréal");
+                        offreCgiSecu.setCodePostal("H3G 1T4");
+                        offreCgiSecu.setTelephone("514-555-0101");
                         offreCgiSecu.accepter();
                         cgi.ajouterOffre(offreCgiSecu);
 
@@ -188,6 +196,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "26$/h", "15 semaines",
                                         "Connaissance de Linux, Git et Docker.");
                         offreCgiDevOpsHisto.setAnnee(anneeHistorique);
+                        offreCgiDevOpsHisto.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreCgiDevOpsHisto.setVille("Montréal");
+                        offreCgiDevOpsHisto.setCodePostal("H3G 1T4");
+                        offreCgiDevOpsHisto.setTelephone("514-555-0101");
                         offreCgiDevOpsHisto.accepter();
                         cgi.ajouterOffre(offreCgiDevOpsHisto);
 
@@ -200,6 +212,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Google", "Techniques de l'informatique", "28$/h", "16 semaines",
                                         "Maîtrise de React, JavaScript moderne et Git.");
                         offreGoogleFront.setAnnee(anneeCourante);
+                        offreGoogleFront.setAdresse("1253 avenue McGill College");
+                        offreGoogleFront.setVille("Montréal");
+                        offreGoogleFront.setCodePostal("H3B 2Y5");
+                        offreGoogleFront.setTelephone("514-555-0202");
                         offreGoogleFront.accepter();
                         google.ajouterOffre(offreGoogleFront);
 
@@ -209,6 +225,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Google", "Techniques de l'informatique", "25$/h", "15 semaines",
                                         "Connaissance de tests d'intégration, JavaScript et rigueur méthodique.");
                         offreGoogleQa.setAnnee(anneeCourante);
+                        offreGoogleQa.setAdresse("1253 avenue McGill College");
+                        offreGoogleQa.setVille("Montréal");
+                        offreGoogleQa.setCodePostal("H3B 2Y5");
+                        offreGoogleQa.setTelephone("514-555-0202");
                         offreGoogleQa.accepter();
                         google.ajouterOffre(offreGoogleQa);
 
@@ -224,12 +244,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // Candidat : Luc Bélanger (EN_ATTENTE, bouton "Convoquer" disponible)
                         // -------------------------------------------------------------------------
                         Candidature candLucPlanif = new Candidature(luc, offreCgiDev);
-                        candLucPlanif.setStatut(StatutCandidature.EN_ATTENTE);
+                        candLucPlanif.setStatut(StatutCandidature.EN_ATTENTE_CONVOCATION);
                         candidatureRepository.save(candLucPlanif);
 
                         // EQ2-13 (Bonus Reconvocation) : Sophie Martin a refusé l'entrevue, bouton "Reconvoquer"
                         Candidature candSophieReconv = new Candidature(sophie, offreCgiSecu);
-                        candSophieReconv.setStatut(StatutCandidature.EN_ATTENTE);
+                        candSophieReconv.setStatut(StatutCandidature.ENTREVUE_REFUSEE);
                         List<RendezVous> rvReconv = new ArrayList<>();
                         rvReconv.add(RendezVous.read("Bureau CGI Inc. - Salle 101",
                                         LocalDateTime.now().plusDays(2).withHour(9).withMinute(0).toInstant(ZoneOffset.UTC)));
@@ -245,7 +265,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // Candidat : Hatim Fakhour (ACCEPTEE, bouton "Embaucher" disponible sous l'onglet Entrevues)
                         // -------------------------------------------------------------------------
                         Candidature candHatimEmbauche = new Candidature(hatim, offreCgiSecu);
-                        candHatimEmbauche.setStatut(StatutCandidature.ACCEPTEE);
+                        candHatimEmbauche.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
                         List<RendezVous> rvHatim = new ArrayList<>();
                         RendezVous rvh1 = RendezVous.read("En ligne - Zoom Sécurité",
                                         LocalDateTime.now().plusDays(3).withHour(14).withMinute(0).toInstant(ZoneOffset.UTC));
@@ -273,7 +293,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // Candidat : Emma Roy chez CGI Inc. (EMBAUCHEE, pas encore de contrat)
                         // -------------------------------------------------------------------------
                         Candidature candEmmaAContracter = new Candidature(emma, offreCgiDev);
-                        candEmmaAContracter.setStatut(StatutCandidature.EMBAUCHEE);
+                        candEmmaAContracter.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
                         candidatureRepository.save(candEmmaAContracter);
 
                         // -------------------------------------------------------------------------
@@ -282,7 +302,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // Contrat créé chez Google, statut EN_ATTENTE_SIGNATURE
                         // -------------------------------------------------------------------------
                         Candidature candHatimGoogle = new Candidature(hatim, offreGoogleFront);
-                        candHatimGoogle.setStatut(StatutCandidature.EMBAUCHEE);
+                        candHatimGoogle.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candHatimGoogle);
 
                         CreationContratRequest reqHatimGoogle = new CreationContratRequest(
@@ -308,7 +328,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // L'employeur clique sur "Signer le contrat"
                         // -------------------------------------------------------------------------
                         Candidature candSophieCgi = new Candidature(sophie, offreCgiDev);
-                        candSophieCgi.setStatut(StatutCandidature.EMBAUCHEE);
+                        candSophieCgi.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candSophieCgi);
 
                         CreationContratRequest reqSophie = new CreationContratRequest(
@@ -337,7 +357,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // 2) Contrat déjà complété (COMPLETE) avec bouton "Imprimer" disponible immédiatement
                         // -------------------------------------------------------------------------
                         Candidature candLucGoogle = new Candidature(luc, offreGoogleQa);
-                        candLucGoogle.setStatut(StatutCandidature.EMBAUCHEE);
+                        candLucGoogle.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candLucGoogle);
 
                         CreationContratRequest reqLuc = new CreationContratRequest(

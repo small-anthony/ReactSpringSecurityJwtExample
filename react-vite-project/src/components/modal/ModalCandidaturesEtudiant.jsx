@@ -8,15 +8,31 @@ const STATUT_STYLES = {
         badge: "bg-green-100 text-green-800 border-green-200",
         icon: CheckCircle
     },
-    ACCEPTEE: {
+    EN_ATTENTE_SIGNATURE: {
+        badge: "bg-purple-100 text-purple-800 border-purple-200",
+        icon: Clock
+    },
+    EN_ATTENTE_CHOIX_STAGE: {
+        badge: "bg-indigo-100 text-indigo-800 border-indigo-200",
+        icon: CheckCircle
+    },
+    EN_ATTENTE_ENTREVUE: {
         badge: "bg-emerald-100 text-emerald-800 border-emerald-200",
         icon: CheckCircle
+    },
+    EN_ATTENTE_CONFIRMATION_ENTREVUE: {
+        badge: "bg-blue-100 text-blue-800 border-blue-200",
+        icon: Clock
+    },
+    ENTREVUE_REFUSEE: {
+        badge: "bg-orange-100 text-orange-800 border-orange-200",
+        icon: XCircle
     },
     REFUSEE: {
         badge: "bg-red-100 text-red-800 border-red-200",
         icon: XCircle
     },
-    EN_ATTENTE: {
+    EN_ATTENTE_CONVOCATION: {
         badge: "bg-amber-100 text-amber-800 border-amber-200",
         icon: Clock
     }

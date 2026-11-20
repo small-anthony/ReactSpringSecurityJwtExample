@@ -134,19 +134,21 @@ public record RapportEtudiantDto(
         if (candidatures == null || candidatures.isEmpty()) {
             return "AUCUNE_CANDIDATURE";
         }
-        boolean stageTrouve = aContratSigne != null && candidatures.stream().anyMatch(aContratSigne);
+        boolean stageTrouve = (aContratSigne != null && candidatures.stream().anyMatch(aContratSigne))
+                || candidatures.stream().anyMatch(c -> c.getStatut() == StatutCandidature.EMBAUCHEE);
         if (stageTrouve) {
             return "STAGE_TROUVE";
         }
         boolean attenteReponse = candidatures.stream().anyMatch(c ->
-                c.getStatut() == StatutCandidature.EN_ATTENTE_REPONSE
-                        || c.getStatut() == StatutCandidature.EMBAUCHEE
+                c.getStatut() == StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE
+                        || c.getStatut() == StatutCandidature.EN_ATTENTE_CHOIX_STAGE
+                        || c.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE
         );
         if (attenteReponse) {
             return "EN_ATTENTE_REPONSE";
         }
         boolean attenteEntrevue = candidatures.stream().anyMatch(c ->
-                c.getStatut() == StatutCandidature.ACCEPTEE
+                c.getStatut() == StatutCandidature.EN_ATTENTE_ENTREVUE
                         || (c.getConvocations() != null && c.getConvocations().stream().anyMatch(conv ->
                                 conv.getStatut() == StatutConvocation.EN_ATTENTE
                         ))
