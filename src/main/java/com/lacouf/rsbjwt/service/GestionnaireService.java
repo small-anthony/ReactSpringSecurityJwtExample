@@ -23,12 +23,14 @@ import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class GestionnaireService {
     private final CvRepository cvRepository;
     private final OffreStageRepository offreStageRepository;
@@ -41,13 +43,13 @@ public class GestionnaireService {
 
     @Autowired
     public GestionnaireService(CvRepository cvRepository,
-                              OffreStageRepository offreStageRepository,
-                              EtudiantRepository etudiantRepository,
-                              CandidatureRepository candidatureRepository,
-                              ProfesseurRepository professeurRepository,
-                              NotificationService notificationService,
-                              EvaluationMilieuStageRepository evaluationMilieuStageRepository,
-                              ContratRepository contratRepository) {
+                               OffreStageRepository offreStageRepository,
+                               EtudiantRepository etudiantRepository,
+                               CandidatureRepository candidatureRepository,
+                               ProfesseurRepository professeurRepository,
+                               NotificationService notificationService,
+                               EvaluationMilieuStageRepository evaluationMilieuStageRepository,
+                               ContratRepository contratRepository) {
         this.cvRepository = cvRepository;
         this.offreStageRepository = offreStageRepository;
         this.etudiantRepository = etudiantRepository;
@@ -59,36 +61,36 @@ public class GestionnaireService {
     }
 
     public GestionnaireService(CvRepository cvRepository,
-                              OffreStageRepository offreStageRepository,
-                              EtudiantRepository etudiantRepository,
-                              CandidatureRepository candidatureRepository,
-                              ProfesseurRepository professeurRepository,
-                              NotificationService notificationService,
-                              EvaluationMilieuStageRepository evaluationMilieuStageRepository) {
+                               OffreStageRepository offreStageRepository,
+                               EtudiantRepository etudiantRepository,
+                               CandidatureRepository candidatureRepository,
+                               ProfesseurRepository professeurRepository,
+                               NotificationService notificationService,
+                               EvaluationMilieuStageRepository evaluationMilieuStageRepository) {
         this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, notificationService, evaluationMilieuStageRepository, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
-                              OffreStageRepository offreStageRepository,
-                              EtudiantRepository etudiantRepository,
-                              CandidatureRepository candidatureRepository,
-                              ProfesseurRepository professeurRepository,
-                              NotificationService notificationService) {
+                               OffreStageRepository offreStageRepository,
+                               EtudiantRepository etudiantRepository,
+                               CandidatureRepository candidatureRepository,
+                               ProfesseurRepository professeurRepository,
+                               NotificationService notificationService) {
         this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, notificationService, null, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
-                              OffreStageRepository offreStageRepository,
-                              EtudiantRepository etudiantRepository,
-                              CandidatureRepository candidatureRepository,
-                              ProfesseurRepository professeurRepository) {
+                               OffreStageRepository offreStageRepository,
+                               EtudiantRepository etudiantRepository,
+                               CandidatureRepository candidatureRepository,
+                               ProfesseurRepository professeurRepository) {
         this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, professeurRepository, null, null, null);
     }
 
     public GestionnaireService(CvRepository cvRepository,
-                              OffreStageRepository offreStageRepository,
-                              EtudiantRepository etudiantRepository,
-                              CandidatureRepository candidatureRepository) {
+                               OffreStageRepository offreStageRepository,
+                               EtudiantRepository etudiantRepository,
+                               CandidatureRepository candidatureRepository) {
         this(cvRepository, offreStageRepository, etudiantRepository, candidatureRepository, null, null, null, null);
     }
 
@@ -397,7 +399,7 @@ public class GestionnaireService {
         if (professeurId != null) {
             professeur = (professeurRepository != null)
                     ? professeurRepository.findById(professeurId)
-                        .orElseThrow(() -> new Exception("Professeur non trouvé avec l'id : " + professeurId))
+                    .orElseThrow(() -> new Exception("Professeur non trouvé avec l'id : " + professeurId))
                     : null;
         } else {
             List<Professeur> professeurs = (professeurRepository != null)

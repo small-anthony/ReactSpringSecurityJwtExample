@@ -74,7 +74,8 @@ export default function ModalDetailOffre({
 
     if (!offre) return null;
 
-    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, telephone } = offre;
+    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, ville, codePostal, telephone } = offre;
+    const adresseComplete = [adresse, ville, codePostal].filter(Boolean).join(", ");
 
     const handlePostuler = async () => {
         try {
@@ -242,16 +243,16 @@ export default function ModalDetailOffre({
                         </div>
                     </div>
 
-                    {(adresse || telephone) && (
+                    {(adresseComplete || telephone) && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {adresse && (
+                            {adresseComplete && (
                                 <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] min-w-0">
                                     <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
                                         <MapPin className="w-4 h-4 text-[#DC2626] shrink-0" strokeWidth={1.5} />
                                         <span>{t("offres_etudiant.modal.address")}</span>
                                     </div>
                                     <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
-                                        {adresse}
+                                        {adresseComplete}
                                     </p>
                                 </div>
                             )}

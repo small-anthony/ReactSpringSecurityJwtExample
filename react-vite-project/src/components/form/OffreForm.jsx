@@ -18,6 +18,8 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
         salaire: initialValues.salaire ? (initialValues.salaire.toString().match(/\d+([.,]\d+)?/)?.[0] || "") : "",
         exigences: initialValues.exigences || "",
         adresse: initialValues.adresse || "",
+        ville: initialValues.ville || "",
+        codePostal: initialValues.codePostal || "",
         telephone: initialValues.telephone || "",
         description: initialValues.description || "",
     });
@@ -59,6 +61,14 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
         if (!formData.exigences.trim()) newErrors.exigences = "exigences";
 
         if (!formData.adresse.trim()) newErrors.adresse = "adresse";
+
+        if (!formData.ville.trim()) newErrors.ville = "ville";
+
+        if (!formData.codePostal.trim()) {
+            newErrors.codePostal = "required";
+        } else if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(formData.codePostal.trim())) {
+            newErrors.codePostal = "format";
+        }
 
         if (!formData.telephone.trim()) {
             newErrors.telephone = "required";
@@ -230,6 +240,50 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                         {t(`creer_offre.errors.${errors.adresse}`)}
                     </p>
                 )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="ds-label">
+                        {t("creer_offre.ville")} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="ville"
+                        value={formData.ville}
+                        onChange={handleChange}
+                        placeholder={t("creer_offre.placeholders.ville")}
+                        className={`ds-input ${
+                            errors.ville ? "ds-input-error" : ""
+                        }`}
+                    />
+                    {errors.ville && (
+                        <p className="ds-error-text">
+                            {t(`creer_offre.errors.${errors.ville}`)}
+                        </p>
+                    )}
+                </div>
+
+                <div>
+                    <label className="ds-label">
+                        {t("creer_offre.codePostal")} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="codePostal"
+                        value={formData.codePostal}
+                        onChange={handleChange}
+                        placeholder={t("creer_offre.placeholders.codePostal")}
+                        className={`ds-input ${
+                            errors.codePostal ? "ds-input-error" : ""
+                        }`}
+                    />
+                    {errors.codePostal && (
+                        <p className="ds-error-text">
+                            {t(`creer_offre.errors.codePostal.${errors.codePostal}`)}
+                        </p>
+                    )}
+                </div>
             </div>
 
             <div>

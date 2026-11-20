@@ -21,6 +21,8 @@ public class OffreStage {
     private String duree;
     private String exigences;
     private String adresse;
+    private String ville;
+    private String codePostal;
     private String telephone;
     private LocalDate dateSuppression = null;
 
@@ -176,6 +178,14 @@ public class OffreStage {
         return adresse;
     }
 
+    public String getVille() {
+        return ville;
+    }
+
+    public String getCodePostal() {
+        return codePostal;
+    }
+
     public String getTelephone() {
         return telephone;
     }
@@ -210,6 +220,14 @@ public class OffreStage {
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
+    }
+
+    public void setVille(String ville) {
+        this.ville = ville;
+    }
+
+    public void setCodePostal(String codePostal) {
+        this.codePostal = codePostal;
     }
 
     public void setTelephone(String telephone) {

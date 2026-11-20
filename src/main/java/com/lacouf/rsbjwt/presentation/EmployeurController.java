@@ -74,6 +74,8 @@ public class EmployeurController {
                     salaire,
                     exigences,
                     request.get("adresse"),
+                    request.get("ville"),
+                    request.get("codePostal"),
                     request.get("telephone"),
                     email,
                     annee
@@ -210,6 +212,8 @@ public class EmployeurController {
                     request.salaire(),
                     request.exigences(),
                     request.adresse(),
+                    request.ville(),
+                    request.codePostal(),
                     request.telephone(),
                     email
             );

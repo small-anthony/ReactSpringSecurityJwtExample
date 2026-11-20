@@ -192,7 +192,9 @@
     "discipline": "Field / Discipline",
     "duree": "Internship Duration",
     "salaire": "Compensation / Salary",
-    "adresse": "Work location address",
+    "adresse": "Street address",
+    "ville": "City",
+    "codePostal": "Postal code",
     "telephone": "Contact phone number",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
@@ -203,7 +205,9 @@
       "discipline": "-- Select a discipline --",
       "duree": "-- Select a duration --",
       "salaire": "22.50",
-      "adresse": "Ex: 1350 René-Lévesque Blvd West, Montréal, QC",
+      "adresse": "Ex: 1350 René-Lévesque Blvd West",
+      "ville": "Ex: Montréal",
+      "codePostal": "Ex: H3G 1T4",
       "telephone": "Ex: 514-555-1234",
       "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
@@ -218,6 +222,11 @@
         "format": "Invalid salary format."
       },
       "adresse": "Address is required.",
+      "ville": "City is required.",
+      "codePostal": {
+        "required": "Postal code is required.",
+        "format": "Invalid postal code (ex: H3G 1T4)."
+      },
       "telephone": {
         "required": "Phone number is required.",
         "format": "Invalid phone number (at least 10 digits)."
@@ -1276,7 +1285,11 @@
       "program": "Program",
       "company": "Company",
       "position": "Position",
-      "period": "Contract period"
+      "period": "Contract period",
+      "contact": "Contact person",
+      "address": "Internship location",
+      "phone": "Phone",
+      "salary": "Hourly wage"
     },
     "section1": {
       "title": "1. Company Identification",

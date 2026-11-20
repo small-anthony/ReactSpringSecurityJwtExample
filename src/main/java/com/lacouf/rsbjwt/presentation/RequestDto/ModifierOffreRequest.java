@@ -9,5 +9,7 @@ public record ModifierOffreRequest(Long id,
                                    String salaire,
                                    String exigences,
                                    String adresse,
+                                   String ville,
+                                   String codePostal,
                                    String telephone) {
 }

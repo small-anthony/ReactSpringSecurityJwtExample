@@ -34,7 +34,9 @@ const mockOffres = [
         duree: "12 semaines",
         description: "Développement d'interfaces modernes avec React.",
         exigences: "Bonnes connaissances en JavaScript et CSS.",
-        adresse: "100 rue Sherbrooke Ouest, Montréal, QC",
+        adresse: "100 rue Sherbrooke Ouest",
+        ville: "Montréal",
+        codePostal: "H3A 1A1",
         telephone: "514-555-0100",
         status: "ACCEPTEE",
         candidatures: []
@@ -48,7 +50,9 @@ const mockOffres = [
         duree: "16 semaines",
         description: "Écriture et exécution de tests automatisés.",
         exigences: "Rigueur et curiosité technique.",
-        adresse: "200 rue Saint-Jacques, Montréal, QC",
+        adresse: "200 rue Saint-Jacques",
+        ville: "Montréal",
+        codePostal: "H2Y 1L6",
         telephone: "514-555-0200",
         status: "EN_ATTENTE",
         candidatures: []

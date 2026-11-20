@@ -129,7 +129,7 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, null, null, "employeur@entreprise.com", null))
                 .thenReturn(offreDto);
 
 //        ACT
@@ -152,7 +152,7 @@ public class EmployeurControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-        when(employeurService.createOffreStage("", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, null, null, "employeur@entreprise.com", null))
                 .thenThrow(new Exception("Le titre est obligatoire"));
 
 //        ACT
@@ -408,13 +408,13 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         ModifierOffreRequest request = new ModifierOffreRequest(1L, "Stagiaire en informatique", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "514-555-1234");
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot",
                 "CGI", StatusAcceptation.EN_ATTENTE, null, "info", "25$/h", "15 semaines", "Java et React");
 
         when(employeurService.updateOffreStage(1L, "Stagiaire en informatique", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "514-555-1234",
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
                 "employeur@entreprise.com"))
                 .thenReturn(offreDto);
 
@@ -433,10 +433,10 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         ModifierOffreRequest request = new ModifierOffreRequest(1L, "", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "514-555-1234");
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234");
 
         when(employeurService.updateOffreStage(1L, "", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "514-555-1234",
+                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
                 "employeur@entreprise.com"))
                 .thenThrow(new Exception("Le titre est obligatoire"));
 //        ACT
@@ -579,6 +579,8 @@ public class EmployeurControllerTest {
         request.put("salaire", "25$/h");
         request.put("exigences", "Java");
         request.put("adresse", "1 rue Test, Montréal");
+        request.put("ville", "Montréal");
+        request.put("codePostal", "H3G 1T4");
         request.put("telephone", "514-555-1234");
         request.put("annee", "2026");
 
@@ -586,7 +588,7 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "1 rue Test, Montréal", "514-555-1234", "employeur@entreprise.com", 2026))
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234", "employeur@entreprise.com", 2026))
                 .thenReturn(offreDto);
 
         // Act
@@ -609,13 +611,15 @@ public class EmployeurControllerTest {
         request.put("salaire", "25$/h");
         request.put("exigences", "Java");
         request.put("adresse", "1 rue Test, Montréal");
+        request.put("ville", "Montréal");
+        request.put("codePostal", "H3G 1T4");
         request.put("telephone", "514-555-1234");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "1 rue Test, Montréal", "514-555-1234", "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234", "employeur@entreprise.com", null))
                 .thenReturn(offreDto);
 
         // Act
@@ -639,7 +643,7 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", null, null, null, null, null, null, "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", null, null, null, null, null, null, null, null, "employeur@entreprise.com", null))
                 .thenReturn(offreDto);
 
         // Act

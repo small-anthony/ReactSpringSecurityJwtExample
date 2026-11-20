@@ -24,7 +24,9 @@ public record OffreStageDto(
         List<CandidatureDto> candidatures,
         int annee,
         String adresse,
-        String telephone
+        String telephone,
+        String ville,
+        String codePostal
 ) implements DataTransferObject {
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
@@ -59,7 +61,7 @@ public record OffreStageDto(
                          String discipline, String salaire, String duree, String exigences,
                          List<CandidatureDto> candidatures, int annee) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, candidatures, annee, null, null);
+                discipline, salaire, duree, exigences, candidatures, annee, null, null, null, null);
     }
 
     public static OffreStageDto create(OffreStage offreStage) {
@@ -77,7 +79,9 @@ public record OffreStageDto(
                 offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>(),
                 offreStage.getAnnee(),
                 offreStage.getAdresse(),
-                offreStage.getTelephone()
+                offreStage.getTelephone(),
+                offreStage.getVille(),
+                offreStage.getCodePostal()
         );
     }
 
@@ -105,7 +109,9 @@ public record OffreStageDto(
                 ),
                 offreStage.getAnnee(),
                 offreStage.getAdresse(),
-                offreStage.getTelephone()
+                offreStage.getTelephone(),
+                offreStage.getVille(),
+                offreStage.getCodePostal()
         );
     }
 

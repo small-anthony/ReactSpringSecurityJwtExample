@@ -36,7 +36,7 @@ public class EmployeurService {
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
-                                          String adresse, String telephone,
+                                          String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur, Integer annee) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
@@ -50,7 +50,7 @@ public class EmployeurService {
             throw new Exception("La description est obligatoire");
         }
 
-        validerAdresseEtTelephone(adresse, telephone);
+        validerLieuEtContact(adresse, ville, codePostal, telephone);
 
         if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
             throw new Exception("Le courriel de l'employeur est obligatoire");
@@ -72,6 +72,8 @@ public class EmployeurService {
                 exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
         );
         offreStage.setAdresse(adresse.trim());
+        offreStage.setVille(ville.trim());
+        offreStage.setCodePostal(codePostal.trim().toUpperCase());
         offreStage.setTelephone(telephone.trim());
 
         if (annee != null && annee > 0) {
@@ -215,7 +217,7 @@ public class EmployeurService {
 
     public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
-                                          String adresse, String telephone,
+                                          String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur) throws Exception {
 
         if (titre == null || titre.trim().isEmpty()) {
@@ -230,7 +232,7 @@ public class EmployeurService {
             throw new Exception("La description est obligatoire");
         }
 
-        validerAdresseEtTelephone(adresse, telephone);
+        validerLieuEtContact(adresse, ville, codePostal, telephone);
 
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
@@ -246,6 +248,8 @@ public class EmployeurService {
         offre.setSalaire(salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null);
         offre.setExigences(exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null);
         offre.setAdresse(adresse.trim());
+        offre.setVille(ville.trim());
+        offre.setCodePostal(codePostal.trim().toUpperCase());
         offre.setTelephone(telephone.trim());
 
         offre.reinitialiserApprobation();
@@ -253,9 +257,21 @@ public class EmployeurService {
         return OffreStageDto.create(offreStageRepository.save(offre));
     }
 
-    private void validerAdresseEtTelephone(String adresse, String telephone) throws Exception {
+    private void validerLieuEtContact(String adresse, String ville, String codePostal, String telephone) throws Exception {
         if (adresse == null || adresse.trim().isEmpty()) {
             throw new Exception("L'adresse est obligatoire");
+        }
+
+        if (ville == null || ville.trim().isEmpty()) {
+            throw new Exception("La ville est obligatoire");
+        }
+
+        if (codePostal == null || codePostal.trim().isEmpty()) {
+            throw new Exception("Le code postal est obligatoire");
+        }
+
+        if (!codePostal.trim().matches("^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$")) {
+            throw new Exception("Le code postal est invalide");
         }
 
         if (telephone == null || telephone.trim().isEmpty()) {

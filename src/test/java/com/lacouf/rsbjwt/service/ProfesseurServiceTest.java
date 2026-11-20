@@ -287,11 +287,37 @@ public class ProfesseurServiceTest {
         assertEquals("CGI Inc.", dto.nomEntreprise());
         assertEquals("Valentin Dimitrov", dto.personneContact());
         assertEquals("514-555-1234", dto.telephoneEntreprise());
+        assertEquals(null, dto.adresseEntreprise());
         assertEquals("Sophie Martin", dto.nomStagiaire());
         assertEquals("2026-05-18 → 2026-08-21", dto.dateStage());
         assertEquals("24.00$/h", dto.salaireHoraire());
         assertEquals("Martin Tremblay", dto.nomProfesseur());
         assertFalse(dto.milieuEvalue());
+    }
+
+    @Test
+    void getDossierStagePourProfesseur_succes_utiliseLieuEtTelephoneDeLOffre() throws Exception {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+        Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
+        Candidature cand = etudiant.getCandidatures().getFirst();
+        cand.getOffreStage().setAdresse("1350 boulevard René-Lévesque Ouest");
+        cand.getOffreStage().setVille("Montréal");
+        cand.getOffreStage().setCodePostal("H3G 1T4");
+        cand.getOffreStage().setTelephone("438-555-0199");
+        Contrat contrat = new Contrat(cand, new byte[]{1}, LocalDate.of(2026, 5, 18), LocalDate.of(2026, 8, 21), "35h", "24.00$/h", "Taches", "Conditions");
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findByCandidatureId(3L)).thenReturn(Optional.of(contrat));
+        when(evaluationMilieuStageRepository.findByCandidatureId(3L)).thenReturn(Optional.empty());
+
+        DossierStageProfesseurDto dto = professeurService.getDossierStagePourProfesseur("martin@test.com", 1L);
+
+        assertEquals("1350 boulevard René-Lévesque Ouest", dto.adresseEntreprise());
+        assertEquals("Montréal", dto.villeEntreprise());
+        assertEquals("H3G 1T4", dto.codePostalEntreprise());
+        assertEquals("438-555-0199", dto.telephoneEntreprise());
     }
 
     @Test
