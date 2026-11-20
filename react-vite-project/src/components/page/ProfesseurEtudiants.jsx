@@ -6,11 +6,14 @@ import { getEtudiantsAssignes, getAnneesProfesseur } from "../../services/api/Pr
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import CarteEtudiantAssigne from "../widget/CarteEtudiantAssigne.jsx";
 import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
+import {useSearchParams} from "react-router-dom";
 
 export default function ProfesseurEtudiants() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const userData = authService.getUserData();
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [etudiants, setEtudiants] = useState([]);
     const [annees, setAnnees] = useState([]);
@@ -18,7 +21,7 @@ export default function ProfesseurEtudiants() {
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [recherche, setRecherche] = useState("");
-    const [filtreEvaluation, setFiltreEvaluation] = useState("TOUS");
+    const [filtreEvaluation, setFiltreEvaluation] = useState(resolveTabFromUrl(searchParams.get("tab")));
     const [etudiantEvaluationId, setEtudiantEvaluationId] = useState(null);
 
     const chargerDonnees = useCallback(async () => {
@@ -48,6 +51,21 @@ export default function ProfesseurEtudiants() {
             })
             .catch(() => setAnnees([]));
     }, [authService]);
+
+    useEffect(() => {
+        setFiltreEvaluation(resolveTabFromUrl(searchParams.get("tab")))
+    }, [searchParams]);
+
+    function resolveTabFromUrl(urlParam) {
+        switch(urlParam?.toLowerCase()) {
+            case "a_evaluer":
+            case "evaluer": return "A_EVALUER";
+
+            case "evalues": return "EVALUES";
+
+            default: return "TOUS";
+        }
+    }
 
     const aEvaluerCount = etudiants.filter((e) => e.aStage && !e.milieuEvalue).length;
     const evaluesCount = etudiants.filter((e) => e.milieuEvalue).length;
@@ -111,15 +129,15 @@ export default function ProfesseurEtudiants() {
             )}
 
             <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-100 rounded-xl w-fit">
-                <button type="button" onClick={() => setFiltreEvaluation("TOUS")} className={classeOnglet("TOUS")}>
+                <button type="button" onClick={() => setSearchParams({})} className={classeOnglet("TOUS")}>
                     <Users className="w-4 h-4 text-blue-500" />
                     {t("professeur.tabs.all")} ({etudiants.length})
                 </button>
-                <button type="button" onClick={() => setFiltreEvaluation("A_EVALUER")} className={classeOnglet("A_EVALUER")}>
+                <button type="button" onClick={() => setSearchParams({tab: "a_evaluer"})} className={classeOnglet("A_EVALUER")}>
                     <Clock className="w-4 h-4 text-amber-500" />
                     {t("professeur.tabs.to_evaluate")} ({aEvaluerCount})
                 </button>
-                <button type="button" onClick={() => setFiltreEvaluation("EVALUES")} className={classeOnglet("EVALUES")}>
+                <button type="button" onClick={() => setSearchParams({tab: "evalues"})} className={classeOnglet("EVALUES")}>
                     <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                     {t("professeur.tabs.evaluated")} ({evaluesCount})
                 </button>

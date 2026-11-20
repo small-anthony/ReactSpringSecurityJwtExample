@@ -88,6 +88,8 @@ export function NotificationButton() {
             navigate("/gestionnaire/approbations/offres");
         } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
             navigate("/etudiant?tab=convocations");
+        } else if (notification.action?.type === "VOIR_EVALUATIONS") {
+            navigate("/professeur?tab=evaluer");
         } else if (actionsContrat[actionType]) {
             const contratId = notification.action?.referenceId;
             navigate(

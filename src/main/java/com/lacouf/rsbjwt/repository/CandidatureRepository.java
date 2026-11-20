@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +25,18 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
 
     @Query("SELECT c FROM Candidature c WHERE c.offreStage.annee = :annee")
     List<Candidature> findByAnnee(int annee);
+
+    @Query("""
+        SELECT DISTINCT c FROM Candidature c
+            LEFT JOIN FETCH c.etudiant e
+            LEFT JOIN FETCH e.professeur p
+        WHERE
+            (
+                c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE
+                OR c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
+            )
+            AND e.professeur IS NOT NULL
+            AND c.lastEvaluationNag <= :expires
+    """)
+    List<Candidature> findAllByEvaluationNeeded(@Param("expires") Instant expires);
 }

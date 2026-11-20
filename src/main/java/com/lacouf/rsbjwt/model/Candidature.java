@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.model;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,11 @@ public class Candidature {
     @OneToMany(mappedBy = "candidature", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id ASC")
     private List<Convocation> convocations = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private EvaluationMilieuStage evaluation;
+
+    private Instant lastEvaluationNag = Instant.MIN;
 
     public Candidature() {}
 
@@ -118,5 +124,13 @@ public class Candidature {
 
     public String getDescriptionOffre() {
         return offreStage.getDescription();
+    }
+
+    public Instant getLastEvaluationNag() {
+        return lastEvaluationNag;
+    }
+
+    public void setLastEvaluationNag(Instant lastEvaluationNag) {
+        this.lastEvaluationNag = lastEvaluationNag;
     }
 }

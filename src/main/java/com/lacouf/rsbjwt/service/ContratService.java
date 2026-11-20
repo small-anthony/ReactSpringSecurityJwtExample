@@ -47,15 +47,14 @@ public class ContratService {
         this.contratRepository = contratRepository;
         this.candidatureRepository = candidatureRepository;
         this.userAppRepository = userAppRepository;
+        this.gestionnaireRepository = gestionnaireRepository;
         this.notificationService = notificationService;
     }
 
     public ContratService(ContratRepository contratRepository,
                           CandidatureRepository candidatureRepository,
                           UserAppRepository userAppRepository) {
-        this(contratRepository, candidatureRepository, userAppRepository, null);
-        this.gestionnaireRepository = gestionnaireRepository;
-        this.notificationService = notificationService;
+        this(contratRepository, candidatureRepository, userAppRepository, null, null);
     }
 
     private record EtudiantEmployeurAnnee(Long etudiantId, Long employeurId, int annee) {
