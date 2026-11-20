@@ -19,7 +19,7 @@ public class Etudiant extends UserApp {
     @OneToMany(mappedBy = "etudiant")
     private List<Candidature> candidatures = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     @JoinColumn(name = "professeur_id")
     private Professeur professeur;
 

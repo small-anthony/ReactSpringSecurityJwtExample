@@ -169,4 +169,12 @@ public class Notification {
 				"gestionnaire.contrat_refuse"
 		);
 	}
+
+	public static Notification evaluerStage(Etudiant etudiant) {
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.VOIR_EVALUATIONS, etudiant.getId()),
+				"professeur.evaluer_stage"
+		);
+	}
 }

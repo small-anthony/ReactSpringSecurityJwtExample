@@ -1,16 +1,9 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.Candidature;
-import com.lacouf.rsbjwt.model.Contrat;
+import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
-import com.lacouf.rsbjwt.model.Etudiant;
-import com.lacouf.rsbjwt.model.EvaluationMilieuStage;
-import com.lacouf.rsbjwt.model.Professeur;
 import com.lacouf.rsbjwt.presentation.RequestDto.EvaluationMilieuStageRequest;
-import com.lacouf.rsbjwt.repository.ContratRepository;
-import com.lacouf.rsbjwt.repository.EtudiantRepository;
-import com.lacouf.rsbjwt.repository.EvaluationMilieuStageRepository;
-import com.lacouf.rsbjwt.repository.ProfesseurRepository;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.DossierStageProfesseurDto;
 import com.lacouf.rsbjwt.service.dto.EtudiantSuperviseDto;
 import com.lacouf.rsbjwt.service.dto.EvaluationMilieuStageDto;
@@ -18,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -26,25 +22,45 @@ public class ProfesseurService {
     private final EtudiantRepository etudiantRepository;
     private final ContratRepository contratRepository;
     private final EvaluationMilieuStageRepository evaluationMilieuStageRepository;
+    private final CandidatureRepository candidatureRepository;
+
+    private final Duration EVALUATION_REMINDER_DELAY = Duration.of(2, ChronoUnit.DAYS);
+    private NotificationService notificationService;
 
     @Autowired
     public ProfesseurService(
             ProfesseurRepository professeurRepository,
             EtudiantRepository etudiantRepository,
             ContratRepository contratRepository,
-            EvaluationMilieuStageRepository evaluationMilieuStageRepository
-    ) {
+            EvaluationMilieuStageRepository evaluationMilieuStageRepository,
+            NotificationService notificationService,
+            CandidatureRepository candidatureRepository) {
         this.professeurRepository = professeurRepository;
         this.etudiantRepository = etudiantRepository;
         this.contratRepository = contratRepository;
         this.evaluationMilieuStageRepository = evaluationMilieuStageRepository;
+        this.notificationService = notificationService;
+        this.candidatureRepository = candidatureRepository;
     }
 
     public ProfesseurService(ProfesseurRepository professeurRepository, EtudiantRepository etudiantRepository) {
-        this(professeurRepository, etudiantRepository, null, null);
+        this(professeurRepository, etudiantRepository, null, null, null, null);
     }
 
     private record AccesProfesseurEtudiant(Professeur professeur, Etudiant etudiant) {}
+
+    public void pushEvaluationNotifications(Instant now, boolean immediate) {
+        List<Candidature> candidatures = candidatureRepository.findAllByEvaluationNeeded(now.minus(EVALUATION_REMINDER_DELAY));
+
+        for(Candidature candidature : candidatures) {
+            Etudiant etudiant = candidature.getEtudiant();
+            Professeur professeur = etudiant.getProfesseur();
+
+            candidature.setLastEvaluationNag(now);
+            candidatureRepository.save(candidature);
+            notificationService.pushNotification(Notification.evaluerStage(etudiant), professeur.getId());
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<EtudiantSuperviseDto> getEtudiantsAssignes(String professeurEmail, Integer annee) throws Exception {
