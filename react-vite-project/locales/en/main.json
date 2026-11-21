@@ -378,11 +378,11 @@
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
-      "EN_ATTENTE_CONVOCATION": "Pending",
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
       "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
       "ENTREVUE_REFUSEE": "Interview declined",
       "EN_ATTENTE_ENTREVUE": "Awaiting interview",
-      "EN_ATTENTE_CHOIX_STAGE": "Selected (student choice)",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
       "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "ACCEPTE": "Accepted",
       "ACCEPTEE": "Interview accepted",
@@ -1420,6 +1420,15 @@
     "title": "Student Progress Tracking",
     "subtitle": "Dashboard of student progress and internship placement status.",
     "kpi_total": "Total Students",
+    "kpi_pending": "Pending",
+    "pending_all": "All",
+    "pending_tabs": {
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Awaiting interview confirmation",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature"
+    },
     "status": {
       "STAGE_TROUVE": "Internship Found",
       "NON_EVALUE_PROFESSEUR": "Pending Prof. Eval.",
@@ -1451,11 +1460,11 @@
     "modal_applications_empty": "This student has not applied to any offers for this session.",
     "statut_candidature": {
       "EN_ATTENTE": "Pending",
-      "EN_ATTENTE_CONVOCATION": "Pending",
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
       "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
       "ENTREVUE_REFUSEE": "Interview declined",
       "EN_ATTENTE_ENTREVUE": "Awaiting interview",
-      "EN_ATTENTE_CHOIX_STAGE": "Selected (student choice)",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
       "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "ACCEPTEE": "Accepted",
       "REFUSEE": "Rejected",

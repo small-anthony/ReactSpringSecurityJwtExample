@@ -378,11 +378,11 @@
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
-      "EN_ATTENTE_CONVOCATION": "En attente",
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
       "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
       "ENTREVUE_REFUSEE": "Entrevue refusée",
       "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
-      "EN_ATTENTE_CHOIX_STAGE": "Retenu (choix étudiant)",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
       "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "ACCEPTE": "Acceptée",
       "ACCEPTEE": "Entrevue acceptée",
@@ -1420,6 +1420,15 @@
     "title": "Suivi des étudiants",
     "subtitle": "Tableau de bord de l'avancement et de l'état de recherche de stage des étudiants.",
     "kpi_total": "Total inscrits",
+    "kpi_pending": "En attente",
+    "pending_all": "Tous",
+    "pending_tabs": {
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "En attente de confirmation d'entrevue",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature"
+    },
     "status": {
       "STAGE_TROUVE": "Stage trouvé",
       "NON_EVALUE_PROFESSEUR": "À évaluer (prof.)",
@@ -1451,11 +1460,11 @@
     "modal_applications_empty": "Cet étudiant n'a postulé à aucune offre pour cette session.",
     "statut_candidature": {
       "EN_ATTENTE": "En attente",
-      "EN_ATTENTE_CONVOCATION": "En attente",
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
       "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
       "ENTREVUE_REFUSEE": "Entrevue refusée",
       "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
-      "EN_ATTENTE_CHOIX_STAGE": "Retenu (choix étudiant)",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
       "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "ACCEPTEE": "Acceptée",
       "REFUSEE": "Refusée",

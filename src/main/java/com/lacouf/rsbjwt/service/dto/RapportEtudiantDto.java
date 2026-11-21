@@ -139,22 +139,23 @@ public record RapportEtudiantDto(
         if (stageTrouve) {
             return "STAGE_TROUVE";
         }
-        boolean attenteReponse = candidatures.stream().anyMatch(c ->
-                c.getStatut() == StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE
-                        || c.getStatut() == StatutCandidature.EN_ATTENTE_CHOIX_STAGE
-                        || c.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE
-        );
-        if (attenteReponse) {
-            return "EN_ATTENTE_REPONSE";
+        if (candidatures.stream().anyMatch(c -> c.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE)) {
+            return "EN_ATTENTE_SIGNATURE";
         }
-        boolean attenteEntrevue = candidatures.stream().anyMatch(c ->
-                c.getStatut() == StatutCandidature.EN_ATTENTE_ENTREVUE
+        if (candidatures.stream().anyMatch(c -> c.getStatut() == StatutCandidature.EN_ATTENTE_CHOIX_STAGE)) {
+            return "EN_ATTENTE_CHOIX_STAGE";
+        }
+        if (candidatures.stream().anyMatch(c -> c.getStatut() == StatutCandidature.EN_ATTENTE_ENTREVUE)) {
+            return "EN_ATTENTE_ENTREVUE";
+        }
+        boolean attenteConfirmation = candidatures.stream().anyMatch(c ->
+                c.getStatut() == StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE
                         || (c.getConvocations() != null && c.getConvocations().stream().anyMatch(conv ->
                                 conv.getStatut() == StatutConvocation.EN_ATTENTE
                         ))
         );
-        if (attenteEntrevue) {
-            return "EN_ATTENTE_ENTREVUE";
+        if (attenteConfirmation) {
+            return "EN_ATTENTE_CONFIRMATION_ENTREVUE";
         }
         return "SANS_CONVOCATION";
     }

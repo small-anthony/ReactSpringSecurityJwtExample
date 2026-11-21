@@ -376,7 +376,7 @@ public class GestionnaireServiceTest {
 
         // ASSERT
         assertEquals(1, resultat.size());
-        assertEquals("EN_ATTENTE_REPONSE", resultat.getFirst().statutStage());
+        assertEquals("EN_ATTENTE_SIGNATURE", resultat.getFirst().statutStage());
     }
 
     @Test
@@ -400,7 +400,7 @@ public class GestionnaireServiceTest {
         List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2026);
 
         assertEquals(1, resultat.size());
-        assertEquals("EN_ATTENTE_REPONSE", resultat.getFirst().statutStage());
+        assertEquals("EN_ATTENTE_SIGNATURE", resultat.getFirst().statutStage());
     }
 
     @Test

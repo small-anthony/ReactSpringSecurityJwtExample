@@ -3,26 +3,15 @@ import { X, Calendar, Building, CheckCircle, Clock, XCircle } from "lucide-react
 import { useTranslation } from "react-i18next";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 
+const STYLE_ATTENTE = {
+    badge: "bg-purple-100 text-purple-800 border-purple-200",
+    icon: Clock
+};
+
 const STATUT_STYLES = {
     EMBAUCHEE: {
         badge: "bg-green-100 text-green-800 border-green-200",
         icon: CheckCircle
-    },
-    EN_ATTENTE_SIGNATURE: {
-        badge: "bg-purple-100 text-purple-800 border-purple-200",
-        icon: Clock
-    },
-    EN_ATTENTE_CHOIX_STAGE: {
-        badge: "bg-indigo-100 text-indigo-800 border-indigo-200",
-        icon: CheckCircle
-    },
-    EN_ATTENTE_ENTREVUE: {
-        badge: "bg-emerald-100 text-emerald-800 border-emerald-200",
-        icon: CheckCircle
-    },
-    EN_ATTENTE_CONFIRMATION_ENTREVUE: {
-        badge: "bg-blue-100 text-blue-800 border-blue-200",
-        icon: Clock
     },
     ENTREVUE_REFUSEE: {
         badge: "bg-orange-100 text-orange-800 border-orange-200",
@@ -31,10 +20,6 @@ const STATUT_STYLES = {
     REFUSEE: {
         badge: "bg-red-100 text-red-800 border-red-200",
         icon: XCircle
-    },
-    EN_ATTENTE_CONVOCATION: {
-        badge: "bg-amber-100 text-amber-800 border-amber-200",
-        icon: Clock
     }
 };
 
@@ -101,7 +86,7 @@ export default function ModalCandidaturesEtudiant({ etudiant, onClose }) {
                         </div>
                     ) : (
                         candidatures.map((cand) => {
-                            const style = STATUT_STYLES[cand.statut] || STATUT_STYLES.EN_ATTENTE;
+                            const style = STATUT_STYLES[cand.statut] || STYLE_ATTENTE;
                             const IconStatut = style.icon;
                             const dateAffichee = formaterDate(cand.dateCandidature);
 
