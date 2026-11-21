@@ -92,10 +92,8 @@ class ContratPdfGeneratorTest {
 
     @Test
     void mettreAJour_avecSignatureTexteEtImagePng_integreLesSignatures() throws Exception {
-        // Arrange
-        byte[] initialPdf = ContratPdfGenerator.generer(candidature, request, "John Gestion");
         Contrat contrat = new Contrat(
-                candidature, initialPdf,
+                candidature,
                 request.dateDebut(), request.dateFin(),
                 request.horaire(), request.salaire(),
                 request.descriptionTaches(), request.conditions()
@@ -108,8 +106,7 @@ class ContratPdfGeneratorTest {
         contrat.signer(new Signature<>(etudiant, pngOut.toByteArray()));
         contrat.signer(new Signature<>(employeur, "signature_texte_fallback".getBytes()));
 
-        // Act
-        byte[] updatedPdf = ContratPdfGenerator.mettreAJour(contrat, "John Gestion");
+        byte[] updatedPdf = ContratPdfGenerator.generer(contrat, "John Gestion");
 
         // Assert
         assertNotNull(updatedPdf);

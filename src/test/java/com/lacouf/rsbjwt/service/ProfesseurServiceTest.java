@@ -275,7 +275,7 @@ public class ProfesseurServiceTest {
         prof.setId(10L);
         Etudiant etudiant = creerEtudiantAvecStageComplet(prof);
         Candidature cand = etudiant.getCandidatures().getFirst();
-        Contrat contrat = new Contrat(cand, new byte[]{1}, LocalDate.of(2026, 5, 18), LocalDate.of(2026, 8, 21), "35h", "24.00$/h", "Taches", "Conditions");
+        Contrat contrat = new Contrat(cand, LocalDate.of(2026, 5, 18), LocalDate.of(2026, 8, 21), "35h", "24.00$/h", "Taches", "Conditions");
 
         when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
         when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
@@ -305,7 +305,7 @@ public class ProfesseurServiceTest {
         cand.getOffreStage().setVille("Montréal");
         cand.getOffreStage().setCodePostal("H3G 1T4");
         cand.getOffreStage().setTelephone("438-555-0199");
-        Contrat contrat = new Contrat(cand, new byte[]{1}, LocalDate.of(2026, 5, 18), LocalDate.of(2026, 8, 21), "35h", "24.00$/h", "Taches", "Conditions");
+        Contrat contrat = new Contrat(cand, LocalDate.of(2026, 5, 18), LocalDate.of(2026, 8, 21), "35h", "24.00$/h", "Taches", "Conditions");
 
         when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
         when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
