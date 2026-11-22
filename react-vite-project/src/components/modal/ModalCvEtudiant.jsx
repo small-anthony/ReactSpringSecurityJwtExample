@@ -1,10 +1,11 @@
 import ModalTeleverserCv from "./ModalTeleverserCv.jsx";
+import ModalCvPdf from "./ModalCvPdf.jsx";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStatutCv } from "../../services/api/EtudiantService.js";
-import { checkCvExists } from "../../services/api/EtudiantCvService.js";
+import { checkCvExists, getMonCv } from "../../services/api/EtudiantCvService.js";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Clock3, XCircle, UploadCloud, FileText } from "lucide-react";
+import { CheckCircle2, Clock3, XCircle, UploadCloud, FileText, Eye } from "lucide-react";
 
 export default function ModalCvEtudiant({ compact, onStatusChange }) {
     const { t } = useTranslation("main");
@@ -13,6 +14,23 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
     const [cvExiste, setCvExiste] = useState(null);
     const [erreur, setErreur] = useState(null);
     const [afficherUploadModal, setAfficherUploadModal] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+        };
+    }, [pdfUrl]);
+
+    const voirMonCv = async () => {
+        try {
+            setErreur(null);
+            const url = await getMonCv();
+            setPdfUrl(url);
+        } catch {
+            setErreur(t("cv_upload.errors.default"));
+        }
+    };
 
     const notifierChangementStatut = (existe, status, messageRefus) => {
         if (!onStatusChange) {
@@ -58,67 +76,83 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
     const messageRefus = cvStatut ? cvStatut.messageRefus : null;
 
     if (compact) {
+        const configCompact =
+            status === "REFUSE"
+                ? {
+                      card: "bg-rose-50 border-rose-200 text-rose-900",
+                      icon: <XCircle className="w-4 h-4 text-rose-600 shrink-0" />,
+                      label: t("etudiant_dashboard.cv_pill.refused"),
+                  }
+                : status === "EN_ATTENTE"
+                ? {
+                      card: "bg-blue-50/80 border-blue-200 text-blue-900",
+                      icon: <Clock3 className="w-4 h-4 text-blue-600 shrink-0" />,
+                      label: t("etudiant_dashboard.cv_pill.pending"),
+                  }
+                : {
+                      card: "bg-white border-slate-200 text-emerald-800",
+                      icon: <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />,
+                      label: t("etudiant_dashboard.cv_pill.validated"),
+                  };
+
         return (
             <>
                 {cvExiste === false && (
                     <button
                         type="button"
                         onClick={() => setAfficherUploadModal(true)}
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition cursor-pointer shadow-2xs"
+                        className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition cursor-pointer shadow-xs"
                     >
-                        <UploadCloud className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <UploadCloud className="w-4 h-4 text-amber-600 shrink-0" />
                         <span>{t("etudiant_dashboard.cv_pill.missing")}</span>
                         <span className="text-amber-400">•</span>
                         <span className="underline font-bold">{t("etudiant_dashboard.cv_pill.upload")}</span>
                     </button>
                 )}
 
-                {cvExiste && status === "REFUSE" && (
-                    <button
-                        type="button"
-                        onClick={() => setAfficherUploadModal(true)}
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition cursor-pointer shadow-2xs"
-                    >
-                        <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                        <span>{t("etudiant_dashboard.cv_pill.refused")}</span>
-                        <span className="text-rose-300">•</span>
-                        <span className="underline font-bold">{t("etudiant_dashboard.cv_pill.replace")}</span>
-                    </button>
-                )}
-
-                {cvExiste && status === "EN_ATTENTE" && (
-                    <button
-                        type="button"
-                        onClick={() => setAfficherUploadModal(true)}
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-50/80 text-blue-800 border border-blue-200 hover:bg-blue-100/80 transition cursor-pointer"
-                    >
-                        <Clock3 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                        <span>{t("etudiant_dashboard.cv_pill.pending")}</span>
-                        <span className="text-blue-300">•</span>
-                        <span className="text-blue-600 hover:underline">{t("etudiant_dashboard.cv_pill.replace")}</span>
-                    </button>
-                )}
-
-                {cvExiste && status === "ACCEPTE" && (
-                    <button
-                        type="button"
-                        onClick={() => setAfficherUploadModal(true)}
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300 transition cursor-pointer shadow-2xs"
-                    >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span className="text-emerald-800 font-bold">{t("etudiant_dashboard.cv_pill.validated")}</span>
-                        <span className="text-slate-300">•</span>
-                        <span className="text-slate-500 hover:text-slate-900">{t("etudiant_dashboard.cv_pill.replace")}</span>
-                    </button>
+                {cvExiste && (
+                    <div className={`inline-flex flex-wrap items-center gap-3 px-4 py-2.5 rounded-xl border shadow-xs ${configCompact.card}`}>
+                        <div className="flex items-center gap-2 text-sm font-bold">
+                            {configCompact.icon}
+                            <span>{configCompact.label}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={voirMonCv}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition cursor-pointer"
+                            >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>{t("cv_upload.view_current_cv")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setAfficherUploadModal(true)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition cursor-pointer"
+                            >
+                                <UploadCloud className="w-3.5 h-3.5" />
+                                <span>{t("etudiant_dashboard.cv_pill.replace")}</span>
+                            </button>
+                        </div>
+                    </div>
                 )}
 
                 {afficherUploadModal && (
                     <ModalTeleverserCv
+                        cvExiste={Boolean(cvExiste)}
                         onClose={() => setAfficherUploadModal(false)}
                         onUploadSuccess={() => {
                             setAfficherUploadModal(false);
                             void chargerStatut();
                         }}
+                    />
+                )}
+
+                {pdfUrl && (
+                    <ModalCvPdf
+                        pdfUrl={pdfUrl}
+                        titre={t("cv_upload.current_cv")}
+                        onClose={() => setPdfUrl(null)}
                     />
                 )}
             </>
@@ -167,6 +201,7 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
                     {afficherUploadModal && (
                         <div className="pt-4">
                             <ModalTeleverserCv
+                                cvExiste={Boolean(cvExiste)}
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -197,19 +232,30 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setAfficherUploadModal(true)}
-                            className="btn-outline text-xs py-2 px-4 shrink-0"
-                        >
-                            <UploadCloud className="w-4 h-4" />
-                            <span>{t("modal_cv.update")}</span>
-                        </button>
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            <button
+                                type="button"
+                                onClick={voirMonCv}
+                                className="btn-outline text-xs py-2 px-3.5"
+                            >
+                                <Eye className="w-4 h-4" />
+                                <span>{t("cv_upload.view_current_cv")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setAfficherUploadModal(true)}
+                                className="btn-outline text-xs py-2 px-4"
+                            >
+                                <UploadCloud className="w-4 h-4" />
+                                <span>{t("modal_cv.update")}</span>
+                            </button>
+                        </div>
                     </div>
 
                     {afficherUploadModal && (
                         <div className="pt-4">
                             <ModalTeleverserCv
+                                cvExiste={Boolean(cvExiste)}
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -242,19 +288,30 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setAfficherUploadModal(true)}
-                            className="btn-secondary text-xs py-2 px-3.5 shrink-0"
-                        >
-                            <UploadCloud className="w-3.5 h-3.5" />
-                            <span>{t("modal_cv.update")}</span>
-                        </button>
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            <button
+                                type="button"
+                                onClick={voirMonCv}
+                                className="btn-outline text-xs py-2 px-3.5"
+                            >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>{t("cv_upload.view_current_cv")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setAfficherUploadModal(true)}
+                                className="btn-secondary text-xs py-2 px-3.5"
+                            >
+                                <UploadCloud className="w-3.5 h-3.5" />
+                                <span>{t("modal_cv.update")}</span>
+                            </button>
+                        </div>
                     </div>
 
                     {afficherUploadModal && (
                         <div className="pt-3">
                             <ModalTeleverserCv
+                                cvExiste={Boolean(cvExiste)}
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -287,19 +344,30 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setAfficherUploadModal(true)}
-                            className="btn-danger text-xs py-2 px-4 shrink-0"
-                        >
-                            <UploadCloud className="w-4 h-4" />
-                            <span>{t("modal_cv.upload_corrected_title")}</span>
-                        </button>
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            <button
+                                type="button"
+                                onClick={voirMonCv}
+                                className="btn-outline text-xs py-2 px-3.5"
+                            >
+                                <Eye className="w-4 h-4" />
+                                <span>{t("cv_upload.view_current_cv")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setAfficherUploadModal(true)}
+                                className="btn-danger text-xs py-2 px-4"
+                            >
+                                <UploadCloud className="w-4 h-4" />
+                                <span>{t("modal_cv.upload_corrected_title")}</span>
+                            </button>
+                        </div>
                     </div>
 
                     {afficherUploadModal && (
                         <div className="pt-4">
                             <ModalTeleverserCv
+                                cvExiste={Boolean(cvExiste)}
                                 onClose={() => setAfficherUploadModal(false)}
                                 onUploadSuccess={() => {
                                     setAfficherUploadModal(false);
@@ -309,6 +377,13 @@ export default function ModalCvEtudiant({ compact, onStatusChange }) {
                         </div>
                     )}
                 </div>
+            )}
+            {pdfUrl && (
+                <ModalCvPdf
+                    pdfUrl={pdfUrl}
+                    titre={t("cv_upload.current_cv")}
+                    onClose={() => setPdfUrl(null)}
+                />
             )}
         </div>
     );

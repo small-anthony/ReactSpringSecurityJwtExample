@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.presentation.RequestDto.RefusConvocationRequest;
 import com.lacouf.rsbjwt.service.ConvocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -91,6 +92,14 @@ public class EtudiantController {
     public ResponseEntity<StatutCvDto> getStatutCv(Authentication authentication) {
         String email = authentication.getName();
         return ResponseEntity.ok(etudiantService.getStatutCv(email));
+    }
+
+    @GetMapping("/cv")
+    public ResponseEntity<byte[]> getMonCv(Authentication authentication) {
+        byte[] pdf = etudiantService.getCv(authentication.getName());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
     @GetMapping("/offres")

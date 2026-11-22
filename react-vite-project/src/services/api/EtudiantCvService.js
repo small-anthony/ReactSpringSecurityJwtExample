@@ -50,3 +50,21 @@ export const checkCvExists = async () => {
 
     return data.hasCv === true;
 }
+
+export const getMonCv = async () => {
+    const token = getTokenCookie() || localStorage.getItem("token");
+
+    const response = await fetch(`${BASE_URL}/etudiant/cv`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Erreur lors du chargement du CV');
+    }
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+};

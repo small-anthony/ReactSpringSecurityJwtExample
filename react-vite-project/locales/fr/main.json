@@ -287,6 +287,8 @@
     "successMessage": "Votre CV a été televersé avec succès!",
     "loading": "Téléversement en cours...",
     "submit": "Téléverser mon CV",
+    "view_current_cv": "Voir mon CV actuel",
+    "current_cv": "Mon CV actuel",
     "errors": {
       "notPdf": "Veuillez sélectionner un fichier PDF.",
       "default": "Une erreur est survenue lors du téléversement."

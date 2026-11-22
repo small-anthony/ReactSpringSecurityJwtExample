@@ -287,6 +287,8 @@
     "successMessage": "Your resume has been uploaded successfully!",
     "loading": "Uploading...",
     "submit": "Upload my resume",
+    "view_current_cv": "View my current resume",
+    "current_cv": "My current resume",
     "errors": {
       "notPdf": "Please select a PDF file.",
       "default": "An error occurred during the upload."
