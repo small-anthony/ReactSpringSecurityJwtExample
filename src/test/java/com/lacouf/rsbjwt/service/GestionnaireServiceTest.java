@@ -366,7 +366,7 @@ public class GestionnaireServiceTest {
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         etudiant.setCandidatures(List.of(candidature));
 
-        Contrat contratNonSigne = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        Contrat contratNonSigne = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
 
         when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
         when(contratRepository.findByCandidatureId(15L)).thenReturn(Optional.of(contratNonSigne));
@@ -391,7 +391,7 @@ public class GestionnaireServiceTest {
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         etudiant.setCandidatures(List.of(candidature));
 
-        Contrat contratPartiel = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        Contrat contratPartiel = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
         contratPartiel.signer(new Signature<>(etudiant, "sig".getBytes()));
 
         when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
@@ -593,7 +593,7 @@ public class GestionnaireServiceTest {
     }
 
     private Contrat creerContratSigneParEtudiant(Etudiant etudiant, Candidature candidature) {
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
         com.lacouf.rsbjwt.model.Employeur employeur = new com.lacouf.rsbjwt.model.Employeur("Bob", "Employeur", new Credentials("bob@cgi.com", "pass", Role.EMPLOYEUR), "CGI", "Informatique");
         com.lacouf.rsbjwt.model.Gestionnaire gestionnaire = new com.lacouf.rsbjwt.model.Gestionnaire("John", "Gestion", new Credentials("gest@test.com", "pass", Role.GESTIONNAIRE));
         contrat.signer(new Signature<>(etudiant, "sig".getBytes()));

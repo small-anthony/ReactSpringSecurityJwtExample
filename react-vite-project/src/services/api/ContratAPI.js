@@ -99,3 +99,12 @@ export async function rejeterContrat(id, authHeader) {
     }
     return response.json();
 }
+
+export async function choisirStageEtGenererContrat(candidatureId, authHeader) {
+    const response = await APIHelper.post(`/contrats/generer/${candidatureId}`, authHeader, {});
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur lors de la sélection du stage");
+    }
+    return response.json();
+}
