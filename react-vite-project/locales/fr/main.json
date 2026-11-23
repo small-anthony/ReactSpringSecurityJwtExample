@@ -458,7 +458,9 @@
     "offres": "Approbations des offres",
     "contrats": "Contrats de stage",
     "rapports": "Rapports étudiants",
-    "assignation_professeurs": "Assignation des professeurs"
+    "assignation_professeurs": "Assignation des professeurs",
+    "collapse": "Réduire le menu",
+    "expand": "Agrandir le menu"
   },
   "rapports_etudiants": {
     "title": "Rapports des étudiants",
@@ -1064,6 +1066,13 @@
   "session": {
     "toutes": "Toutes les sessions",
     "libelle": "Hiver {{annee}}"
+  },
+  "pagination": {
+    "info": "Affichage {{debut}}-{{fin}} sur {{total}}",
+    "per_page": "Par page",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "page_label": "Page {{page}}"
   },
   "calendar": {
     "clear": "Effacer la date",

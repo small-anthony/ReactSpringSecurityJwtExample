@@ -458,7 +458,9 @@
     "offres": "Offer Approvals",
     "contrats": "Internship Contracts",
     "rapports": "Student Reports",
-    "assignation_professeurs": "Professor Assignment"
+    "assignation_professeurs": "Professor Assignment",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
   },
   "rapports_etudiants": {
     "title": "Student Reports",
@@ -1064,6 +1066,13 @@
   "session": {
     "toutes": "All sessions",
     "libelle": "Winter {{annee}}"
+  },
+  "pagination": {
+    "info": "Showing {{debut}}-{{fin}} of {{total}}",
+    "per_page": "Per page",
+    "prev": "Previous",
+    "next": "Next",
+    "page_label": "Page {{page}}"
   },
   "calendar": {
     "clear": "Clear date",
