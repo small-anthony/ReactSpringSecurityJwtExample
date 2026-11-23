@@ -98,25 +98,28 @@ export function construireActionsPrioritaires({
         });
     });
 
-    if (!aTrouveStage && contrats.length === 0 && candidaturesEmbauchees.length > 0) {
-        const embauche = candidaturesEmbauchees[0];
-        const { id, nomEntreprise, titre } = embauche;
-        items.push({
-            id: `hired-${id}`,
-            priority: "info",
-            badge: t("etudiant_dashboard.applications.status_selected"),
-            tone: "border-blue-200 bg-blue-50/40",
-            badgeTone: "bg-blue-100 text-blue-800",
-            icon: CheckCircle2,
-            iconTone: "bg-blue-100 text-blue-600",
-            title: t("etudiant_dashboard.todo.hired_notice_title", {
-                entreprise: nomEntreprise,
-                poste: titre
-            }),
-            desc: t("etudiant_dashboard.todo.hired_notice_desc"),
-            ctaLabel: t("offres_etudiant.btn_see_details"),
-            ctaClass: "btn-secondary text-xs py-2 px-3.5",
-            onAction: () => onSelectionnerOffre(embauche)
+    const contratsActifs = contrats.filter((c) => c.statut !== "REFUSE");
+
+    if (!aTrouveStage && contratsActifs.length === 0 && candidaturesEmbauchees.length > 0) {
+        candidaturesEmbauchees.forEach((embauche) => {
+            const { id, nomEntreprise, titre } = embauche;
+            items.push({
+                id: `hired-${id}`,
+                priority: "info",
+                badge: t("etudiant_dashboard.applications.status_selected"),
+                tone: "border-blue-200 bg-blue-50/40",
+                badgeTone: "bg-blue-100 text-blue-800",
+                icon: CheckCircle2,
+                iconTone: "bg-blue-100 text-blue-600",
+                title: t("etudiant_dashboard.todo.hired_notice_title", {
+                    entreprise: nomEntreprise,
+                    poste: titre
+                }),
+                desc: t("etudiant_dashboard.todo.hired_notice_desc"),
+                ctaLabel: t("offres_etudiant.btn_see_details"),
+                ctaClass: "btn-secondary text-xs py-2 px-3.5",
+                onAction: () => onSelectionnerOffre(embauche)
+            });
         });
     }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import {
     ArrowLeft,
     AlertCircle,
@@ -195,6 +195,7 @@ function InfoCase({ icone, libelle, valeur }) {
 export default function EvaluationStagiaire() {
     const { t, i18n } = useTranslation("main");
     const { contratId } = useParams();
+    const location = useLocation();
     const authService = useContext(AuthServiceContext);
     const haut = useRef(null);
 
@@ -208,7 +209,8 @@ export default function EvaluationStagiaire() {
     const [tentative, setTentative] = useState(false);
     const [succes, setSucces] = useState(false);
 
-    const lecture = evaluation !== null;
+    const estAncienneSession = Boolean(location.state?.estAncienneSession);
+    const lecture = evaluation !== null || estAncienneSession;
     const erreurs = tentative && !lecture ? validerFormulaire(formulaire) : AUCUNE_ERREUR;
     const identifiantsErreurs = identifiantsEnErreur(erreurs);
 

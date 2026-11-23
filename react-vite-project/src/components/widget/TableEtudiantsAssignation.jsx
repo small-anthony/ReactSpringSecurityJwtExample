@@ -15,6 +15,7 @@ export default function TableEtudiantsAssignation({
     loading = false,
     rechercheEtudiant = "",
     filtreStatut = "tous",
+    lectureSeule = false,
     onAssigner,
     onDesassigner
 }) {
@@ -52,7 +53,9 @@ export default function TableEtudiantsAssignation({
                                 <th className="px-6 py-4">{t("assignation_professeurs.th_etudiant")}</th>
                                 <th className="px-6 py-4">{t("assignation_professeurs.th_stage")}</th>
                                 <th className="px-6 py-4">{t("assignation_professeurs.th_professeur")}</th>
-                                <th className="px-6 py-4 text-right">{t("assignation_professeurs.th_action")}</th>
+                                {!lectureSeule && (
+                                    <th className="px-6 py-4 text-right">{t("assignation_professeurs.th_action")}</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -117,40 +120,42 @@ export default function TableEtudiantsAssignation({
                                         )}
                                     </td>
 
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            {etudiant.estAssigne ? (
-                                                <>
+                                    {!lectureSeule && (
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                {etudiant.estAssigne ? (
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onAssigner(etudiant)}
+                                                            className="btn-secondary !py-1.5 !px-3 !text-xs"
+                                                        >
+                                                            {t("assignation_professeurs.btn_modifier")}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onDesassigner(etudiant)}
+                                                            className="btn-danger-soft !py-1.5 !px-3 !text-xs"
+                                                            title={t("assignation_professeurs.btn_desassigner")}
+                                                            aria-label={t("assignation_professeurs.btn_desassigner")}
+                                                        >
+                                                            <UserX className="w-3.5 h-3.5" />
+                                                            {t("assignation_professeurs.btn_desassigner")}
+                                                        </button>
+                                                    </>
+                                                ) : (
                                                     <button
                                                         type="button"
                                                         onClick={() => onAssigner(etudiant)}
-                                                        className="btn-secondary !py-1.5 !px-3 !text-xs"
+                                                        className="btn-primary !py-1.5 !px-3.5 !text-xs"
                                                     >
-                                                        {t("assignation_professeurs.btn_modifier")}
+                                                        <UserCheck className="w-3.5 h-3.5" />
+                                                        {t("assignation_professeurs.btn_assigner")}
                                                     </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => onDesassigner(etudiant)}
-                                                        className="btn-danger-soft !py-1.5 !px-3 !text-xs"
-                                                        title={t("assignation_professeurs.btn_desassigner")}
-                                                        aria-label={t("assignation_professeurs.btn_desassigner")}
-                                                    >
-                                                        <UserX className="w-3.5 h-3.5" />
-                                                        {t("assignation_professeurs.btn_desassigner")}
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onAssigner(etudiant)}
-                                                    className="btn-primary !py-1.5 !px-3.5 !text-xs"
-                                                >
-                                                    <UserCheck className="w-3.5 h-3.5" />
-                                                    {t("assignation_professeurs.btn_assigner")}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
+                                                )}
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

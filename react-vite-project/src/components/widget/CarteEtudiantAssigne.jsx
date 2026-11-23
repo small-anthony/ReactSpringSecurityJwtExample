@@ -49,7 +49,7 @@ function StatutStageBadge({ statut }) {
     );
 }
 
-export default function CarteEtudiantAssigne({ etudiant, onOuvrirEvaluation }) {
+export default function CarteEtudiantAssigne({ etudiant, lectureSeule = false, onOuvrirEvaluation }) {
     const { t } = useTranslation("main");
 
     return (
@@ -113,7 +113,7 @@ export default function CarteEtudiantAssigne({ etudiant, onOuvrirEvaluation }) {
                                 <Eye className="w-3.5 h-3.5" />
                                 <span>{t("professeur.btn_voir_evaluation_milieu")}</span>
                             </button>
-                        ) : (
+                        ) : !lectureSeule ? (
                             <button
                                 type="button"
                                 onClick={() => onOuvrirEvaluation(etudiant.id)}
@@ -122,7 +122,7 @@ export default function CarteEtudiantAssigne({ etudiant, onOuvrirEvaluation }) {
                                 <ClipboardCheck className="w-3.5 h-3.5" />
                                 <span>{t("professeur.btn_evaluer_milieu")}</span>
                             </button>
-                        )
+                        ) : null
                     )}
                 </div>
             </div>

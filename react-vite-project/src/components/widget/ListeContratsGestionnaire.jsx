@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 
 export default function ListeContratsGestionnaire({
   contrats,
+  lectureSeule = false,
   onVoirDocument,
   onTelechargerDocument,
   onImprimerDocument,
@@ -228,7 +229,7 @@ export default function ListeContratsGestionnaire({
             </div>
 
             <div className="flex items-center gap-2">
-              {!c.signeParGestionnaire && c.statut !== "REFUSE" ? (
+              {!lectureSeule && !c.signeParGestionnaire && c.statut !== "REFUSE" ? (
                 c.signeParEtudiant && c.signeParEmployeur ? (
                   <>
                     {onRefuserContrat && (

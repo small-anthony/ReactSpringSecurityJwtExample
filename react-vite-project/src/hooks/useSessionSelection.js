@@ -1,4 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+export function estSessionPassee(anneeChoisie, annees) {
+    if (anneeChoisie === null || anneeChoisie === undefined) return false;
+    if (!Array.isArray(annees) || annees.length === 0) return false;
+    const numeriques = annees.map(Number).filter((n) => !Number.isNaN(n));
+    if (numeriques.length === 0) return false;
+    const anneeCouranteRef = Math.max(...numeriques);
+    return Number(anneeChoisie) < anneeCouranteRef;
+}
 
 export function useSessionSelection(fetchAnnees, authService) {
     const [annees, setAnnees] = useState([]);
@@ -28,5 +37,10 @@ export function useSessionSelection(fetchAnnees, authService) {
         };
     }, [fetchAnnees, authService]);
 
-    return { annees, anneeChoisie, setAnneeChoisie, anneesChargees };
+    const estAncienneSession = useMemo(
+        () => estSessionPassee(anneeChoisie, annees),
+        [anneeChoisie, annees]
+    );
+
+    return { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession };
 }
