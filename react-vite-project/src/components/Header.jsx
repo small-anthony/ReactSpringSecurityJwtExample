@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { ChevronDown, ChevronUp, Building2, LogOut } from "lucide-react";
 import { AuthServiceContext } from "../services/AuthService.tsx";
 import { useTranslation } from "react-i18next";
 import "./Header.css";
@@ -26,6 +27,7 @@ function Header({ user }) {
   const { t, i18n } = useTranslation("main");
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const setLanguage = (lang) => {
     i18n.changeLanguage(lang);
@@ -33,6 +35,7 @@ function Header({ user }) {
 
   const logOut = () => {
     authService.logout();
+    setUserMenuOpen(false);
     setMobileMenuOpen(false);
     navigate("/");
   };
@@ -76,6 +79,8 @@ function Header({ user }) {
   const initials = extraireInitiales(user);
   const prenom = user ? user.firstName : "";
   const nom = user ? user.lastName : "";
+  const nomComplet = `${prenom || ""} ${nom || ""}`.trim();
+  const entreprise = user ? (user.entreprise || user.nomEntreprise || user.companyName || "") : "";
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
@@ -135,35 +140,71 @@ function Header({ user }) {
             {user ? (
               <div className="flex items-center gap-2.5 pl-2">
                 <NotificationButton/>
-                <div className="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-slate-50 border border-slate-200/90 text-xs shadow-2xs">
-                  <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
-                    {initials || "U"}
-                  </div>
-                  <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                    {formatRole(roleTexte)}
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={logOut}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition duration-150 cursor-pointer border border-transparent hover:border-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-                >
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="relative">
+                  <button
+                    type="button"
+                    id="btn-user-menu"
+                    onClick={() => setUserMenuOpen((prev) => !prev)}
+                    aria-expanded={userMenuOpen}
+                    aria-haspopup="dialog"
+                    className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200/90 text-xs shadow-2xs transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                  </svg>
-                  {t("pagename.logout")}
-                </button>
+                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
+                      {initials || "U"}
+                    </div>
+                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                      {formatRole(roleTexte)}
+                    </span>
+                    {userMenuOpen ? (
+                      <ChevronUp className="w-4 h-4 text-slate-500" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    )}
+                  </button>
+
+                  {userMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                      <div
+                        role="dialog"
+                        aria-label={nomComplet || formatRole(roleTexte)}
+                        className="absolute right-0 mt-2 w-64 z-50 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden"
+                      >
+                        <div className="px-4 py-3.5 border-b border-slate-100 bg-slate-50/70 space-y-1">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                              {initials || "U"}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-bold text-slate-900 break-words">
+                                {nomComplet || formatRole(roleTexte)}
+                              </p>
+                              <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-700">
+                                {formatRole(roleTexte)}
+                              </p>
+                            </div>
+                          </div>
+                          {entreprise && (
+                            <p className="text-xs text-slate-600 flex items-center gap-1.5 pt-1 font-medium break-words">
+                              <Building2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                              <span>{entreprise}</span>
+                            </p>
+                          )}
+                        </div>
+                        <div className="p-2">
+                          <button
+                            type="button"
+                            onClick={logOut}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+                          >
+                            <LogOut className="w-4 h-4 shrink-0" />
+                            <span>{t("pagename.logout")}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -272,10 +313,18 @@ function Header({ user }) {
 
           {user ? (
             <div className="pt-3 border-t border-slate-100 space-y-3">
-              <div className="flex items-center gap-2 text-sm text-slate-800">
-                <span className="font-semibold">
-                  {prenom} {nom}
-                </span>
+              <div className="flex items-center justify-between gap-2 text-sm text-slate-800 flex-wrap">
+                <div>
+                  <span className="font-semibold block">
+                    {prenom} {nom}
+                  </span>
+                  {entreprise && (
+                    <span className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                      <Building2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      {entreprise}
+                    </span>
+                  )}
+                </div>
                 <span className="px-2 py-0.5 text-xs font-bold uppercase rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                   {formatRole(roleTexte)}
                 </span>
