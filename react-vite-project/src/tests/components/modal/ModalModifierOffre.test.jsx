@@ -22,6 +22,10 @@ const mockOffre = {
     duree: "12 semaines",
     description: "Conception de microservices Spring Boot.",
     exigences: "Expérience avec Java et les bases de données SQL.",
+    adresse: "1253 avenue McGill College",
+    ville: "Montréal",
+    codePostal: "H3B 2Y5",
+    telephone: "514-555-0202",
     status: "ACCEPTEE"
 };
 
@@ -58,6 +62,10 @@ describe("ModalModifierOffre", () => {
         expect(screen.getByDisplayValue("28.00")).toBeInTheDocument();
         expect(screen.getByDisplayValue("Conception de microservices Spring Boot.")).toBeInTheDocument();
         expect(screen.getByDisplayValue("Expérience avec Java et les bases de données SQL.")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("1253 avenue McGill College")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("Montréal")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("H3B 2Y5")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("514-555-0202")).toBeInTheDocument();
     });
 
     it("devrait soumettre les modifications et formater le salaire en $/h", async () => {

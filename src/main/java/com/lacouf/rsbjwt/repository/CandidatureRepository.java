@@ -31,10 +31,7 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
             LEFT JOIN FETCH c.etudiant e
             LEFT JOIN FETCH e.professeur p
         WHERE
-            (
-                c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE
-                OR c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.ACCEPTEE
-            )
+            c.statut = com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE
             AND e.professeur IS NOT NULL
             AND c.lastEvaluationNag <= :expires
     """)

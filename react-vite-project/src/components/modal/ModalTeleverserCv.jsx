@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
-import { uploadCv } from '../../services/api/EtudiantCvService.js';
+import React, { useState, useEffect } from 'react';
+import { uploadCv, getMonCv } from '../../services/api/EtudiantCvService.js';
 import {useTranslation} from "react-i18next";
-import { X } from "lucide-react";
+import { X, Eye, FileText } from "lucide-react";
 import ModalConfirmation from "./ModalConfirmation.jsx";
+import ModalCvPdf from "./ModalCvPdf.jsx";
 
-export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
+export default function ModalTeleverserCv({ onUploadSuccess, onClose, cvExiste = false }) {
     const { t } = useTranslation("main");
     const [file, setFile] = useState(null);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+        };
+    }, [pdfUrl]);
+
+    const voirCvActuel = async () => {
+        try {
+            setError('');
+            const url = await getMonCv();
+            setPdfUrl(url);
+        } catch (err) {
+            setError(err.message || t('cv_upload.errors.default'));
+        }
+    };
 
     const validateSetFile = (selectedFile) => {
         if (!selectedFile) return;
@@ -118,6 +136,25 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
                         </button>
                     )}
                 </div>
+                {cvExiste && (
+                    <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <FileText className="w-4 h-4 text-blue-600 shrink-0" />
+                            <span className="text-sm font-medium text-slate-700 truncate">
+                                {t('cv_upload.current_cv')}
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={voirCvActuel}
+                            className="btn-outline py-1.5 px-3 text-xs shrink-0"
+                        >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>{t('cv_upload.view_current_cv')}</span>
+                        </button>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} noValidate className="space-y-4">
                     <div>
                         <input type="file" id="cv-upload-input"
@@ -159,6 +196,14 @@ export default function ModalTeleverserCv({ onUploadSuccess, onClose }) {
                     </button>
                 </form>
             </div>
+
+            {pdfUrl && (
+                <ModalCvPdf
+                    pdfUrl={pdfUrl}
+                    titre={t('cv_upload.current_cv')}
+                    onClose={() => setPdfUrl(null)}
+                />
+            )}
         </div>
     );
 }

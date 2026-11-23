@@ -192,6 +192,10 @@
     "discipline": "Discipline d'études",
     "duree": "Durée du stage",
     "salaire": "Rémunération / Salaire",
+    "adresse": "Adresse (numéro et rue)",
+    "ville": "Ville",
+    "codePostal": "Code postal",
+    "telephone": "Téléphone de contact",
     "exigences": "Exigences particulières (compétences, technologies)",
     "description": "Description de l'offre",
     "weeks": "{{count}} semaines",
@@ -201,6 +205,10 @@
       "discipline": "-- Choisir une discipline --",
       "duree": "-- Choisir une durée --",
       "salaire": "22.50",
+      "adresse": "Ex: 1350 boulevard René-Lévesque Ouest",
+      "ville": "Ex: Montréal",
+      "codePostal": "Ex: H3G 1T4",
+      "telephone": "Ex: 514-555-1234",
       "exigences": "Ex: Connaissances en React, Spring Boot, Git...",
       "description": "Décrivez les tâches et responsabilités..."
     },
@@ -213,6 +221,16 @@
         "format": "Format de rémunération invalide."
       },
       "duree": "Veuillez choisir une durée.",
+      "adresse": "L'adresse est obligatoire.",
+      "ville": "La ville est obligatoire.",
+      "codePostal": {
+        "required": "Le code postal est obligatoire.",
+        "format": "Code postal invalide (ex: H3G 1T4)."
+      },
+      "telephone": {
+        "required": "Le téléphone est obligatoire.",
+        "format": "Numéro de téléphone invalide (10 chiffres minimum)."
+      },
       "exigences": "Les exigences sont obligatoires.",
       "description": "La description est obligatoire.",
       "descriptionLength": "La description doit contenir au moins 20 caractères."
@@ -269,6 +287,8 @@
     "successMessage": "Votre CV a été televersé avec succès!",
     "loading": "Téléversement en cours...",
     "submit": "Téléverser mon CV",
+    "view_current_cv": "Voir mon CV actuel",
+    "current_cv": "Mon CV actuel",
     "errors": {
       "notPdf": "Veuillez sélectionner un fichier PDF.",
       "default": "Une erreur est survenue lors du téléversement."
@@ -360,6 +380,12 @@
     "no_cv": "Aucun CV disponible",
     "status": {
       "EN_ATTENTE": "En attente",
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "ACCEPTE": "Acceptée",
       "ACCEPTEE": "Entrevue acceptée",
       "REFUSE": "Refusée",
@@ -398,6 +424,12 @@
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "En attente de réponse de l'employeur",
+      "EN_ATTENTE_CONVOCATION": "En attente de réponse de l'employeur",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convoqué(e) à une entrevue",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "Entrevue confirmée",
+      "EN_ATTENTE_CHOIX_STAGE": "Retenu(e) — en attente de votre choix",
+      "EN_ATTENTE_SIGNATURE": "Contrat en attente de signature",
       "ACCEPTE": "Convoqué(e) à une entrevue",
       "ACCEPTEE": "Convoqué(e) à une entrevue",
       "REFUSE": "Candidature refusée. Cliquez sur « Voir détails » pour plus d'informations.",
@@ -410,6 +442,10 @@
     "status_entrevue_confirmee": "Entrevue confirmée — En attente de décision",
     "status_selected_waiting_contract": "Votre candidature a été retenue par l'employeur. Vous serez embauché(e) dès que vous aurez signé votre contrat de stage.",
     "status_contract_pending_signature": "Votre candidature a été retenue — Un contrat attend votre signature pour officialiser votre embauche.",
+    "btn_choose_stage": "Choisir ce stage",
+    "choosing_stage": "Génération du contrat...",
+    "choose_stage_notice": "Félicitations ! L'employeur a retenu votre candidature. Cliquez sur « Choisir ce stage » pour confirmer votre choix, générer automatiquement votre contrat et décliner vos autres candidatures.",
+    "choose_stage_error": "Erreur lors de la sélection du stage.",
     "refuse_reason": "Message de l'employeur",
     "modal_refused_title": "Candidature refusée",
     "modal_refused_no_reason": "Votre candidature n'a pas été retenue par l'employeur pour cette offre de stage.",
@@ -564,7 +600,9 @@
         "discipline": "Discipline",
         "salaire": "Salaire",
         "duree": "Durée",
-        "exigences": "Exigences"
+        "exigences": "Exigences",
+        "adresse": "Adresse",
+        "telephone": "Téléphone"
       },
       "errors": {
         "fetch": "Impossible de charger les offres pour le moment.",
@@ -640,6 +678,8 @@
       "duration": "Durée",
       "salary": "Rémunération",
       "not_specified": "Non spécifiée",
+      "address": "Adresse du lieu de travail",
+      "phone": "Téléphone",
       "requirements": "Exigences particulières",
       "description": "Description du stage",
       "no_description": "Aucune description fournie.",
@@ -1033,11 +1073,14 @@
   },
   "quick_login": {
     "valentin_desc": "Planification d'entrevue, embauche, signature de contrat et archives",
-    "john_desc": "Rapports d'étudiants, création de contrat, signature et impression",
-    "hatim_desc": "Signature de contrat de stage, entrevue acceptée",
-    "sophie_desc": "Convocation refusée (reconvoquer), contrat signé",
-    "luc_desc": "Candidature à convoquer, contrat signé prêt pour gestionnaire",
-    "emma_desc": "Étudiante embauchée prête pour contrat, contrat complété",
+    "john_desc": "Rapports d'étudiants, signature et impression de contrats",
+    "hatim_desc": "Signature de contrat de stage et historique",
+    "sophie_desc": "Contrat signé par l'étudiante (prêt pour l'employeur)",
+    "luc_desc": "Contrat signé étudiant + employeur (prêt pour gestionnaire)",
+    "emma_desc": "2 offres retenues — choix du stage et génération auto du contrat",
+    "alex_desc": "Entrevue confirmée chez CGI Inc. (prêt à embaucher)",
+    "julie_desc": "Candidature soumise chez CGI Inc. (à convoquer)",
+    "karim_desc": "Convocation refusée chez CGI Inc. (à reconvoquer)",
     "daniil_desc": "Sans convocation / Sans CV (rapports gestionnaire)",
     "company_cegep": "Cégep",
     "company_student_m": "Étudiant",
@@ -1251,7 +1294,11 @@
       "program": "Programme",
       "company": "Entreprise",
       "position": "Poste",
-      "period": "Période du contrat"
+      "period": "Période du contrat",
+      "contact": "Personne contact",
+      "address": "Adresse du lieu de stage",
+      "phone": "Téléphone",
+      "salary": "Salaire horaire"
     },
     "section1": {
       "title": "1. Identification de l'entreprise",
@@ -1382,6 +1429,15 @@
     "title": "Suivi des étudiants",
     "subtitle": "Tableau de bord de l'avancement et de l'état de recherche de stage des étudiants.",
     "kpi_total": "Total inscrits",
+    "kpi_pending": "En attente",
+    "pending_all": "Tous",
+    "pending_tabs": {
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "En attente de confirmation d'entrevue",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature"
+    },
     "status": {
       "STAGE_TROUVE": "Stage trouvé",
       "NON_EVALUE_PROFESSEUR": "À évaluer (prof.)",
@@ -1413,6 +1469,12 @@
     "modal_applications_empty": "Cet étudiant n'a postulé à aucune offre pour cette session.",
     "statut_candidature": {
       "EN_ATTENTE": "En attente",
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "ACCEPTEE": "Acceptée",
       "REFUSEE": "Refusée",
       "EMBAUCHEE": "Embauché"

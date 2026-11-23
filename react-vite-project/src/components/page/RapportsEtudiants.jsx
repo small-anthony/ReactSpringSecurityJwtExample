@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
-import { LayoutDashboard, Search, CheckCircle, Clock, AlertTriangle, AlertCircle, Users, HelpCircle, Eye, X } from "lucide-react";
+import { LayoutDashboard, Search, CheckCircle, Clock, AlertTriangle, AlertCircle, Users, Eye, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -11,10 +11,25 @@ import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalCandidaturesEtudiant from "../modal/ModalCandidaturesEtudiant.jsx";
 import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
 
+const SOUS_ETATS_ATTENTE = [
+    "EN_ATTENTE_CONFIRMATION_ENTREVUE",
+    "EN_ATTENTE_ENTREVUE",
+    "EN_ATTENTE_CHOIX_STAGE",
+    "EN_ATTENTE_SIGNATURE",
+];
+
+const ORDRE_STATUTS = [
+    "STAGE_TROUVE",
+    "EN_ATTENTE_SIGNATURE",
+    "EN_ATTENTE_CHOIX_STAGE",
+    "EN_ATTENTE_ENTREVUE",
+    "EN_ATTENTE_CONFIRMATION_ENTREVUE",
+    "SANS_CONVOCATION",
+    "AUCUNE_CANDIDATURE",
+];
+
 const COULEURS_STATUT = {
     STAGE_TROUVE: "bg-green-100 text-green-800 border-green-200",
-    EN_ATTENTE_REPONSE: "bg-purple-100 text-purple-800 border-purple-200",
-    EN_ATTENTE_ENTREVUE: "bg-blue-100 text-blue-800 border-blue-200",
     SANS_CONVOCATION: "bg-orange-100 text-orange-800 border-orange-200",
     AUCUNE_CANDIDATURE: "bg-red-100 text-red-800 border-red-200",
 };
@@ -36,7 +51,13 @@ export default function RapportsEtudiants() {
 
     const [recherche, setRecherche] = useState("");
     const [filtreStatut, setFiltreStatut] = useState("TOUS");
+    const [filtreAttente, setFiltreAttente] = useState("TOUS");
     const [etudiantSelectionne, setEtudiantSelectionne] = useState(null);
+
+    const selectionnerFiltreStatut = (statut) => {
+        setFiltreStatut(statut);
+        setFiltreAttente("TOUS");
+    };
 
     const ouvrirEvaluation = (id) => {
         const next = new URLSearchParams(searchParams);
@@ -70,19 +91,27 @@ export default function RapportsEtudiants() {
         return () => { isMounted = false; };
     }, [authService, anneesChargees, anneeChoisie, t]);
 
+    const etudiantsEnAttente = etudiants.filter((e) => SOUS_ETATS_ATTENTE.includes(e.statutStage));
+
     const stats = {
         total: etudiants.length,
         stageTrouve: etudiants.filter((e) => e.statutStage === "STAGE_TROUVE").length,
-        attenteReponse: etudiants.filter((e) => e.statutStage === "EN_ATTENTE_REPONSE").length,
-        attenteEntrevue: etudiants.filter((e) => e.statutStage === "EN_ATTENTE_ENTREVUE").length,
+        enAttente: etudiantsEnAttente.length,
         sansConvocation: etudiants.filter((e) => e.statutStage === "SANS_CONVOCATION").length,
         aucuneCandidature: etudiants.filter((e) => e.statutStage === "AUCUNE_CANDIDATURE").length,
     };
 
+    const compterSousEtat = (etat) =>
+        etudiantsEnAttente.filter((e) => e.statutStage === etat).length;
+
     const etudiantsFiltres = useMemo(() => {
         let resultat = etudiants;
 
-        if (filtreStatut !== "TOUS") {
+        if (filtreStatut === "EN_ATTENTE") {
+            resultat = filtreAttente === "TOUS"
+                ? etudiantsEnAttente
+                : etudiantsEnAttente.filter((e) => e.statutStage === filtreAttente);
+        } else if (filtreStatut !== "TOUS") {
             resultat = resultat.filter((e) => e.statutStage === filtreStatut);
         }
 
@@ -94,8 +123,10 @@ export default function RapportsEtudiants() {
             );
         }
 
-        return resultat;
-    }, [etudiants, filtreStatut, recherche]);
+        return [...resultat].sort(
+            (a, b) => ORDRE_STATUTS.indexOf(a.statutStage) - ORDRE_STATUTS.indexOf(b.statutStage)
+        );
+    }, [etudiants, filtreStatut, filtreAttente, recherche]);
 
     return (
         <main className="flex flex-col md:flex-row w-full min-w-0 min-h-screen bg-gray-50/30 overflow-x-hidden">
@@ -136,125 +167,131 @@ export default function RapportsEtudiants() {
                         </div>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3 min-w-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 min-w-0">
                         <button
                             type="button"
-                            onClick={() => setFiltreStatut("TOUS")}
-                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            onClick={() => selectionnerFiltreStatut("TOUS")}
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl bg-white text-left transition cursor-pointer ${
                                 filtreStatut === "TOUS"
-                                    ? "bg-gray-900 text-white border-gray-900 shadow-sm ring-2 ring-gray-900/20"
-                                    : "bg-white border-gray-200 hover:border-gray-300"
+                                    ? "border-2 border-gray-900"
+                                    : "border border-gray-200 hover:border-gray-300"
                             }`}
                         >
                             <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
-                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "TOUS" ? "text-gray-200" : "text-gray-500"}`}>
+                                <span className="min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide text-gray-500">
                                     {t("gestionnaire_dashboard.kpi_total")}
                                 </span>
-                                <Users className="w-4 h-4 opacity-70 shrink-0 mt-0.5" />
+                                <Users className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
                             </div>
-                            <div className="text-2xl font-extrabold">{stats.total}</div>
+                            <div className="text-2xl font-extrabold text-gray-900">{stats.total}</div>
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => setFiltreStatut(filtreStatut === "STAGE_TROUVE" ? "TOUS" : "STAGE_TROUVE")}
-                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            onClick={() => selectionnerFiltreStatut("STAGE_TROUVE")}
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl bg-white text-left transition cursor-pointer ${
                                 filtreStatut === "STAGE_TROUVE"
-                                    ? "bg-green-700 text-white border-green-700 shadow-sm ring-2 ring-green-600/30"
-                                    : "bg-white border-green-200 hover:border-green-300"
+                                    ? "border-2 border-green-600"
+                                    : "border border-green-200 hover:border-green-300"
                             }`}
                         >
                             <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
-                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "STAGE_TROUVE" ? "text-green-100" : "text-green-700"}`}>
+                                <span className="min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide text-green-700">
                                     {t("gestionnaire_dashboard.status.STAGE_TROUVE")}
                                 </span>
-                                <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "STAGE_TROUVE" ? "text-white" : "text-green-600"}`} />
+                                <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-green-600" />
                             </div>
-                            <div className={`text-2xl font-extrabold ${filtreStatut === "STAGE_TROUVE" ? "text-white" : "text-green-700"}`}>
+                            <div className="text-2xl font-extrabold text-green-700">
                                 {stats.stageTrouve}
                             </div>
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => setFiltreStatut(filtreStatut === "EN_ATTENTE_REPONSE" ? "TOUS" : "EN_ATTENTE_REPONSE")}
-                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
-                                filtreStatut === "EN_ATTENTE_REPONSE"
-                                    ? "bg-purple-700 text-white border-purple-700 shadow-sm ring-2 ring-purple-600/30"
-                                    : "bg-white border-purple-200 hover:border-purple-300"
+                            onClick={() => selectionnerFiltreStatut("EN_ATTENTE")}
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl bg-white text-left transition cursor-pointer ${
+                                filtreStatut === "EN_ATTENTE"
+                                    ? "border-2 border-purple-600"
+                                    : "border border-purple-200 hover:border-purple-300"
                             }`}
                         >
                             <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
-                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-purple-100" : "text-purple-700"}`}>
-                                    {t("gestionnaire_dashboard.status.EN_ATTENTE_REPONSE")}
+                                <span className="min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide text-purple-700">
+                                    {t("gestionnaire_dashboard.kpi_pending")}
                                 </span>
-                                <HelpCircle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-white" : "text-purple-600"}`} />
+                                <Clock className="w-4 h-4 shrink-0 mt-0.5 text-purple-600" />
                             </div>
-                            <div className={`text-2xl font-extrabold ${filtreStatut === "EN_ATTENTE_REPONSE" ? "text-white" : "text-purple-700"}`}>
-                                {stats.attenteReponse}
+                            <div className="text-2xl font-extrabold text-purple-700">
+                                {stats.enAttente}
                             </div>
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => setFiltreStatut(filtreStatut === "EN_ATTENTE_ENTREVUE" ? "TOUS" : "EN_ATTENTE_ENTREVUE")}
-                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
-                                filtreStatut === "EN_ATTENTE_ENTREVUE"
-                                    ? "bg-blue-700 text-white border-blue-700 shadow-sm ring-2 ring-blue-600/30"
-                                    : "bg-white border-blue-200 hover:border-blue-300"
-                            }`}
-                        >
-                            <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
-                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-blue-100" : "text-blue-700"}`}>
-                                    {t("gestionnaire_dashboard.status.EN_ATTENTE_ENTREVUE")}
-                                </span>
-                                <Clock className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-white" : "text-blue-600"}`} />
-                            </div>
-                            <div className={`text-2xl font-extrabold ${filtreStatut === "EN_ATTENTE_ENTREVUE" ? "text-white" : "text-blue-700"}`}>
-                                {stats.attenteEntrevue}
-                            </div>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setFiltreStatut(filtreStatut === "SANS_CONVOCATION" ? "TOUS" : "SANS_CONVOCATION")}
-                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            onClick={() => selectionnerFiltreStatut("SANS_CONVOCATION")}
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl bg-white text-left transition cursor-pointer ${
                                 filtreStatut === "SANS_CONVOCATION"
-                                    ? "bg-orange-700 text-white border-orange-700 shadow-sm ring-2 ring-orange-600/30"
-                                    : "bg-white border-orange-200 hover:border-orange-300"
+                                    ? "border-2 border-orange-600"
+                                    : "border border-orange-200 hover:border-orange-300"
                             }`}
                         >
                             <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
-                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "SANS_CONVOCATION" ? "text-orange-100" : "text-orange-700"}`}>
+                                <span className="min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide text-orange-700">
                                     {t("gestionnaire_dashboard.status.SANS_CONVOCATION")}
                                 </span>
-                                <AlertTriangle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "SANS_CONVOCATION" ? "text-white" : "text-orange-600"}`} />
+                                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-orange-600" />
                             </div>
-                            <div className={`text-2xl font-extrabold ${filtreStatut === "SANS_CONVOCATION" ? "text-white" : "text-orange-700"}`}>
+                            <div className="text-2xl font-extrabold text-orange-700">
                                 {stats.sansConvocation}
                             </div>
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => setFiltreStatut(filtreStatut === "AUCUNE_CANDIDATURE" ? "TOUS" : "AUCUNE_CANDIDATURE")}
-                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                            onClick={() => selectionnerFiltreStatut("AUCUNE_CANDIDATURE")}
+                            className={`min-w-0 overflow-hidden p-3.5 rounded-xl bg-white text-left transition cursor-pointer ${
                                 filtreStatut === "AUCUNE_CANDIDATURE"
-                                    ? "bg-red-700 text-white border-red-700 shadow-sm ring-2 ring-red-600/30"
-                                    : "bg-white border-red-200 hover:border-red-300"
+                                    ? "border-2 border-red-600"
+                                    : "border border-red-200 hover:border-red-300"
                             }`}
                         >
                             <div className="flex items-start justify-between gap-1.5 mb-1 min-w-0">
-                                <span className={`min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-red-100" : "text-red-700"}`}>
+                                <span className="min-w-0 flex-1 break-words text-[11px] font-bold uppercase tracking-wide text-red-700">
                                     {t("gestionnaire_dashboard.status.AUCUNE_CANDIDATURE")}
                                 </span>
-                                <AlertCircle className={`w-4 h-4 shrink-0 mt-0.5 ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-white" : "text-red-600"}`} />
+                                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-600" />
                             </div>
-                            <div className={`text-2xl font-extrabold ${filtreStatut === "AUCUNE_CANDIDATURE" ? "text-white" : "text-red-700"}`}>
+                            <div className="text-2xl font-extrabold text-red-700">
                                 {stats.aucuneCandidature}
                             </div>
                         </button>
                     </div>
+
+                    {filtreStatut === "EN_ATTENTE" && (
+                        <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-xs flex flex-wrap items-center gap-2">
+                            {["TOUS", ...SOUS_ETATS_ATTENTE].map((etat) => {
+                                const actif = filtreAttente === etat;
+                                const label = etat === "TOUS"
+                                    ? t("gestionnaire_dashboard.pending_all")
+                                    : t(`gestionnaire_dashboard.pending_tabs.${etat}`);
+                                const count = etat === "TOUS" ? stats.enAttente : compterSousEtat(etat);
+                                return (
+                                    <button
+                                        key={etat}
+                                        type="button"
+                                        onClick={() => setFiltreAttente(etat)}
+                                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                                            actif
+                                                ? "bg-purple-100 text-purple-800 border-purple-400"
+                                                : "bg-gray-50 text-gray-600 border-gray-200 hover:border-purple-300 hover:text-purple-700"
+                                        }`}
+                                    >
+                                        {label} ({count})
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
 
                     <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between min-w-0">
                         <div className="relative w-full sm:w-96 min-w-0">
@@ -306,7 +343,11 @@ export default function RapportsEtudiants() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {etudiantsFiltres.map((etudiant) => (
+                                        {etudiantsFiltres.map((etudiant) => {
+                                            const libelleStatut = SOUS_ETATS_ATTENTE.includes(etudiant.statutStage)
+                                                ? t(`gestionnaire_dashboard.pending_tabs.${etudiant.statutStage}`)
+                                                : t(`gestionnaire_dashboard.status.${etudiant.statutStage}`);
+                                            return (
                                             <tr key={etudiant.id} className="hover:bg-gray-50/60 transition">
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-2.5">
@@ -320,8 +361,8 @@ export default function RapportsEtudiants() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${COULEURS_STATUT[etudiant.statutStage] || "bg-gray-100 text-gray-700"}`}>
-                                                        {t(`gestionnaire_dashboard.status.${etudiant.statutStage}`)}
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${COULEURS_STATUT[etudiant.statutStage] || "bg-purple-100 text-purple-800 border-purple-200"}`}>
+                                                        {libelleStatut}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -348,22 +389,22 @@ export default function RapportsEtudiants() {
                                                     {etudiant.statutStage === "STAGE_TROUVE" ? (
                                                         etudiant.milieuEvalue ? (
                                                             <div className="flex flex-wrap items-center gap-2">
-                                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200 whitespace-nowrap">
                                                                     <CheckCircle className="w-3.5 h-3.5" />
                                                                     <span>{t("rapports_etudiants.milieu_evalue_badge")}</span>
                                                                 </span>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => ouvrirEvaluation(etudiant.id)}
-                                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 rounded-lg transition cursor-pointer"
+                                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 rounded-lg transition cursor-pointer whitespace-nowrap"
                                                                 >
                                                                     <Eye className="w-3.5 h-3.5" />
                                                                     <span>{t("rapports_etudiants.voir_evaluation_milieu")}</span>
                                                                 </button>
                                                             </div>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                                                                <Clock className="w-3.5 h-3.5" />
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
+                                                                <Clock className="w-3.5 h-3.5 text-slate-500" />
                                                                 <span>{t("rapports_etudiants.milieu_non_evalue_badge")}</span>
                                                             </span>
                                                         )
@@ -372,7 +413,8 @@ export default function RapportsEtudiants() {
                                                     )}
                                                 </td>
                                             </tr>
-                                        ))}
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

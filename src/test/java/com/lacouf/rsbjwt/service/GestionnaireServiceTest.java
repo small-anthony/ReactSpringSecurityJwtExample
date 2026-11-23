@@ -354,7 +354,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void getRapportEtudiants_candidatureEmbaucheeSansContratSigne_nestPasStageTrouve() {
+    void getRapportEtudiants_candidatureEnAttenteSignatureSansContratSigne_nestPasStageTrouve() {
         // ARRANGE
         Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
@@ -363,10 +363,10 @@ public class GestionnaireServiceTest {
         OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2026);
         Candidature candidature = new Candidature(etudiant, offre2026);
         candidature.setId(15L);
-        candidature.setStatut(StatutCandidature.EMBAUCHEE);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         etudiant.setCandidatures(List.of(candidature));
 
-        Contrat contratNonSigne = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        Contrat contratNonSigne = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
 
         when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
         when(contratRepository.findByCandidatureId(15L)).thenReturn(Optional.of(contratNonSigne));
@@ -376,7 +376,31 @@ public class GestionnaireServiceTest {
 
         // ASSERT
         assertEquals(1, resultat.size());
-        assertEquals("EN_ATTENTE_REPONSE", resultat.getFirst().statutStage());
+        assertEquals("EN_ATTENTE_SIGNATURE", resultat.getFirst().statutStage());
+    }
+
+    @Test
+    void getRapportEtudiants_candidatureEnAttenteSignatureSigneeParEtudiantSeulement_estEnAttenteReponse() {
+        Credentials cred = new Credentials("jean@test.com", "pass", Role.ETUDIANT);
+        Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
+        etudiant.setId(1L);
+
+        OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2026);
+        Candidature candidature = new Candidature(etudiant, offre2026);
+        candidature.setId(16L);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        etudiant.setCandidatures(List.of(candidature));
+
+        Contrat contratPartiel = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        contratPartiel.signer(new Signature<>(etudiant, "sig".getBytes()));
+
+        when(etudiantRepository.findAll()).thenReturn(List.of(etudiant));
+        when(contratRepository.findByCandidatureId(16L)).thenReturn(Optional.of(contratPartiel));
+
+        List<RapportEtudiantDto> resultat = gestionnaireService.getRapportEtudiants(2026);
+
+        assertEquals(1, resultat.size());
+        assertEquals("EN_ATTENTE_SIGNATURE", resultat.getFirst().statutStage());
     }
 
     @Test
@@ -569,8 +593,12 @@ public class GestionnaireServiceTest {
     }
 
     private Contrat creerContratSigneParEtudiant(Etudiant etudiant, Candidature candidature) {
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "25$/h", "desc", "cond");
+        com.lacouf.rsbjwt.model.Employeur employeur = new com.lacouf.rsbjwt.model.Employeur("Bob", "Employeur", new Credentials("bob@cgi.com", "pass", Role.EMPLOYEUR), "CGI", "Informatique");
+        com.lacouf.rsbjwt.model.Gestionnaire gestionnaire = new com.lacouf.rsbjwt.model.Gestionnaire("John", "Gestion", new Credentials("gest@test.com", "pass", Role.GESTIONNAIRE));
         contrat.signer(new Signature<>(etudiant, "sig".getBytes()));
+        contrat.signer(new Signature<>(employeur, "sig_emp".getBytes()));
+        contrat.signer(new Signature<>(gestionnaire, "sig_gest".getBytes()));
         return contrat;
     }
 

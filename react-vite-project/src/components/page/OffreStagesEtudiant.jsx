@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getMesCandidatures, getOffresDisponibles } from "../../services/api/EtudiantService.js";
 import { getConvocationsEtudiant } from "../../services/api/ConvocationAPI.js";
-import { getAnneesContratsEtudiant, getContratsEtudiant } from "../../services/api/ContratAPI.js";
+import { getAnneesContratsEtudiant, getContratsEtudiant, choisirStageEtGenererContrat } from "../../services/api/ContratAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
@@ -31,6 +31,7 @@ import {
     FileText,
     FilterX,
     LayoutDashboard,
+    Loader2,
     Search,
     X,
     XCircle
@@ -63,10 +64,64 @@ function contientTexte(texteSource, texteRecherche) {
 
 const ORDRE_STATUT_CANDIDATURE = {
     EMBAUCHEE: 0,
-    ACCEPTEE: 1,
-    EN_ATTENTE_REPONSE: 2,
-    EN_ATTENTE: 3,
-    REFUSEE: 4,
+    EN_ATTENTE_SIGNATURE: 1,
+    EN_ATTENTE_CHOIX_STAGE: 2,
+    EN_ATTENTE_ENTREVUE: 3,
+    EN_ATTENTE_CONFIRMATION_ENTREVUE: 4,
+    ENTREVUE_REFUSEE: 5,
+    EN_ATTENTE_CONVOCATION: 6,
+    REFUSEE: 7,
+};
+
+const BADGE_STATUT_CANDIDATURE = {
+    EN_ATTENTE_CONVOCATION: {
+        classes: "bg-slate-100 text-slate-700 border-slate-200",
+        Icon: Clock,
+        iconClass: "text-slate-500",
+        labelKey: "candidature_etudiant.status.EN_ATTENTE_CONVOCATION"
+    },
+    EN_ATTENTE_CONFIRMATION_ENTREVUE: {
+        classes: "bg-amber-100 text-amber-800 border-amber-200",
+        Icon: Calendar,
+        iconClass: "text-amber-600",
+        labelKey: "candidature_etudiant.status.EN_ATTENTE_CONFIRMATION_ENTREVUE"
+    },
+    ENTREVUE_REFUSEE: {
+        classes: "bg-orange-100 text-orange-800 border-orange-200",
+        Icon: XCircle,
+        iconClass: "text-orange-600",
+        labelKey: "candidature_etudiant.status.ENTREVUE_REFUSEE"
+    },
+    EN_ATTENTE_ENTREVUE: {
+        classes: "bg-indigo-100 text-indigo-800 border-indigo-200",
+        Icon: Calendar,
+        iconClass: "text-indigo-600",
+        labelKey: "candidature_etudiant.status.EN_ATTENTE_ENTREVUE"
+    },
+    EN_ATTENTE_CHOIX_STAGE: {
+        classes: "bg-blue-100 text-blue-800 border-blue-200",
+        Icon: CheckCircle2,
+        iconClass: "text-blue-600",
+        labelKey: "candidature_etudiant.status.EN_ATTENTE_CHOIX_STAGE"
+    },
+    EN_ATTENTE_SIGNATURE: {
+        classes: "bg-amber-100 text-amber-800 border-amber-200",
+        Icon: Clock,
+        iconClass: "text-amber-600",
+        labelKey: "etudiant_dashboard.applications.status_contract_to_sign"
+    },
+    EMBAUCHEE: {
+        classes: "bg-emerald-100 text-emerald-800 border-emerald-200",
+        Icon: CheckCircle2,
+        iconClass: "text-emerald-600",
+        labelKey: "candidature_etudiant.badge_EMBAUCHEE"
+    },
+    REFUSEE: {
+        classes: "bg-rose-100 text-rose-800 border-rose-200",
+        Icon: XCircle,
+        iconClass: "text-rose-600",
+        labelKey: "etudiant_dashboard.applications.status_refused"
+    }
 };
 
 export default function OffreStagesEtudiant() {
@@ -97,6 +152,7 @@ export default function OffreStagesEtudiant() {
         openUpload: null
     });
     const [offreSelectionnee, setOffreSelectionnee] = useState(null);
+    const [choosingCandidatureId, setChoosingCandidatureId] = useState(null);
     const [recherche, setRecherche] = useState("");
     const [filtreEntreprise, setFiltreEntreprise] = useState("");
     const [filtreDiscipline, setFiltreDiscipline] = useState("");
@@ -226,6 +282,26 @@ export default function OffreStagesEtudiant() {
         }
     };
 
+    const handleChoisirStageSucces = async () => {
+        setOffreSelectionnee(null);
+        await chargerDonnees();
+        changerOnglet("contrats");
+    };
+
+    const handleChoisirStageDepuisCarte = async (candidatureId) => {
+        if (!candidatureId) return;
+        try {
+            setChoosingCandidatureId(candidatureId);
+            setErreur(null);
+            await choisirStageEtGenererContrat(candidatureId, authService.buildAuthHeader());
+            await handleChoisirStageSucces();
+        } catch (err) {
+            setErreur((err && err.message) || t("candidature_etudiant.choose_stage_error"));
+        } finally {
+            setChoosingCandidatureId(null);
+        }
+    };
+
     const offresDisponiblesNonPostulees = useMemo(() => {
         return offres.filter((o) => !idsOffresPostulees.has(o.id));
     }, [offres, idsOffresPostulees]);
@@ -263,7 +339,9 @@ export default function OffreStagesEtudiant() {
 
     const candidaturesEmbauchees = useMemo(() => {
         return mesCandidaturesOffres.filter(
-            (offre) => obtenirStatutCandidature(offre, candidaturesParOffre, contrats) === "EMBAUCHEE"
+            (offre) => ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(
+                obtenirStatutCandidature(offre, candidaturesParOffre, contrats)
+            )
         );
     }, [mesCandidaturesOffres, candidaturesParOffre, contrats]);
 
@@ -397,6 +475,14 @@ export default function OffreStagesEtudiant() {
         setFiltreDuree("");
     };
 
+    const aStageEnCoursOuTrouve = useMemo(() => {
+        if (aDejaContratSigne) return true;
+        if (contrats.some((c) => c.statut !== "REFUSE")) return true;
+        return Object.values(candidaturesParOffre).some(
+            (c) => c && (c.statut === "EN_ATTENTE_SIGNATURE" || c.statut === "EMBAUCHEE")
+        );
+    }, [aDejaContratSigne, contrats, candidaturesParOffre]);
+
     const getCandidatureBadge = (offreId) => {
         const contratAssocie = contrats.find(
             (c) => c.offreId === offreId || String(c.offreId) === String(offreId)
@@ -423,44 +509,16 @@ export default function OffreStagesEtudiant() {
         }
 
         const cand = candidaturesParOffre[offreId];
-        const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE";
+        const statut = cand && cand.statut ? cand.statut : "EN_ATTENTE_CONVOCATION";
+        const badgeConfig = contratAssocie && !contratAssocie.signeParEtudiant
+            ? BADGE_STATUT_CANDIDATURE.EN_ATTENTE_SIGNATURE
+            : BADGE_STATUT_CANDIDATURE[statut] || BADGE_STATUT_CANDIDATURE.EN_ATTENTE_CONVOCATION;
+        const { classes, Icon, iconClass, labelKey } = badgeConfig;
 
-        if (statut === "EMBAUCHEE") {
-            if (contratAssocie && !contratAssocie.signeParEtudiant) {
-                return (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                        <Clock className="w-3 h-3 text-amber-600" />
-                        {t("etudiant_dashboard.applications.status_contract_to_sign")}
-                    </span>
-                );
-            }
-            return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                    <Clock className="w-3 h-3 text-blue-600" />
-                    {t("etudiant_dashboard.applications.status_selected")}
-                </span>
-            );
-        }
-        if (statut === "ACCEPTE" || statut === "ACCEPTEE") {
-            return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
-                    <Calendar className="w-3 h-3 text-indigo-600" />
-                    {t("etudiant_dashboard.applications.status_interview")}
-                </span>
-            );
-        }
-        if (statut === "REFUSEE" || statut === "REFUSE") {
-            return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
-                    <XCircle className="w-3 h-3 text-rose-600" />
-                    {t("etudiant_dashboard.applications.status_refused")}
-                </span>
-            );
-        }
         return (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                <Clock className="w-3 h-3 text-slate-500" />
-                {t("etudiant_dashboard.applications.status_pending")}
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${classes}`}>
+                <Icon className={`w-3 h-3 ${iconClass}`} />
+                {t(labelKey)}
             </span>
         );
     };
@@ -851,7 +909,31 @@ export default function OffreStagesEtudiant() {
                                                     </div>
                                                 )}
 
-                                            <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
+                                            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2 flex-wrap">
+                                                {ongletActif === "mes_candidatures" &&
+                                                    statutCandidature === "EN_ATTENTE_CHOIX_STAGE" &&
+                                                    !aStageEnCoursOuTrouve &&
+                                                    candidature?.id && (
+                                                        <button
+                                                            type="button"
+                                                            id={`btn-choisir-stage-${candidature.id}`}
+                                                            onClick={() => handleChoisirStageDepuisCarte(candidature.id)}
+                                                            disabled={choosingCandidatureId === candidature.id}
+                                                            className="btn-primary bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto text-xs py-2 px-4"
+                                                        >
+                                                            {choosingCandidatureId === candidature.id ? (
+                                                                <>
+                                                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                                    <span>{t("candidature_etudiant.choosing_stage")}</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                                                    <span>{t("candidature_etudiant.btn_choose_stage")}</span>
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    )}
                                                 <button
                                                     type="button"
                                                     onClick={() => setOffreSelectionnee(offre)}
@@ -879,6 +961,8 @@ export default function OffreStagesEtudiant() {
                 aPostule={aPostuleOffreSelectionnee}
                 candidature={candidatureOffreSelectionnee}
                 onPostulerSucces={handlePostulerSucces}
+                onChoisirStageSucces={handleChoisirStageSucces}
+                aDejaStageChoisi={aStageEnCoursOuTrouve}
                 contrats={contrats}
             />
         </div>

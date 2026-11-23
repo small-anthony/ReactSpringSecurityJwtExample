@@ -54,18 +54,9 @@ public class EmployeurService {
         this(userAppRepository, employeurRepository, offreStageRepository, candidatureRepository, null, null);
     }
 
-    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description, String emailEmployeur) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, null, null, null, null, emailEmployeur, null);
-    }
-
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
-                                          String emailEmployeur) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences, emailEmployeur, null);
-    }
-
-    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
-                                          String discipline, String duree, String salaire, String exigences,
+                                          String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur, Integer annee) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
@@ -78,6 +69,8 @@ public class EmployeurService {
         if (description == null || description.trim().isEmpty()) {
             throw new Exception("La description est obligatoire");
         }
+
+        validerLieuEtContact(adresse, ville, codePostal, telephone);
 
         if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
             throw new Exception("Le courriel de l'employeur est obligatoire");
@@ -98,6 +91,10 @@ public class EmployeurService {
                 duree != null && !duree.trim().isEmpty() ? duree.trim() : null,
                 exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
         );
+        offreStage.setAdresse(adresse.trim());
+        offreStage.setVille(ville.trim());
+        offreStage.setCodePostal(codePostal.trim().toUpperCase());
+        offreStage.setTelephone(telephone.trim());
 
         if (annee != null && annee > 0) {
             offreStage.setAnnee(annee);
@@ -189,15 +186,15 @@ public class EmployeurService {
     public CandidatureDto refuserCandidature(Long candidatureId, String message, String emailEmployeur) throws Exception {
         String messageNettoye = (message == null || message.trim().isEmpty()) ? null : message.trim();
         return repondre(candidatureId, emailEmployeur,
-                EnumSet.of(StatutCandidature.EN_ATTENTE, StatutCandidature.EN_ATTENTE_REPONSE, StatutCandidature.ACCEPTEE),
+                EnumSet.of(StatutCandidature.EN_ATTENTE_CONVOCATION, StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE, StatutCandidature.ENTREVUE_REFUSEE, StatutCandidature.EN_ATTENTE_ENTREVUE, StatutCandidature.EN_ATTENTE_CHOIX_STAGE),
                 StatutCandidature.REFUSEE, messageNettoye,
                 "Cette candidature a déjà reçu une réponse");
     }
 
     public CandidatureDto embaucherCandidature(Long candidatureId, String emailEmployeur) throws Exception {
         return repondre(candidatureId, emailEmployeur,
-                EnumSet.of(StatutCandidature.ACCEPTEE),
-                StatutCandidature.EMBAUCHEE, null,
+                EnumSet.of(StatutCandidature.EN_ATTENTE_ENTREVUE),
+                StatutCandidature.EN_ATTENTE_CHOIX_STAGE, null,
                 "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
     }
 
@@ -238,7 +235,7 @@ public class EmployeurService {
 
         List<Candidature> candidatures = candidatureRepository.findByOffreStage(offre);
         for (Candidature candidature : candidatures) {
-            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE) {
+            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE_CONVOCATION) {
                 refuserCandidature(candidature.getId(), "L'offre a été supprimée par l'employeur", emailEmployeur);
             }
         }
@@ -248,6 +245,7 @@ public class EmployeurService {
 
     public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
+                                          String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur) throws Exception {
 
         if (titre == null || titre.trim().isEmpty()) {
@@ -262,6 +260,8 @@ public class EmployeurService {
             throw new Exception("La description est obligatoire");
         }
 
+        validerLieuEtContact(adresse, ville, codePostal, telephone);
+
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
@@ -275,9 +275,41 @@ public class EmployeurService {
         offre.setDuree(duree != null && !duree.trim().isEmpty() ? duree.trim() : null);
         offre.setSalaire(salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null);
         offre.setExigences(exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null);
+        offre.setAdresse(adresse.trim());
+        offre.setVille(ville.trim());
+        offre.setCodePostal(codePostal.trim().toUpperCase());
+        offre.setTelephone(telephone.trim());
 
         offre.reinitialiserApprobation();
 
         return OffreStageDto.create(offreStageRepository.save(offre));
+    }
+
+    private void validerLieuEtContact(String adresse, String ville, String codePostal, String telephone) throws Exception {
+        if (adresse == null || adresse.trim().isEmpty()) {
+            throw new Exception("L'adresse est obligatoire");
+        }
+
+        if (ville == null || ville.trim().isEmpty()) {
+            throw new Exception("La ville est obligatoire");
+        }
+
+        if (codePostal == null || codePostal.trim().isEmpty()) {
+            throw new Exception("Le code postal est obligatoire");
+        }
+
+        if (!codePostal.trim().matches("^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$")) {
+            throw new Exception("Le code postal est invalide");
+        }
+
+        if (telephone == null || telephone.trim().isEmpty()) {
+            throw new Exception("Le téléphone est obligatoire");
+        }
+
+        String chiffres = telephone.replaceAll("\\D", "");
+        boolean caracteresValides = telephone.trim().matches("^\\+?[0-9 ().-]+$");
+        if (!caracteresValides || chiffres.length() < 10 || chiffres.length() > 15) {
+            throw new Exception("Le numéro de téléphone est invalide");
+        }
     }
 }

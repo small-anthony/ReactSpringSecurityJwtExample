@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,6 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 
@@ -68,8 +72,8 @@ public class ContratService {
     @Transactional(readOnly = true)
     public List<CandidaturePourContratDto> getCandidaturesPourContrat(Integer annee) {
         List<Candidature> candidatures = new ArrayList<>();
+        candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE));
         candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.EMBAUCHEE));
-        candidatures.addAll(candidatureRepository.findByStatut(StatutCandidature.ACCEPTEE));
 
         List<Candidature> distinctCandidatures = candidatures.stream().distinct().toList();
         Set<EtudiantEmployeurAnnee> contratsExistants = new HashSet<>();
@@ -114,19 +118,10 @@ public class ContratService {
         Candidature candidature = candidatureRepository.findById(request.candidatureId())
                 .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
-        if (candidature.getStatut() != StatutCandidature.EMBAUCHEE && candidature.getStatut() != StatutCandidature.ACCEPTEE) {
-            throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
-        }
-
-        if (contratRepository.existsByCandidatureId(candidature.getId())) {
-            throw new Exception("Un contrat existe dans pour cet étudiant et cet employeur.");
-        }
-
-        byte[] documentData = ContratPdfGenerator.generer(candidature, request, resoudreNomGestionnaire(gestionnaireEmail));
+        validerEligibiliteCandidature(candidature);
 
         Contrat contrat = new Contrat(
                 candidature,
-                documentData,
                 request.dateDebut(),
                 request.dateFin(),
                 request.horaire().trim(),
@@ -134,21 +129,65 @@ public class ContratService {
                 request.descriptionTaches().trim(),
                 request.conditions().trim());
 
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        candidatureRepository.save(candidature);
         Contrat savedContrat = contratRepository.save(contrat);
-        if (notificationService != null) {
-            if (candidature.getEtudiant() != null && candidature.getEtudiant().getId() != null) {
-                notificationService.pushNotification(
-                        Notification.contratCreatedForEtudiant(savedContrat),
-                        candidature.getEtudiant().getId());
-            }
-            if (candidature.getEmployeur() != null && candidature.getEmployeur().getId() != null) {
-                notificationService.pushNotification(
-                        Notification.contratCreatedForEmployeur(savedContrat),
-                        candidature.getEmployeur().getId());
-            }
-        }
-
+        notifierCreationContrat(candidature, savedContrat);
         return ContratDto.create(savedContrat);
+    }
+
+    public ContratDto genererContratAutomatique(Long candidatureId) throws Exception {
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+                .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + candidatureId));
+
+        validerEligibiliteCandidature(candidature);
+
+        OffreStage offre = candidature.getOffreStage();
+        int annee = offre != null ? offre.getAnnee() : AcademicSessionUtils.getAnneeActuelle();
+        validerAbsenceAutreStageActif(candidature, annee);
+        LocalDate dateDebut = LocalDate.of(annee, 5, 11);
+        long semaines = extraireSemainesDuree(offre != null ? offre.getDuree() : null);
+        LocalDate dateFin = dateDebut.plusWeeks(semaines);
+        String horaire = "Du lundi au vendredi, 9h à 17h (35h/semaine)";
+        String salaire = (offre != null && !estVide(offre.getSalaire())) ? offre.getSalaire().trim() : "Non spécifié";
+        String descriptionTaches = (offre != null && !estVide(offre.getDescription()))
+                ? offre.getDescription().trim()
+                : (offre != null && !estVide(offre.getTitre()) ? offre.getTitre().trim() : "Stage en informatique");
+        String conditions = (offre != null && !estVide(offre.getExigences()))
+                ? offre.getExigences().trim()
+                : "Conditions standards du milieu de stage.";
+
+        Contrat contrat = new Contrat(
+                candidature,
+                dateDebut,
+                dateFin,
+                horaire,
+                salaire,
+                descriptionTaches,
+                conditions);
+
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        candidatureRepository.save(candidature);
+        refuserAutresCandidaturesEtudiant(candidature, annee);
+        Contrat savedContrat = contratRepository.save(contrat);
+        notifierCreationContrat(candidature, savedContrat);
+        return ContratDto.create(savedContrat);
+    }
+
+    private void notifierCreationContrat(Candidature candidature, Contrat savedContrat) {
+        if (notificationService == null || candidature == null) {
+            return;
+        }
+        if (candidature.getEtudiant() != null && candidature.getEtudiant().getId() != null) {
+            notificationService.pushNotification(
+                    Notification.contratCreatedForEtudiant(savedContrat),
+                    candidature.getEtudiant().getId());
+        }
+        if (candidature.getEmployeur() != null && candidature.getEmployeur().getId() != null) {
+            notificationService.pushNotification(
+                    Notification.contratCreatedForEmployeur(savedContrat),
+                    candidature.getEmployeur().getId());
+        }
     }
 
     public ContratDto signerContrat(Long contratId, String actorEmail, MultipartFile signatureFile) throws Exception {
@@ -173,9 +212,10 @@ public class ContratService {
         }
         validerSignatairePourContrat(contrat, utilisateur);
         contrat.signer(signature);
-
-        byte[] pdfMisAJour = ContratPdfGenerator.mettreAJour(contrat, getNomGestionnaire());
-        contrat.setData(pdfMisAJour);
+        if (contrat.getStatut() == StatutContrat.COMPLETE && contrat.getCandidature() != null) {
+            contrat.getCandidature().setStatut(StatutCandidature.EMBAUCHEE);
+            candidatureRepository.save(contrat.getCandidature());
+        }
 
         Contrat contratSauvegarde = contratRepository.save(contrat);
         if (!(utilisateur instanceof Gestionnaire)
@@ -195,6 +235,10 @@ public class ContratService {
 
         validerSignatairePourRejet(contrat, utilisateur);
         contrat.rejeter(utilisateur);
+        if (contrat.getCandidature() != null) {
+            contrat.getCandidature().setStatut(StatutCandidature.REFUSEE);
+            candidatureRepository.save(contrat.getCandidature());
+        }
         Contrat contratSauvegarde = contratRepository.save(contrat);
         if (utilisateur instanceof Etudiant || utilisateur instanceof Employeur) {
             notifierGestionnaires(() -> Notification.contratRefuse(contratSauvegarde));
@@ -203,6 +247,9 @@ public class ContratService {
     }
 
     private void notifierGestionnaires(Supplier<Notification> notificationFactory) {
+        if (notificationService == null || gestionnaireRepository == null) {
+            return;
+        }
         gestionnaireRepository.findAll().forEach(gestionnaire ->
                 notificationService.pushNotification(notificationFactory.get(), gestionnaire.getId())
         );
@@ -229,7 +276,7 @@ public class ContratService {
     public byte[] getContratPdf(Long id) throws Exception {
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new Exception("Contrat introuvable avec l'identifiant : " + id));
-        return contrat.getData();
+        return ContratPdfGenerator.generer(contrat, getNomGestionnaire());
     }
 
     @Transactional(readOnly = true)
@@ -308,13 +355,71 @@ public class ContratService {
         return valeur == null || valeur.isBlank();
     }
 
-    private String resoudreNomGestionnaire(String email) {
-        if (estVide(email)) {
-            return getNomGestionnaire();
+    private void validerEligibiliteCandidature(Candidature candidature) throws Exception {
+        if (candidature.getStatut() != StatutCandidature.EN_ATTENTE_CHOIX_STAGE
+                && candidature.getStatut() != StatutCandidature.EMBAUCHEE) {
+            throw new Exception("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.");
         }
-        return userAppRepository.findUserAppByEmail(email)
-                .map(u -> u.getFirstName() + " " + u.getLastName())
-                .orElseGet(this::getNomGestionnaire);
+        if (contratRepository.existsByCandidatureId(candidature.getId())) {
+            throw new Exception("Un contrat existe dans pour cet étudiant et cet employeur.");
+        }
+    }
+
+    private void validerAbsenceAutreStageActif(Candidature candidatureChoisie, int annee) throws Exception {
+        if (candidatureChoisie.getEtudiant() == null) {
+            return;
+        }
+        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(candidatureChoisie.getEtudiant());
+        if (candidaturesEtudiant == null) {
+            return;
+        }
+        boolean dejaStageActif = candidaturesEtudiant.stream()
+                .anyMatch(autre -> !Objects.equals(autre.getId(), candidatureChoisie.getId())
+                        && (autre.getOffreStage() == null || autre.getOffreStage().getAnnee() == annee)
+                        && (autre.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE
+                                || autre.getStatut() == StatutCandidature.EMBAUCHEE));
+        if (dejaStageActif) {
+            throw new Exception("Vous avez déjà un stage en cours ou confirmé pour cette session.");
+        }
+    }
+
+    private long extraireSemainesDuree(String duree) {
+        if (estVide(duree)) {
+            return 15L;
+        }
+        Matcher matcher = Pattern.compile("(\\d{1,3})").matcher(duree);
+        if (matcher.find()) {
+            long valeur = Long.parseLong(matcher.group(1));
+            if (valeur > 0) {
+                return valeur;
+            }
+        }
+        return 15L;
+    }
+
+    private void refuserAutresCandidaturesEtudiant(Candidature candidatureChoisie, int annee) {
+        if (candidatureChoisie.getEtudiant() == null) {
+            return;
+        }
+        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(candidatureChoisie.getEtudiant());
+        if (candidaturesEtudiant == null) {
+            return;
+        }
+        LocalDateTime maintenant = LocalDateTime.now();
+        for (Candidature autre : candidaturesEtudiant) {
+            if (Objects.equals(autre.getId(), candidatureChoisie.getId())) {
+                continue;
+            }
+            if (autre.getOffreStage() != null && autre.getOffreStage().getAnnee() != annee) {
+                continue;
+            }
+            if (autre.getStatut() != StatutCandidature.REFUSEE) {
+                autre.setStatut(StatutCandidature.REFUSEE);
+                autre.setMessageReponse("L'étudiant a choisi une autre offre de stage.");
+                autre.setDateDecision(maintenant);
+                candidatureRepository.save(autre);
+            }
+        }
     }
 
     private String getNomGestionnaire() {

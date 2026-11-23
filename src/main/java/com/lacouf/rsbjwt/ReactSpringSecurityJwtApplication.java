@@ -8,7 +8,6 @@ import com.lacouf.rsbjwt.model.embeddable.RendezVous;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.service.ContratPdfGenerator;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -156,6 +155,27 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         claire.getCv().accepterApprobation();
                         claire = etudiantRepository.save(claire);
 
+                        Etudiant alex = new Etudiant("Alex", "Gagnon",
+                                        new Credentials("alex@test.com", defaultPass, Role.ETUDIANT),
+                                        2223344, "Techniques de l'informatique");
+                        alex.setCv(cvBytes);
+                        alex.getCv().accepterApprobation();
+                        alex = etudiantRepository.save(alex);
+
+                        Etudiant julie = new Etudiant("Julie", "Bouchard",
+                                        new Credentials("julie@test.com", defaultPass, Role.ETUDIANT),
+                                        3334455, "Techniques de l'informatique");
+                        julie.setCv(cvBytes);
+                        julie.getCv().accepterApprobation();
+                        julie = etudiantRepository.save(julie);
+
+                        Etudiant karim = new Etudiant("Karim", "Benali",
+                                        new Credentials("karim@test.com", defaultPass, Role.ETUDIANT),
+                                        4445566, "Techniques de l'informatique");
+                        karim.setCv(cvBytes);
+                        karim.getCv().accepterApprobation();
+                        karim = etudiantRepository.save(karim);
+
                         // =========================================================================
                         // 2. OFFRES DE STAGE (Courantes et Historiques)
                         // =========================================================================
@@ -169,6 +189,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "24$/h", "15 semaines",
                                         "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie.");
                         offreCgiDev.setAnnee(anneeCourante);
+                        offreCgiDev.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreCgiDev.setVille("Montréal");
+                        offreCgiDev.setCodePostal("H3G 1T4");
+                        offreCgiDev.setTelephone("514-555-0101");
                         offreCgiDev.accepter();
                         cgi.ajouterOffre(offreCgiDev);
 
@@ -178,6 +202,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "27$/h", "15 semaines",
                                         "Intérêt pour la sécurité web, OWASP et les tests d'intrusion.");
                         offreCgiSecu.setAnnee(anneeCourante);
+                        offreCgiSecu.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreCgiSecu.setVille("Montréal");
+                        offreCgiSecu.setCodePostal("H3G 1T4");
+                        offreCgiSecu.setTelephone("514-555-0101");
                         offreCgiSecu.accepter();
                         cgi.ajouterOffre(offreCgiSecu);
 
@@ -188,6 +216,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.", "Techniques de l'informatique", "26$/h", "15 semaines",
                                         "Connaissance de Linux, Git et Docker.");
                         offreCgiDevOpsHisto.setAnnee(anneeHistorique);
+                        offreCgiDevOpsHisto.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreCgiDevOpsHisto.setVille("Montréal");
+                        offreCgiDevOpsHisto.setCodePostal("H3G 1T4");
+                        offreCgiDevOpsHisto.setTelephone("514-555-0101");
                         offreCgiDevOpsHisto.accepter();
                         cgi.ajouterOffre(offreCgiDevOpsHisto);
 
@@ -200,6 +232,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Google", "Techniques de l'informatique", "28$/h", "16 semaines",
                                         "Maîtrise de React, JavaScript moderne et Git.");
                         offreGoogleFront.setAnnee(anneeCourante);
+                        offreGoogleFront.setAdresse("1253 avenue McGill College");
+                        offreGoogleFront.setVille("Montréal");
+                        offreGoogleFront.setCodePostal("H3B 2Y5");
+                        offreGoogleFront.setTelephone("514-555-0202");
                         offreGoogleFront.accepter();
                         google.ajouterOffre(offreGoogleFront);
 
@@ -209,6 +245,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Google", "Techniques de l'informatique", "25$/h", "15 semaines",
                                         "Connaissance de tests d'intégration, JavaScript et rigueur méthodique.");
                         offreGoogleQa.setAnnee(anneeCourante);
+                        offreGoogleQa.setAdresse("1253 avenue McGill College");
+                        offreGoogleQa.setVille("Montréal");
+                        offreGoogleQa.setCodePostal("H3B 2Y5");
+                        offreGoogleQa.setTelephone("514-555-0202");
                         offreGoogleQa.accepter();
                         google.ajouterOffre(offreGoogleQa);
 
@@ -223,38 +263,32 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // Employeur : employeur@test.com (CGI Inc.) -> Offre "Développeur Full Stack Web"
                         // Candidat : Luc Bélanger (EN_ATTENTE, bouton "Convoquer" disponible)
                         // -------------------------------------------------------------------------
-                        Candidature candLucPlanif = new Candidature(luc, offreCgiDev);
-                        candLucPlanif.setStatut(StatutCandidature.EN_ATTENTE);
-                        candidatureRepository.save(candLucPlanif);
+                        Candidature candJuliePlanif = new Candidature(julie, offreCgiDev);
+                        candJuliePlanif.setStatut(StatutCandidature.EN_ATTENTE_CONVOCATION);
+                        candidatureRepository.save(candJuliePlanif);
 
-                        // EQ2-13 (Bonus Reconvocation) : Sophie Martin a refusé l'entrevue, bouton "Reconvoquer"
-                        Candidature candSophieReconv = new Candidature(sophie, offreCgiSecu);
-                        candSophieReconv.setStatut(StatutCandidature.EN_ATTENTE);
+                        Candidature candKarimReconv = new Candidature(karim, offreCgiSecu);
+                        candKarimReconv.setStatut(StatutCandidature.ENTREVUE_REFUSEE);
                         List<RendezVous> rvReconv = new ArrayList<>();
                         rvReconv.add(RendezVous.read("Bureau CGI Inc. - Salle 101",
                                         LocalDateTime.now().plusDays(2).withHour(9).withMinute(0).toInstant(ZoneOffset.UTC)));
                         Convocation convRefusee = new Convocation(rvReconv, "Entrevue cybersécurité");
-                        candSophieReconv.addConvocation(convRefusee);
+                        candKarimReconv.addConvocation(convRefusee);
                         convRefusee.refuser("Pas disponible le matin, préférez l'après-midi svp.");
-                        candidatureRepository.save(candSophieReconv);
+                        candidatureRepository.save(candKarimReconv);
                         convocationRepository.save(convRefusee);
 
-                        // -------------------------------------------------------------------------
-                        // EQ2-15 : En tant qu'employeur, j'embauche un ou plusieurs étudiants
-                        // Employeur : employeur@test.com (CGI Inc.) -> Offre "Analyste Cybersécurité Junior"
-                        // Candidat : Hatim Fakhour (ACCEPTEE, bouton "Embaucher" disponible sous l'onglet Entrevues)
-                        // -------------------------------------------------------------------------
-                        Candidature candHatimEmbauche = new Candidature(hatim, offreCgiSecu);
-                        candHatimEmbauche.setStatut(StatutCandidature.ACCEPTEE);
-                        List<RendezVous> rvHatim = new ArrayList<>();
-                        RendezVous rvh1 = RendezVous.read("En ligne - Zoom Sécurité",
+                        Candidature candAlexEmbauche = new Candidature(alex, offreCgiSecu);
+                        candAlexEmbauche.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
+                        List<RendezVous> rvAlex = new ArrayList<>();
+                        RendezVous rva1 = RendezVous.read("En ligne - Zoom Sécurité",
                                         LocalDateTime.now().plusDays(3).withHour(14).withMinute(0).toInstant(ZoneOffset.UTC));
-                        rvHatim.add(rvh1);
-                        Convocation convHatim = new Convocation(rvHatim, "Entrevue avec le directeur technique.");
-                        candHatimEmbauche.addConvocation(convHatim);
-                        convHatim.accepter(rvh1, null);
-                        candidatureRepository.save(candHatimEmbauche);
-                        convocationRepository.save(convHatim);
+                        rvAlex.add(rva1);
+                        Convocation convAlex = new Convocation(rvAlex, "Entrevue avec le directeur technique.");
+                        candAlexEmbauche.addConvocation(convAlex);
+                        convAlex.accepter(rva1, null);
+                        candidatureRepository.save(candAlexEmbauche);
+                        convocationRepository.save(convAlex);
 
                         // -------------------------------------------------------------------------
                         // EQ2-16 : En tant que gestionnaire, je vois les étudiants acceptés ou refusés
@@ -267,14 +301,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candMarcRefuse.setDateDecision(LocalDateTime.now().minusDays(1));
                         candidatureRepository.save(candMarcRefuse);
 
-                        // -------------------------------------------------------------------------
-                        // EQ2-17 : En tant que gestionnaire, je fais un contrat
-                        // Gestionnaire : gestionnaire@test.com -> "Créer un contrat"
-                        // Candidat : Emma Roy chez CGI Inc. (EMBAUCHEE, pas encore de contrat)
-                        // -------------------------------------------------------------------------
-                        Candidature candEmmaAContracter = new Candidature(emma, offreCgiDev);
-                        candEmmaAContracter.setStatut(StatutCandidature.EMBAUCHEE);
-                        candidatureRepository.save(candEmmaAContracter);
+                        Candidature candEmmaCgiChoix = new Candidature(emma, offreCgiDev);
+                        candEmmaCgiChoix.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+                        candidatureRepository.save(candEmmaCgiChoix);
+
+                        Candidature candEmmaGoogleChoix = new Candidature(emma, offreGoogleFront);
+                        candEmmaGoogleChoix.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+                        candidatureRepository.save(candEmmaGoogleChoix);
 
                         // -------------------------------------------------------------------------
                         // EQ2-18 : En tant qu'étudiant, je signe le contrat
@@ -282,7 +315,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // Contrat créé chez Google, statut EN_ATTENTE_SIGNATURE
                         // -------------------------------------------------------------------------
                         Candidature candHatimGoogle = new Candidature(hatim, offreGoogleFront);
-                        candHatimGoogle.setStatut(StatutCandidature.EMBAUCHEE);
+                        candHatimGoogle.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candHatimGoogle);
 
                         CreationContratRequest reqHatimGoogle = new CreationContratRequest(
@@ -293,9 +326,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "28.00$/h",
                                         "Développement de composants UI React modernes et intégration aux APIs REST.",
                                         "Télétravail hybride (2 jours au bureau). Équipement MacBook Pro fourni.");
-                        byte[] pdfHatim = ContratPdfGenerator.generer(candHatimGoogle, reqHatimGoogle, "John Gestion");
                         Contrat contratHatimASigner = new Contrat(
-                                        candHatimGoogle, pdfHatim,
+                                        candHatimGoogle,
                                         reqHatimGoogle.dateDebut(), reqHatimGoogle.dateFin(),
                                         reqHatimGoogle.horaire(), reqHatimGoogle.salaire(),
                                         reqHatimGoogle.descriptionTaches(), reqHatimGoogle.conditions());
@@ -308,7 +340,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // L'employeur clique sur "Signer le contrat"
                         // -------------------------------------------------------------------------
                         Candidature candSophieCgi = new Candidature(sophie, offreCgiDev);
-                        candSophieCgi.setStatut(StatutCandidature.EMBAUCHEE);
+                        candSophieCgi.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candSophieCgi);
 
                         CreationContratRequest reqSophie = new CreationContratRequest(
@@ -319,15 +351,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "24.00$/h",
                                         "Développement full-stack de microservices Spring Boot et interfaces utilisateur.",
                                         "Formule hybride, assurances collectives incluses.");
-                        byte[] pdfSophie = ContratPdfGenerator.generer(candSophieCgi, reqSophie, "John Gestion");
                         Contrat contratSophieEmployeurASigner = new Contrat(
-                                        candSophieCgi, pdfSophie,
+                                        candSophieCgi,
                                         reqSophie.dateDebut(), reqSophie.dateFin(),
                                         reqSophie.horaire(), reqSophie.salaire(),
                                         reqSophie.descriptionTaches(), reqSophie.conditions());
                         // Sophie a signé
                         contratSophieEmployeurASigner.signer(new Signature<>(sophie, "signature_sophie".getBytes()));
-                        contratSophieEmployeurASigner.setData(ContratPdfGenerator.mettreAJour(contratSophieEmployeurASigner, "John Gestion"));
                         contratRepository.save(contratSophieEmployeurASigner);
 
                         // -------------------------------------------------------------------------
@@ -337,7 +367,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         // 2) Contrat déjà complété (COMPLETE) avec bouton "Imprimer" disponible immédiatement
                         // -------------------------------------------------------------------------
                         Candidature candLucGoogle = new Candidature(luc, offreGoogleQa);
-                        candLucGoogle.setStatut(StatutCandidature.EMBAUCHEE);
+                        candLucGoogle.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candLucGoogle);
 
                         CreationContratRequest reqLuc = new CreationContratRequest(
@@ -348,41 +378,15 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "25.00$/h",
                                         "Automatisation de tests E2E avec Playwright et validation continue des livrables.",
                                         "Télétravail complet avec réunions d'équipe hebdomadaires.");
-                        byte[] pdfLuc = ContratPdfGenerator.generer(candLucGoogle, reqLuc, "John Gestion");
                         Contrat contratPretGestionnaire = new Contrat(
-                                        candLucGoogle, pdfLuc,
+                                        candLucGoogle,
                                         reqLuc.dateDebut(), reqLuc.dateFin(),
                                         reqLuc.horaire(), reqLuc.salaire(),
                                         reqLuc.descriptionTaches(), reqLuc.conditions());
                         // Étudiant + Employeur ont signé
                         contratPretGestionnaire.signer(new Signature<>(luc, "signature_luc".getBytes()));
                         contratPretGestionnaire.signer(new Signature<>(google, "signature_google".getBytes()));
-                        contratPretGestionnaire.setData(ContratPdfGenerator.mettreAJour(contratPretGestionnaire, "John Gestion"));
                         contratRepository.save(contratPretGestionnaire);
-
-                        // Contrat complété à 100% (pour démonstration immédiate d'impression / téléchargement)
-                        Candidature candEmmaComplete = new Candidature(emma, offreGoogleQa);
-                        candEmmaComplete.setStatut(StatutCandidature.EMBAUCHEE);
-                        candidatureRepository.save(candEmmaComplete);
-
-                        CreationContratRequest reqEmmaComp = new CreationContratRequest(
-                                        candEmmaComplete.getId(),
-                                        LocalDate.of(anneeCourante, 5, 11),
-                                        LocalDate.of(anneeCourante, 8, 21),
-                                        "35h/semaine", "25.00$/h",
-                                        "Assurance qualité logicielle",
-                                        "Matériel fourni");
-                        byte[] pdfEmmaComp = ContratPdfGenerator.generer(candEmmaComplete, reqEmmaComp, "John Gestion");
-                        Contrat contratCompleteImprime = new Contrat(
-                                        candEmmaComplete, pdfEmmaComp,
-                                        reqEmmaComp.dateDebut(), reqEmmaComp.dateFin(),
-                                        reqEmmaComp.horaire(), reqEmmaComp.salaire(),
-                                        reqEmmaComp.descriptionTaches(), reqEmmaComp.conditions());
-                        contratCompleteImprime.signer(new Signature<>(emma, "sig_emma".getBytes()));
-                        contratCompleteImprime.signer(new Signature<>(google, "sig_google".getBytes()));
-                        contratCompleteImprime.signer(new Signature<>(john, "sig_john".getBytes()));
-                        contratCompleteImprime.setData(ContratPdfGenerator.mettreAJour(contratCompleteImprime, "John Gestion"));
-                        contratRepository.save(contratCompleteImprime);
 
                         // -------------------------------------------------------------------------
                         // EQ2-23 : En tant qu'employeur, j'évalue un stagiaire de la session courante
@@ -400,16 +404,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "35h/semaine", "24.00$/h",
                                         "Développement Full Stack Web avec React et Spring Boot",
                                         "Télétravail hybride");
-                        byte[] pdfClaireComp = ContratPdfGenerator.generer(candClaireCgiComplete, reqClaireComp, "John Gestion");
                         Contrat contratClaireCgiComplete = new Contrat(
-                                        candClaireCgiComplete, pdfClaireComp,
+                                        candClaireCgiComplete,
                                         reqClaireComp.dateDebut(), reqClaireComp.dateFin(),
                                         reqClaireComp.horaire(), reqClaireComp.salaire(),
                                         reqClaireComp.descriptionTaches(), reqClaireComp.conditions());
                         contratClaireCgiComplete.signer(new Signature<>(claire, "sig_claire".getBytes()));
                         contratClaireCgiComplete.signer(new Signature<>(cgi, "sig_cgi_claire".getBytes()));
                         contratClaireCgiComplete.signer(new Signature<>(john, "sig_john_claire".getBytes()));
-                        contratClaireCgiComplete.setData(ContratPdfGenerator.mettreAJour(contratClaireCgiComplete, "John Gestion"));
                         contratRepository.save(contratClaireCgiComplete);
 
                         // -------------------------------------------------------------------------
@@ -428,16 +430,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "35h/semaine", "26.00$/h",
                                         "Maintenance et automatisation des déploiements DevOps historiques.",
                                         "Conditions standards.");
-                        byte[] pdfHisto = ContratPdfGenerator.generer(candHisto, reqHisto, "John Gestion");
                         Contrat contratHisto = new Contrat(
-                                        candHisto, pdfHisto,
+                                        candHisto,
                                         reqHisto.dateDebut(), reqHisto.dateFin(),
                                         reqHisto.horaire(), reqHisto.salaire(),
                                         reqHisto.descriptionTaches(), reqHisto.conditions());
                         contratHisto.signer(new Signature<>(hatim, "sig_hatim_histo".getBytes()));
                         contratHisto.signer(new Signature<>(cgi, "sig_cgi_histo".getBytes()));
                         contratHisto.signer(new Signature<>(john, "sig_john_histo".getBytes()));
-                        contratHisto.setData(ContratPdfGenerator.mettreAJour(contratHisto, "John Gestion"));
                         contratRepository.save(contratHisto);
 
                         System.out.println("=== INITIALISATION DES DONNÉES DE DÉMONSTRATION COMPLÉTÉE AVEC SUCCÈS ===");

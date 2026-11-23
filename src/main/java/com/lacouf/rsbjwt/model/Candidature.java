@@ -28,7 +28,7 @@ public class Candidature {
     private LocalDateTime dateCandidature = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    private StatutCandidature statut = StatutCandidature.EN_ATTENTE;
+    private StatutCandidature statut = StatutCandidature.EN_ATTENTE_CONVOCATION;
 
     @Column(length = 1000)
     private String messageReponse;
@@ -90,6 +90,26 @@ public class Candidature {
 
     public String getSalaireOffre() {
         return offreStage != null ? offreStage.getSalaire() : null;
+    }
+
+    public String getAdresseOffre() {
+        return offreStage != null ? offreStage.getAdresse() : null;
+    }
+
+    public String getVilleOffre() {
+        return offreStage != null ? offreStage.getVille() : null;
+    }
+
+    public String getCodePostalOffre() {
+        return offreStage != null ? offreStage.getCodePostal() : null;
+    }
+
+    public String telephoneLieuStage() {
+        String telephoneOffre = offreStage != null ? offreStage.getTelephone() : null;
+        if (telephoneOffre != null && !telephoneOffre.isBlank()) {
+            return telephoneOffre;
+        }
+        return telephoneEmployeur();
     }
 
     public String nomContactEmployeur() {

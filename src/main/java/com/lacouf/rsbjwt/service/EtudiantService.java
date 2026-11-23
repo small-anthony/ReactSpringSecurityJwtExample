@@ -142,6 +142,16 @@ public class EtudiantService {
                 etudiant.getCv().getMessageRefusApprobation());
     }
 
+    public byte[] getCv(String email) {
+        Etudiant etudiant = (Etudiant) userAppRepository.findUserAppByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
+
+        if (etudiant.getCv() == null || etudiant.getCv().getData() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucun CV disponible");
+        }
+        return etudiant.getCv().getData();
+    }
+
     public List<OffreStageDto> getOffresDisponibles(String email) {
         UserApp user = userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));

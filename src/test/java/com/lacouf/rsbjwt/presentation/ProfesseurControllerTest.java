@@ -278,7 +278,7 @@ class ProfesseurControllerTest {
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("martin@test.com");
         DossierStageProfesseurDto dto = new DossierStageProfesseurDto(
-                1L, 3L, 5L, "CGI", "Valentin", "514-555-1234", "emp@test.com",
+                1L, 3L, 5L, "CGI", "Valentin", "514-555-1234", "1350 boulevard René-Lévesque Ouest", "Montréal", "H3G 1T4", "emp@test.com",
                 "Sophie Martin", "info", "Dev Web", "2026-05-18", "2026-08-21",
                 "2026-05-18 → 2026-08-21", "24.00", "Martin Tremblay", false, null
         );

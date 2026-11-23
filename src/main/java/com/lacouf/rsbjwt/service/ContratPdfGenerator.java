@@ -70,7 +70,7 @@ public class ContratPdfGenerator {
     private record Fonts(PdfFont regular, PdfFont bold, PdfFont italic) {
     }
 
-    public static byte[] mettreAJour(Contrat contrat, String nomGestionnaire) throws IOException {
+    public static byte[] generer(Contrat contrat, String nomGestionnaire) throws IOException {
         Candidature candidature = contrat.getCandidature();
         Etudiant etudiant = candidature.getEtudiant();
         Employeur employeur = candidature.getEmployeur();
@@ -94,6 +94,10 @@ public class ContratPdfGenerator {
                 contrat.getSignatureGestionnaire()
         );
         return genererDocument(data);
+    }
+
+    public static byte[] mettreAJour(Contrat contrat, String nomGestionnaire) throws IOException {
+        return generer(contrat, nomGestionnaire);
     }
 
     public static byte[] generer(Candidature candidature, CreationContratRequest request, String nomGestionnaire) throws IOException {

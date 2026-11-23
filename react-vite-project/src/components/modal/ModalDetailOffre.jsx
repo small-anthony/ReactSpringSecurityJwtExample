@@ -1,8 +1,9 @@
-import { X, XCircle, Building2, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
+import { X, XCircle, Building2, MapPin, Phone, DollarSign, Calendar, GraduationCap, FileText, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useContext } from "react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { postuler } from "../../services/api/OffreStageService.js";
+import { choisirStageEtGenererContrat } from "../../services/api/ContratAPI.js";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 
 const MESSAGE_OFFRE_SUPPRIMEE = "L'offre a été supprimée par l'employeur";
@@ -36,6 +37,8 @@ export default function ModalDetailOffre({
     onClose,
     aPostule,
     onPostulerSucces,
+    onChoisirStageSucces,
+    aDejaStageChoisi = false,
     candidature,
     contrats = []
 }) {
@@ -43,6 +46,7 @@ export default function ModalDetailOffre({
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [isApplying, setIsApplying] = useState(false);
+    const [isChoosingStage, setIsChoosingStage] = useState(false);
     const [hasApplied, setHasApplied] = useState(aPostule);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
@@ -61,7 +65,8 @@ export default function ModalDetailOffre({
         (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE") &&
         !aRefuseContrat
     );
-    const estRetenueSansSignature = statutCand === "EMBAUCHEE" && !aSigneContrat && !aRefuseContrat;
+    const estRetenueSansSignature = ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(statutCand) && !aSigneContrat && !aRefuseContrat;
+    const peutChoisirStage = statutCand === "EN_ATTENTE_CHOIX_STAGE" && !contratAssocie && !aDejaStageChoisi && Boolean(cand && cand.id);
 
     useEffect(() => {
         setHasApplied(aPostule);
@@ -74,7 +79,8 @@ export default function ModalDetailOffre({
 
     if (!offre) return null;
 
-    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description } = offre;
+    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, ville, codePostal, telephone } = offre;
+    const adresseComplete = [adresse, ville, codePostal].filter(Boolean).join(", ");
 
     const handlePostuler = async () => {
         try {
@@ -102,6 +108,23 @@ export default function ModalDetailOffre({
             setErrorMessage(msg);
         } finally {
             setIsApplying(false);
+        }
+    };
+
+    const handleChoisirStage = async () => {
+        if (!cand || !cand.id) return;
+        try {
+            setIsChoosingStage(true);
+            setErrorMessage("");
+            const authHeader = authService.buildAuthHeader();
+            const contrat = await choisirStageEtGenererContrat(cand.id, authHeader);
+            if (onChoisirStageSucces) {
+                await onChoisirStageSucces(contrat);
+            }
+        } catch (err) {
+            setErrorMessage((err && err.message) || t("candidature_etudiant.choose_stage_error"));
+        } finally {
+            setIsChoosingStage(false);
         }
     };
 
@@ -159,9 +182,11 @@ export default function ModalDetailOffre({
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-sm flex items-center gap-2.5">
                         <AlertCircle className="w-5 h-5 text-blue-600 shrink-0" strokeWidth={1.5} />
                         <span className="font-semibold">
-                            {contratAssocie
-                                ? t("candidature_etudiant.status_contract_pending_signature")
-                                : t("candidature_etudiant.status_selected_waiting_contract")}
+                            {peutChoisirStage
+                                ? t("candidature_etudiant.choose_stage_notice")
+                                : contratAssocie
+                                    ? t("candidature_etudiant.status_contract_pending_signature")
+                                    : t("candidature_etudiant.status_selected_waiting_contract")}
                         </span>
                     </div>
                 )}
@@ -242,6 +267,33 @@ export default function ModalDetailOffre({
                         </div>
                     </div>
 
+                    {(adresseComplete || telephone) && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {adresseComplete && (
+                                <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] min-w-0">
+                                    <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
+                                        <MapPin className="w-4 h-4 text-[#DC2626] shrink-0" strokeWidth={1.5} />
+                                        <span>{t("offres_etudiant.modal.address")}</span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
+                                        {adresseComplete}
+                                    </p>
+                                </div>
+                            )}
+                            {telephone && (
+                                <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] min-w-0">
+                                    <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
+                                        <Phone className="w-4 h-4 text-[#059669] shrink-0" strokeWidth={1.5} />
+                                        <span>{t("offres_etudiant.modal.phone")}</span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
+                                        {telephone}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {exigences && (
                         <div className="bg-[#EFF6FF] border-l-[3px] border-l-[#2563EB] rounded-r-xl p-4">
                             <h3 className="text-xs font-bold text-[#1E40AF] uppercase tracking-wider mb-1">
@@ -272,6 +324,28 @@ export default function ModalDetailOffre({
                     >
                         {t("offres_etudiant.modal.close")}
                     </button>
+
+                    {peutChoisirStage && (
+                        <button
+                            type="button"
+                            id="btn-choisir-stage-modal"
+                            onClick={handleChoisirStage}
+                            disabled={isChoosingStage}
+                            className="btn-primary bg-emerald-600 hover:bg-emerald-700 px-6"
+                        >
+                            {isChoosingStage ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+                                    <span>{t("candidature_etudiant.choosing_stage")}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
+                                    <span>{t("candidature_etudiant.btn_choose_stage")}</span>
+                                </>
+                            )}
+                        </button>
+                    )}
 
                     {!hasApplied && !estRefusee && !estRetenueSansSignature && !aSigneContrat && (
                         <button

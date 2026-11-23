@@ -17,10 +17,6 @@ public class Contrat {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Lob
-	@Column(name = "document_data", nullable = false)
-	private byte[] data;
-
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "candidature_id")
 	private Candidature candidature;
@@ -80,10 +76,9 @@ public class Contrat {
 	})
 	private Signature<Gestionnaire> signatureGestionnaire = null;
 
-	public Contrat(Candidature candidature, byte[] data, LocalDate dateDebut, LocalDate dateFin,
+	public Contrat(Candidature candidature, LocalDate dateDebut, LocalDate dateFin,
 				   String horaire, String salaire, String descriptionTaches, String conditions) {
 		this.candidature = candidature;
-		this.data = data;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.horaire = horaire;
@@ -173,14 +168,6 @@ public class Contrat {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
 	}
 
 	public Candidature getCandidature() {

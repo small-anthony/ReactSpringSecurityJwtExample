@@ -38,7 +38,7 @@ const mockEtudiants = [
         discipline: "INFORMATIQUE",
         statutStage: "EN_ATTENTE_ENTREVUE",
         candidatures: [
-            { id: 11, titreOffre: "Analyste QA", nomEntreprise: "Desjardins", statut: "EN_ATTENTE", dateCandidature: "2026-03-01T14:30:00" }
+            { id: 11, titreOffre: "Analyste QA", nomEntreprise: "Desjardins", statut: "EN_ATTENTE_ENTREVUE", dateCandidature: "2026-03-01T14:30:00" }
         ]
     },
     {
@@ -82,6 +82,21 @@ describe("RapportsEtudiants (Tableau de bord Gestionnaire)", () => {
         expect(screen.getByText("3")).toBeInTheDocument();
     });
 
+    it("devrait classer les étudiants par statut de stage", async () => {
+        GestionnaireService.getRapportEtudiants.mockResolvedValue([
+            mockEtudiants[2],
+            mockEtudiants[1],
+            mockEtudiants[0],
+        ]);
+        renderComponent();
+
+        await screen.findByText("Jean Tremblay");
+        const lignes = screen.getAllByRole("row").slice(1);
+        expect(lignes[0]).toHaveTextContent("Jean Tremblay");
+        expect(lignes[1]).toHaveTextContent("Sophie Martin");
+        expect(lignes[2]).toHaveTextContent("Alex Roy");
+    });
+
     it("devrait filtrer les étudiants par statut lors du clic sur une carte KPI", async () => {
         renderComponent();
 
@@ -93,6 +108,33 @@ describe("RapportsEtudiants (Tableau de bord Gestionnaire)", () => {
         expect(screen.getByText("Jean Tremblay")).toBeInTheDocument();
         expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
         expect(screen.queryByText("Alex Roy")).not.toBeInTheDocument();
+    });
+
+    it("devrait afficher le menu de filtrage En attente et filtrer par sous-statut", async () => {
+        renderComponent();
+
+        await screen.findByText("Jean Tremblay");
+
+        const boutonEnAttente = screen.getByRole("button", { name: /en attente/i });
+        fireEvent.click(boutonEnAttente);
+
+        expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
+        expect(screen.queryByText("Jean Tremblay")).not.toBeInTheDocument();
+        expect(screen.queryByText("Alex Roy")).not.toBeInTheDocument();
+
+        expect(screen.getByRole("button", { name: /tous \(1\)/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /en attente de confirmation d'entrevue \(0\)/i })).toBeInTheDocument();
+        const boutonAttenteEntrevue = screen.getByRole("button", { name: /en attente d'entrevue \(1\)/i });
+        expect(screen.getByRole("button", { name: /en attente du choix de l'étudiant \(0\)/i })).toBeInTheDocument();
+        const boutonAttenteSignature = screen.getByRole("button", { name: /en attente de signature \(0\)/i });
+        expect(boutonAttenteEntrevue).toBeInTheDocument();
+        expect(boutonAttenteSignature).toBeInTheDocument();
+
+        fireEvent.click(boutonAttenteSignature);
+        expect(screen.queryByText("Sophie Martin")).not.toBeInTheDocument();
+
+        fireEvent.click(boutonAttenteEntrevue);
+        expect(screen.getByText("Sophie Martin")).toBeInTheDocument();
     });
 
     it("devrait filtrer les étudiants avec la barre de recherche", async () => {

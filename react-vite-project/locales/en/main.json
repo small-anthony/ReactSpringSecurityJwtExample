@@ -192,6 +192,10 @@
     "discipline": "Field / Discipline",
     "duree": "Internship Duration",
     "salaire": "Compensation / Salary",
+    "adresse": "Street address",
+    "ville": "City",
+    "codePostal": "Postal code",
+    "telephone": "Contact phone number",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
     "weeks": "{{count}} weeks",
@@ -201,6 +205,10 @@
       "discipline": "-- Select a discipline --",
       "duree": "-- Select a duration --",
       "salaire": "22.50",
+      "adresse": "Ex: 1350 René-Lévesque Blvd West",
+      "ville": "Ex: Montréal",
+      "codePostal": "Ex: H3G 1T4",
+      "telephone": "Ex: 514-555-1234",
       "exigences": "Ex: Knowledge of React, Spring Boot, Git...",
       "description": "Describe the tasks and responsibilities..."
     },
@@ -212,6 +220,16 @@
       "salaire": {
         "required": "Salary is required.",
         "format": "Invalid salary format."
+      },
+      "adresse": "Address is required.",
+      "ville": "City is required.",
+      "codePostal": {
+        "required": "Postal code is required.",
+        "format": "Invalid postal code (ex: H3G 1T4)."
+      },
+      "telephone": {
+        "required": "Phone number is required.",
+        "format": "Invalid phone number (at least 10 digits)."
       },
       "exigences": "Requirements are required.",
       "description": "Description is required.",
@@ -269,6 +287,8 @@
     "successMessage": "Your resume has been uploaded successfully!",
     "loading": "Uploading...",
     "submit": "Upload my resume",
+    "view_current_cv": "View my current resume",
+    "current_cv": "My current resume",
     "errors": {
       "notPdf": "Please select a PDF file.",
       "default": "An error occurred during the upload."
@@ -360,6 +380,12 @@
     "no_cv": "No resume available",
     "status": {
       "EN_ATTENTE": "Pending",
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "ACCEPTE": "Accepted",
       "ACCEPTEE": "Interview accepted",
       "REFUSE": "Rejected",
@@ -398,6 +424,12 @@
   "candidature_etudiant": {
     "status": {
       "EN_ATTENTE": "Awaiting employer's decision",
+      "EN_ATTENTE_CONVOCATION": "Awaiting employer's decision",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Invited to an interview",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Interview confirmed",
+      "EN_ATTENTE_CHOIX_STAGE": "Selected — awaiting your choice",
+      "EN_ATTENTE_SIGNATURE": "Contract awaiting signature",
       "ACCEPTE": "Invited to an interview",
       "ACCEPTEE": "Invited to an interview",
       "REFUSE": "Application rejected. Click \"View details\" for more information.",
@@ -410,6 +442,10 @@
     "status_entrevue_confirmee": "Interview confirmed — Awaiting decision",
     "status_selected_waiting_contract": "Your application has been selected by the employer. You will be hired once you sign your internship contract.",
     "status_contract_pending_signature": "Your application has been selected — A contract is awaiting your signature to finalize your hiring.",
+    "btn_choose_stage": "Choose this internship",
+    "choosing_stage": "Generating contract...",
+    "choose_stage_notice": "Congratulations! The employer selected your application. Click \"Choose this internship\" to confirm your choice, automatically generate your contract, and decline your other applications.",
+    "choose_stage_error": "Error while selecting this internship.",
     "refuse_reason": "Employer's message",
     "modal_refused_title": "Application rejected",
     "modal_refused_no_reason": "Your application was not selected by the employer for this internship offer.",
@@ -564,7 +600,9 @@
         "discipline": "Discipline",
         "salaire": "Salary",
         "duree": "Duration",
-        "exigences": "Requirements"
+        "exigences": "Requirements",
+        "adresse": "Address",
+        "telephone": "Phone"
       },
       "errors": {
         "fetch": "Unable to load offers at this time.",
@@ -640,6 +678,8 @@
       "duration": "Duration",
       "salary": "Compensation",
       "not_specified": "Not specified",
+      "address": "Work location address",
+      "phone": "Phone",
       "requirements": "Special requirements",
       "description": "Internship description",
       "no_description": "No description provided.",
@@ -1033,11 +1073,14 @@
   },
   "quick_login": {
     "valentin_desc": "Interview scheduling, hiring, contract signing and archives",
-    "john_desc": "Student reports, contract creation, signing and printing",
-    "hatim_desc": "Internship contract signing, interview accepted",
-    "sophie_desc": "Refused interview (reschedule), signed contract",
-    "luc_desc": "Candidate to interview, signed contract ready for coordinator",
-    "emma_desc": "Hired student ready for contract, completed contract",
+    "john_desc": "Student reports, contract signing and printing",
+    "hatim_desc": "Internship contract signing and history",
+    "sophie_desc": "Contract signed by student (ready for employer)",
+    "luc_desc": "Contract signed by student & employer (ready for coordinator)",
+    "emma_desc": "2 offers selected — choose internship & auto-generate contract",
+    "alex_desc": "Confirmed interview at CGI Inc. (ready to hire)",
+    "julie_desc": "Submitted application at CGI Inc. (to invite)",
+    "karim_desc": "Declined interview at CGI Inc. (to reschedule)",
     "daniil_desc": "No interview / No resume (coordinator reports)",
     "company_cegep": "College",
     "company_student_m": "Student",
@@ -1251,7 +1294,11 @@
       "program": "Program",
       "company": "Company",
       "position": "Position",
-      "period": "Contract period"
+      "period": "Contract period",
+      "contact": "Contact person",
+      "address": "Internship location",
+      "phone": "Phone",
+      "salary": "Hourly wage"
     },
     "section1": {
       "title": "1. Company Identification",
@@ -1382,6 +1429,15 @@
     "title": "Student Progress Tracking",
     "subtitle": "Dashboard of student progress and internship placement status.",
     "kpi_total": "Total Students",
+    "kpi_pending": "Pending",
+    "pending_all": "All",
+    "pending_tabs": {
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Awaiting interview confirmation",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature"
+    },
     "status": {
       "STAGE_TROUVE": "Internship Found",
       "NON_EVALUE_PROFESSEUR": "Pending Prof. Eval.",
@@ -1413,6 +1469,12 @@
     "modal_applications_empty": "This student has not applied to any offers for this session.",
     "statut_candidature": {
       "EN_ATTENTE": "Pending",
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "ACCEPTEE": "Accepted",
       "REFUSEE": "Rejected",
       "EMBAUCHEE": "Hired"

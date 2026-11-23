@@ -36,6 +36,10 @@ export default function CreerOffre() {
           formData.duree.trim(),
           finalSalaire,
           formData.exigences.trim(),
+          formData.adresse.trim(),
+          formData.ville.trim(),
+          formData.codePostal.trim(),
+          formData.telephone.trim(),
           authHeader
       );
 

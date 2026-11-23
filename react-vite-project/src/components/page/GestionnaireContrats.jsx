@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FileText, PlusCircle, X, XCircle } from "lucide-react";
+import { FileText, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
-import FormulaireCreationContrat from "../widget/FormulaireCreationContrat.jsx";
 import ListeContratsGestionnaire from "../widget/ListeContratsGestionnaire.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import {
-  getCandidaturesAccepteesPourContrat,
-  creerContrat,
   getTousLesContrats,
   getContratDocumentBlob,
   rejeterContrat
@@ -28,11 +25,8 @@ export default function GestionnaireContrats() {
     authService
   );
 
-  const [activeTab, setActiveTab] = useState(() => (searchParams.get("contratId") ? "list" : "create"));
-  const [candidatures, setCandidatures] = useState([]);
   const [contrats, setContrats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [erreur, setErreur] = useState(null);
   const [succes, setSucces] = useState(null);
   const [messageRefus, setMessageRefus] = useState(null);
@@ -94,13 +88,9 @@ export default function GestionnaireContrats() {
       setLoading(true);
       setErreur(null);
       const aAnnee = annee !== null && annee !== undefined;
-      const [candsData, contratsData] = await Promise.all([
-        aAnnee
-          ? getCandidaturesAccepteesPourContrat(authHeader, annee)
-          : getCandidaturesAccepteesPourContrat(authHeader),
-        aAnnee ? getTousLesContrats(authHeader, annee) : getTousLesContrats(authHeader)
-      ]);
-      setCandidatures(candsData || []);
+      const contratsData = aAnnee
+        ? await getTousLesContrats(authHeader, annee)
+        : await getTousLesContrats(authHeader);
       setContrats(contratsData || []);
     } catch (e) {
       setErreur(e.message || t("contrats.alerts.error_load"));
@@ -118,7 +108,6 @@ export default function GestionnaireContrats() {
     const rawContratId = searchParams.get("contratId");
     if (!rawContratId || loading) return;
 
-    setActiveTab("list");
     const contratId = Number(rawContratId);
     const action = searchParams.get("action");
     const cible = contrats.find((c) => c.id === contratId);
@@ -132,25 +121,6 @@ export default function GestionnaireContrats() {
     next.delete("action");
     setSearchParams(next, { replace: true });
   }, [searchParams, loading, contrats, setSearchParams]);
-
-  const handleCreerContrat = async (payload) => {
-    setErreur(null);
-    setSucces(null);
-    try {
-      setSubmitting(true);
-      await creerContrat(payload, authHeader);
-      setSucces(t("contrats.alerts.success_created"));
-      await chargerDonnees();
-      setActiveTab("list");
-      return true;
-    } catch (err) {
-      setErreur(err.message || t("contrats.alerts.error_missing_fields"));
-      return false;
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   const handleTelechargerDoc = async (contratId) => {
     try {
       const blob = await getContratDocumentBlob(contratId, authHeader);
@@ -246,46 +216,20 @@ export default function GestionnaireContrats() {
 
       <div className="flex-1 p-6 sm:p-8 md:p-10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            {t("contrats.title")}
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+              <FileText className="w-6 h-6 text-blue-600 shrink-0" />
+              {t("contrats.title")}
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+              {contrats.length}
+            </span>
+          </div>
           <SelecteurSession
             annees={annees}
             anneeSelectionnee={anneeChoisie}
             onChangementAnnee={setAnneeChoisie}
           />
-        </div>
-
-        <div className="flex border-b border-slate-200 mb-8 gap-6">
-          <button
-            id="tab-create-contrat"
-            type="button"
-            onClick={() => setActiveTab("create")}
-            className={`pb-3 px-1 font-semibold text-sm transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
-              activeTab === "create"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            <PlusCircle className="w-4 h-4" />
-            {t("contrats.tabs.create")}
-          </button>
-          <button
-            id="tab-list-contrats"
-            type="button"
-            onClick={() => setActiveTab("list")}
-            className={`pb-3 px-1 font-semibold text-sm transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
-              activeTab === "list"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            {t("contrats.tabs.list")}{" "}
-            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
-              {contrats.length}
-            </span>
-          </button>
         </div>
 
         {erreur && (
@@ -336,28 +280,14 @@ export default function GestionnaireContrats() {
           </div>
         )}
 
-        {activeTab === "create" && (
-          <FormulaireCreationContrat
-            candidatures={candidatures}
-            submitting={submitting}
-            onCreerContrat={handleCreerContrat}
-            onErreur={(msg) => {
-              setSucces(null);
-              setErreur(msg);
-            }}
-          />
-        )}
-
-        {activeTab === "list" && (
-          <ListeContratsGestionnaire
-            contrats={contrats}
-            onVoirDocument={handleVoirDocument}
-            onTelechargerDocument={handleTelechargerDoc}
-            onImprimerDocument={handleImprimerDoc}
-            onSignerContrat={setSigningContrat}
-            onRefuserContrat={setContratARefuser}
-          />
-        )}
+        <ListeContratsGestionnaire
+          contrats={contrats}
+          onVoirDocument={handleVoirDocument}
+          onTelechargerDocument={handleTelechargerDoc}
+          onImprimerDocument={handleImprimerDoc}
+          onSignerContrat={setSigningContrat}
+          onRefuserContrat={setContratARefuser}
+        />
 
         {signingContrat && (
           <ModalSignaturePad

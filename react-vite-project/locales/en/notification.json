@@ -2,19 +2,18 @@
   "etudiant": {
     "cv_accepted": "Your CV was accepted! You can now browse internship offers.",
     "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV.",
+    "convocation_received": "You have received an interview invitation. Open it to choose a time slot.",
     "contrat_created": "A new internship contract is ready for your signature."
   },
   "employeur": {
     "contrat_created": "A new internship contract was created and is awaiting your signature.",
-    "convocation_received": "You have received an interview invitation. Open it to choose a time slot.",
-    "nouvelle_candidature": "A student applied to your offer: {{titre}}.",
+    "nouvelle_candidature": "A student applied to your offer: {{titre}}."
+  },
+  "gestionnaire": {
     "cv_submitted": "A student submitted a new CV for approval.",
     "offre_submitted": "An employer submitted a new internship offer for approval.",
     "contrat_pret_signature": "A contract has been signed by both the student and the employer and is ready for your signature.",
     "contrat_refuse": "A contract was refused by the student or the employer. Please review it and resend the contracts."
-  },
-  "gestionnaire": {
-    "cv_submitted": "A student submitted a new CV for approval."
   },
   "professeur": {
     "evaluer_stage": "A student needs to have their internship evaluated."
