@@ -49,6 +49,7 @@ export function NotificationButton() {
         chargerNotifications();
     }, [authService]);
 
+    useEffect(() => {
         if (userData?.role === "ROLE_EMPLOYEUR") {
             getOffresStages(authService.buildAuthHeader())
                 .then((data) => setOffres(data || []))
