@@ -1271,6 +1271,12 @@
       "ACCEPTEE": "Offer accepted",
       "EN_ATTENTE": "Pending",
       "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature",
       "REFUSEE": "Rejected",
       "REFUSE": "Rejected",
       "EN_RECHERCHE": "Searching for internship"

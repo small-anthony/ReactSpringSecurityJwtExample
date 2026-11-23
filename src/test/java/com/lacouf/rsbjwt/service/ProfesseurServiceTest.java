@@ -117,6 +117,45 @@ public class ProfesseurServiceTest {
     }
 
     @Test
+    void getEtudiantsAssignes_filtreParAnneeExclutEtudiantsSansStageDansAnnee() throws Exception {
+        Professeur prof = new Professeur("Martin", "Tremblay", new Credentials("martin@test.com", "pass", Role.PROFESSEUR));
+        prof.setId(10L);
+
+        Etudiant hatim = new Etudiant("Hatim", "Fakhour", new Credentials("hatim@test.com", "pass", Role.ETUDIANT), 1234567, "info");
+        hatim.setId(1L);
+        hatim.setProfesseur(prof);
+        OffreStage offre2026 = new OffreStage("DevOps", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
+        OffreStage offreGoogle2027 = new OffreStage("Front", "Desc", "Google", "info", "25$/h", "15 sem", "React", 2027);
+        Candidature candHatim2026 = new Candidature(hatim, offre2026);
+        candHatim2026.setStatut(StatutCandidature.EMBAUCHEE);
+        Candidature candHatim2027 = new Candidature(hatim, offreGoogle2027);
+        candHatim2027.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        hatim.setCandidatures(List.of(candHatim2026, candHatim2027));
+
+        Etudiant claire = new Etudiant("Claire", "Lavoie", new Credentials("claire@test.com", "pass", Role.ETUDIANT), 8887776, "info");
+        claire.setId(2L);
+        claire.setProfesseur(prof);
+        OffreStage offreCgi2027 = new OffreStage("FullStack", "Desc", "CGI", "info", "24$/h", "15 sem", "Spring", 2027);
+        Candidature candClaire2027 = new Candidature(claire, offreCgi2027);
+        candClaire2027.setStatut(StatutCandidature.EMBAUCHEE);
+        claire.setCandidatures(List.of(candClaire2027));
+
+        when(professeurRepository.findByEmail("martin@test.com")).thenReturn(Optional.of(prof));
+        when(etudiantRepository.findByProfesseurId(10L)).thenReturn(List.of(hatim, claire));
+
+        List<EtudiantSuperviseDto> resultat2026 = professeurService.getEtudiantsAssignes("martin@test.com", 2026);
+        List<EtudiantSuperviseDto> resultat2027 = professeurService.getEtudiantsAssignes("martin@test.com", 2027);
+
+        assertEquals(1, resultat2026.size());
+        assertEquals("Hatim", resultat2026.getFirst().firstName());
+        assertEquals("EMBAUCHEE", resultat2026.getFirst().statutStage());
+
+        assertEquals(1, resultat2027.size());
+        assertEquals("Claire", resultat2027.getFirst().firstName());
+        assertEquals("EMBAUCHEE", resultat2027.getFirst().statutStage());
+    }
+
+    @Test
     void getEtudiantsAssignes_professeurNonTrouve_lanceException() {
         // Arrange
         when(professeurRepository.findByEmail("inconnu@test.com")).thenReturn(Optional.empty());

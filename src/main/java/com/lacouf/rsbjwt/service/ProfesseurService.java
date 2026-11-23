@@ -67,7 +67,10 @@ public class ProfesseurService {
         Professeur professeur = professeurRepository.findByEmail(professeurEmail)
                 .orElseThrow(() -> new Exception("Professeur introuvable"));
         List<Etudiant> etudiants = etudiantRepository.findByProfesseurId(professeur.getId());
-        return etudiants.stream().map(e -> toEtudiantSuperviseDto(e, annee)).toList();
+        return etudiants.stream()
+                .map(e -> toEtudiantSuperviseDto(e, annee))
+                .filter(dto -> annee == null || dto.aStage())
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -152,10 +155,7 @@ public class ProfesseurService {
         return candidatures.stream()
                 .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
                 .findFirst()
-                .orElseGet(() -> candidatures.stream()
-                        .filter(c -> c.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE)
-                        .findFirst()
-                        .orElse(null));
+                .orElse(null);
     }
 
     private Contrat trouverContrat(Long candidatureId) {

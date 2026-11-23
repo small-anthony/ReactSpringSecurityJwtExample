@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
 import { Users, GraduationCap, Search, CheckCircle2, Clock, RefreshCw, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getEtudiantsAssignes, getAnneesProfesseur } from "../../services/api/ProfesseurService.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import CarteEtudiantAssigne from "../widget/CarteEtudiantAssigne.jsx";
 import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
@@ -16,41 +17,39 @@ export default function ProfesseurEtudiants() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const [etudiants, setEtudiants] = useState([]);
-    const [annees, setAnnees] = useState([]);
-    const [anneeChoisie, setAnneeChoisie] = useState(null);
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+        getAnneesProfesseur,
+        authService
+    );
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [recherche, setRecherche] = useState("");
     const [filtreEvaluation, setFiltreEvaluation] = useState(resolveTabFromUrl(searchParams.get("tab")));
     const [etudiantEvaluationId, setEtudiantEvaluationId] = useState(null);
+    const reqIdRef = useRef(0);
 
     const chargerDonnees = useCallback(async () => {
+        const reqId = ++reqIdRef.current;
         try {
             setLoading(true);
             setErreur(null);
             const data = await getEtudiantsAssignes(authService.buildAuthHeader(), anneeChoisie);
+            if (reqId !== reqIdRef.current) return;
             setEtudiants(data || []);
         } catch (err) {
+            if (reqId !== reqIdRef.current) return;
             setErreur(err.message || t("professeur.erreur_chargement"));
         } finally {
-            setLoading(false);
+            if (reqId === reqIdRef.current) {
+                setLoading(false);
+            }
         }
     }, [authService, anneeChoisie, t]);
 
     useEffect(() => {
+        if (!anneesChargees) return;
         chargerDonnees();
-    }, [chargerDonnees]);
-
-    useEffect(() => {
-        getAnneesProfesseur(authService.buildAuthHeader())
-            .then((data) => {
-                setAnnees(data || []);
-                if (data && data.length > 0 && anneeChoisie === null) {
-                    setAnneeChoisie(data[0]);
-                }
-            })
-            .catch(() => setAnnees([]));
-    }, [authService]);
+    }, [anneesChargees, chargerDonnees]);
 
     useEffect(() => {
         setFiltreEvaluation(resolveTabFromUrl(searchParams.get("tab")))

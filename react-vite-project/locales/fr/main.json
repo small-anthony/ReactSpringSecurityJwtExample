@@ -1271,6 +1271,12 @@
       "ACCEPTEE": "Offre acceptée",
       "EN_ATTENTE": "En attente",
       "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
       "REFUSEE": "Refusée",
       "EN_RECHERCHE": "En recherche de stage",
       "REFUSE": "Refusée"

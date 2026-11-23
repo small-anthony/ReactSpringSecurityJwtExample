@@ -16,6 +16,12 @@ const STYLES_STATUTS = {
     ACCEPTEE: { badge: "font-bold bg-blue-50 text-blue-800 border-blue-200", icone: CheckCircle2, iconeClasse: "text-blue-600", cle: "professeur.statut.ACCEPTEE" },
     EN_ATTENTE: { badge: "font-bold bg-amber-50 text-amber-800 border-amber-200", icone: Clock, iconeClasse: "text-amber-600", cle: "professeur.statut.EN_ATTENTE" },
     EN_ATTENTE_REPONSE: { badge: "font-bold bg-purple-50 text-purple-800 border-purple-200", icone: Clock, iconeClasse: "text-purple-600", cle: "professeur.statut.EN_ATTENTE_REPONSE" },
+    EN_ATTENTE_CONVOCATION: { badge: "font-bold bg-amber-50 text-amber-800 border-amber-200", icone: Clock, iconeClasse: "text-amber-600", cle: "professeur.statut.EN_ATTENTE_CONVOCATION" },
+    EN_ATTENTE_CONFIRMATION_ENTREVUE: { badge: "font-bold bg-purple-50 text-purple-800 border-purple-200", icone: Clock, iconeClasse: "text-purple-600", cle: "professeur.statut.EN_ATTENTE_CONFIRMATION_ENTREVUE" },
+    ENTREVUE_REFUSEE: { badge: "font-bold bg-rose-50 text-rose-800 border-rose-200", icone: AlertCircle, iconeClasse: "text-rose-600", cle: "professeur.statut.ENTREVUE_REFUSEE" },
+    EN_ATTENTE_ENTREVUE: { badge: "font-bold bg-blue-50 text-blue-800 border-blue-200", icone: Clock, iconeClasse: "text-blue-600", cle: "professeur.statut.EN_ATTENTE_ENTREVUE" },
+    EN_ATTENTE_CHOIX_STAGE: { badge: "font-bold bg-amber-50 text-amber-800 border-amber-200", icone: Clock, iconeClasse: "text-amber-600", cle: "professeur.statut.EN_ATTENTE_CHOIX_STAGE" },
+    EN_ATTENTE_SIGNATURE: { badge: "font-bold bg-indigo-50 text-indigo-800 border-indigo-200", icone: Clock, iconeClasse: "text-indigo-600", cle: "professeur.statut.EN_ATTENTE_SIGNATURE" },
     REFUSEE: { badge: "font-bold bg-rose-50 text-rose-800 border-rose-200", icone: AlertCircle, iconeClasse: "text-rose-600", cle: "professeur.statut.REFUSEE" },
     REFUSE: { badge: "font-bold bg-rose-50 text-rose-800 border-rose-200", icone: AlertCircle, iconeClasse: "text-rose-600", cle: "professeur.statut.REFUSEE" },
     EN_RECHERCHE: { badge: "font-semibold bg-slate-100 text-slate-700 border-slate-200", icone: Clock, iconeClasse: "text-slate-500", cle: "professeur.statut.EN_RECHERCHE" }
