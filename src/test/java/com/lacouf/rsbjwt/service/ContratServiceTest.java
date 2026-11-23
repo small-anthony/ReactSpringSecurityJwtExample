@@ -85,7 +85,6 @@ public class ContratServiceTest {
         // Arrange
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
         when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
-        when(userAppRepository.findUserAppByEmail("alice@college.ca")).thenReturn(Optional.of(gestionnaire));
         when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
@@ -191,7 +190,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_troisParties_succes() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("sig".getBytes());
         when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
@@ -219,7 +218,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_employeurEnPremier_statutSigneParEmployeur() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("sig".getBytes());
         when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
@@ -236,7 +235,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_gestionnaireAvantEtudiantOuEmployeur_lanceException() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("sig".getBytes());
         when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
@@ -252,7 +251,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_signatureFichierNul_lanceException() {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
         when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
 
@@ -266,7 +265,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_signatureFichierVide_lanceException() {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         MultipartFile fileVide = mock(MultipartFile.class);
         when(fileVide.isEmpty()).thenReturn(true);
         when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
@@ -282,7 +281,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_signatureBytesVides_lanceException() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         MultipartFile fileBytesVides = mock(MultipartFile.class);
         when(fileBytesVides.isEmpty()).thenReturn(false);
         when(fileBytesVides.getBytes()).thenReturn(new byte[0]);
@@ -299,7 +298,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_erreursValidation_lanceException() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         Etudiant autreEtudiant = new Etudiant("Autre", "Etudiant", new Credentials("autre@test.com", "pass", Role.ETUDIANT), 7654321, "Informatique");
         autreEtudiant.setId(99L);
         MultipartFile signatureFile = mock(MultipartFile.class);
@@ -343,7 +342,7 @@ public class ContratServiceTest {
     @Test
     void getTousLesContrats_succes() {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(contratRepository.findAllByOrderByDateCreationDesc()).thenReturn(List.of(contrat));
 
         // Act
@@ -357,7 +356,7 @@ public class ContratServiceTest {
     @Test
     void getContratById_succes() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(contratRepository.findById(10L)).thenReturn(Optional.of(contrat));
 
         // Act
@@ -379,16 +378,15 @@ public class ContratServiceTest {
 
     @Test
     void getContratPdf_succes() throws Exception {
-        // Arrange
-        byte[] doc = "Document de contrat".getBytes();
-        Contrat contrat = new Contrat(candidature, doc, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(contratRepository.findById(10L)).thenReturn(Optional.of(contrat));
+        when(userAppRepository.findAll()).thenReturn(List.of(gestionnaire));
 
-        // Act
         byte[] pdf = contratService.getContratPdf(10L);
 
-        // Assert
-        assertArrayEquals(doc, pdf);
+        assertNotNull(pdf);
+        assertTrue(pdf.length > 0);
+        assertEquals("%PDF", new String(pdf, 0, 4));
     }
 
     @Test
@@ -403,7 +401,7 @@ public class ContratServiceTest {
     @Test
     void getContratsEtudiantEtEmployeur_succes() {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com")).thenReturn(List.of(contrat));
         when(contratRepository.findByCandidatureOffreStageEmployeurEmail("bob@cgi.com")).thenReturn(List.of(contrat));
 
@@ -415,7 +413,7 @@ public class ContratServiceTest {
     @Test
     void rejeterContrat_succes() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
         when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
         when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -433,7 +431,7 @@ public class ContratServiceTest {
     @Test
     void rejeterContrat_parEmployeur_succes() throws Exception {
         // Arrange
-        Contrat contrat = new Contrat(candidature, "doc".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contrat = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         when(userAppRepository.findUserAppByEmail("bob@cgi.com")).thenReturn(Optional.of(employeur));
         when(contratRepository.findById(1L)).thenReturn(Optional.of(contrat));
         when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -459,7 +457,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_etudiantDejaSigneAutreContrat_lanceException() throws Exception {
         // Arrange
-        Contrat contratDejaSigne = new Contrat(candidature, "doc1".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contratDejaSigne = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         contratDejaSigne.signer(new Signature<>(etudiant, "sig1".getBytes()));
 
         OffreStage autreOffre = new OffreStage("Autre poste", "Desc", "Google");
@@ -468,7 +466,7 @@ public class ContratServiceTest {
         Candidature autreCandidature = new Candidature(etudiant, autreOffre);
         autreCandidature.setId(2L);
         autreCandidature.setStatut(StatutCandidature.EMBAUCHEE);
-        Contrat nouveauContrat = new Contrat(autreCandidature, "doc2".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "desc", "cond");
+        Contrat nouveauContrat = new Contrat(autreCandidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "desc", "cond");
 
         MultipartFile signatureFile = mock(MultipartFile.class);
         when(signatureFile.isEmpty()).thenReturn(false);
@@ -491,7 +489,7 @@ public class ContratServiceTest {
     @Test
     void signerContrat_etudiantAutreContratRefuse_succes() throws Exception {
         // Arrange
-        Contrat contratRefuse = new Contrat(candidature, "doc1".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        Contrat contratRefuse = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
         contratRefuse.signer(new Signature<>(etudiant, "sig1".getBytes()));
         contratRefuse.rejeter(employeur);
 
@@ -501,7 +499,7 @@ public class ContratServiceTest {
         Candidature autreCandidature = new Candidature(etudiant, autreOffre);
         autreCandidature.setId(2L);
         autreCandidature.setStatut(StatutCandidature.EMBAUCHEE);
-        Contrat nouveauContrat = new Contrat(autreCandidature, "doc2".getBytes(), LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "desc", "cond");
+        Contrat nouveauContrat = new Contrat(autreCandidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "desc", "cond");
 
         MultipartFile signatureFile = mock(MultipartFile.class);
         when(signatureFile.isEmpty()).thenReturn(false);
@@ -519,5 +517,83 @@ public class ContratServiceTest {
         // Assert
         assertTrue(resultat.signeParEtudiant());
         assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT, resultat.statut());
+    }
+
+    @Test
+    void genererContratAutomatique_succes_extraitInfosEtRefuseAutresCandidatures() throws Exception {
+        offreStage.setSalaire("25.00$/h");
+        offreStage.setDuree("14 semaines");
+        offreStage.setExigences("Java et React");
+        offreStage.setAnnee(2026);
+
+        OffreStage autreOffre = new OffreStage("Analyste QA", "Tests E2E", "Google");
+        autreOffre.setId(6L);
+        autreOffre.setAnnee(2026);
+        Candidature autreCandidature = new Candidature(etudiant, autreOffre);
+        autreCandidature.setId(2L);
+        autreCandidature.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candidature, autreCandidature));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ContratDto result = contratService.genererContratAutomatique(1L);
+
+        assertNotNull(result);
+        assertEquals(StatutContrat.EN_ATTENTE_SIGNATURE, result.statut());
+        assertEquals("25.00$/h", result.salaire());
+        assertEquals("Stage backend", result.descriptionTaches());
+        assertEquals("Java et React", result.conditions());
+        assertEquals(LocalDate.of(2026, 5, 11), result.dateDebut());
+        assertEquals(LocalDate.of(2026, 5, 11).plusWeeks(14), result.dateFin());
+        assertEquals(StatutCandidature.EN_ATTENTE_SIGNATURE, candidature.getStatut());
+        assertEquals(StatutCandidature.REFUSEE, autreCandidature.getStatut());
+        verify(candidatureRepository).save(autreCandidature);
+    }
+
+    @Test
+    void genererContratAutomatique_candidatureNonEmbauchee_lanceException() {
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CONVOCATION);
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.genererContratAutomatique(1L));
+
+        assertEquals("L'étudiant n'a pas été embauché par l'employeur, impossible de créer un contrat.", exception.getMessage());
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    void genererContratAutomatique_contratExisteDeja_lanceException() {
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(true);
+
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.genererContratAutomatique(1L));
+
+        assertEquals("Un contrat existe dans pour cet étudiant et cet employeur.", exception.getMessage());
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    void genererContratAutomatique_etudiantDejaStageActif_lanceException() {
+        offreStage.setAnnee(2026);
+        OffreStage autreOffre = new OffreStage("Analyste QA", "Tests E2E", "Google");
+        autreOffre.setId(6L);
+        autreOffre.setAnnee(2026);
+        Candidature autreCandidature = new Candidature(etudiant, autreOffre);
+        autreCandidature.setId(2L);
+        autreCandidature.setStatut(StatutCandidature.EMBAUCHEE);
+
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candidature, autreCandidature));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.genererContratAutomatique(1L));
+
+        assertEquals("Vous avez déjà un stage en cours ou confirmé pour cette session.", exception.getMessage());
+        verify(contratRepository, never()).save(any(Contrat.class));
     }
 }

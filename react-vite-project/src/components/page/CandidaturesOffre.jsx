@@ -288,47 +288,47 @@ export default function CandidaturesOffre() {
                 </p>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-5">
                 {candidaturesAffichees.map((candidat) => (
                     <article
                         key={candidat.id}
-                        className="flex flex-col h-full p-5 sm:p-6 ds-card hover:shadow-md transition-shadow"
+                        className="flex flex-col p-6 sm:p-7 ds-card hover:shadow-md transition-shadow"
                     >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                             <div className="min-w-0 flex-1">
-                                <h2 className="text-lg font-bold text-slate-900 break-words">
+                                <h2 className="text-xl font-bold text-slate-900 break-words">
                                     {candidat.etudiant.firstName} {candidat.etudiant.lastName}
                                 </h2>
-                                <p className="text-sm text-slate-500 break-all mt-0.5">
+                                <p className="text-base text-slate-600 break-all mt-1">
                                     {candidat.etudiant.email}
                                 </p>
-                                <p className="text-xs font-semibold text-blue-600 mt-1">
+                                <p className="text-sm font-semibold text-blue-600 mt-1.5">
                                     {getDisciplineLabel(candidat.etudiant.discipline)}
                                 </p>
                             </div>
 
-                            <div className="flex flex-col items-end gap-2 shrink-0">
-                                {candidat.etudiant.hasCv ? (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleVoirCv(candidat)}
-                                        className="btn-outline py-1.5 px-3 text-xs"
-                                    >
-                                        <FileText className="w-3.5 h-3.5" />
-                                        {t("candidatures_offre.view_cv")}
-                                    </button>
-                                ) : (
-                                    <span className="text-xs text-slate-400 italic py-1">
-                                        {t("candidatures_offre.no_cv")}
-                                    </span>
-                                )}
+                            <div className="flex flex-wrap items-center justify-end gap-3 shrink-0">
                                 {aUnBadge(candidat) && (
                                     <span
-                                        className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${
+                                        className={`px-3 py-1 text-sm font-semibold rounded-full ${
                                             COULEURS_BADGE[candidat.statut] || "bg-slate-100 text-slate-700"
                                         }`}
                                     >
                                         {t(`candidatures_offre.status.${candidat.statut}`)}
+                                    </span>
+                                )}
+                                {candidat.etudiant.hasCv ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleVoirCv(candidat)}
+                                        className="btn-outline"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        {t("candidatures_offre.view_cv")}
+                                    </button>
+                                ) : (
+                                    <span className="text-sm text-slate-400 italic py-1.5">
+                                        {t("candidatures_offre.no_cv")}
                                     </span>
                                 )}
                             </div>
@@ -376,7 +376,7 @@ export default function CandidaturesOffre() {
                         )}
 
                         {peutRefuser(candidat) && refusId !== candidat.id && (
-                            <div className="mt-auto pt-4 flex flex-wrap justify-between gap-2.5 border-t border-slate-100">
+                            <div className="mt-5 pt-4 flex flex-wrap items-center gap-3 border-t border-slate-100">
                                 {peutConvoquer(candidat) && (
                                     <button
                                         type="button"

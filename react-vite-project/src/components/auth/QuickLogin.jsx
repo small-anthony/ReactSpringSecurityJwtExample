@@ -88,6 +88,36 @@ const DEMO_USERS = [
         color: "rose"
     },
     {
+        name: "Alex Gagnon",
+        companyKey: "company_student_m",
+        role: "etudiant",
+        email: "alex@test.com",
+        password: "password",
+        descKey: "alex_desc",
+        icon: GraduationCap,
+        color: "teal"
+    },
+    {
+        name: "Julie Bouchard",
+        companyKey: "company_student_f",
+        role: "etudiant",
+        email: "julie@test.com",
+        password: "password",
+        descKey: "julie_desc",
+        icon: GraduationCap,
+        color: "emerald"
+    },
+    {
+        name: "Karim Benali",
+        companyKey: "company_student_m",
+        role: "etudiant",
+        email: "karim@test.com",
+        password: "password",
+        descKey: "karim_desc",
+        icon: GraduationCap,
+        color: "purple"
+    },
+    {
         name: "Daniil Dimov",
         companyKey: "company_student_m",
         role: "etudiant",

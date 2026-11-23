@@ -44,6 +44,16 @@ public class ContratController {
 		}
 	}
 
+	@PostMapping("/generer/{candidatureId}")
+	public ResponseEntity<?> genererContratAutomatique(@PathVariable Long candidatureId) {
+		try {
+			ContratDto contrat = contratService.genererContratAutomatique(candidatureId);
+			return ResponseEntity.status(HttpStatus.CREATED).body(contrat);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+
 	@GetMapping(value = {"/candidatures-acceptees", "/candidatures-pour-contrat"})
 	public ResponseEntity<List<CandidaturePourContratDto>> getCandidaturesAccepteesPourContrat(
 			@RequestParam(required = false) Integer annee) {

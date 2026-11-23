@@ -293,4 +293,26 @@ public class ContratControllerTest {
 		assertEquals(1, contratController.getContratsEtudiant(2026, auth).getBody().size());
 		assertEquals(List.of(2027, 2026), contratController.getAnneesContratsEtudiant(auth).getBody());
 	}
+
+	@Test
+	void genererContratAutomatique_shouldReturnCreated() throws Exception {
+		ContratDto dto = createDummyContratDto();
+		when(contratService.genererContratAutomatique(1L)).thenReturn(dto);
+
+		ResponseEntity<?> response = contratController.genererContratAutomatique(1L);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(dto, response.getBody());
+	}
+
+	@Test
+	void genererContratAutomatique_shouldReturnBadRequestOnException() throws Exception {
+		when(contratService.genererContratAutomatique(99L))
+				.thenThrow(new Exception("Candidature introuvable"));
+
+		ResponseEntity<?> response = contratController.genererContratAutomatique(99L);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertEquals("Candidature introuvable", response.getBody());
+	}
 }
