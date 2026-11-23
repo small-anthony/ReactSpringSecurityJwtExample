@@ -7,9 +7,11 @@ import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.repository.ContratRepository;
+import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
@@ -36,13 +39,26 @@ public class ContratService {
     private final ContratRepository contratRepository;
     private final CandidatureRepository candidatureRepository;
     private final UserAppRepository userAppRepository;
+    private final GestionnaireRepository gestionnaireRepository;
+    private final NotificationService notificationService;
+
+    @Autowired
+    public ContratService(ContratRepository contratRepository,
+                          CandidatureRepository candidatureRepository,
+                          UserAppRepository userAppRepository,
+                          GestionnaireRepository gestionnaireRepository,
+                          NotificationService notificationService) {
+        this.contratRepository = contratRepository;
+        this.candidatureRepository = candidatureRepository;
+        this.userAppRepository = userAppRepository;
+        this.gestionnaireRepository = gestionnaireRepository;
+        this.notificationService = notificationService;
+    }
 
     public ContratService(ContratRepository contratRepository,
                           CandidatureRepository candidatureRepository,
                           UserAppRepository userAppRepository) {
-        this.contratRepository = contratRepository;
-        this.candidatureRepository = candidatureRepository;
-        this.userAppRepository = userAppRepository;
+        this(contratRepository, candidatureRepository, userAppRepository, null, null);
     }
 
     private record EtudiantEmployeurAnnee(Long etudiantId, Long employeurId, int annee) {
@@ -115,7 +131,9 @@ public class ContratService {
 
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         candidatureRepository.save(candidature);
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat savedContrat = contratRepository.save(contrat);
+        notifierCreationContrat(candidature, savedContrat);
+        return ContratDto.create(savedContrat);
     }
 
     public ContratDto genererContratAutomatique(Long candidatureId) throws Exception {
@@ -151,7 +169,25 @@ public class ContratService {
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         candidatureRepository.save(candidature);
         refuserAutresCandidaturesEtudiant(candidature, annee);
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat savedContrat = contratRepository.save(contrat);
+        notifierCreationContrat(candidature, savedContrat);
+        return ContratDto.create(savedContrat);
+    }
+
+    private void notifierCreationContrat(Candidature candidature, Contrat savedContrat) {
+        if (notificationService == null || candidature == null) {
+            return;
+        }
+        if (candidature.getEtudiant() != null && candidature.getEtudiant().getId() != null) {
+            notificationService.pushNotification(
+                    Notification.contratCreatedForEtudiant(savedContrat),
+                    candidature.getEtudiant().getId());
+        }
+        if (candidature.getEmployeur() != null && candidature.getEmployeur().getId() != null) {
+            notificationService.pushNotification(
+                    Notification.contratCreatedForEmployeur(savedContrat),
+                    candidature.getEmployeur().getId());
+        }
     }
 
     public ContratDto signerContrat(Long contratId, String actorEmail, MultipartFile signatureFile) throws Exception {
@@ -181,7 +217,13 @@ public class ContratService {
             candidatureRepository.save(contrat.getCandidature());
         }
 
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat contratSauvegarde = contratRepository.save(contrat);
+        if (!(utilisateur instanceof Gestionnaire)
+                && contratSauvegarde.getStatut() == StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR) {
+            notifierGestionnaires(() -> Notification.contratPretPourSignatureGestionnaire(contratSauvegarde));
+        }
+
+        return ContratDto.create(contratSauvegarde);
     }
 
     public ContratDto rejeterContrat(Long contratId, String actorEmail) throws Exception {
@@ -197,7 +239,20 @@ public class ContratService {
             contrat.getCandidature().setStatut(StatutCandidature.REFUSEE);
             candidatureRepository.save(contrat.getCandidature());
         }
-        return ContratDto.create(contratRepository.save(contrat));
+        Contrat contratSauvegarde = contratRepository.save(contrat);
+        if (utilisateur instanceof Etudiant || utilisateur instanceof Employeur) {
+            notifierGestionnaires(() -> Notification.contratRefuse(contratSauvegarde));
+        }
+        return ContratDto.create(contratSauvegarde);
+    }
+
+    private void notifierGestionnaires(Supplier<Notification> notificationFactory) {
+        if (notificationService == null || gestionnaireRepository == null) {
+            return;
+        }
+        gestionnaireRepository.findAll().forEach(gestionnaire ->
+                notificationService.pushNotification(notificationFactory.get(), gestionnaire.getId())
+        );
     }
 
     @Transactional(readOnly = true)

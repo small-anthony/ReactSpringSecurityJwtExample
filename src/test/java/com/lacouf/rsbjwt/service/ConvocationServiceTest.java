@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
+import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationType;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.RendezVous;
@@ -14,6 +15,7 @@ import com.lacouf.rsbjwt.service.dto.RendezVousDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,6 +38,9 @@ class ConvocationServiceTest {
 
     @Mock
     private CandidatureRepository candidatureRepository;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ConvocationService convocationService;
@@ -171,6 +176,57 @@ class ConvocationServiceTest {
     }
 
     @Test
+    void creerConvocation_succes_notifieLEtudiant() throws Exception {
+//        ARRANGE
+        ReflectionTestUtils.setField(etudiant, "id", 5L);
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+        when(convocationRepository.save(any(Convocation.class))).thenAnswer(invocation -> {
+            Convocation c = invocation.getArgument(0);
+            ReflectionTestUtils.setField(c, "id", 99L);
+            return c;
+        });
+        List<RendezVousDto> dtos = List.of(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+
+//        ACT
+        convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "Bienvenue");
+
+//        ASSERT
+        ArgumentCaptor<Notification> notification = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationService).pushNotification(notification.capture(), eq(5L));
+        assertEquals(NotificationType.ACTION_REQUIRED, notification.getValue().getType());
+        assertEquals("etudiant.convocation_received", notification.getValue().getMessage());
+    }
+
+    @Test
+    void creerConvocation_quonPossedePas_neNotifiePersonne() throws Exception {
+//        ARRANGE
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+        List<RendezVousDto> dtos = List.of(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+
+//        ACT
+        assertThrows(AuthenticationException.class, () ->
+                convocationService.creerConvocation("fakeEmail@test.com", candidature.getId(), dtos, "Bienvenue")
+        );
+
+//        ASSERT
+        verify(notificationService, never()).pushNotification(any(Notification.class), any());
+    }
+
+    @Test
+    void creerConvocation_rendezVousInvalide_neNotifiePersonne() throws Exception {
+//        ARRANGE
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+
+//        ACT
+        assertThrows(Exception.class, () ->
+                convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), List.of(), "msg")
+        );
+
+//        ASSERT
+        verify(notificationService, never()).pushNotification(any(Notification.class), any());
+    }
+
+    @Test
     void creerConvocation_quonPossedePas_lanceException() throws Exception {
 //        ARRANGE
         when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
@@ -184,44 +240,44 @@ class ConvocationServiceTest {
         );
     }
 
-        @Test
-        void verifierEtMettreAJourStatutsPasses_shouldExpireConvocations() {
+    @Test
+    void verifierEtMettreAJourStatutsPasses_shouldExpireConvocations() {
 //        ARRANGE
-                Instant timestamp = Instant.now();
-                when(convocationRepository.expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
-                        .thenReturn(0);
+        Instant timestamp = Instant.now();
+        when(convocationRepository.expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE))
+                .thenReturn(0);
 
 //        ACT
-                convocationService.verifierEtMettreAJourStatutsPasses(timestamp);
+        convocationService.verifierEtMettreAJourStatutsPasses(timestamp);
 
 //        ASSERT
-                verify(convocationRepository).expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE);
-        }
+        verify(convocationRepository).expireConvocations(timestamp, StatutConvocation.ANNULEE, StatutConvocation.EN_ATTENTE);
+    }
 
-        @Test
-        void reconvoquerApresRefus_succes() throws Exception {
+    @Test
+    void reconvoquerApresRefus_succes() throws Exception {
 //        ARRANGE
-                when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
-                                .thenReturn(Optional.of(convocation));
-                when(convocationRepository.save(any(Convocation.class)))
-                                .thenAnswer(invocation -> {
-                                        Convocation c = invocation.getArgument(0);
-                                        if (c.getId() == null) {
-                                                ReflectionTestUtils.setField(c, "id", 2L);
-                                        }
-                                        return c;
-                                });
+        when(convocationRepository.findWithEmployeurAndEtudiantById(convocation.getId()))
+                .thenReturn(Optional.of(convocation));
+        when(convocationRepository.save(any(Convocation.class)))
+                .thenAnswer(invocation -> {
+                    Convocation c = invocation.getArgument(0);
+                    if (c.getId() == null) {
+                        ReflectionTestUtils.setField(c, "id", 2L);
+                    }
+                    return c;
+                });
 
 //                ACT
-                convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "Pas dispo le matin");
+        convocationService.refuserConvocation(etudiant.getEmail(), convocation.getId(), "Pas dispo le matin");
 
                 assertEquals(StatutCandidature.ENTREVUE_REFUSEE, candidature.getStatut());
                 assertEquals("Pas dispo le matin", candidature.getConvocations().get(0).getReponseEtudiant());
 
-                when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
 
-                List<RendezVousDto> nouveauxRdv = List.of(RendezVousDto.create(RendezVous.create("En ligne", Instant.MAX)));
-                ConvocationDto nouvelleDto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), nouveauxRdv, "Nouveaux créneaux");
+        List<RendezVousDto> nouveauxRdv = List.of(RendezVousDto.create(RendezVous.create("En ligne", Instant.MAX)));
+        ConvocationDto nouvelleDto = convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), nouveauxRdv, "Nouveaux créneaux");
 
 //                ASSERT
                 assertNotNull(nouvelleDto);

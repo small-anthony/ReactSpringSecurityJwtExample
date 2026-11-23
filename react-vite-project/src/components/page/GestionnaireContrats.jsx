@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FileText, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ListeContratsGestionnaire from "../widget/ListeContratsGestionnaire.jsx";
@@ -18,12 +19,14 @@ import SelecteurSession from "../widget/SelecteurSession.jsx";
 export default function GestionnaireContrats() {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
+  const [searchParams, setSearchParams] = useSearchParams();
   const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
     getAnneesGestionnaire,
     authService
   );
 
   const [contrats, setContrats] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [erreur, setErreur] = useState(null);
   const [succes, setSucces] = useState(null);
   const [messageRefus, setMessageRefus] = useState(null);
@@ -82,6 +85,7 @@ export default function GestionnaireContrats() {
 
   const chargerDonnees = async (annee = anneeChoisie) => {
     try {
+      setLoading(true);
       setErreur(null);
       const aAnnee = annee !== null && annee !== undefined;
       const contratsData = aAnnee
@@ -90,6 +94,8 @@ export default function GestionnaireContrats() {
       setContrats(contratsData || []);
     } catch (e) {
       setErreur(e.message || t("contrats.alerts.error_load"));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,6 +104,23 @@ export default function GestionnaireContrats() {
     chargerDonnees(anneeChoisie);
   }, [anneesChargees, anneeChoisie]);
 
+  useEffect(() => {
+    const rawContratId = searchParams.get("contratId");
+    if (!rawContratId || loading) return;
+
+    const contratId = Number(rawContratId);
+    const action = searchParams.get("action");
+    const cible = contrats.find((c) => c.id === contratId);
+
+    if (cible && action === "signer" && cible.statut === "SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR") {
+      setSigningContrat(cible);
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.delete("contratId");
+    next.delete("action");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, loading, contrats, setSearchParams]);
   const handleTelechargerDoc = async (contratId) => {
     try {
       const blob = await getContratDocumentBlob(contratId, authHeader);

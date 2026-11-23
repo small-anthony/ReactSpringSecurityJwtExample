@@ -133,6 +133,10 @@ public class Convocation {
         return candidature.getEtudiant();
     }
 
+    public Long getEtudiantId() {
+        return candidature.getEtudiantId();
+    }
+
     public Employeur getEmployeur() {
         return candidature.getEmployeur();
     }

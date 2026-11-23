@@ -105,6 +105,10 @@ public class EtudiantService {
         offre.addCandidature(new Candidature(etudiant, offre));
         offreStageRepository.save(offre);
 
+        if (offre.getEmployeur() != null) {
+            notificationService.pushNotification(Notification.nouvelleCandidature(offre), offre.getEmployeur().getId());
+        }
+
         return OffreStageDto.createFilteredByEtudiant(offre, etudiant);
     }
 
