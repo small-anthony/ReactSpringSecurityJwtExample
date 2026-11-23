@@ -149,16 +149,19 @@ function Header({ user }) {
                     aria-haspopup="dialog"
                     className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200/90 text-xs shadow-2xs transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
-                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
+                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">
                       {initials || "U"}
                     </div>
-                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                      {formatRole(roleTexte)}
+                    <span
+                      title={nomComplet || formatRole(roleTexte)}
+                      className="text-xs font-semibold text-slate-800 truncate max-w-[140px]"
+                    >
+                      {prenom || formatRole(roleTexte)}
                     </span>
                     {userMenuOpen ? (
-                      <ChevronUp className="w-4 h-4 text-slate-500" />
+                      <ChevronUp className="w-4 h-4 text-slate-500 shrink-0" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                      <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
                     )}
                   </button>
 
