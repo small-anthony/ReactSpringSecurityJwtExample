@@ -98,13 +98,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "Larry", "Page",
                                         new Credentials("valentin@test.com", defaultPass, Role.EMPLOYEUR),
                                         "Google", "514-111-1111");
-                        Professeur profMartin = new Professeur("Martin", "Tremblay",
-                                        new Credentials("professeur@test.com", defaultPass, Role.PROFESSEUR));
-                        professeurRepository.save(profMartin);
+                        Professeur profMartin = professeurRepository.save(
+                                        new Professeur("Martin", "Tremblay",
+                                                        new Credentials("professeur@test.com", defaultPass, Role.PROFESSEUR)));
 
-                        Professeur profChantal = new Professeur("Chantal", "Gagnon",
-                                        new Credentials("chantal@test.com", defaultPass, Role.PROFESSEUR));
-                        professeurRepository.save(profChantal);
+                        Professeur profChantal = professeurRepository.save(
+                                        new Professeur("Chantal", "Gagnon",
+                                                        new Credentials("chantal@test.com", defaultPass, Role.PROFESSEUR)));
 
                         // Étudiants
                         Etudiant hatim = new Etudiant("Hatim", "Fakhour",
@@ -440,9 +440,115 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         contratHisto.signer(new Signature<>(john, "sig_john_histo".getBytes()));
                         contratRepository.save(contratHisto);
 
+                        seedPaginationData(
+                                defaultPass,
+                                cvBytes,
+                                john,
+                                cgi,
+                                profMartin,
+                                offreCgiDev,
+                                anneeCourante
+                        );
+
                         System.out.println("=== INITIALISATION DES DONNÉES DE DÉMONSTRATION COMPLÉTÉE AVEC SUCCÈS ===");
                 } catch (Exception e) {
                         e.printStackTrace();
+                }
+        }
+
+        private void seedPaginationData(
+                        String defaultPass,
+                        byte[] cvBytes,
+                        Gestionnaire john,
+                        Employeur cgi,
+                        Professeur profMartin,
+                        OffreStage offreCgiDev,
+                        int anneeCourante) {
+                for (int i = 1; i <= 10; i++) {
+                        OffreStage offreAcceptee = new OffreStage(
+                                        "Développeur Logiciel #" + i,
+                                        "Participation au développement d'applications d'entreprise et tests automatisés (#" + i + ").",
+                                        "CGI Inc.",
+                                        "Techniques de l'informatique",
+                                        (22 + (i % 5)) + "$/h",
+                                        "15 semaines",
+                                        "Java, React, Git");
+                        offreAcceptee.setAnnee(anneeCourante);
+                        offreAcceptee.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreAcceptee.setVille("Montréal");
+                        offreAcceptee.setCodePostal("H3G 1T4");
+                        offreAcceptee.setTelephone("514-555-0101");
+                        offreAcceptee.accepter();
+                        cgi.ajouterOffre(offreAcceptee);
+                }
+
+                for (int i = 1; i <= 11; i++) {
+                        OffreStage offreEnAttente = new OffreStage(
+                                        "Analyste TI à approuver #" + i,
+                                        "Analyse fonctionnelle, support technique et documentation applicative (#" + i + ").",
+                                        "CGI Inc.",
+                                        "Techniques de l'informatique",
+                                        "23$/h",
+                                        "15 semaines",
+                                        "SQL, Communication, Agile");
+                        offreEnAttente.setAnnee(anneeCourante);
+                        offreEnAttente.setAdresse("1350 boulevard René-Lévesque Ouest");
+                        offreEnAttente.setVille("Montréal");
+                        offreEnAttente.setCodePostal("H3G 1T4");
+                        offreEnAttente.setTelephone("514-555-0101");
+                        cgi.ajouterOffre(offreEnAttente);
+                }
+                employeurRepository.save(cgi);
+
+                String[] prenoms = {
+                        "Camille", "Noah", "Léa", "Gabriel", "Chloé",
+                        "Thomas", "Zoé", "Nathan", "Maya", "Félix",
+                        "Alice", "Raphaël", "Sarah", "Léo", "Jade",
+                        "Samuel", "Inès", "Olivier", "Mila", "Antoine",
+                        "Clara", "Victor", "Éva", "Émile", "Rose"
+                };
+                String[] noms = {
+                        "Gagnon", "Pelletier", "Roy", "Côté", "Fortin",
+                        "Bélanger", "Morin", "Lévesque", "Ouellet", "Bouchard",
+                        "Gauthier", "Bergeron", "Poirier", "Lacroix", "Beaulieu",
+                        "Girard", "Nadeau", "Martel", "Caron", "Deschamps",
+                        "Boucher", "Savard", "Dufour", "Paquette", "Simard"
+                };
+
+                for (int i = 0; i < prenoms.length; i++) {
+                        Etudiant etu = new Etudiant(
+                                        prenoms[i],
+                                        noms[i],
+                                        new Credentials("pag.etudiant" + (i + 1) + "@test.com", defaultPass, Role.ETUDIANT),
+                                        9000001 + i,
+                                        "Techniques de l'informatique");
+                        etu.setCv(cvBytes);
+                        if (i >= 12) {
+                                etu.getCv().accepterApprobation();
+                        }
+                        etu = etudiantRepository.save(etu);
+
+                        if (i >= 12 && i < 24) {
+                                etu.setProfesseur(profMartin);
+                                etu = etudiantRepository.save(etu);
+
+                                Candidature cand = new Candidature(etu, offreCgiDev);
+                                cand.setStatut(StatutCandidature.EMBAUCHEE);
+                                cand = candidatureRepository.save(cand);
+
+                                Contrat contrat = new Contrat(
+                                                cand,
+                                                LocalDate.of(anneeCourante, 5, 11),
+                                                LocalDate.of(anneeCourante, 8, 21),
+                                                "35h/semaine",
+                                                "24.00$/h",
+                                                "Développement Full Stack et tests unitaires.",
+                                                "Télétravail hybride");
+                                contrat.signer(new Signature<>(etu, ("sig_etu_" + i).getBytes()));
+                                contrat.signer(new Signature<>(cgi, ("sig_cgi_" + i).getBytes()));
+                                contrat.signer(new Signature<>(john, ("sig_john_" + i).getBytes()));
+                                contratRepository.save(contrat);
+                        }
                 }
         }
 }
