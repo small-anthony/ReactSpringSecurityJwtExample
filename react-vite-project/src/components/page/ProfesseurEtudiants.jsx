@@ -4,7 +4,9 @@ import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getEtudiantsAssignes, getAnneesProfesseur } from "../../services/api/ProfesseurService.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 import CarteEtudiantAssigne from "../widget/CarteEtudiantAssigne.jsx";
 import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
 import {useSearchParams} from "react-router-dom";
@@ -17,7 +19,7 @@ export default function ProfesseurEtudiants() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const [etudiants, setEtudiants] = useState([]);
-    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesProfesseur,
         authService
     );
@@ -81,6 +83,16 @@ export default function ProfesseurEtudiants() {
         const titre = (e.titreOffreStage || "").toLowerCase();
         return nom.includes(query) || matricule.includes(query) || entreprise.includes(query) || titre.includes(query);
     });
+
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: etudiantsPagines
+    } = usePagination(etudiantsFiltres, 10, [recherche, filtreEvaluation, anneeChoisie]);
 
     const classeOnglet = (valeur) =>
         `px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
@@ -185,15 +197,26 @@ export default function ProfesseurEtudiants() {
                     </p>
                 </div>
             ) : (
-                <div className="space-y-4">
-                    {etudiantsFiltres.map((etudiant) => (
-                        <CarteEtudiantAssigne
-                            key={etudiant.id}
-                            etudiant={etudiant}
-                            onOuvrirEvaluation={(id) => setEtudiantEvaluationId(id)}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="space-y-4">
+                        {etudiantsPagines.map((etudiant) => (
+                            <CarteEtudiantAssigne
+                                key={etudiant.id}
+                                etudiant={etudiant}
+                                lectureSeule={estAncienneSession}
+                                onOuvrirEvaluation={(id) => setEtudiantEvaluationId(id)}
+                            />
+                        ))}
+                    </div>
+                    <Pagination
+                        page={page}
+                        totalItems={totalItems}
+                        totalPages={totalPages}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                    />
+                </>
             )}
         </div>
     );

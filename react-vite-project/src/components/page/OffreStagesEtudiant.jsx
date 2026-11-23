@@ -20,6 +20,8 @@ import TableauDeBordEtudiant, {
 import { DISCIPLINES } from "../../constants/disciplines";
 import { DUREES } from "../../constants/durees";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
+import { usePagination } from "../../hooks/usePagination.js";
+import Pagination from "../widget/Pagination.jsx";
 import {
     AlertTriangle,
     Briefcase,
@@ -464,6 +466,20 @@ export default function OffreStagesEtudiant() {
         ongletActif
     ]);
 
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: offresPaginees
+    } = usePagination(
+        offresFiltrees,
+        9,
+        [ongletActif, recherche, filtreEntreprise, filtreDiscipline, filtreDuree]
+    );
+
     const aDesFiltresActifs = Boolean(
         recherche || filtreEntreprise || filtreDiscipline || filtreDuree
     );
@@ -817,7 +833,7 @@ export default function OffreStagesEtudiant() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {offresFiltrees.map((offre) => {
+                                {offresPaginees.map((offre) => {
                                     const {
                                         id,
                                         discipline,
@@ -951,6 +967,15 @@ export default function OffreStagesEtudiant() {
                                 })}
                             </div>
                         )}
+                        <Pagination
+                            page={page}
+                            totalItems={totalItems}
+                            totalPages={totalPages}
+                            pageSize={pageSize}
+                            onPageChange={setPage}
+                            onPageSizeChange={setPageSize}
+                            pageSizeOptions={[9, 18, 36]}
+                        />
                     </div>
                 )}
             </div>

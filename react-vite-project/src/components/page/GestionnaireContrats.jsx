@@ -14,13 +14,15 @@ import {
 } from "../../services/api/ContratAPI.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 
 export default function GestionnaireContrats() {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+  const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
     getAnneesGestionnaire,
     authService
   );
@@ -34,6 +36,16 @@ export default function GestionnaireContrats() {
   const [signingContrat, setSigningContrat] = useState(null);
   const [contratARefuser, setContratARefuser] = useState(null);
   const [refusSubmitting, setRefusSubmitting] = useState(false);
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalItems,
+    totalPages,
+    paginatedItems: contratsPagines
+  } = usePagination(contrats, 10, [anneeChoisie]);
 
   const authHeader = authService.buildAuthHeader();
 
@@ -281,12 +293,22 @@ export default function GestionnaireContrats() {
         )}
 
         <ListeContratsGestionnaire
-          contrats={contrats}
+          contrats={contratsPagines}
+          lectureSeule={estAncienneSession}
           onVoirDocument={handleVoirDocument}
           onTelechargerDocument={handleTelechargerDoc}
           onImprimerDocument={handleImprimerDoc}
           onSignerContrat={setSigningContrat}
           onRefuserContrat={setContratARefuser}
+        />
+
+        <Pagination
+          page={page}
+          totalItems={totalItems}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
         />
 
         {signingContrat && (

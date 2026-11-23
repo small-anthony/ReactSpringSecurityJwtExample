@@ -6,7 +6,9 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getRapportEtudiants } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalCandidaturesEtudiant from "../modal/ModalCandidaturesEtudiant.jsx";
 import FormulaireEvaluationMilieuStage from "../widget/FormulaireEvaluationMilieuStage.jsx";
@@ -127,6 +129,16 @@ export default function RapportsEtudiants() {
             (a, b) => ORDRE_STATUTS.indexOf(a.statutStage) - ORDRE_STATUTS.indexOf(b.statutStage)
         );
     }, [etudiants, filtreStatut, filtreAttente, recherche]);
+
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: etudiantsPagines
+    } = usePagination(etudiantsFiltres, 10, [filtreStatut, filtreAttente, recherche, anneeChoisie]);
 
     return (
         <main className="flex flex-col md:flex-row w-full min-w-0 min-h-screen bg-gray-50/30 overflow-x-hidden">
@@ -343,7 +355,7 @@ export default function RapportsEtudiants() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {etudiantsFiltres.map((etudiant) => {
+                                        {etudiantsPagines.map((etudiant) => {
                                             const libelleStatut = SOUS_ETATS_ATTENTE.includes(etudiant.statutStage)
                                                 ? t(`gestionnaire_dashboard.pending_tabs.${etudiant.statutStage}`)
                                                 : t(`gestionnaire_dashboard.status.${etudiant.statutStage}`);
@@ -420,6 +432,15 @@ export default function RapportsEtudiants() {
                             </div>
                         )}
                     </div>
+
+                    <Pagination
+                        page={page}
+                        totalItems={totalItems}
+                        totalPages={totalPages}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                    />
                 </div>
                 )}
             </div>

@@ -24,7 +24,9 @@ import {
 } from "../../services/api/ContratAPI.js";
 import { getAnneesEmployeur } from "../../services/api/OffreStageService.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
@@ -32,7 +34,7 @@ export default function EmployeurContrats() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const navigate = useNavigate();
-    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesEmployeur,
         authService
     );
@@ -147,6 +149,16 @@ export default function EmployeurContrats() {
         if (filtre === "SIGNES") return c.signeParEmployeur;
         return true;
     });
+
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: contratsPagines
+    } = usePagination(contratsFiltres, 10, [filtre, anneeChoisie]);
 
     const getStatusBadge = (contrat) => {
         if (contrat.statut === "REFUSE") {
@@ -340,8 +352,9 @@ export default function EmployeurContrats() {
                         </p>
                     </div>
                 ) : (
-                    <div className="space-y-5">
-                        {contratsFiltres.map((c) => (
+                    <>
+                        <div className="space-y-5">
+                            {contratsPagines.map((c) => (
                             <article
                                 key={c.id}
                                 className="bg-white rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-shadow duration-200 p-6 md:p-7 space-y-6"
@@ -437,7 +450,7 @@ export default function EmployeurContrats() {
                                         </button>
                                     </div>
 
-                                    {!c.signeParEmployeur && c.statut !== "REFUSE" ? (
+                                    {!estAncienneSession && !c.signeParEmployeur && c.statut !== "REFUSE" ? (
                                         <div className="flex items-center gap-2">
                                             <button
                                                 type="button"
@@ -465,7 +478,16 @@ export default function EmployeurContrats() {
                                 </div>
                             </article>
                         ))}
-                    </div>
+                        </div>
+                        <Pagination
+                            page={page}
+                            totalItems={totalItems}
+                            totalPages={totalPages}
+                            pageSize={pageSize}
+                            onPageChange={setPage}
+                            onPageSizeChange={setPageSize}
+                        />
+                    </>
                 )}
 
                 {signingContrat && (

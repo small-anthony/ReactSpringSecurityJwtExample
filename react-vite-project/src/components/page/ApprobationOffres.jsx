@@ -1,13 +1,14 @@
 import {useContext, useEffect, useState} from "react";
 import {AuthServiceContext} from "../../services/AuthService.tsx";
-import {accepterOffre, fetchOffresEnAttente, refuserOffre, getAnneesGestionnaire} from "../../services/api/OffreStageService.js";
+import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/api/OffreStageService.js";
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
 import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, MapPin, Phone } from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
-import SelecteurSession from "../widget/SelecteurSession.jsx";
+import {usePagination} from "../../hooks/usePagination.js";
+import Pagination from "../widget/Pagination.jsx";
 
 const ApprobationOffres = () => {
     const { t } = useTranslation("main");
@@ -16,9 +17,17 @@ const ApprobationOffres = () => {
     const [offres, setOffres] = useState([]);
     const [offreToApprove, setOffreToApprove] = useState(null);
     const [offreToRefuse, setOffreToRefuse] = useState(null);
-    const [annees, setAnnees] = useState([]);
-    const [anneeChoisie, setAnneeChoisie] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: offresPaginees
+    } = usePagination(offres, 10, []);
 
     const formatSalaire = (valeur) => {
         if (!valeur) return "";
@@ -33,19 +42,7 @@ const ApprobationOffres = () => {
     }
 
     useEffect(() => {
-        getAnneesGestionnaire?.(authService.buildAuthHeader())
-            ?.then((data) => {
-                setAnnees(data);
-
-                if (data && data.length > 0) {
-                    setAnneeChoisie(data[0]);
-                }
-            })
-            ?.catch(() => setAnnees([]));
-    }, [authService]);
-
-    useEffect(() => {
-        fetchOffresEnAttente(authService.buildAuthHeader(), anneeChoisie)
+        fetchOffresEnAttente(authService.buildAuthHeader())
             ?.then((data) => {
                 setOffres(data);
                 setErrorMessage("")
@@ -53,7 +50,7 @@ const ApprobationOffres = () => {
             .catch(() => {
                 setErrorMessage(t("approbation.offres.errors.fetch"));
             });
-    }, [authService, anneeChoisie]);
+    }, [authService]);
 
     const handleAccepter = (offreId, etudiantsIds) => {
         accepterOffre(offreId, etudiantsIds, authService.buildAuthHeader())
@@ -89,11 +86,6 @@ const ApprobationOffres = () => {
             <div className="flex-1 p-6 sm:p-8 md:p-10">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                     <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{t('approbation.offres.title')}</h2>
-                    <SelecteurSession
-                        annees={annees}
-                        anneeSelectionnee={anneeChoisie}
-                        onChangementAnnee={setAnneeChoisie}
-                    />
                 </div>
 
                 {errorMessage && (
@@ -103,7 +95,7 @@ const ApprobationOffres = () => {
                 )}
 
                 <div className="grid gap-6">
-                    {offres.map((offre) => (
+                    {offresPaginees.map((offre) => (
                         <article key={offre.id} className="relative p-6 sm:p-7 ds-card hover:shadow-md transition-shadow">
                             <h3 className="text-xl font-bold text-slate-900 mb-1 break-words">{offre.titre}</h3>
                             <p className="text-blue-600 font-semibold mb-5 flex items-center gap-1.5 pb-4 border-b border-slate-100 min-w-0">
@@ -207,6 +199,14 @@ const ApprobationOffres = () => {
                             <p className="text-slate-500 font-medium">{t('approbation.offres.no_offres')}</p>
                         </div>
                     )}
+                    <Pagination
+                        page={page}
+                        totalItems={totalItems}
+                        totalPages={totalPages}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                    />
                 </div>
             </div>
 

@@ -23,7 +23,9 @@ import {
     rejeterContrat
 } from "../../services/api/ContratAPI.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
@@ -36,7 +38,7 @@ const calculerEtatSignature = (liste) => {
 export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesContratsEtudiant,
         authService
     );
@@ -197,6 +199,16 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
     const countSignes = contrats.filter((c) => c.signeParEtudiant && c.statut !== "REFUSE").length;
     const countRefuses = contrats.filter((c) => c.statut === "REFUSE").length;
 
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: contratsPagines
+    } = usePagination(contratsFiltres, 10, [filtre, anneeChoisie]);
+
     const content = (
         <div className={embedMode ? "space-y-6" : "max-w-6xl mx-auto space-y-6"}>
             {!embedMode && (
@@ -341,8 +353,9 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             )}
 
             {!loading && contratsFiltres.length > 0 && (
-                <div className="grid gap-6">
-                    {contratsFiltres.map((c) => (
+                <>
+                    <div className="grid gap-6">
+                        {contratsPagines.map((c) => (
                         <article
                             key={c.id}
                             className="relative p-6 sm:p-7 bg-white border border-gray-200 rounded-2xl shadow-xs hover:shadow-md transition-shadow"
@@ -451,7 +464,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                                         <XCircle className="w-4 h-4 text-red-600" />
                                         <span>{t("contrats_etudiant.refused_badge_text")}</span>
                                     </div>
-                                ) : !c.signeParEtudiant ? (
+                                ) : !estAncienneSession && !c.signeParEtudiant ? (
                                     <div className="flex flex-wrap items-center justify-end gap-2">
                                         {aDejaSigneUnContrat && (
                                             <span className="text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
@@ -491,7 +504,16 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                             </div>
                         </article>
                     ))}
-                </div>
+                    </div>
+                    <Pagination
+                        page={page}
+                        totalItems={totalItems}
+                        totalPages={totalPages}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                    />
+                </>
             )}
 
             {signingContrat && (

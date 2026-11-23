@@ -8,6 +8,9 @@ import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
+import { estSessionPassee } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 
 const STATUS_STYLES = {
     EN_ATTENTE: "bg-amber-50 text-amber-800 border-amber-200",
@@ -83,6 +86,8 @@ export default function ProfileEmployeur() {
         }
     };
 
+    const estAncienneSession = estSessionPassee(anneeChoisie, annees);
+
     const offresEnAttente = offres.filter((o) => o.status === "EN_ATTENTE");
     const offresAcceptees = offres.filter((o) => o.status === "ACCEPTE" || o.status === "ACCEPTEE");
     const offresRefusees = offres.filter((o) => o.status === "REFUSE" || o.status === "REFUSEE");
@@ -92,14 +97,24 @@ export default function ProfileEmployeur() {
     if (categorie === "accepte") offresAffichees = offresAcceptees;
     if (categorie === "refuse") offresAffichees = offresRefusees;
 
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: offresPaginees
+    } = usePagination(offresAffichees, 10, [categorie, anneeChoisie]);
+
     return (
         <main className="w-full max-w-5xl mx-auto my-10 px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{t("employeur_home.title")}</h1>
                     <p className="text-slate-500 text-sm sm:text-base mt-1">{t("employeur_home.subtitle")}</p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <div className="flex flex-wrap items-center gap-2.5">
                     <SelecteurSession
                         annees={annees}
                         anneeSelectionnee={anneeChoisie}
@@ -121,12 +136,14 @@ export default function ProfileEmployeur() {
                         <Users className="w-4 h-4 text-blue-600" />
                         {t("pagename.stagiaires", { defaultValue: "Mes stagiaires" })}
                     </Link>
-                    <Link
-                        to="/employeur/creer-offre"
-                        className="btn-primary shrink-0"
-                    >
-                        {t("employeur_home.create_offer")}
-                    </Link>
+                    {!estAncienneSession && (
+                        <Link
+                            to="/employeur/creer-offre"
+                            className="btn-primary shrink-0"
+                        >
+                            {t("employeur_home.create_offer")}
+                        </Link>
+                    )}
                 </div>
             </div>
 
@@ -193,7 +210,7 @@ export default function ProfileEmployeur() {
             )}
 
             <div className="grid gap-5">
-                {offresAffichees.map((offre) => (
+                {offresPaginees.map((offre) => (
                     <article key={offre.id} className="p-6 sm:p-7 ds-card hover:shadow-md transition-shadow">
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                             <div className="min-w-0 flex-1">
@@ -276,31 +293,46 @@ export default function ProfileEmployeur() {
                         <div className="flex flex-wrap items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100">
                             <button
                                 type="button"
-                                onClick={() => navigate(`/employeur/offres/${offre.id}/candidatures`)}
+                                onClick={() =>
+                                    navigate(`/employeur/offres/${offre.id}/candidatures`, {
+                                        state: { estAncienneSession }
+                                    })
+                                }
                                 className="btn-primary"
                             >
                                 {t("employeur_home.view_candidates")} ({compterCandidatures(offre)})
                             </button>
-                            <div className="flex items-center gap-2.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setOffreAEditer(offre)}
-                                    className="btn-secondary"
-                                >
-                                    {t("employeur_home.edit_offer")}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setOffreASupprimer(offre)}
-                                    className="btn-danger-soft"
-                                >
-                                    {t("employeur_home.delete_offer")}
-                                </button>
-                            </div>
+                            {!estAncienneSession && (
+                                <div className="flex items-center gap-2.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => setOffreAEditer(offre)}
+                                        className="btn-secondary"
+                                    >
+                                        {t("employeur_home.edit_offer")}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setOffreASupprimer(offre)}
+                                        className="btn-danger-soft"
+                                    >
+                                        {t("employeur_home.delete_offer")}
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </article>
                 ))}
             </div>
+
+            <Pagination
+                page={page}
+                totalItems={totalItems}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+            />
 
             <ModalConfirmation
                 isOpen={Boolean(offreASupprimer)}

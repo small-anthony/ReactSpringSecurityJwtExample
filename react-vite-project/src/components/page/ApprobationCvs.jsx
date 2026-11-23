@@ -7,6 +7,8 @@ import {useTranslation} from "react-i18next";
 import ModalRefus from "../modal/ModalRefus.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalApprobationCv from "../modal/ModalApprobationCv.jsx";
+import Pagination from "../widget/Pagination.jsx";
+import { usePagination } from "../../hooks/usePagination.js";
 
 const ApprobationCvs = () => {
     const { t } = useTranslation("main");
@@ -74,6 +76,16 @@ const ApprobationCvs = () => {
         setPdfUrlModal(null);
     };
 
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: cvsPagines
+    } = usePagination(cvs, 10, []);
+
     return(
         <main className="flex flex-col md:flex-row w-full min-h-[calc(100vh-4rem)] overflow-hidden">
             <SidePanelGestionnaire activeTab="approbationsCvs" />
@@ -95,7 +107,7 @@ const ApprobationCvs = () => {
                     </div>
                 ) : (
                     <div className="grid gap-6">
-                        {cvs.map(cv => (
+                        {cvsPagines.map(cv => (
                             <article key={cv.id} className="relative p-6 sm:p-7 ds-card hover:shadow-md transition-shadow">
 
                                 <h3 className="text-xl font-bold text-slate-900 pr-20 mb-1">
@@ -154,6 +166,14 @@ const ApprobationCvs = () => {
                                 <p className="text-slate-500 font-medium">{t('approbation.cvs.nocvs')}</p>
                             </div>
                         )}
+                        <Pagination
+                            page={page}
+                            totalItems={totalItems}
+                            totalPages={totalPages}
+                            pageSize={pageSize}
+                            onPageChange={setPage}
+                            onPageSizeChange={setPageSize}
+                        />
                     </div>
                 )}
             </div>

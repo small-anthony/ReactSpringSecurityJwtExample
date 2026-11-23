@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FileText } from "lucide-react";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -13,6 +13,8 @@ import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 import ModalCreerConvocation from "../modal/ModalCreerConvocation.jsx";
 import { proposeConvocation } from "../../services/api/ConvocationAPI.js";
 import { DISCIPLINES } from "../../constants/disciplines.js";
+import Pagination from "../widget/Pagination.jsx";
+import { usePagination } from "../../hooks/usePagination.js";
 
 const peutConvoquer = (candidature) =>
     ["EN_ATTENTE_CONVOCATION", "ENTREVUE_REFUSEE"].includes(candidature.statut);
@@ -60,6 +62,8 @@ const COULEURS_BADGE = {
 export default function CandidaturesOffre() {
     const { offreId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const estAncienneSession = Boolean(location.state?.estAncienneSession);
     const authService = useContext(AuthServiceContext);
     const { t, i18n } = useTranslation("main");
     const langue = i18n?.language;
@@ -212,6 +216,16 @@ export default function CandidaturesOffre() {
     if (categorie === "embauchees") candidaturesAffichees = candidaturesEmbauchees;
     if (categorie === "refusees") candidaturesAffichees = candidaturesRefusees;
 
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: candidaturesPaginees
+    } = usePagination(candidaturesAffichees, 10, [categorie, offreId]);
+
     return (
         <main className="w-full max-w-5xl mx-auto my-10 px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
@@ -289,7 +303,7 @@ export default function CandidaturesOffre() {
             )}
 
             <div className="grid grid-cols-1 gap-5">
-                {candidaturesAffichees.map((candidat) => (
+                {candidaturesPaginees.map((candidat) => (
                     <article
                         key={candidat.id}
                         className="flex flex-col p-6 sm:p-7 ds-card hover:shadow-md transition-shadow"
@@ -375,7 +389,7 @@ export default function CandidaturesOffre() {
                             </div>
                         )}
 
-                        {peutRefuser(candidat) && refusId !== candidat.id && (
+                        {!estAncienneSession && peutRefuser(candidat) && refusId !== candidat.id && (
                             <div className="mt-5 pt-4 flex flex-wrap items-center gap-3 border-t border-slate-100">
                                 {peutConvoquer(candidat) && (
                                     <button
@@ -446,6 +460,15 @@ export default function CandidaturesOffre() {
                     </article>
                 ))}
             </div>
+
+            <Pagination
+                page={page}
+                totalItems={totalItems}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+            />
 
             {cvPdfModal && (
                 <ModalCvPdf

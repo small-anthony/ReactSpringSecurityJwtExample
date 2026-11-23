@@ -16,8 +16,10 @@ import {
 } from "../../services/api/GestionnaireService.js";
 import { getAnneesGestionnaire } from "../../services/api/OffreStageService.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 import StatsAssignationProfesseurs from "../widget/StatsAssignationProfesseurs.jsx";
 import TableEtudiantsAssignation from "../widget/TableEtudiantsAssignation.jsx";
 import ModalAssignerProfesseur from "../modal/ModalAssignerProfesseur.jsx";
@@ -29,7 +31,7 @@ export default function AssignationProfesseurs() {
 
     const [etudiants, setEtudiants] = useState([]);
     const [professeurs, setProfesseurs] = useState([]);
-    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesGestionnaire,
         authService
     );
@@ -125,6 +127,16 @@ export default function AssignationProfesseurs() {
         const nonAssignes = total - assignes;
         return { total, assignes, nonAssignes };
     }, [etudiants]);
+
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: etudiantsPagines
+    } = usePagination(etudiantsFiltres, 10, [rechercheEtudiant, filtreStatut, anneeChoisie]);
 
     const ouvrirModalAssignation = (etudiant) => {
         setEtudiantEnCours(etudiant);
@@ -284,12 +296,22 @@ export default function AssignationProfesseurs() {
                 </div>
 
                 <TableEtudiantsAssignation
-                    etudiants={etudiantsFiltres}
+                    etudiants={etudiantsPagines}
                     loading={loading}
                     rechercheEtudiant={rechercheEtudiant}
                     filtreStatut={filtreStatut}
+                    lectureSeule={estAncienneSession}
                     onAssigner={ouvrirModalAssignation}
                     onDesassigner={demanderConfirmationDesassigner}
+                />
+
+                <Pagination
+                    page={page}
+                    totalItems={totalItems}
+                    totalPages={totalPages}
+                    pageSize={pageSize}
+                    onPageChange={setPage}
+                    onPageSizeChange={setPageSize}
                 />
 
                 <ModalAssignerProfesseur

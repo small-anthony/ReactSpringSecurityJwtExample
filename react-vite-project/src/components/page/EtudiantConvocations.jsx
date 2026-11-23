@@ -16,6 +16,8 @@ import {
 } from "../../services/api/ConvocationAPI.js";
 import ConvocationCard from "../convocation/ConvocationCard.jsx";
 import ModalRefuserConvocation from "../modal/ModalRefuserConvocation.jsx";
+import Pagination from "../widget/Pagination.jsx";
+import { usePagination } from "../../hooks/usePagination.js";
 
 export default function EtudiantConvocations({ embedMode, onPendingCountChange }) {
   const { t } = useTranslation("main");
@@ -119,6 +121,16 @@ export default function EtudiantConvocations({ embedMode, onPendingCountChange }
   const countEnAttente = convocations.filter((c) => c.statut === "EN_ATTENTE").length;
   const countAcceptees = convocations.filter((c) => c.statut === "ACCEPTEE").length;
   const countExpirees = convocations.filter((c) => c.statut === "EXPIREE").length;
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalItems,
+    totalPages,
+    paginatedItems: convocationsPaginees
+  } = usePagination(convocationsFiltrees, 10, [filtre]);
 
   const content = (
     <>
@@ -234,17 +246,27 @@ export default function EtudiantConvocations({ embedMode, onPendingCountChange }
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {convocationsFiltrees.map((convocation) => (
-              <ConvocationCard
-                key={convocation.id}
-                convocation={convocation}
-                onAccepter={handleAccepter}
-                onRefuser={handleOuvrirRefus}
-                actionLoadingId={actionLoadingId}
-              />
-            ))}
-          </div>
+          <>
+            <div className="space-y-4">
+              {convocationsPaginees.map((convocation) => (
+                <ConvocationCard
+                  key={convocation.id}
+                  convocation={convocation}
+                  onAccepter={handleAccepter}
+                  onRefuser={handleOuvrirRefus}
+                  actionLoadingId={actionLoadingId}
+                />
+              ))}
+            </div>
+            <Pagination
+              page={page}
+              totalItems={totalItems}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          </>
         )}
       </div>
 

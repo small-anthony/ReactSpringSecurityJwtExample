@@ -17,13 +17,15 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getStagiaires } from "../../services/api/EvaluationAPI.js";
 import { getAnneesEmployeur } from "../../services/api/OffreStageService.js";
 import { useSessionSelection } from "../../hooks/useSessionSelection.js";
+import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
+import Pagination from "../widget/Pagination.jsx";
 
 export default function EmployeurStagiaires() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const navigate = useNavigate();
-    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees } = useSessionSelection(
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesEmployeur,
         authService
     );
@@ -65,6 +67,16 @@ export default function EmployeurStagiaires() {
         if (filtre === "EVALUES") return s.evalue;
         return true;
     });
+
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: stagiairesPagines
+    } = usePagination(stagiairesFiltres, 10, [filtre, anneeChoisie]);
 
     const classeOnglet = (valeur) =>
         `px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
@@ -163,8 +175,9 @@ export default function EmployeurStagiaires() {
                         </p>
                     </div>
                 ) : (
-                    <div className="space-y-5">
-                        {stagiairesFiltres.map((s) => (
+                    <>
+                        <div className="space-y-5">
+                            {stagiairesPagines.map((s) => (
                             <article
                                 key={s.contratId}
                                 className="bg-white rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-shadow duration-200 p-6 md:p-7 space-y-6"
@@ -216,13 +229,13 @@ export default function EmployeurStagiaires() {
                                     {s.evalue ? (
                                         <button
                                             type="button"
-                                            onClick={() => navigate(`/employeur/stagiaires/${s.contratId}/evaluation`)}
+                                            onClick={() => navigate(`/employeur/stagiaires/${s.contratId}/evaluation`, { state: { estAncienneSession } })}
                                             className="px-4 py-2 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition cursor-pointer inline-flex items-center gap-1.5"
                                         >
                                             <Eye className="w-3.5 h-3.5" />
                                             <span>{t("stagiaires.actions.view", { defaultValue: "Voir l'évaluation" })}</span>
                                         </button>
-                                    ) : (
+                                    ) : !estAncienneSession ? (
                                         <button
                                             type="button"
                                             onClick={() => navigate(`/employeur/stagiaires/${s.contratId}/evaluation`)}
@@ -231,11 +244,20 @@ export default function EmployeurStagiaires() {
                                             <ClipboardCheck className="w-3.5 h-3.5" />
                                             <span>{t("stagiaires.actions.evaluate", { defaultValue: "Évaluer le stagiaire" })}</span>
                                         </button>
-                                    )}
+                                    ) : null}
                                 </div>
                             </article>
                         ))}
-                    </div>
+                        </div>
+                        <Pagination
+                            page={page}
+                            totalItems={totalItems}
+                            totalPages={totalPages}
+                            pageSize={pageSize}
+                            onPageChange={setPage}
+                            onPageSizeChange={setPageSize}
+                        />
+                    </>
                 )}
             </div>
         </div>
