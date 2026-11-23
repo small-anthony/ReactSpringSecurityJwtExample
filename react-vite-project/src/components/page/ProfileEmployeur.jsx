@@ -9,7 +9,7 @@ import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import Pagination from "../widget/Pagination.jsx";
-import { estSessionPassee } from "../../hooks/useSessionSelection.js";
+import { useSessionSelection } from "../../hooks/useSessionSelection.js";
 import { usePagination } from "../../hooks/usePagination.js";
 
 const STATUS_STYLES = {
@@ -27,8 +27,10 @@ export default function ProfileEmployeur() {
     const authService = useContext(AuthServiceContext);
     const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
-    const [annees, setAnnees] = useState([]);
-    const [anneeChoisie, setAnneeChoisie] = useState(null);
+    const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
+        getAnneesEmployeur,
+        authService
+    );
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [offreAEditer, setOffreAEditer] = useState(null);
@@ -38,24 +40,13 @@ export default function ProfileEmployeur() {
     const [categorie, setCategorie] = useState("toutes");
 
     useEffect(() => {
-        getAnneesEmployeur?.(authService.buildAuthHeader())
-            ?.then((data) => {
-                setAnnees(data);
-
-                if (data && data.length > 0) {
-                    setAnneeChoisie(data[0]);
-                }
-            })
-            ?.catch(() => setAnnees([]));
-    }, [authService]);
-
-    useEffect(() => {
+        if (!anneesChargees) return;
         let offresChargees = true;
         setIsLoading(true);
 
         getOffresStages(authService.buildAuthHeader(), anneeChoisie)
             ?.then((data) => {
-                if (offresChargees) setOffres(data);
+                if (offresChargees) setOffres(data || []);
             })
             .catch((err) => {
                 if (offresChargees) setError(err.message);
@@ -67,7 +58,7 @@ export default function ProfileEmployeur() {
         return () => {
             offresChargees = false;
         };
-    }, [authService, anneeChoisie]);
+    }, [authService, anneesChargees, anneeChoisie]);
 
     const handleSupprimer = async (offreId) => {
         const idCible = typeof offreId === "number" ? offreId : offreASupprimer?.id;
@@ -85,8 +76,6 @@ export default function ProfileEmployeur() {
             setIsDeleting(false);
         }
     };
-
-    const estAncienneSession = estSessionPassee(anneeChoisie, annees);
 
     const offresEnAttente = offres.filter((o) => o.status === "EN_ATTENTE");
     const offresAcceptees = offres.filter((o) => o.status === "ACCEPTE" || o.status === "ACCEPTEE");

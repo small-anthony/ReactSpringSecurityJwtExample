@@ -133,7 +133,7 @@ public class EtudiantService {
         Etudiant etudiant = etudiantRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        if (etudiant.getCv() == null) {
+        if (etudiant.getCv() == null || etudiant.getCv().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
             return new StatutCvDto(false, null, null);
         }
         return new StatutCvDto(
@@ -146,7 +146,9 @@ public class EtudiantService {
         Etudiant etudiant = (Etudiant) userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant introuvable"));
 
-        if (etudiant.getCv() == null || etudiant.getCv().getData() == null) {
+        if (etudiant.getCv() == null
+                || etudiant.getCv().getData() == null
+                || etudiant.getCv().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucun CV disponible");
         }
         return etudiant.getCv().getData();
@@ -184,6 +186,10 @@ public class EtudiantService {
 
         if (offre.getStatus() != StatusAcceptation.ACCEPTE) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette offre n'est pas disponible.");
+        }
+
+        if (offre.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette offre n'est plus disponible.");
         }
 
         boolean autorise = offre.getEtudiantsAutorises() == null

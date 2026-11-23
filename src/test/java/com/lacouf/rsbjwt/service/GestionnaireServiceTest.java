@@ -262,6 +262,42 @@ public class GestionnaireServiceTest {
     }
 
     @Test
+    void getOffresEnAttente_exclutOffresAncienneSession() {
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+        OffreStage offreAncienne = new OffreStage("Ancienne", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", anneeActuelle - 1);
+        offreAncienne.setId(1L);
+        OffreStage offreCourante = new OffreStage("Courante", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", anneeActuelle);
+        offreCourante.setId(2L);
+
+        when(offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.EN_ATTENTE))
+                .thenReturn(List.of(offreAncienne, offreCourante));
+
+        List<OffreStageDto> resultat = gestionnaireService.getOffresEnAttente();
+
+        assertEquals(1, resultat.size());
+        assertEquals(2L, resultat.getFirst().id());
+    }
+
+    @Test
+    void getCvEnAttente_exclutCvsAncienneSession() {
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+        Cv cvAncien = new Cv();
+        cvAncien.setId(1L);
+        cvAncien.setAnnee(anneeActuelle - 1);
+        Cv cvCourant = new Cv();
+        cvCourant.setId(2L);
+        cvCourant.setAnnee(anneeActuelle);
+
+        when(cvRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE))
+                .thenReturn(List.of(cvAncien, cvCourant));
+
+        List<CvDto> resultat = gestionnaireService.getCvEnAttente();
+
+        assertEquals(1, resultat.size());
+        assertEquals(2L, resultat.getFirst().id());
+    }
+
+    @Test
     void getOffresEnAttente_avecAnnee_retourneOffresEnAttenteAnnee() {
 //        ARRANGE
         OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);

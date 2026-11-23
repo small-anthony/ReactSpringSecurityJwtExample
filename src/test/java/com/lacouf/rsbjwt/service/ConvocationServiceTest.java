@@ -12,6 +12,7 @@ import com.lacouf.rsbjwt.repository.ConvocationRepository;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -300,6 +301,30 @@ class ConvocationServiceTest {
     }
 
     @Test
+    void getConvocationsEtudiant_exclutAncienneSession() {
+        // Arrange
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+        OffreStage vieilleOffre = new OffreStage("Vieux Stage", "Desc", "CGI Inc.");
+        vieilleOffre.setEmployeur(employeur);
+        vieilleOffre.setAnnee(anneeActuelle - 1);
+        Candidature vieilleCandidature = new Candidature(etudiant, vieilleOffre);
+        ReflectionTestUtils.setField(vieilleCandidature, "id", 20L);
+        Convocation vieilleConvocation = new Convocation(rendezVousPossibles, "Ancien message");
+        ReflectionTestUtils.setField(vieilleConvocation, "id", 2L);
+        vieilleCandidature.addConvocation(vieilleConvocation);
+
+        when(convocationRepository.findByEtudiantEmail("etudiant@test.com"))
+                .thenReturn(List.of(vieilleConvocation, convocation));
+
+        // Act
+        List<ConvocationDto> dtos = convocationService.getConvocationsEtudiant("etudiant@test.com");
+
+        // Assert
+        assertEquals(1, dtos.size());
+        assertEquals(convocation.getId(), dtos.getFirst().id());
+    }
+
+    @Test
     void getConvocationsAccepteesEtudiant_succes() {
         // Arrange
         when(convocationRepository.findByEtudiantEmail("etudiant@test.com")).thenReturn(List.of(convocation));
@@ -310,6 +335,30 @@ class ConvocationServiceTest {
         // Assert
         assertEquals(1, dtos.size());
         verify(convocationRepository).findByEtudiantEmail("etudiant@test.com");
+    }
+
+    @Test
+    void getConvocationsAccepteesEtudiant_exclutAncienneSession() {
+        // Arrange
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+        OffreStage vieilleOffre = new OffreStage("Vieux Stage", "Desc", "CGI Inc.");
+        vieilleOffre.setEmployeur(employeur);
+        vieilleOffre.setAnnee(anneeActuelle - 1);
+        Candidature vieilleCandidature = new Candidature(etudiant, vieilleOffre);
+        ReflectionTestUtils.setField(vieilleCandidature, "id", 20L);
+        Convocation vieilleConvocation = new Convocation(rendezVousPossibles, "Ancien message");
+        ReflectionTestUtils.setField(vieilleConvocation, "id", 2L);
+        vieilleCandidature.addConvocation(vieilleConvocation);
+
+        when(convocationRepository.findByEtudiantEmail("etudiant@test.com"))
+                .thenReturn(List.of(vieilleConvocation, convocation));
+
+        // Act
+        List<ConvocationDto> dtos = convocationService.getConvocationsAccepteesEtudiant("etudiant@test.com");
+
+        // Assert
+        assertEquals(1, dtos.size());
+        assertEquals(convocation.getId(), dtos.getFirst().id());
     }
 
     @Test

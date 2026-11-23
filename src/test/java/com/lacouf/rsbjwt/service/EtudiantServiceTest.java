@@ -480,6 +480,45 @@ public class EtudiantServiceTest {
         }
 
         @Test
+        void getStatutCv_avecCvAncienneSession_retourneHasCvFalse() {
+                // ARRANGE
+                Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+                etudiant.setCv(new byte[] { 1, 2, 3 });
+                etudiant.getCv().accepterApprobation();
+                etudiant.getCv().setAnnee(AcademicSessionUtils.getAnneeActuelle() - 1);
+
+                when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
+                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+
+                // ACT
+                StatutCvDto resultat = etudiantService.getStatutCv("etudiant@gmail.com");
+
+                // ASSERT
+                assertNotNull(resultat);
+                assertFalse(resultat.hasCv());
+                assertNull(resultat.status());
+        }
+
+        @Test
+        void getCv_avecCvAncienneSession_lanceExceptionNotFound() {
+                // ARRANGE
+                Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+                etudiant.setCv(new byte[] { 1, 2, 3 });
+                etudiant.getCv().setAnnee(AcademicSessionUtils.getAnneeActuelle() - 1);
+
+                when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
+
+                // ACT & ASSERT
+                ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                                () -> etudiantService.getCv("etudiant@gmail.com"));
+                assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        }
+
+        @Test
         void getOffresDisponibles_sansCv_retourneOffresFiltrees() {
                 // ARRANGE
                 Credentials credentials = new Credentials("etudiant@gmail.com", "password", Role.ETUDIANT);
@@ -605,6 +644,28 @@ public class EtudiantServiceTest {
 
                 // ASSERT
                 assertEquals("Cette offre n'est plus disponible", exception.getMessage());
+        }
+
+        @Test
+        void getOffreDetail_offreAncienneSession_lanceForbidden() {
+                // ARRANGE
+                String email = "etudiant@gmail.com";
+                Credentials credentials = new Credentials(email, "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+
+                OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI");
+                offre.setId(10L);
+                offre.accepter();
+                offre.setAnnee(AcademicSessionUtils.getAnneeActuelle() - 1);
+
+                when(userAppRepository.findUserAppByEmail(email)).thenReturn(Optional.of(etudiant));
+                when(offreStageRepository.findById(10L)).thenReturn(Optional.of(offre));
+
+                // ACT & ASSERT
+                ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                                () -> etudiantService.getOffreDetail(10L, email));
+                assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         }
 
         @Test

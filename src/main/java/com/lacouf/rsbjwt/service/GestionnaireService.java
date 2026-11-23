@@ -98,6 +98,9 @@ public class GestionnaireService {
         Cv cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new Exception("CV non trouvé"));
 
+        if (cv.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de traiter un CV d'une ancienne session.");
+        }
         if (cv.getStatusAcceptation() != StatusAcceptation.EN_ATTENTE) {
             throw new Exception("Ce CV a deja ete traite.");
         }
@@ -112,6 +115,9 @@ public class GestionnaireService {
         Cv cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new Exception("CV non trouvé"));
 
+        if (cv.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de traiter un CV d'une ancienne session.");
+        }
         if (cv.getStatusAcceptation() != StatusAcceptation.EN_ATTENTE) {
             throw new Exception("Ce CV a deja ete traite.");
         }
@@ -123,8 +129,10 @@ public class GestionnaireService {
     }
 
     public List<CvDto> getCvEnAttente() {
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
         return cvRepository.findByApprobationStatus(StatusAcceptation.EN_ATTENTE)
                 .stream()
+                .filter(cv -> cv.getAnnee() >= anneeActuelle)
                 .map(CvDto::create)
                 .toList();
     }
@@ -139,6 +147,9 @@ public class GestionnaireService {
         OffreStage offre = offreStageRepository.findById(offreStageId)
                 .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
 
+        if (offre.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de traiter une offre d'une ancienne session.");
+        }
         if (!offre.isEnAttente()) {
             throw new Exception("Cette offre a déjà été traitée.");
         }
@@ -157,6 +168,9 @@ public class GestionnaireService {
         OffreStage offre = offreStageRepository.findById(offreStageId)
                 .orElseThrow(() -> new Exception("Offre de stage non trouvée"));
 
+        if (offre.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de traiter une offre d'une ancienne session.");
+        }
         if (!offre.isEnAttente()) {
             throw new Exception("Cette offre a deja ete traitee.");
         }
@@ -170,11 +184,13 @@ public class GestionnaireService {
     }
 
     public List<OffreStageDto> getOffresEnAttente(Integer annee) {
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
         List<OffreStage> offres = (annee != null)
                 ? offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.EN_ATTENTE, annee)
                 : offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.EN_ATTENTE);
         return offres.stream()
                 .filter(offre -> !offre.isSupprime())
+                .filter(offre -> annee != null || offre.getAnnee() >= anneeActuelle)
                 .map(OffreStageDto::create)
                 .collect(Collectors.toList());
     }

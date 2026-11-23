@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.ENUM.StatusAcceptation;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,11 +20,14 @@ public class Cv {
     @Embedded
     private Approbation approbation = new Approbation();
 
+    private int annee = AcademicSessionUtils.getAnneeActuelle();
+
     public Cv() {
     }
 
     public void mettreAJour(byte[] nouvelData) {
         this.data = nouvelData;
+        this.annee = AcademicSessionUtils.getAnneeActuelle();
         approbation.setStatus(StatusAcceptation.EN_ATTENTE);
     }
 
@@ -81,5 +85,13 @@ public class Cv {
 
     public void setEtudiant(Etudiant etudiant) {
         this.etudiant = etudiant;
+    }
+
+    public int getAnnee() {
+        return annee;
+    }
+
+    public void setAnnee(int annee) {
+        this.annee = annee;
     }
 }

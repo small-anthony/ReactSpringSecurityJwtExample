@@ -9,6 +9,7 @@ import com.lacouf.rsbjwt.repository.ConvocationRepository;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.service.dto.ConvocationDto;
 import com.lacouf.rsbjwt.service.dto.RendezVousDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +40,23 @@ public class ConvocationService {
     }
 
     public List<ConvocationDto> getConvocationsEtudiant(String etudiantEmail) {
-        return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
+        return ConvocationDto.create(filtrerParSessionActuelle(convocationRepository.findByEtudiantEmail(etudiantEmail)));
     }
 
     public List<ConvocationDto> getConvocationsAccepteesEtudiant(String etudiantEmail) {
-        return ConvocationDto.create(convocationRepository.findByEtudiantEmail(etudiantEmail));
+        return ConvocationDto.create(filtrerParSessionActuelle(convocationRepository.findByEtudiantEmail(etudiantEmail)));
+    }
+
+    private List<Convocation> filtrerParSessionActuelle(List<Convocation> convocations) {
+        if (convocations == null) {
+            return List.of();
+        }
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+        return convocations.stream()
+                .filter(c -> c.getCandidature() == null
+                        || c.getCandidature().getOffreStage() == null
+                        || c.getCandidature().getOffreStage().getAnnee() >= anneeActuelle)
+                .toList();
     }
 
     public List<ConvocationDto> getConvocationsEmployeur(String employeurEmail) {

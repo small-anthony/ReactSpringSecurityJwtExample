@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -154,6 +155,7 @@ public class ProfesseurService {
     private Candidature trouverStageActif(List<Candidature> candidatures) {
         return candidatures.stream()
                 .filter(c -> c.getStatut() == StatutCandidature.EMBAUCHEE)
+                .sorted(Comparator.comparingInt(Candidature::getAnneeOffre).reversed())
                 .findFirst()
                 .orElse(null);
     }
