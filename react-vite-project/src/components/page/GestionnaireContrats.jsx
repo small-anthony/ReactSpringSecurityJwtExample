@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { FileText, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -17,6 +17,15 @@ import { useSessionSelection } from "../../hooks/useSessionSelection.js";
 import { usePagination } from "../../hooks/usePagination.js";
 import SelecteurSession from "../widget/SelecteurSession.jsx";
 import Pagination from "../widget/Pagination.jsx";
+
+const ORDRE_STATUT_CONTRAT_GESTIONNAIRE = {
+  SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR: 0,
+  SIGNE_PAR_ETUDIANT: 1,
+  SIGNE_PAR_EMPLOYEUR: 2,
+  EN_ATTENTE_SIGNATURE: 3,
+  COMPLETE: 4,
+  REFUSE: 5,
+};
 
 export default function GestionnaireContrats() {
   const { t } = useTranslation("main");
@@ -37,6 +46,15 @@ export default function GestionnaireContrats() {
   const [contratARefuser, setContratARefuser] = useState(null);
   const [refusSubmitting, setRefusSubmitting] = useState(false);
 
+  const contratsTries = useMemo(() => {
+    return [...contrats].sort((a, b) => {
+      const prioriteA = ORDRE_STATUT_CONTRAT_GESTIONNAIRE[a.statut] ?? 99;
+      const prioriteB = ORDRE_STATUT_CONTRAT_GESTIONNAIRE[b.statut] ?? 99;
+      if (prioriteA !== prioriteB) return prioriteA - prioriteB;
+      return Number(b.id || 0) - Number(a.id || 0);
+    });
+  }, [contrats]);
+
   const {
     page,
     setPage,
@@ -45,7 +63,7 @@ export default function GestionnaireContrats() {
     totalItems,
     totalPages,
     paginatedItems: contratsPagines
-  } = usePagination(contrats, 10, [anneeChoisie]);
+  } = usePagination(contratsTries, 10, [anneeChoisie]);
 
   const authHeader = authService.buildAuthHeader();
 
@@ -247,13 +265,15 @@ export default function GestionnaireContrats() {
         {erreur && (
           <div
             id="contrat-error-alert"
-            className="mb-6 ds-alert-error flex items-center justify-between"
+            className="mb-6 ds-alert-error flex items-center justify-between gap-2.5"
             role="alert"
           >
             <span>{traduireErreurContrat(erreur)}</span>
             <button
+              type="button"
               onClick={() => setErreur(null)}
-              className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
+              className="text-red-500 hover:text-red-700 p-1 rounded-lg cursor-pointer"
+              aria-label={t("common.close")}
             >
               <X className="w-4 h-4" />
             </button>
@@ -263,13 +283,15 @@ export default function GestionnaireContrats() {
         {succes && (
           <div
             id="contrat-success-alert"
-            className="mb-6 ds-alert-success flex items-center justify-between"
+            className="mb-6 ds-alert-success flex items-center justify-between gap-2.5"
             role="status"
           >
             <span>{succes}</span>
             <button
+              type="button"
               onClick={() => setSucces(null)}
-              className="text-emerald-600 hover:text-emerald-800 p-1 cursor-pointer"
+              className="text-emerald-600 hover:text-emerald-800 p-1 rounded-lg cursor-pointer"
+              aria-label={t("common.close")}
             >
               <X className="w-4 h-4" />
             </button>
@@ -279,13 +301,15 @@ export default function GestionnaireContrats() {
         {messageRefus && (
           <div
             id="contrat-refus-alert"
-            className="mb-6 ds-alert-error flex items-center justify-between"
+            className="mb-6 ds-alert-error flex items-center justify-between gap-2.5"
             role="status"
           >
             <span>{messageRefus}</span>
             <button
+              type="button"
               onClick={() => setMessageRefus(null)}
-              className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
+              className="text-red-500 hover:text-red-700 p-1 rounded-lg cursor-pointer"
+              aria-label={t("common.close")}
             >
               <X className="w-4 h-4" />
             </button>

@@ -177,4 +177,12 @@ public class Notification {
 				"professeur.evaluer_stage"
 		);
 	}
+
+	public static Notification etudiantAssigne(Etudiant etudiant) {
+		return new Notification(
+				NotificationType.INFORMATIVE,
+				new NotificationAction(NotificationActionType.ETUDIANT_ASSIGNE, etudiant.getId()),
+				"professeur.etudiant_assigne"
+		);
+	}
 }

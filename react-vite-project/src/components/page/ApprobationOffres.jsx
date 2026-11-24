@@ -4,7 +4,7 @@ import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
-import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, MapPin, Phone } from "lucide-react";
+import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, MapPin, Phone, Calendar } from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import {usePagination} from "../../hooks/usePagination.js";
@@ -162,6 +162,17 @@ const ApprobationOffres = () => {
                                     </h4>
                                     <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.telephone}</p>
                                 </div>
+                                {(offre.dateDebut || offre.dateFin) && (
+                                    <div className="pt-2 border-t border-slate-200/60">
+                                        <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
+                                            <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                                            {t('approbation.offres.attributes.periode')}
+                                        </h4>
+                                        <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">
+                                            {offre.dateDebut && offre.dateFin ? `${offre.dateDebut} → ${offre.dateFin}` : (offre.dateDebut || offre.dateFin)}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (

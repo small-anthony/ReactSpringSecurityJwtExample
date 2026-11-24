@@ -9,6 +9,8 @@ import {
     AlertTriangle
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { usePagination } from "../../hooks/usePagination.js";
+import Pagination from "../widget/Pagination.jsx";
 
 export default function ModalAssignerProfesseur({
     isOpen,
@@ -24,6 +26,15 @@ export default function ModalAssignerProfesseur({
     soumissionEnCours
 }) {
     const { t } = useTranslation("main");
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: professeursPagines
+    } = usePagination(professeurs, 10, [isOpen, rechercheProfesseur]);
 
     if (!isOpen || !etudiant) return null;
 
@@ -105,71 +116,82 @@ export default function ModalAssignerProfesseur({
                                 {t("assignation_professeurs.aucun_professeur")}
                             </div>
                         ) : (
-                            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                                {professeurs.map((prof) => {
-                                    const estSelectionne = professeurSelectionne?.id === prof.id;
-                                    const estTropCharge = prof.tropEtudiants;
+                            <>
+                                <div className="space-y-2">
+                                    {professeursPagines.map((prof) => {
+                                        const estSelectionne = professeurSelectionne?.id === prof.id;
+                                        const estTropCharge = prof.tropEtudiants;
 
-                                    return (
-                                        <div
-                                            key={prof.id}
-                                            onClick={() => onSelectProfesseur(prof)}
-                                            className={`p-3.5 rounded-xl border transition-all duration-150 cursor-pointer flex items-center justify-between gap-3 ${
-                                                estSelectionne
-                                                    ? "border-blue-600 bg-blue-50/70 shadow-xs ring-2 ring-blue-500/20"
-                                                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <div
-                                                    className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 ${
-                                                        estSelectionne
-                                                            ? "bg-blue-600 text-white"
-                                                            : "bg-slate-100 text-slate-700"
-                                                    }`}
-                                                >
-                                                    {(prof.firstName || "").charAt(0)}
-                                                    {(prof.lastName || "").charAt(0)}
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <div className="font-bold text-slate-900 text-sm truncate">
-                                                        {prof.firstName} {prof.lastName}
+                                        return (
+                                            <div
+                                                key={prof.id}
+                                                onClick={() => onSelectProfesseur(prof)}
+                                                className={`p-3.5 rounded-xl border transition-all duration-150 cursor-pointer flex items-center justify-between gap-3 ${
+                                                    estSelectionne
+                                                        ? "border-blue-600 bg-blue-50/70 shadow-xs ring-2 ring-blue-500/20"
+                                                        : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80"
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div
+                                                        className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 ${
+                                                            estSelectionne
+                                                                ? "bg-blue-600 text-white"
+                                                                : "bg-slate-100 text-slate-700"
+                                                        }`}
+                                                    >
+                                                        {(prof.firstName || "").charAt(0)}
+                                                        {(prof.lastName || "").charAt(0)}
                                                     </div>
-                                                    <div className="text-xs text-slate-500 truncate">
-                                                        {prof.email}
+                                                    <div className="min-w-0">
+                                                        <div className="font-bold text-slate-900 text-sm truncate">
+                                                            {prof.firstName} {prof.lastName}
+                                                        </div>
+                                                        <div className="text-xs text-slate-500 truncate">
+                                                            {prof.email}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                                            estTropCharge
+                                                                ? "bg-amber-100 text-amber-900 border border-amber-300"
+                                                                : "bg-slate-100 text-slate-700"
+                                                        }`}
+                                                    >
+                                                        {estTropCharge && (
+                                                            <AlertTriangle className="w-3 h-3 text-amber-700" />
+                                                        )}
+                                                        {prof.nombreEtudiantsAssignes}{" "}
+                                                        {t("assignation_professeurs.etudiants_abrege")}
+                                                    </span>
+
+                                                    <div
+                                                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                                                            estSelectionne
+                                                                ? "border-blue-600 bg-blue-600 text-white"
+                                                                : "border-slate-300 bg-white"
+                                                        }`}
+                                                    >
+                                                        {estSelectionne && <CheckCircle2 className="w-3.5 h-3.5" />}
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <div className="flex items-center gap-2 shrink-0">
-                                                <span
-                                                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                                                        estTropCharge
-                                                            ? "bg-amber-100 text-amber-900 border border-amber-300"
-                                                            : "bg-slate-100 text-slate-700"
-                                                    }`}
-                                                >
-                                                    {estTropCharge && (
-                                                        <AlertTriangle className="w-3 h-3 text-amber-700" />
-                                                    )}
-                                                    {prof.nombreEtudiantsAssignes}{" "}
-                                                    {t("assignation_professeurs.etudiants_abrege")}
-                                                </span>
-
-                                                <div
-                                                    className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                                                        estSelectionne
-                                                            ? "border-blue-600 bg-blue-600 text-white"
-                                                            : "border-slate-300 bg-white"
-                                                    }`}
-                                                >
-                                                    {estSelectionne && <CheckCircle2 className="w-3.5 h-3.5" />}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <Pagination
+                                    page={page}
+                                    totalItems={totalItems}
+                                    totalPages={totalPages}
+                                    pageSize={pageSize}
+                                    onPageChange={setPage}
+                                    onPageSizeChange={setPageSize}
+                                    className="!mt-3"
+                                />
+                            </>
                         )}
                     </div>
 

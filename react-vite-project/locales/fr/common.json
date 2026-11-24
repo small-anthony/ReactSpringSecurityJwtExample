@@ -1,0 +1,103 @@
+{
+  "sitename": "Stagify",
+  "common": {
+    "cancel": "Annuler",
+    "submitting": "Traitement...",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "not_available": "N/D",
+    "at": "à",
+    "delete": "Supprimer",
+    "loading": "Chargement en cours..."
+  },
+  "pagename": {
+    "home": "Accueil",
+    "about": "À propos",
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "signup_employeur": "S'inscrire comme employeur",
+    "signup_etudiant": "S'inscrire comme étudiant",
+    "signup_professeur": "S'inscrire comme professeur",
+    "etudiant": "Mon profil",
+    "offres_stages": "Offres de stages",
+    "convocations": "Convocations",
+    "approbation_offres": "Approbation Offres",
+    "approbation_cvs": "Approbation CVs",
+    "voir_offres": "Voir offres",
+    "logout": "Déconnexion",
+    "contrats": "Mes contrats",
+    "contrats_employeur": "Mes contrats",
+    "stagiaires": "Mes stagiaires",
+    "mes_etudiants": "Mes étudiants",
+    "dashboard": "Tableau de bord",
+    "assignation_professeurs": "Assignation des professeurs"
+  },
+  "home": {
+    "title": "Stagify",
+    "subtitle": "Plateforme de gestion des stages",
+    "description": "L'espace collaboratif qui réunit étudiants, entreprises et professeurs. Trouvez un stage enrichissant, recrutez des talents qualifiés ou assurez le suivi pédagogique en toute simplicité.",
+    "cta_signup": "S'inscrire",
+    "cta_login": "Se connecter",
+    "connected_as": "Connecté en tant que"
+  },
+  "about": {
+    "title": "À propos de Stagify",
+    "version": "Version 1.0.0",
+    "description": "Plateforme centralisée facilitant la mise en relation entre étudiants, entreprises partenaires et professeurs pour la gestion des stages académiques.",
+    "go_back": "Retour à l'accueil"
+  },
+  "footer": {
+    "copyright": "Tous droits réservés © 2026 Stagify."
+  },
+  "hello-user": "Bonjour, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
+  "role": {
+    "gestionnaire": "Gestionnaire",
+    "etudiant": "Étudiant",
+    "etudiant_nocv": "Étudiant (CV manquant)",
+    "employeur": "Employeur",
+    "professeur": "Professeur",
+    "admin": "Administrateur"
+  },
+  "placeholder": {
+    "rendezvous": "Créez un rendez-vous...",
+    "lieu": "Choisissez un lieu...",
+    "message": "Entrez un message...",
+    "message_optionnel": "Message optionnel..."
+  },
+  "session": {
+    "toutes": "Toutes les sessions",
+    "libelle": "Hiver {{annee}}"
+  },
+  "pagination": {
+    "info": "Affichage {{debut}}-{{fin}} sur {{total}}",
+    "per_page": "Par page",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "page_label": "Page {{page}}"
+  },
+  "calendar": {
+    "clear": "Effacer la date",
+    "calendar": "Calendrier",
+    "prev_month": "Mois précédent",
+    "next_month": "Mois suivant"
+  },
+  "notifications": {
+    "titre": "Mes notifications",
+    "non_lues_count": "{{count}} nouvelle(s)",
+    "tout_lu": "Tout est à jour",
+    "vide_titre": "Aucune notification",
+    "vide_description": "Vous êtes à jour pour le moment.",
+    "ouvrir": "Consulter"
+  },
+  "sidepanel": {
+    "title": "Tableau de bord",
+    "dashboard": "Tableau de bord",
+    "cvs": "Approbations des CVs",
+    "offres": "Approbations des offres",
+    "contrats": "Contrats de stage",
+    "rapports": "Rapports étudiants",
+    "assignation_professeurs": "Assignation des professeurs",
+    "collapse": "Réduire le menu",
+    "expand": "Agrandir le menu"
+  }
+}

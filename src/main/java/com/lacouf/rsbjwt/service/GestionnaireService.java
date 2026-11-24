@@ -445,6 +445,13 @@ public class GestionnaireService {
         etudiant.setProfesseur(professeur);
         Etudiant etudiantSauvegarde = etudiantRepository.save(etudiant);
 
+        if (!dejaAssigne && notificationService != null) {
+            notificationService.pushNotification(
+                    Notification.etudiantAssigne(etudiantSauvegarde),
+                    professeur.getId()
+            );
+        }
+
         String message = estModification
                 ? "L'assignation du professeur a été modifiée avec succès."
                 : "Le professeur a été assigné avec succès à l'étudiant.";

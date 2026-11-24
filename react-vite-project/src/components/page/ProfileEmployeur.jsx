@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import {deleteOffreStage, getOffresStages, getAnneesEmployeur} from "../../services/api/OffreStageService.js";
 import {useTranslation} from "react-i18next";
-import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText,Users, MapPin, Phone } from "lucide-react";
+import { DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, Briefcase, FileText, Users, MapPin, Phone, Calendar } from "lucide-react";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import ModalModifierOffre from "../modal/ModalModiffierOffre.jsx";
 import ModalConfirmation from "../modal/ModalConfirmation.jsx";
@@ -272,6 +272,17 @@ export default function ProfileEmployeur() {
                                 </h4>
                                 <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.telephone}</p>
                             </div>
+                            {(offre.dateDebut || offre.dateFin) && (
+                                <div className="pt-2 border-t border-slate-200/60">
+                                    <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
+                                        <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                                        {t('approbation.offres.attributes.periode')}
+                                    </h4>
+                                    <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">
+                                        {offre.dateDebut && offre.dateFin ? `${offre.dateDebut} → ${offre.dateFin}` : (offre.dateDebut || offre.dateFin)}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                         {offre.status === "REFUSE" && offre.messageReponse && (
                             <div className="mt-5 ds-alert-error">

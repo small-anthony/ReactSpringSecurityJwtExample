@@ -200,14 +200,32 @@ export default function CandidaturesOffre() {
         setMessageRefus("");
     };
 
-    const candidaturesEnAttente = candidatures.filter((c) =>
-        ["EN_ATTENTE_CONVOCATION", "ENTREVUE_REFUSEE"].includes(c.statut)
+    const ORDRE_STATUT_CANDIDATURE_OFFRE = {
+        EN_ATTENTE_CHOIX_STAGE: 0,
+        EN_ATTENTE_SIGNATURE: 1,
+        EMBAUCHEE: 2,
+        EN_ATTENTE_ENTREVUE: 3,
+        EN_ATTENTE_CONFIRMATION_ENTREVUE: 4,
+        EN_ATTENTE_CONVOCATION: 5,
+        ENTREVUE_REFUSEE: 6,
+        REFUSEE: 7,
+    };
+
+    const trierParStatutCandidature = (liste) =>
+        [...liste].sort((a, b) => {
+            const prioriteA = ORDRE_STATUT_CANDIDATURE_OFFRE[a.statut] ?? 99;
+            const prioriteB = ORDRE_STATUT_CANDIDATURE_OFFRE[b.statut] ?? 99;
+            return prioriteA - prioriteB;
+        });
+
+    const candidaturesEnAttente = trierParStatutCandidature(
+        candidatures.filter((c) => ["EN_ATTENTE_CONVOCATION", "ENTREVUE_REFUSEE"].includes(c.statut))
     );
-    const candidaturesEntrevues = candidatures.filter((c) =>
-        ["EN_ATTENTE_CONFIRMATION_ENTREVUE", "EN_ATTENTE_ENTREVUE"].includes(c.statut)
+    const candidaturesEntrevues = trierParStatutCandidature(
+        candidatures.filter((c) => ["EN_ATTENTE_CONFIRMATION_ENTREVUE", "EN_ATTENTE_ENTREVUE"].includes(c.statut))
     );
-    const candidaturesEmbauchees = candidatures.filter((c) =>
-        ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(c.statut)
+    const candidaturesEmbauchees = trierParStatutCandidature(
+        candidatures.filter((c) => ["EN_ATTENTE_CHOIX_STAGE", "EN_ATTENTE_SIGNATURE", "EMBAUCHEE"].includes(c.statut))
     );
     const candidaturesRefusees = candidatures.filter((c) => c.statut === "REFUSEE");
 

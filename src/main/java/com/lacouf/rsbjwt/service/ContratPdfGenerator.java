@@ -25,6 +25,7 @@ import com.lacouf.rsbjwt.model.Candidature;
 import com.lacouf.rsbjwt.model.Contrat;
 import com.lacouf.rsbjwt.model.Employeur;
 import com.lacouf.rsbjwt.model.Etudiant;
+import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ public class ContratPdfGenerator {
             String nomEmployeur,
             String nomEtudiant,
             String nomEntreprise,
+            String adresseStage,
             String dateDebut,
             String dateFin,
             long nombreSemaines,
@@ -75,6 +77,7 @@ public class ContratPdfGenerator {
         Etudiant etudiant = candidature.getEtudiant();
         Employeur employeur = candidature.getEmployeur();
         String nomEntreprise = safe(employeur.getEntreprise());
+        String adresseStage = formatAdresseOffre(candidature.getOffreStage());
 
         ContratPdfData data = new ContratPdfData(
                 String.valueOf(contrat.getAnneeDebut()),
@@ -82,6 +85,7 @@ public class ContratPdfGenerator {
                 formatNomEmployeur(employeur, nomEntreprise),
                 formatNomEtudiant(etudiant),
                 nomEntreprise,
+                adresseStage,
                 safe(contrat.getDateDebut()),
                 safe(contrat.getDateFin()),
                 contrat.getNombreSemaines(),
@@ -104,6 +108,7 @@ public class ContratPdfGenerator {
         Etudiant etudiant = candidature.getEtudiant();
         Employeur employeur = candidature.getEmployeur();
         String nomEntreprise = safe(employeur.getEntreprise());
+        String adresseStage = formatAdresseOffre(candidature.getOffreStage());
 
         ContratPdfData data = new ContratPdfData(
                 String.valueOf(request.getAnneeDebut()),
@@ -111,6 +116,7 @@ public class ContratPdfGenerator {
                 formatNomEmployeur(employeur, nomEntreprise),
                 formatNomEtudiant(etudiant),
                 nomEntreprise,
+                adresseStage,
                 safe(request.dateDebut()),
                 safe(request.dateFin()),
                 request.getNombreSemaines(),
@@ -185,8 +191,14 @@ public class ContratPdfGenerator {
         document.add(centeredPreamble("L'étudiant(e), " + data.nomEtudiant(), fonts.regular(), 8));
         document.add(centeredPreamble("conviennent des conditions de stage suivantes :", fonts.regular(), 22));
 
-        ajouterSectionEncadree(document, fonts, "ENDROIT DU STAGE",
-                "Adresse : " + data.nomEntreprise());
+        if (!data.adresseStage().isBlank()) {
+            ajouterSectionEncadree(document, fonts, "ENDROIT DU STAGE",
+                    "Entreprise : " + data.nomEntreprise(),
+                    "Adresse : " + data.adresseStage());
+        } else {
+            ajouterSectionEncadree(document, fonts, "ENDROIT DU STAGE",
+                    "Entreprise : " + data.nomEntreprise());
+        }
 
         ajouterSectionEncadree(document, fonts, "DURÉE DU STAGE",
                 "Date de début : " + data.dateDebut(),
@@ -400,6 +412,16 @@ public class ContratPdfGenerator {
 
     private static String formatNomEmployeur(Employeur employeur, String nomEntreprise) {
         return safe(employeur.getFirstName()) + " " + safe(employeur.getLastName()) + " (" + nomEntreprise + ")";
+    }
+
+    private static String formatAdresseOffre(OffreStage offre) {
+        if (offre == null) {
+            return "";
+        }
+        return java.util.stream.Stream.of(offre.getAdresse(), offre.getVille(), offre.getCodePostal())
+                .filter(s -> s != null && !s.isBlank())
+                .map(String::trim)
+                .collect(java.util.stream.Collectors.joining(", "));
     }
 
     private static String safe(Object value) {

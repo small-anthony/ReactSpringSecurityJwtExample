@@ -13,4 +13,5 @@ public enum NotificationActionType {
 	SIGNER_CONTRAT,
 	REVISER_CONTRAT,
 	VOIR_EVALUATIONS,
+	ETUDIANT_ASSIGNE,
 }

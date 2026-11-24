@@ -16,6 +16,7 @@
     "contrat_refuse": "A contract was refused by the student or the employer. Please review it and resend the contracts."
   },
   "professeur": {
-    "evaluer_stage": "A student needs to have their internship evaluated."
+    "evaluer_stage": "A student needs to have their internship evaluated.",
+    "etudiant_assigne": "A new student has been assigned to you for internship supervision."
   }
 }

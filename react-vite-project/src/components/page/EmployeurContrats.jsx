@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     FileText,
     Clock,
@@ -13,7 +13,9 @@ import {
     AlertCircle,
     XCircle,
     GraduationCap,
-    Check
+    Check,
+    X,
+    MapPin
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -30,10 +32,18 @@ import Pagination from "../widget/Pagination.jsx";
 import ModalSignaturePad from "../modal/ModalSignaturePad.jsx";
 import ModalCvPdf from "../modal/ModalCvPdf.jsx";
 
+const FILTRES_CONTRAT_EMPLOYEUR = new Set(["TOUS", "A_SIGNER", "SIGNES", "REFUSES"]);
+
+const resolveFiltreContratEmployeur = (param) => {
+    const upper = param?.toUpperCase();
+    return FILTRES_CONTRAT_EMPLOYEUR.has(upper) ? upper : "TOUS";
+};
+
 export default function EmployeurContrats() {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesEmployeur,
         authService
@@ -44,7 +54,14 @@ export default function EmployeurContrats() {
     const [erreur, setErreur] = useState(null);
     const [succes, setSucces] = useState(null);
     const [messageRefus, setMessageRefus] = useState(null);
-    const [filtre, setFiltre] = useState("TOUS");
+    const [filtre, setFiltre] = useState(() => resolveFiltreContratEmployeur(searchParams.get("filtre")));
+
+    useEffect(() => {
+        const param = searchParams.get("filtre");
+        if (param) {
+            setFiltre(resolveFiltreContratEmployeur(param));
+        }
+    }, [searchParams]);
     const [signingContrat, setSigningContrat] = useState(null);
     const [contratARefuser, setContratARefuser] = useState(null);
     const [refusSubmitting, setRefusSubmitting] = useState(false);
@@ -144,11 +161,24 @@ export default function EmployeurContrats() {
     const aSignerCount = contrats.filter((c) => !c.signeParEmployeur && c.statut !== "REFUSE").length;
     const signesCount = contrats.filter((c) => c.signeParEmployeur).length;
 
-    const contratsFiltres = contrats.filter((c) => {
-        if (filtre === "A_SIGNER") return !c.signeParEmployeur && c.statut !== "REFUSE";
-        if (filtre === "SIGNES") return c.signeParEmployeur;
-        return true;
-    });
+    const getPrioriteContratEmployeur = (contrat) => {
+        if (contrat.statut === "REFUSE") return 4;
+        if (!contrat.signeParEmployeur) return contrat.signeParEtudiant ? 0 : 1;
+        if (contrat.statut === "COMPLETE") return 3;
+        return 2;
+    };
+
+    const contratsFiltres = contrats
+        .filter((c) => {
+            if (filtre === "A_SIGNER") return !c.signeParEmployeur && c.statut !== "REFUSE";
+            if (filtre === "SIGNES") return c.signeParEmployeur;
+            return true;
+        })
+        .sort((a, b) => {
+            const diff = getPrioriteContratEmployeur(a) - getPrioriteContratEmployeur(b);
+            if (diff !== 0) return diff;
+            return Number(b.id || 0) - Number(a.id || 0);
+        });
 
     const {
         page,
@@ -287,7 +317,7 @@ export default function EmployeurContrats() {
                 </div>
 
                 {erreur && (
-                    <div className="p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 rounded-xl flex items-center justify-between text-sm shadow-xs">
+                    <div className="ds-alert-error flex items-center justify-between gap-2.5" role="alert">
                         <div className="flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 shrink-0" />
                             <span>{erreur}</span>
@@ -295,15 +325,16 @@ export default function EmployeurContrats() {
                         <button
                             type="button"
                             onClick={() => setErreur(null)}
-                            className="text-rose-500 hover:text-rose-700 font-bold px-2 py-1 cursor-pointer"
+                            className="text-rose-700 hover:text-rose-900 cursor-pointer p-1 rounded-lg hover:bg-rose-100/60"
+                            aria-label={t("common.close")}
                         >
-                            ✕
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
                 )}
 
                 {succes && (
-                    <div className="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-xl flex items-center justify-between text-sm shadow-xs">
+                    <div className="ds-alert-success flex items-center justify-between gap-2.5" role="status">
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
                             <span>{succes}</span>
@@ -311,15 +342,16 @@ export default function EmployeurContrats() {
                         <button
                             type="button"
                             onClick={() => setSucces(null)}
-                            className="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 cursor-pointer"
+                            className="text-emerald-700 hover:text-emerald-900 cursor-pointer p-1 rounded-lg hover:bg-emerald-100/60"
+                            aria-label={t("common.close")}
                         >
-                            ✕
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
                 )}
 
                 {messageRefus && (
-                    <div className="p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-xl flex items-center justify-between text-sm shadow-xs">
+                    <div className="ds-alert-error flex items-center justify-between gap-2.5" role="status">
                         <div className="flex items-center gap-2">
                             <XCircle className="w-5 h-5 shrink-0 text-rose-600" />
                             <span>{messageRefus}</span>
@@ -327,9 +359,10 @@ export default function EmployeurContrats() {
                         <button
                             type="button"
                             onClick={() => setMessageRefus(null)}
-                            className="text-rose-500 hover:text-rose-700 font-bold px-2 py-1 cursor-pointer"
+                            className="text-rose-700 hover:text-rose-900 cursor-pointer p-1 rounded-lg hover:bg-rose-100/60"
+                            aria-label={t("common.close")}
                         >
-                            ✕
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
                 )}
@@ -371,9 +404,18 @@ export default function EmployeurContrats() {
                                             {t("contrats.candidature_select.matricule")} : {c.etudiantMatricule}
                                             {c.etudiantEmail && ` • ${c.etudiantEmail}`}
                                         </p>
-                                        <p className="text-sm text-blue-700 font-semibold flex items-start gap-1.5 pt-1 min-w-0">
-                                            <Briefcase className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                        <p className="text-sm text-blue-700 font-semibold flex items-center gap-1.5 flex-wrap pt-1 min-w-0">
+                                            <Briefcase className="w-4 h-4 text-blue-500 shrink-0" />
                                             <span className="break-words min-w-0">{c.titreOffre}</span>
+                                            {c.lieu && (
+                                                <>
+                                                    <span className="text-gray-300">•</span>
+                                                    <span className="text-gray-600 flex items-center gap-1 font-normal break-words min-w-0">
+                                                        <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                        <span className="break-words">{c.lieu}</span>
+                                                    </span>
+                                                </>
+                                            )}
                                         </p>
                                     </div>
                                     <div className="shrink-0">{getStatusBadge(c)}</div>

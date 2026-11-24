@@ -673,6 +673,7 @@ public class GestionnaireServiceTest {
         assertEquals("Sophie", reponse.etudiant().firstName());
         assertEquals("Martin", reponse.professeur().firstName());
         assertNull(reponse.avertissement());
+        verify(notificationService).pushNotification(any(com.lacouf.rsbjwt.model.Notification.class), org.mockito.ArgumentMatchers.eq(10L));
     }
 
     @Test

@@ -576,4 +576,17 @@ class ConvocationServiceTest {
         );
         assertTrue(e.getMessage().contains("La convocation est deja resolue"));
     }
+
+    @Test
+    void creerConvocation_candidatureDejaEmbauchee_lanceException() {
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        when(candidatureRepository.findById(candidature.getId())).thenReturn(Optional.of(candidature));
+
+        List<RendezVousDto> dtos = List.of(RendezVousDto.create(RendezVous.create("Virtuel", Instant.MAX)));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                convocationService.creerConvocation(employeur.getEmail(), candidature.getId(), dtos, "Bienvenue"));
+
+        assertTrue(exception.getMessage().contains("état actuel"));
+    }
 }

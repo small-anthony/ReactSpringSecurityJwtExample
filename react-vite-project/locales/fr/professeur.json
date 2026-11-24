@@ -1,0 +1,49 @@
+{
+  "professeur": {
+    "mes_etudiants": "Mes étudiants assignés",
+    "badge_role": "Espace Professeur Superviseur",
+    "titre_page": "Mes étudiants supervisés",
+    "bienvenue": "Bonjour {{nom}}, suivez l'état des stages et des demandes de vos étudiants assignés.",
+    "total_etudiants": "{{count}} étudiant(s) supervisé(s)",
+    "chargement": "Chargement de vos étudiants assignés...",
+    "aucun_etudiant_titre": "Aucun étudiant assigné",
+    "aucun_etudiant_description": "Le gestionnaire de stage ne vous a pas encore assigné d'étudiant pour cette session. Les étudiants apparaîtront ici dès leur assignation.",
+    "aucun_resultat_recherche": "Aucun étudiant ne correspond à vos critères de recherche.",
+    "recherche_placeholder": "Rechercher par nom, matricule, entreprise...",
+    "btn_demandes": "Demandes ({{count}})",
+    "historique_demandes": "Historique des demandes de stage",
+    "matricule_label": "Matricule",
+    "entreprise_defaut": "Entreprise non spécifiée",
+    "offre_stage_defaut": "Offre de stage",
+    "postule_le": "Postulé le {{date}}",
+    "erreur_chargement": "Erreur lors du chargement de vos étudiants.",
+    "tabs": {
+      "all": "Tous",
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalués"
+    },
+    "contact_label": "Superviseur / Contact",
+    "phone_label": "Téléphone",
+    "periode_label": "Dates du stage",
+    "non_specifie": "Non précisé",
+    "badge_milieu_evalue": "Milieu évalué",
+    "badge_milieu_a_evaluer": "Milieu à évaluer",
+    "btn_evaluer_milieu": "Évaluer le milieu de stage",
+    "btn_voir_evaluation_milieu": "Voir l'évaluation du milieu",
+    "statut": {
+      "EMBAUCHEE": "Embauché(e)",
+      "ACCEPTEE": "Offre acceptée",
+      "EN_ATTENTE": "En attente",
+      "EN_ATTENTE_REPONSE": "En attente de réponse",
+      "EN_ATTENTE_CONVOCATION": "En attente de convocation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Convocation envoyée",
+      "ENTREVUE_REFUSEE": "Entrevue refusée",
+      "EN_ATTENTE_ENTREVUE": "En attente d'entrevue",
+      "EN_ATTENTE_CHOIX_STAGE": "En attente du choix de l'étudiant",
+      "EN_ATTENTE_SIGNATURE": "En attente de signature",
+      "REFUSEE": "Refusée",
+      "EN_RECHERCHE": "En recherche de stage",
+      "REFUSE": "Refusée"
+    }
+  }
+}

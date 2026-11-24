@@ -15,6 +15,8 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
         nomEntreprise: initialValues.nomEntreprise || "",
         discipline: initialValues.discipline || "",
         duree: initialValues.duree || "",
+        dateDebut: initialValues.dateDebut || "",
+        dateFin: initialValues.dateFin || "",
         salaire: initialValues.salaire ? (initialValues.salaire.toString().match(/\d+([.,]\d+)?/)?.[0] || "") : "",
         exigences: initialValues.exigences || "",
         adresse: initialValues.adresse || "",
@@ -58,6 +60,19 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
         }
 
         if (!formData.duree.trim()) newErrors.duree = "duree";
+
+        const datesRequises = !formData.id || Boolean(initialValues.dateDebut || initialValues.dateFin || formData.dateDebut || formData.dateFin);
+        if (datesRequises) {
+            if (!formData.dateDebut) {
+                newErrors.dateDebut = "required";
+            }
+            if (!formData.dateFin) {
+                newErrors.dateFin = "required";
+            } else if (formData.dateDebut && formData.dateFin <= formData.dateDebut) {
+                newErrors.dateFin = "afterStart";
+            }
+        }
+
         if (!formData.exigences.trim()) newErrors.exigences = "exigences";
 
         if (!formData.adresse.trim()) newErrors.adresse = "adresse";
@@ -216,6 +231,49 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                     {errors.duree && (
                         <p className="ds-error-text">
                             {t(`creer_offre.errors.${errors.duree}`)}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="ds-label">
+                        {t("creer_offre.dateDebut")} {!formData.id && <span className="text-red-500">*</span>}
+                    </label>
+                    <input
+                        type="date"
+                        name="dateDebut"
+                        value={formData.dateDebut}
+                        onChange={handleChange}
+                        className={`ds-input ${
+                            errors.dateDebut ? "ds-input-error" : ""
+                        }`}
+                    />
+                    {errors.dateDebut && (
+                        <p className="ds-error-text">
+                            {t(`creer_offre.errors.dateDebut.${errors.dateDebut}`)}
+                        </p>
+                    )}
+                </div>
+
+                <div>
+                    <label className="ds-label">
+                        {t("creer_offre.dateFin")} {!formData.id && <span className="text-red-500">*</span>}
+                    </label>
+                    <input
+                        type="date"
+                        name="dateFin"
+                        min={formData.dateDebut || undefined}
+                        value={formData.dateFin}
+                        onChange={handleChange}
+                        className={`ds-input ${
+                            errors.dateFin ? "ds-input-error" : ""
+                        }`}
+                    />
+                    {errors.dateFin && (
+                        <p className="ds-error-text">
+                            {t(`creer_offre.errors.dateFin.${errors.dateFin}`)}
                         </p>
                     )}
                 </div>

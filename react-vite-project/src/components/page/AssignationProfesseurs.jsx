@@ -99,26 +99,34 @@ export default function AssignationProfesseurs() {
     }, [rechercheProfesseur, modalOuvert, authService]);
 
     const etudiantsFiltres = useMemo(() => {
-        return etudiants.filter((e) => {
-            const nomComplet = `${e.firstName || ""} ${e.lastName || ""}`.toLowerCase();
-            const matricule = (e.matricule || "").toString();
-            const entreprise = (e.nomEntreprise || "").toLowerCase();
-            const titre = (e.titreOffreStage || "").toLowerCase();
-            const query = rechercheEtudiant.trim().toLowerCase();
+        return etudiants
+            .filter((e) => {
+                const nomComplet = `${e.firstName || ""} ${e.lastName || ""}`.toLowerCase();
+                const matricule = (e.matricule || "").toString();
+                const entreprise = (e.nomEntreprise || "").toLowerCase();
+                const titre = (e.titreOffreStage || "").toLowerCase();
+                const query = rechercheEtudiant.trim().toLowerCase();
 
-            const correspondRecherche =
-                !query ||
-                nomComplet.includes(query) ||
-                matricule.includes(query) ||
-                entreprise.includes(query) ||
-                titre.includes(query);
+                const correspondRecherche =
+                    !query ||
+                    nomComplet.includes(query) ||
+                    matricule.includes(query) ||
+                    entreprise.includes(query) ||
+                    titre.includes(query);
 
-            if (!correspondRecherche) return false;
+                if (!correspondRecherche) return false;
 
-            if (filtreStatut === "assignes") return e.estAssigne;
-            if (filtreStatut === "non_assignes") return !e.estAssigne;
-            return true;
-        });
+                if (filtreStatut === "assignes") return e.estAssigne;
+                if (filtreStatut === "non_assignes") return !e.estAssigne;
+                return true;
+            })
+            .sort((a, b) => {
+                const diff = Number(Boolean(a.estAssigne)) - Number(Boolean(b.estAssigne));
+                if (diff !== 0) return diff;
+                const nomA = `${a.lastName || ""} ${a.firstName || ""}`.trim();
+                const nomB = `${b.lastName || ""} ${b.firstName || ""}`.trim();
+                return nomA.localeCompare(nomB, "fr", { sensitivity: "base" });
+            });
     }, [etudiants, rechercheEtudiant, filtreStatut]);
 
     const stats = useMemo(() => {

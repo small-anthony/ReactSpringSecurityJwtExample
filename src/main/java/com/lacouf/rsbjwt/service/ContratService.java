@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.model.embeddable.Signature;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
@@ -118,7 +119,15 @@ public class ContratService {
         Candidature candidature = candidatureRepository.findById(request.candidatureId())
                 .orElseThrow(() -> new Exception("Candidature introuvable avec l'identifiant : " + request.candidatureId()));
 
+        int annee = candidature.getOffreStage() != null
+                ? candidature.getOffreStage().getAnnee()
+                : AcademicSessionUtils.getAnneeActuelle();
+        if (annee < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de créer un contrat pour une ancienne session.");
+        }
+
         validerEligibiliteCandidature(candidature);
+        validerAbsenceAutreStageActif(candidature, annee);
 
         Contrat contrat = new Contrat(
                 candidature,
@@ -144,10 +153,17 @@ public class ContratService {
 
         OffreStage offre = candidature.getOffreStage();
         int annee = offre != null ? offre.getAnnee() : AcademicSessionUtils.getAnneeActuelle();
+        if (annee < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de générer un contrat pour une ancienne session.");
+        }
         validerAbsenceAutreStageActif(candidature, annee);
-        LocalDate dateDebut = LocalDate.of(annee, 5, 11);
+        LocalDate dateDebut = (offre != null && offre.getDateDebut() != null)
+                ? offre.getDateDebut()
+                : LocalDate.of(annee, 5, 11);
         long semaines = extraireSemainesDuree(offre != null ? offre.getDuree() : null);
-        LocalDate dateFin = dateDebut.plusWeeks(semaines);
+        LocalDate dateFin = (offre != null && offre.getDateDebut() != null && offre.getDateFin() != null)
+                ? offre.getDateFin()
+                : dateDebut.plusWeeks(semaines);
         String horaire = "Du lundi au vendredi, 9h à 17h (35h/semaine)";
         String salaire = (offre != null && !estVide(offre.getSalaire())) ? offre.getSalaire().trim() : "Non spécifié";
         String descriptionTaches = (offre != null && !estVide(offre.getDescription()))
@@ -168,7 +184,6 @@ public class ContratService {
 
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         candidatureRepository.save(candidature);
-        refuserAutresCandidaturesEtudiant(candidature, annee);
         Contrat savedContrat = contratRepository.save(contrat);
         notifierCreationContrat(candidature, savedContrat);
         return ContratDto.create(savedContrat);
@@ -218,6 +233,12 @@ public class ContratService {
         }
 
         Contrat contratSauvegarde = contratRepository.save(contrat);
+        if (utilisateur instanceof Etudiant etudiant && contrat.getCandidature() != null) {
+            int anneeContrat = contrat.getOffreStage() != null
+                    ? contrat.getOffreStage().getAnnee()
+                    : AcademicSessionUtils.getAnneeActuelle();
+            refuserAutresCandidaturesEtContratsEtudiant(contrat.getCandidature(), etudiant, anneeContrat, contratSauvegarde);
+        }
         if (!(utilisateur instanceof Gestionnaire)
                 && contratSauvegarde.getStatut() == StatutContrat.SIGNE_PAR_ETUDIANT_ET_EMPLOYEUR) {
             notifierGestionnaires(() -> Notification.contratPretPourSignatureGestionnaire(contratSauvegarde));
@@ -369,17 +390,21 @@ public class ContratService {
         if (candidatureChoisie.getEtudiant() == null) {
             return;
         }
-        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(candidatureChoisie.getEtudiant());
-        if (candidaturesEtudiant == null) {
-            return;
-        }
-        boolean dejaStageActif = candidaturesEtudiant.stream()
+        Etudiant etudiant = candidatureChoisie.getEtudiant();
+        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(etudiant);
+        boolean dejaEmbauchee = candidaturesEtudiant != null && candidaturesEtudiant.stream()
                 .anyMatch(autre -> !Objects.equals(autre.getId(), candidatureChoisie.getId())
                         && (autre.getOffreStage() == null || autre.getOffreStage().getAnnee() == annee)
-                        && (autre.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE
-                                || autre.getStatut() == StatutCandidature.EMBAUCHEE));
-        if (dejaStageActif) {
-            throw new Exception("Vous avez déjà un stage en cours ou confirmé pour cette session.");
+                        && autre.getStatut() == StatutCandidature.EMBAUCHEE);
+        boolean dejaContratSigne = etudiant.getEmail() != null && Optional.ofNullable(contratRepository.findByCandidatureEtudiantEmail(etudiant.getEmail()))
+                .orElse(List.of())
+                .stream()
+                .anyMatch(c -> c.isSigneParEtudiant()
+                        && c.getStatut() != StatutContrat.REFUSE
+                        && (c.getOffreStage() == null || c.getOffreStage().getAnnee() == annee)
+                        && (c.getCandidature() == null || !Objects.equals(c.getCandidature().getId(), candidatureChoisie.getId())));
+        if (dejaEmbauchee || dejaContratSigne) {
+            throw new Exception("Vous avez déjà choisi et signé un stage pour cette session.");
         }
     }
 
@@ -397,11 +422,29 @@ public class ContratService {
         return 15L;
     }
 
-    private void refuserAutresCandidaturesEtudiant(Candidature candidatureChoisie, int annee) {
-        if (candidatureChoisie.getEtudiant() == null) {
+    private void refuserAutresCandidaturesEtContratsEtudiant(Candidature candidatureChoisie, Etudiant etudiant, int annee, Contrat contratSigne) {
+        if (etudiant == null) {
             return;
         }
-        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(candidatureChoisie.getEtudiant());
+        if (etudiant.getEmail() != null) {
+            List<Contrat> contratsEtudiant = contratRepository.findByCandidatureEtudiantEmail(etudiant.getEmail());
+            if (contratsEtudiant != null) {
+                for (Contrat autreContrat : contratsEtudiant) {
+                    if (autreContrat == contratSigne
+                            || (contratSigne.getId() != null && Objects.equals(autreContrat.getId(), contratSigne.getId()))) {
+                        continue;
+                    }
+                    if (autreContrat.getOffreStage() != null && autreContrat.getOffreStage().getAnnee() != annee) {
+                        continue;
+                    }
+                    if (autreContrat.getStatut() != StatutContrat.REFUSE && autreContrat.getStatut() != StatutContrat.COMPLETE) {
+                        autreContrat.rejeter(etudiant);
+                        contratRepository.save(autreContrat);
+                    }
+                }
+            }
+        }
+        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(etudiant);
         if (candidaturesEtudiant == null) {
             return;
         }
@@ -412,6 +455,13 @@ public class ContratService {
             }
             if (autre.getOffreStage() != null && autre.getOffreStage().getAnnee() != annee) {
                 continue;
+            }
+            if (autre.getConvocations() != null) {
+                for (Convocation convocation : autre.getConvocations()) {
+                    if (convocation.getStatut() == StatutConvocation.EN_ATTENTE) {
+                        convocation.annuler();
+                    }
+                }
             }
             if (autre.getStatut() != StatutCandidature.REFUSEE) {
                 autre.setStatut(StatutCandidature.REFUSEE);
@@ -431,6 +481,10 @@ public class ContratService {
     }
 
     private void validerSignatairePourContrat(Contrat contrat, UserApp utilisateur) throws Exception {
+        if (contrat.getOffreStage() != null
+                && contrat.getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de signer un contrat d'une ancienne session.");
+        }
         if (contrat.getStatut() == StatutContrat.REFUSE) {
             throw new Exception("Le contrat a été refusé");
         }
@@ -464,6 +518,13 @@ public class ContratService {
     }
 
     private void validerSignatairePourRejet(Contrat contrat, UserApp utilisateur) throws Exception {
+        if (contrat.getOffreStage() != null
+                && contrat.getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de refuser un contrat d'une ancienne session.");
+        }
+        if (contrat.getStatut() == StatutContrat.COMPLETE) {
+            throw new Exception("Impossible de refuser un contrat déjà complété.");
+        }
         if (contrat.getStatut() == StatutContrat.REFUSE) {
             throw new Exception("Le contrat a deja ete refuse");
         }        if (utilisateur instanceof Etudiant etudiant) {

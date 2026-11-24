@@ -19,7 +19,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.lacouf.rsbjwt.model.Cv;
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.Convocation;
 import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
+import com.lacouf.rsbjwt.model.ENUM.StatutConvocation;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 
@@ -31,6 +33,7 @@ public class EmployeurService {
     private final CandidatureRepository candidatureRepository;
     private final NotificationService notificationService;
     private final GestionnaireRepository gestionnaireRepository;
+    private final ContratService contratService;
 
     @Autowired
     public EmployeurService(UserAppRepository userAppRepository,
@@ -38,26 +41,46 @@ public class EmployeurService {
                             OffreStageRepository offreStageRepository,
                             CandidatureRepository candidatureRepository,
                             NotificationService notificationService,
-                            GestionnaireRepository gestionnaireRepository) {
+                            GestionnaireRepository gestionnaireRepository,
+                            ContratService contratService) {
         this.userAppRepository = userAppRepository;
         this.employeurRepository = employeurRepository;
         this.offreStageRepository = offreStageRepository;
         this.candidatureRepository = candidatureRepository;
         this.notificationService = notificationService;
         this.gestionnaireRepository = gestionnaireRepository;
+        this.contratService = contratService;
+    }
+
+    public EmployeurService(UserAppRepository userAppRepository,
+                            EmployeurRepository employeurRepository,
+                            OffreStageRepository offreStageRepository,
+                            CandidatureRepository candidatureRepository,
+                            NotificationService notificationService,
+                            GestionnaireRepository gestionnaireRepository) {
+        this(userAppRepository, employeurRepository, offreStageRepository, candidatureRepository, notificationService, gestionnaireRepository, null);
     }
 
     public EmployeurService(UserAppRepository userAppRepository,
                             EmployeurRepository employeurRepository,
                             OffreStageRepository offreStageRepository,
                             CandidatureRepository candidatureRepository) {
-        this(userAppRepository, employeurRepository, offreStageRepository, candidatureRepository, null, null);
+        this(userAppRepository, employeurRepository, offreStageRepository, candidatureRepository, null, null, null);
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
                                           String discipline, String duree, String salaire, String exigences,
                                           String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur, Integer annee) throws Exception {
+        return createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences,
+                adresse, ville, codePostal, telephone, emailEmployeur, annee, null, null);
+    }
+
+    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
+                                          String discipline, String duree, String salaire, String exigences,
+                                          String adresse, String ville, String codePostal, String telephone,
+                                          String emailEmployeur, Integer annee,
+                                          LocalDate dateDebut, LocalDate dateFin) throws Exception {
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
         }
@@ -71,6 +94,7 @@ public class EmployeurService {
         }
 
         validerLieuEtContact(adresse, ville, codePostal, telephone);
+        validerDatesOffre(dateDebut, dateFin);
 
         if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
             throw new Exception("Le courriel de l'employeur est obligatoire");
@@ -95,8 +119,13 @@ public class EmployeurService {
         offreStage.setVille(ville.trim());
         offreStage.setCodePostal(codePostal.trim().toUpperCase());
         offreStage.setTelephone(telephone.trim());
+        offreStage.setDateDebut(dateDebut);
+        offreStage.setDateFin(dateFin);
 
         if (annee != null && annee > 0) {
+            if (annee < AcademicSessionUtils.getAnneeActuelle()) {
+                throw new Exception("Impossible de créer une offre pour une ancienne session.");
+            }
             offreStage.setAnnee(annee);
         }
 
@@ -192,10 +221,17 @@ public class EmployeurService {
     }
 
     public CandidatureDto embaucherCandidature(Long candidatureId, String emailEmployeur) throws Exception {
-        return repondre(candidatureId, emailEmployeur,
+        CandidatureDto dto = repondre(candidatureId, emailEmployeur,
                 EnumSet.of(StatutCandidature.EN_ATTENTE_ENTREVUE),
                 StatutCandidature.EN_ATTENTE_CHOIX_STAGE, null,
                 "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
+        if (contratService != null) {
+            contratService.genererContratAutomatique(candidatureId);
+            return candidatureRepository.findById(candidatureId)
+                    .map(CandidatureDto::create)
+                    .orElse(dto);
+        }
+        return dto;
     }
 
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,
@@ -210,6 +246,11 @@ public class EmployeurService {
 
         Candidature candidature = candidatureRepository.findByIdAndOffreStageEmployeur(candidatureId, employeur)
                 .orElseThrow(() -> new Exception("Candidature introuvable pour cet employeur"));
+
+        if (candidature.getOffreStage() != null
+                && candidature.getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible d'effectuer cette action sur une ancienne session.");
+        }
 
         if (!statutsAutorises.contains(candidature.getStatut())) {
             throw new Exception(erreurStatut);
@@ -231,11 +272,29 @@ public class EmployeurService {
         OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
 
+        if (offre.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de supprimer une offre d'une ancienne session.");
+        }
+
         offre.supprimer();
 
+        Set<StatutCandidature> statutsARefuser = EnumSet.of(
+                StatutCandidature.EN_ATTENTE_CONVOCATION,
+                StatutCandidature.EN_ATTENTE_CONFIRMATION_ENTREVUE,
+                StatutCandidature.EN_ATTENTE_ENTREVUE,
+                StatutCandidature.ENTREVUE_REFUSEE,
+                StatutCandidature.EN_ATTENTE_CHOIX_STAGE
+        );
         List<Candidature> candidatures = candidatureRepository.findByOffreStage(offre);
         for (Candidature candidature : candidatures) {
-            if (candidature.getStatut() == StatutCandidature.EN_ATTENTE_CONVOCATION) {
+            if (statutsARefuser.contains(candidature.getStatut())) {
+                if (candidature.getConvocations() != null) {
+                    for (Convocation convocation : candidature.getConvocations()) {
+                        if (convocation.getStatut() == StatutConvocation.EN_ATTENTE) {
+                            convocation.annuler();
+                        }
+                    }
+                }
                 refuserCandidature(candidature.getId(), "L'offre a été supprimée par l'employeur", emailEmployeur);
             }
         }
@@ -247,6 +306,15 @@ public class EmployeurService {
                                           String discipline, String duree, String salaire, String exigences,
                                           String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur) throws Exception {
+        return updateOffreStage(offreId, titre, nomEntreprise, description, discipline, duree, salaire, exigences,
+                adresse, ville, codePostal, telephone, emailEmployeur, null, null);
+    }
+
+    public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
+                                          String discipline, String duree, String salaire, String exigences,
+                                          String adresse, String ville, String codePostal, String telephone,
+                                          String emailEmployeur,
+                                          LocalDate dateDebut, LocalDate dateFin) throws Exception {
 
         if (titre == null || titre.trim().isEmpty()) {
             throw new Exception("Le titre est obligatoire");
@@ -261,12 +329,17 @@ public class EmployeurService {
         }
 
         validerLieuEtContact(adresse, ville, codePostal, telephone);
+        validerDatesOffre(dateDebut, dateFin);
 
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
 
         OffreStage offre = offreStageRepository.findByIdAndEmployeurAndDateSuppressionIsNull(offreId, employeur)
                 .orElseThrow(() -> new Exception("Offre introuvable pour cet employeur"));
+
+        if (offre.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de modifier une offre d'une ancienne session.");
+        }
 
         offre.setTitre(titre.trim());
         offre.setNomEntreprise(nomEntreprise.trim());
@@ -279,10 +352,23 @@ public class EmployeurService {
         offre.setVille(ville.trim());
         offre.setCodePostal(codePostal.trim().toUpperCase());
         offre.setTelephone(telephone.trim());
+        if (dateDebut != null && dateFin != null) {
+            offre.setDateDebut(dateDebut);
+            offre.setDateFin(dateFin);
+        }
 
         offre.reinitialiserApprobation();
 
         return OffreStageDto.create(offreStageRepository.save(offre));
+    }
+
+    private void validerDatesOffre(LocalDate dateDebut, LocalDate dateFin) throws Exception {
+        if ((dateDebut != null && dateFin == null) || (dateDebut == null && dateFin != null)) {
+            throw new Exception("Les dates de début et de fin sont obligatoires ensemble");
+        }
+        if (dateDebut != null && !dateFin.isAfter(dateDebut)) {
+            throw new Exception("La date de fin doit être postérieure à la date de début");
+        }
     }
 
     private void validerLieuEtContact(String adresse, String ville, String codePostal, String telephone) throws Exception {

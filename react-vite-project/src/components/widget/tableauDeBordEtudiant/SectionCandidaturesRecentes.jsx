@@ -1,6 +1,7 @@
 import { ArrowRight, Briefcase, Building2 } from "lucide-react";
 
 const MESSAGE_OFFRE_SUPPRIMEE = "L'offre a été supprimée par l'employeur";
+const MESSAGE_AUTRE_STAGE_CHOISI = "L'étudiant a choisi une autre offre de stage.";
 
 export default function SectionCandidaturesRecentes({
     candidaturesTrieesApercu,
@@ -64,10 +65,13 @@ export default function SectionCandidaturesRecentes({
                         const candidature = candidaturesParOffre[id];
                         const statut = candidature ? candidature.statut : null;
                         const messageReponse = candidature ? candidature.messageReponse : null;
+                        const estAutreStageChoisi = messageReponse === MESSAGE_AUTRE_STAGE_CHOISI;
                         const texteRefus =
                             messageReponse === MESSAGE_OFFRE_SUPPRIMEE
                                 ? t("candidature_etudiant.offer_deleted")
-                                : messageReponse;
+                                : estAutreStageChoisi
+                                    ? t("candidature_etudiant.other_stage_chosen")
+                                    : messageReponse;
 
                         return (
                             <div
@@ -92,7 +96,7 @@ export default function SectionCandidaturesRecentes({
                                         )}
                                     </p>
                                     {statut === "REFUSEE" && texteRefus && (
-                                        <p className="text-xs text-rose-600 line-clamp-1 break-words">
+                                        <p className={`text-xs line-clamp-1 break-words ${estAutreStageChoisi ? "text-slate-600" : "text-rose-600"}`}>
                                             {texteRefus}
                                         </p>
                                     )}

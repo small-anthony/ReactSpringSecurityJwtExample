@@ -140,4 +140,50 @@ describe("ModalModifierOffre", () => {
         expect(handleClose).not.toHaveBeenCalled();
         expect(handleOffreModifiee).not.toHaveBeenCalled();
     });
+
+    it("devrait valider que la date de fin est postérieure à la date de début et envoyer les dates", async () => {
+        const user = userEvent.setup();
+        OffreStageService.updateOffreStage.mockResolvedValueOnce({
+            ...mockOffre,
+            dateDebut: "2026-05-11",
+            dateFin: "2026-08-21"
+        });
+
+        renderModal({
+            offre: {
+                ...mockOffre,
+                dateDebut: "2026-05-11",
+                dateFin: "2026-08-21"
+            }
+        });
+
+        const inputDebut = screen.getByDisplayValue("2026-05-11");
+        const inputFin = screen.getByDisplayValue("2026-08-21");
+
+        await user.clear(inputFin);
+        await user.type(inputFin, "2026-05-01");
+        await user.click(screen.getByRole("button", { name: /enregistrer/i }));
+
+        expect(await screen.findByText(/date de fin doit être postérieure/i)).toBeInTheDocument();
+        expect(OffreStageService.updateOffreStage).not.toHaveBeenCalled();
+
+        await user.clear(inputDebut);
+        await user.type(inputDebut, "2026-05-11");
+        await user.clear(inputFin);
+        await user.type(inputFin, "2026-08-21");
+        await user.click(screen.getByRole("button", { name: /enregistrer/i }));
+
+        const boutonConfirmer = await screen.findByRole("button", { name: /confirmer/i });
+        await user.click(boutonConfirmer);
+
+        await waitFor(() => {
+            expect(OffreStageService.updateOffreStage).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    dateDebut: "2026-05-11",
+                    dateFin: "2026-08-21"
+                }),
+                { Authorization: "Bearer token123" }
+            );
+        });
+    });
 });

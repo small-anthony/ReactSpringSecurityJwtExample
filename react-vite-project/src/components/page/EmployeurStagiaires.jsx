@@ -10,7 +10,8 @@ import {
     AlertCircle,
     ClipboardCheck,
     Eye,
-    Users
+    Users,
+    X
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -62,11 +63,17 @@ export default function EmployeurStagiaires() {
     const aEvaluerCount = stagiaires.filter((s) => !s.evalue).length;
     const evaluesCount = stagiaires.filter((s) => s.evalue).length;
 
-    const stagiairesFiltres = stagiaires.filter((s) => {
-        if (filtre === "A_EVALUER") return !s.evalue;
-        if (filtre === "EVALUES") return s.evalue;
-        return true;
-    });
+    const stagiairesFiltres = stagiaires
+        .filter((s) => {
+            if (filtre === "A_EVALUER") return !s.evalue;
+            if (filtre === "EVALUES") return s.evalue;
+            return true;
+        })
+        .sort((a, b) => {
+            const diff = Number(Boolean(a.evalue)) - Number(Boolean(b.evalue));
+            if (diff !== 0) return diff;
+            return Number(b.id || 0) - Number(a.id || 0);
+        });
 
     const {
         page,
@@ -144,13 +151,18 @@ export default function EmployeurStagiaires() {
                 </div>
 
                 {erreur && (
-                    <div className="p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 rounded-xl flex items-center justify-between text-sm shadow-xs">
+                    <div className="ds-alert-error flex items-center justify-between gap-2.5" role="alert">
                         <div className="flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 shrink-0" />
                             <span>{erreur}</span>
                         </div>
-                        <button onClick={() => setErreur(null)} className="text-rose-500 hover:text-rose-700 font-bold px-2 py-1 cursor-pointer">
-                            ✕
+                        <button
+                            type="button"
+                            onClick={() => setErreur(null)}
+                            className="text-rose-700 hover:text-rose-900 cursor-pointer p-1 rounded-lg hover:bg-rose-100/60"
+                            aria-label={t("common.close")}
+                        >
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
                 )}

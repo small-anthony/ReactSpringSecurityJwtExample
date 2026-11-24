@@ -44,6 +44,9 @@ class ContratPdfGeneratorTest {
 
         OffreStage offre = new OffreStage("Développeur Java", "Stage backend", "CGI Inc.");
         offre.setEmployeur(employeur);
+        offre.setAdresse("1350 boulevard René-Lévesque Ouest");
+        offre.setVille("Montréal");
+        offre.setCodePostal("H3G 1T4");
 
         candidature = new Candidature(etudiant, offre);
         candidature.setId(1L);
@@ -79,6 +82,9 @@ class ContratPdfGeneratorTest {
             String page2 = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(2));
             assertTrue(page2.contains("John Gestion"));
             assertTrue(page2.contains("Bob Employeur (CGI Inc.)"));
+            assertTrue(page2.contains("Entreprise : CGI Inc."));
+            assertTrue(page2.contains("Adresse : 1350 boulevard René-Lévesque Ouest, Montréal, H3G 1T4"));
+            assertFalse(page2.contains("Adresse : CGI Inc."));
             assertTrue(page2.contains("Jean Tremblay"));
             assertTrue(page2.contains("25.00 $/h"));
             assertTrue(page2.contains("2027-01-11"));

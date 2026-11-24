@@ -171,4 +171,34 @@ describe("EmployeurContrats", () => {
             expect(ContratAPI.getContratDocumentBlob).toHaveBeenCalledWith(101, expect.any(Object));
         });
     });
+
+    it("trie les contrats employeur par priorité (à signer en premier, complétés puis refusés ensuite)", async () => {
+        vi.spyOn(ContratAPI, "getContratsEmployeur").mockResolvedValue([
+            {
+                ...mockContrats[1],
+                id: 103,
+                etudiantPrenom: "Paul",
+                etudiantNom: "Refusé",
+                statut: "REFUSE"
+            },
+            {
+                ...mockContrats[1],
+                id: 104,
+                etudiantPrenom: "Sophie",
+                etudiantNom: "Complétée",
+                statut: "COMPLETE",
+                signeParGestionnaire: true
+            },
+            mockContrats[1],
+            mockContrats[0]
+        ]);
+
+        const { container } = render(<MockEmployeurContrats />);
+        expect(await screen.findByText(/Jean Tremblay/i)).toBeInTheDocument();
+
+        const texte = container.textContent;
+        expect(texte.indexOf("Jean Tremblay")).toBeLessThan(texte.indexOf("Sophie Gagnon"));
+        expect(texte.indexOf("Sophie Gagnon")).toBeLessThan(texte.indexOf("Sophie Complétée"));
+        expect(texte.indexOf("Sophie Complétée")).toBeLessThan(texte.indexOf("Paul Refusé"));
+    });
 });

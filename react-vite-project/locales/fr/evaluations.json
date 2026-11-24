@@ -1,0 +1,300 @@
+{
+  "stagiaires": {
+    "title": "Mes stagiaires",
+    "subtitle": "Consultez vos stagiaires et remplissez leur fiche d'évaluation.",
+    "loading": "Chargement de vos stagiaires...",
+    "error_load": "Erreur lors du chargement de vos stagiaires",
+    "period": "Période",
+    "company": "Entreprise",
+    "tabs": {
+      "all": "Tous mes stagiaires",
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalués"
+    },
+    "status": {
+      "to_evaluate": "À évaluer",
+      "evaluated": "Évalué"
+    },
+    "actions": {
+      "evaluate": "Évaluer le stagiaire",
+      "view": "Voir l'évaluation"
+    },
+    "empty": {
+      "title": "Aucun stagiaire trouvé",
+      "subtitle": "Vos stagiaires apparaîtront ici lorsque leur contrat aura été signé par toutes les parties."
+    }
+  },
+  "evaluation": {
+    "back": "Retour à mes stagiaires",
+    "title": "Fiche d'évaluation du stagiaire",
+    "title_view": "Évaluation du stagiaire",
+    "subtitle": "Cochez les comportements observés chez le stagiaire et formulez des commentaires s'il y a lieu.",
+    "loading": "Chargement de la fiche d'évaluation...",
+    "error_load": "Erreur lors du chargement de la fiche d'évaluation",
+    "error_submit": "Erreur lors de l'enregistrement de l'évaluation",
+    "success": "L'évaluation a été enregistrée avec succès.",
+    "submitted_on": "Évaluation soumise le {{date}}",
+    "student_info": {
+      "student": "Nom de l'élève",
+      "program": "Programme d'études",
+      "company": "Nom de l'entreprise",
+      "supervisor": "Nom du superviseur",
+      "phone": "Téléphone",
+      "position": "Poste",
+      "period": "Période"
+    },
+    "able_to": "Le stagiaire a été en mesure de :",
+    "comments": "Commentaires",
+    "levels": {
+      "TOTALEMENT_EN_ACCORD": "Totalement en accord",
+      "PLUTOT_EN_ACCORD": "Plutôt en accord",
+      "PLUTOT_EN_DESACCORD": "Plutôt en désaccord",
+      "TOTALEMENT_EN_DESACCORD": "Totalement en désaccord",
+      "NON_APPLICABLE": "N/A"
+    },
+    "sections": {
+      "PRODUCTIVITE": {
+        "title": "1. Productivité",
+        "description": "Capacité d'optimiser son rendement au travail"
+      },
+      "QUALITE_TRAVAIL": {
+        "title": "2. Qualité du travail",
+        "description": "Capacité de s'acquitter des tâches sous sa responsabilité en s'imposant personnellement des normes de qualité"
+      },
+      "RELATIONS_INTERPERSONNELLES": {
+        "title": "3. Qualité des relations interpersonnelles",
+        "description": "Capacité d'établir des interrelations harmonieuses dans son milieu de travail"
+      },
+      "HABILETES_PERSONNELLES": {
+        "title": "4. Habiletés personnelles",
+        "description": "Capacité de faire preuve d'attitudes ou de comportements matures et responsables"
+      }
+    },
+    "criteres": {
+      "PLANIFIER_ORGANISER": "planifier et organiser son travail de façon efficace",
+      "COMPRENDRE_DIRECTIVES": "comprendre rapidement les directives relatives à son travail",
+      "RYTHME_SOUTENU": "maintenir un rythme de travail soutenu",
+      "ETABLIR_PRIORITES": "établir ses priorités",
+      "RESPECTER_ECHEANCIERS": "respecter ses échéanciers",
+      "RESPECTER_MANDATS": "respecter les mandats qui lui ont été confiés",
+      "ATTENTION_DETAILS": "porter attention aux détails dans la réalisation de ses tâches",
+      "VERIFIER_TRAVAIL": "vérifier son travail, s'assurer que rien n'a été oublié",
+      "OCCASIONS_PERFECTIONNEMENT": "rechercher des occasions de se perfectionner",
+      "ANALYSE_PROBLEMES": "faire une bonne analyse des problèmes rencontrés",
+      "CONTACTS_FACILES": "établir facilement des contacts avec les gens",
+      "TRAVAIL_EQUIPE": "contribuer activement au travail d'équipe",
+      "CULTURE_ENTREPRISE": "s'adapter facilement à la culture de l'entreprise",
+      "CRITIQUES_CONSTRUCTIVES": "accepter les critiques constructives",
+      "RESPECT_ENVERS_LES_GENS": "être respectueux envers les gens",
+      "ECOUTE_ACTIVE": "faire preuve d'écoute active en essayant de comprendre le point de vue de l'autre",
+      "INTERET_MOTIVATION": "démontrer de l'intérêt et de la motivation au travail",
+      "EXPRIMER_IDEES": "exprimer clairement ses idées",
+      "INITIATIVE": "faire preuve d'initiative",
+      "TRAVAIL_SECURITAIRE": "travailler de façon sécuritaire",
+      "SENS_RESPONSABILITES": "démontrer un bon sens des responsabilités ne requérant qu'un minimum de supervision",
+      "PONCTUALITE_ASSIDUITE": "être ponctuel et assidu à son travail"
+    },
+    "overall": {
+      "title": "Appréciation globale du stagiaire",
+      "precision": "Précisez votre appréciation",
+      "options": {
+        "DEPASSENT_DE_BEAUCOUP_LES_ATTENTES": "Les habiletés démontrées dépassent de beaucoup les attentes",
+        "DEPASSENT_LES_ATTENTES": "Les habiletés démontrées dépassent les attentes",
+        "REPONDENT_PLEINEMENT_AUX_ATTENTES": "Les habiletés démontrées répondent pleinement aux attentes",
+        "REPONDENT_PARTIELLEMENT_AUX_ATTENTES": "Les habiletés démontrées répondent partiellement aux attentes",
+        "NE_REPONDENT_PAS_AUX_ATTENTES": "Les habiletés démontrées ne répondent pas aux attentes"
+      }
+    },
+    "discussed": {
+      "label": "Cette évaluation a été discutée avec le stagiaire",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "hours": {
+      "label": "Nombre d'heures réel par semaine d'encadrement accordé au stagiaire",
+      "placeholder": "Ex: 7,5"
+    },
+    "next_internship": {
+      "label": "L'entreprise aimerait accueillir cet élève pour son prochain stage",
+      "options": {
+        "OUI": "Oui",
+        "NON": "Non",
+        "PEUT_ETRE": "Peut-être"
+      }
+    },
+    "technical_training": {
+      "label": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage ?",
+      "placeholder": "Votre réponse..."
+    },
+    "signatory": {
+      "title": "Signataire",
+      "name": "Nom (en lettres moulées)",
+      "role": "Fonction",
+      "name_placeholder": "Ex: Jimmy Donaldson",
+      "role_placeholder": "Ex: Directeur des technologies"
+    },
+    "submit": "Enregistrer l'évaluation",
+    "submitting": "Enregistrement...",
+    "errors": {
+      "incomplete": "Veuillez évaluer tous les critères : il en reste {{nombre}}.",
+      "overall": "Veuillez choisir une appréciation globale.",
+      "discussed": "Veuillez indiquer si l'évaluation a été discutée avec le stagiaire.",
+      "hours": "Veuillez entrer un nombre d'heures d'encadrement valide.",
+      "next_internship": "Veuillez indiquer si l'entreprise accueillerait cet élève pour un prochain stage.",
+      "name": "Le nom du signataire est obligatoire.",
+      "role": "La fonction du signataire est obligatoire.",
+      "criterion": "Veuillez choisir une réponse.",
+      "summary": "Le formulaire contient {{nombre}} erreur(s).",
+      "go_to_first": "Aller à la première erreur"
+    }
+  },
+  "evaluation_milieu": {
+    "back_professeur": "Retour à mes étudiants supervisés",
+    "back_gestionnaire": "Retour aux rapports étudiants",
+    "title": "Évaluation du milieu de stage",
+    "title_view": "Évaluation du milieu de stage (Consultable)",
+    "subtitle": "Formulaire officiel d'évaluation du milieu de stage par l'enseignant responsable.",
+    "program_header": "Techniques de l'informatique — Alternance travail-études",
+    "loading": "Chargement du formulaire d'évaluation du milieu de stage...",
+    "error_load": "Impossible de charger le dossier d'évaluation du milieu de stage.",
+    "error_submit": "Erreur lors de la soumission de l'évaluation du milieu de stage.",
+    "success": "L'évaluation du milieu de stage a été enregistrée et transmise au gestionnaire de stage avec succès.",
+    "submitted_on": "Évaluation soumise le {{date}} par {{professeur}}",
+    "readonly_notice": "Cette évaluation a été soumise et verrouillée en lecture seule.",
+    "summary_card": {
+      "student": "Stagiaire",
+      "program": "Programme",
+      "company": "Entreprise",
+      "position": "Poste",
+      "period": "Période du contrat",
+      "contact": "Personne contact",
+      "address": "Adresse du lieu de stage",
+      "phone": "Téléphone",
+      "salary": "Salaire horaire"
+    },
+    "section1": {
+      "title": "1. Identification de l'entreprise",
+      "nom_entreprise": "Nom de l'entreprise",
+      "personne_contact": "Personne contact",
+      "adresse": "Adresse",
+      "adresse_placeholder": "Ex: 1350 boul. René-Lévesque Ouest",
+      "ville": "Ville",
+      "ville_placeholder": "Ex: Montréal",
+      "code_postal": "Code postal",
+      "code_postal_placeholder": "Ex: H3G 1T4",
+      "telephone": "Téléphone",
+      "telecopieur": "Télécopieur (facultatif)",
+      "telecopieur_placeholder": "Ex: 514-555-9999"
+    },
+    "section2": {
+      "title": "2. Identification du stagiaire",
+      "nom_stagiaire": "Nom du stagiaire",
+      "date_stage": "Date du stage",
+      "date_stage_placeholder": "Ex: 2026-05-18 → 2026-08-21",
+      "numero_stage": "Stage",
+      "stage_1": "Stage 1",
+      "stage_2": "Stage 2"
+    },
+    "section3": {
+      "title": "3. Évaluation du milieu de stage",
+      "subtitle": "Évaluez chacun des dix critères ci-dessous selon votre observation du milieu.",
+      "progress_label": "Progression : {{repondus}} / {{total}} critères",
+      "asterisk_note": "* Toute réponse « Plutôt en désaccord » ou « Totalement en désaccord » doit être expliquée dans la section Commentaires.",
+      "levels": {
+        "TOTALEMENT_EN_ACCORD": "Totalement en accord",
+        "PLUTOT_EN_ACCORD": "Plutôt en accord",
+        "PLUTOT_EN_DESACCORD": "Plutôt en désaccord *",
+        "TOTALEMENT_EN_DESACCORD": "Totalement en désaccord *",
+        "NON_APPLICABLE": "Impossible de se prononcer"
+      },
+      "criteres": {
+        "TACHES_CONFORMES": "Les tâches confiées au stagiaire sont conformes aux tâches annoncées dans l'entente de stage.",
+        "MESURES_ACCUEIL": "Des mesures d'accueil facilitent l'intégration du nouveau stagiaire.",
+        "TEMPS_ENCADREMENT_SUFFISANT": "Le temps réel consacré à l'encadrement du stagiaire est suffisant.",
+        "ENVIRONNEMENT_SECURITAIRE": "L'environnement de travail respecte les normes d'hygiène et de sécurité au travail.",
+        "CLIMAT_TRAVAIL_AGREABLE": "Le climat de travail est agréable.",
+        "ACCESSIBLE_TRANSPORT_COMMUN": "Le milieu de stage est accessible par transport en commun.",
+        "SALAIRE_INTERESSANT": "Le salaire offert est intéressant pour le stagiaire.",
+        "COMMUNICATION_SUPERVISEUR": "La communication avec le superviseur de stage facilite le déroulement du stage.",
+        "EQUIPEMENT_ADEQUAT": "L'équipement fourni est adéquat pour réaliser les tâches confiées.",
+        "VOLUME_TRAVAIL_ACCEPTABLE": "Le volume de travail est acceptable."
+      },
+      "heures_encadrement": {
+        "titre": "Préciser le nombre d'heures d'encadrement par semaine :",
+        "mois1": "Premier mois (h/sem)",
+        "mois2": "Deuxième mois (h/sem)",
+        "mois3": "Troisième mois (h/sem)",
+        "placeholder": "Ex: 5"
+      },
+      "salaire": {
+        "label": "Préciser le salaire horaire offert :",
+        "placeholder": "Ex: 24.00",
+        "unite": "$ / heure"
+      },
+      "commentaires": {
+        "label": "Commentaires",
+        "obligatoire_badge": "Justification requise (*)",
+        "placeholder": "Rédigez vos observations ou justifiez les réponses en désaccord..."
+      }
+    },
+    "section4": {
+      "title": "4. Observations générales",
+      "milieu_privilegier": {
+        "label": "Ce milieu est à privilégier pour le :",
+        "PREMIER_STAGE": "Premier stage",
+        "DEUXIEME_STAGE": "Deuxième stage"
+      },
+      "capacite_accueil": {
+        "label": "Ce milieu est ouvert à accueillir :",
+        "UN": "Un stagiaire",
+        "DEUX": "Deux stagiaires",
+        "TROIS": "Trois stagiaires",
+        "PLUS_DE_TROIS": "Plus de trois"
+      },
+      "meme_stagiaire": {
+        "label": "Ce milieu désire accueillir le même stagiaire pour un prochain stage :",
+        "oui": "Oui",
+        "non": "Non"
+      },
+      "quarts_variables": {
+        "label": "Ce milieu offre des quarts de travail variables :",
+        "oui": "Oui",
+        "non": "Non",
+        "plages_label": "Préciser les plages horaires des quarts de travail :",
+        "plage": "Plage {{index}}",
+        "de": "De",
+        "a": "à"
+      },
+      "signature_label": "Signature de l'enseignant responsable du stagiaire",
+      "signature_placeholder": "Nom complet de l'enseignant responsable",
+      "date_label": "Date de l'évaluation"
+    },
+    "submit": "Soumettre l'évaluation du milieu",
+    "submitting": "Envoi en cours...",
+    "errors": {
+      "banner": "Veuillez corriger les champs en erreur avant de soumettre le formulaire.",
+      "nom_entreprise": "Le nom de l'entreprise est obligatoire.",
+      "personne_contact": "La personne contact est obligatoire.",
+      "adresse": "L'adresse de l'entreprise est obligatoire.",
+      "ville": "La ville est obligatoire.",
+      "code_postal_required": "Le code postal est obligatoire.",
+      "code_postal_format": "Le code postal doit respecter le format canadien (ex. H3G 1T4).",
+      "telephone": "Le numéro de téléphone est obligatoire.",
+      "nom_stagiaire": "Le nom du stagiaire est obligatoire.",
+      "date_stage": "La date du stage est obligatoire.",
+      "numero_stage": "Veuillez sélectionner le numéro du stage (1 ou 2).",
+      "criteres_incomplets": "Veuillez répondre à tous les critères : {{nombre}} critère(s) restant(s).",
+      "critere_requis": "Veuillez sélectionner une réponse pour ce critère.",
+      "heures_mois": "Veuillez entrer un nombre d'heures valide (0 ou plus).",
+      "salaire": "Veuillez saisir un salaire horaire valide (chiffres uniquement, ex. 24.50).",
+      "commentaires_requis": "Veuillez expliquer dans les commentaires les critères évalués en désaccord (*).",
+      "milieu_privilegier": "Veuillez indiquer pour quel stage ce milieu est à privilégier.",
+      "capacite_accueil": "Veuillez indiquer le nombre de stagiaires que le milieu peut accueillir.",
+      "meme_stagiaire": "Veuillez indiquer si le milieu désire accueillir le même stagiaire.",
+      "quarts_variables": "Veuillez indiquer si le milieu offre des quarts de travail variables.",
+      "quart1_requis": "Veuillez préciser au moins la première plage horaire (début et fin).",
+      "quart_paire": "Veuillez renseigner l'heure de début et l'heure de fin pour chaque plage horaire utilisée.",
+      "signature": "La signature de l'enseignant responsable est obligatoire."
+    }
+  }
+}

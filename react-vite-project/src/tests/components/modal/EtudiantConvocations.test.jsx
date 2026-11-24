@@ -159,4 +159,13 @@ describe("EtudiantConvocations", () => {
 
         expect(await screen.findByText("Erreur réseau serveur")).toBeInTheDocument();
     });
+
+    it("ne devrait pas afficher d'écran de chargement en embedMode et afficher initialConvocations", async () => {
+        ConvocationAPI.getConvocationsEtudiant.mockImplementation(() => new Promise(() => {}));
+
+        render(<MockEtudiantConvocations embedMode={true} initialConvocations={mockConvocations} />);
+
+        expect(screen.queryByText(/chargement/i)).not.toBeInTheDocument();
+        expect(screen.getByText("Développeur Full Stack")).toBeInTheDocument();
+    });
 });

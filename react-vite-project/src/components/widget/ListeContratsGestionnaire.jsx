@@ -11,7 +11,8 @@ import {
   Printer,
   PenTool,
   CheckCircle2,
-  XCircle
+  XCircle,
+  MapPin
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -135,6 +136,15 @@ export default function ListeContratsGestionnaire({
             <span className="font-semibold text-slate-900 break-words">{c.nomEntreprise}</span>
             <span className="text-slate-300">•</span>
             <span className="text-slate-700 break-words">{c.titreOffre}</span>
+            {c.lieu && (
+              <>
+                <span className="text-slate-300">•</span>
+                <span className="text-slate-600 flex items-center gap-1 font-normal break-words min-w-0">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span className="break-words">{c.lieu}</span>
+                </span>
+              </>
+            )}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

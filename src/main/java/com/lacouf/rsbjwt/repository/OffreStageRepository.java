@@ -15,6 +15,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 	Optional<OffreStage> findByIdAndEmployeurAndDateSuppressionIsNull(Long id, Employeur employeur);
 	List<OffreStage> findByApprobationStatus(StatusAcceptation status);
 	List<OffreStage> findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation status);
+	@Query("SELECT o FROM OffreStage o WHERE o.approbation.status = :status AND o.annee = :annee AND o.dateSuppression IS NULL")
 	List<OffreStage> findByApprobationStatusAndAnnee(StatusAcceptation status, int annee);
 	List<OffreStage> findAllByAnnee(int annee);
 
@@ -32,6 +33,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
         LEFT JOIN FETCH offre.candidatures
         WHERE offre.employeur = :employeur
           AND offre.annee = :annee
+          AND offre.dateSuppression IS NULL
     """)
 	List<OffreStage> findWithCandidaturesByEmployeurAndAnnee(Employeur employeur, int annee);
 

@@ -16,6 +16,7 @@
     "contrat_refuse": "Un contrat a été refusé par l'étudiant ou l'employeur. Veuillez le réviser et renvoyer les contrats."
   },
   "professeur": {
-    "evaluer_stage": "Un étudiant à besoin d'avoir leur stage évalué."
+    "evaluer_stage": "Un étudiant à besoin d'avoir leur stage évalué.",
+    "etudiant_assigne": "Un nouvel étudiant vous a été assigné pour la supervision de son stage."
   }
 }

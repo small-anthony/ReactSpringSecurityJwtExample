@@ -1,0 +1,49 @@
+{
+  "professeur": {
+    "mes_etudiants": "My Assigned Students",
+    "badge_role": "Supervising Professor Space",
+    "titre_page": "My Supervised Students",
+    "bienvenue": "Welcome {{nom}}, track the internship progress and requests of your assigned students.",
+    "total_etudiants": "{{count}} supervised student(s)",
+    "chargement": "Loading your assigned students...",
+    "aucun_etudiant_titre": "No students assigned",
+    "aucun_etudiant_description": "The internship manager has not assigned any students to you for this session yet. Students will appear here once assigned.",
+    "aucun_resultat_recherche": "No student matches your search criteria.",
+    "recherche_placeholder": "Search by name, student ID, company...",
+    "btn_demandes": "Applications ({{count}})",
+    "historique_demandes": "Internship Application History",
+    "matricule_label": "Student ID",
+    "entreprise_defaut": "Unspecified company",
+    "offre_stage_defaut": "Internship offer",
+    "postule_le": "Applied on {{date}}",
+    "erreur_chargement": "Error loading your students.",
+    "tabs": {
+      "all": "All",
+      "to_evaluate": "To evaluate",
+      "evaluated": "Evaluated"
+    },
+    "contact_label": "Supervisor / Contact",
+    "phone_label": "Phone",
+    "periode_label": "Internship dates",
+    "non_specifie": "Not specified",
+    "badge_milieu_evalue": "Workplace evaluated",
+    "badge_milieu_a_evaluer": "Workplace to evaluate",
+    "btn_evaluer_milieu": "Evaluate workplace",
+    "btn_voir_evaluation_milieu": "View workplace evaluation",
+    "statut": {
+      "EMBAUCHEE": "Hired",
+      "ACCEPTEE": "Offer accepted",
+      "EN_ATTENTE": "Pending",
+      "EN_ATTENTE_REPONSE": "Awaiting response",
+      "EN_ATTENTE_CONVOCATION": "Awaiting invitation",
+      "EN_ATTENTE_CONFIRMATION_ENTREVUE": "Interview sent",
+      "ENTREVUE_REFUSEE": "Interview declined",
+      "EN_ATTENTE_ENTREVUE": "Awaiting interview",
+      "EN_ATTENTE_CHOIX_STAGE": "Awaiting student's choice",
+      "EN_ATTENTE_SIGNATURE": "Awaiting signature",
+      "REFUSEE": "Rejected",
+      "REFUSE": "Rejected",
+      "EN_RECHERCHE": "Searching for internship"
+    }
+  }
+}

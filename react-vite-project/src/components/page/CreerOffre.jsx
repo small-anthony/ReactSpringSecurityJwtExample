@@ -29,17 +29,21 @@ export default function CreerOffre() {
       }
 
       await createOffreStage(
-          formData.titre.trim(),
-          formData.description.trim(),
-          finalEntreprise,
-          formData.discipline.trim(),
-          formData.duree.trim(),
-          finalSalaire,
-          formData.exigences.trim(),
-          formData.adresse.trim(),
-          formData.ville.trim(),
-          formData.codePostal.trim(),
-          formData.telephone.trim(),
+          {
+              titre: formData.titre.trim(),
+              description: formData.description.trim(),
+              nomEntreprise: finalEntreprise,
+              discipline: formData.discipline.trim(),
+              duree: formData.duree.trim(),
+              salaire: finalSalaire,
+              exigences: formData.exigences.trim(),
+              adresse: formData.adresse.trim(),
+              ville: formData.ville.trim(),
+              codePostal: formData.codePostal.trim(),
+              telephone: formData.telephone.trim(),
+              dateDebut: formData.dateDebut || null,
+              dateFin: formData.dateFin || null
+          },
           authHeader
       );
 

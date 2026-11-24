@@ -15,6 +15,7 @@ import com.lacouf.rsbjwt.repository.GestionnaireRepository;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.CandidaturePourContratDto;
 import com.lacouf.rsbjwt.service.dto.ContratDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -530,15 +531,16 @@ public class ContratServiceTest {
     }
 
     @Test
-    void genererContratAutomatique_succes_extraitInfosEtRefuseAutresCandidatures() throws Exception {
+    void genererContratAutomatique_succes_extraitInfosEtConserveAutresCandidatures() throws Exception {
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
         offreStage.setSalaire("25.00$/h");
         offreStage.setDuree("14 semaines");
         offreStage.setExigences("Java et React");
-        offreStage.setAnnee(2026);
+        offreStage.setAnnee(anneeCourante);
 
         OffreStage autreOffre = new OffreStage("Analyste QA", "Tests E2E", "Google");
         autreOffre.setId(6L);
-        autreOffre.setAnnee(2026);
+        autreOffre.setAnnee(anneeCourante);
         Candidature autreCandidature = new Candidature(etudiant, autreOffre);
         autreCandidature.setId(2L);
         autreCandidature.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
@@ -555,11 +557,10 @@ public class ContratServiceTest {
         assertEquals("25.00$/h", result.salaire());
         assertEquals("Stage backend", result.descriptionTaches());
         assertEquals("Java et React", result.conditions());
-        assertEquals(LocalDate.of(2026, 5, 11), result.dateDebut());
-        assertEquals(LocalDate.of(2026, 5, 11).plusWeeks(14), result.dateFin());
+        assertEquals(LocalDate.of(anneeCourante, 5, 11), result.dateDebut());
+        assertEquals(LocalDate.of(anneeCourante, 5, 11).plusWeeks(14), result.dateFin());
         assertEquals(StatutCandidature.EN_ATTENTE_SIGNATURE, candidature.getStatut());
-        assertEquals(StatutCandidature.REFUSEE, autreCandidature.getStatut());
-        verify(candidatureRepository).save(autreCandidature);
+        assertEquals(StatutCandidature.EN_ATTENTE_CHOIX_STAGE, autreCandidature.getStatut());
     }
 
     @Test
@@ -588,10 +589,11 @@ public class ContratServiceTest {
 
     @Test
     void genererContratAutomatique_etudiantDejaStageActif_lanceException() {
-        offreStage.setAnnee(2026);
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
+        offreStage.setAnnee(anneeCourante);
         OffreStage autreOffre = new OffreStage("Analyste QA", "Tests E2E", "Google");
         autreOffre.setId(6L);
-        autreOffre.setAnnee(2026);
+        autreOffre.setAnnee(anneeCourante);
         Candidature autreCandidature = new Candidature(etudiant, autreOffre);
         autreCandidature.setId(2L);
         autreCandidature.setStatut(StatutCandidature.EMBAUCHEE);
@@ -603,13 +605,13 @@ public class ContratServiceTest {
         Exception exception = assertThrows(Exception.class, () ->
                 contratService.genererContratAutomatique(1L));
 
-        assertEquals("Vous avez déjà un stage en cours ou confirmé pour cette session.", exception.getMessage());
+        assertEquals("Vous avez déjà choisi et signé un stage pour cette session.", exception.getMessage());
         verify(contratRepository, never()).save(any(Contrat.class));
     }
 
     @Test
     void genererContratAutomatique_devraitNotifierEtudiantEtEmployeur() throws Exception {
-        offreStage.setAnnee(2026);
+        offreStage.setAnnee(AcademicSessionUtils.getAnneeActuelle());
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
         when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
         when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candidature));
@@ -737,5 +739,82 @@ public class ContratServiceTest {
 
         assertEquals(StatutContrat.REFUSE, resultat.statut());
         verify(notificationService).pushNotification(any(Notification.class), eq(gestionnaire.getId()));
+    }
+
+    @Test
+    void signerContrat_parEtudiant_refuseAutresCandidaturesEtAutresContrats() throws Exception {
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
+        offreStage.setAnnee(anneeCourante);
+        Contrat contratChoisi = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contratChoisi.setId(5L);
+
+        OffreStage autreOffre = new OffreStage("Analyste QA", "Tests E2E", "Google");
+        autreOffre.setId(6L);
+        autreOffre.setAnnee(anneeCourante);
+        Candidature autreCandidature = new Candidature(etudiant, autreOffre);
+        autreCandidature.setId(2L);
+        autreCandidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+        Contrat autreContrat = new Contrat(autreCandidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "22$", "qa", "cond");
+        autreContrat.setId(6L);
+
+        MultipartFile signatureFile = mock(MultipartFile.class);
+        when(signatureFile.isEmpty()).thenReturn(false);
+        when(signatureFile.getBytes()).thenReturn("sig".getBytes());
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(5L)).thenReturn(Optional.of(contratChoisi));
+        when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com")).thenReturn(List.of(contratChoisi, autreContrat));
+        when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candidature, autreCandidature));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ContratDto resultat = contratService.signerContrat(5L, "jean@test.com", signatureFile);
+
+        assertEquals(StatutContrat.SIGNE_PAR_ETUDIANT, resultat.statut());
+        assertEquals(StatutContrat.REFUSE, autreContrat.getStatut());
+        assertEquals(StatutCandidature.REFUSEE, autreCandidature.getStatut());
+    }
+
+    @Test
+    void rejeterContrat_dejaComplete_lanceException() {
+        Contrat contratComplete = new Contrat(candidature, LocalDate.now(), LocalDate.now().plusMonths(3), "35h", "20$", "desc", "cond");
+        contratComplete.setId(9L);
+        contratComplete.signer(new Signature<>(etudiant, "s1".getBytes()));
+        contratComplete.signer(new Signature<>(employeur, "s2".getBytes()));
+        contratComplete.signer(new Signature<>(gestionnaire, "s3".getBytes()));
+
+        when(userAppRepository.findUserAppByEmail("jean@test.com")).thenReturn(Optional.of(etudiant));
+        when(contratRepository.findById(9L)).thenReturn(Optional.of(contratComplete));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.rejeterContrat(9L, "jean@test.com"));
+
+        assertEquals("Impossible de refuser un contrat déjà complété.", exception.getMessage());
+    }
+
+    @Test
+    void genererContratAutomatique_utiliseDatesEtAdresseDeOffre() throws Exception {
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
+        LocalDate debutOffre = LocalDate.of(anneeCourante, 6, 1);
+        LocalDate finOffre = LocalDate.of(anneeCourante, 9, 4);
+        offreStage.setAnnee(anneeCourante);
+        offreStage.setAdresse("1000 rue Saint-Jacques");
+        offreStage.setVille("Montréal");
+        offreStage.setCodePostal("H3C 1G7");
+        offreStage.setDateDebut(debutOffre);
+        offreStage.setDateFin(finOffre);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(inv -> {
+            Contrat c = inv.getArgument(0);
+            c.setId(42L);
+            return c;
+        });
+
+        ContratDto resultat = contratService.genererContratAutomatique(1L);
+
+        assertEquals(debutOffre, resultat.dateDebut());
+        assertEquals(finOffre, resultat.dateFin());
+        assertEquals("1000 rue Saint-Jacques, Montréal, H3C 1G7", resultat.lieu());
     }
 }

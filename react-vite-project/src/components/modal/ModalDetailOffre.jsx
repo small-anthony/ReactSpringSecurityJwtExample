@@ -7,6 +7,7 @@ import { choisirStageEtGenererContrat } from "../../services/api/ContratAPI.js";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 
 const MESSAGE_OFFRE_SUPPRIMEE = "L'offre a été supprimée par l'employeur";
+const MESSAGE_AUTRE_STAGE_CHOISI = "L'étudiant a choisi une autre offre de stage.";
 
 function extraireCandidatureOffre(offre, candidatureExterne) {
     if (candidatureExterne) {
@@ -54,12 +55,12 @@ export default function ModalDetailOffre({
     const cand = extraireCandidatureOffre(offre, candidature);
     const statutCand = extraireStatutCandidature(cand);
     const messageReponse = cand ? cand.messageReponse : null;
-    const estRefusee = statutCand === "REFUSEE";
     const idOffre = offre ? offre.id : null;
     const contratAssocie = contrats.find(
         (c) => c.offreId === idOffre || String(c.offreId) === String(idOffre)
     );
-    const aRefuseContrat = contratAssocie && contratAssocie.statut === "REFUSE";
+    const aRefuseContrat = Boolean(contratAssocie && contratAssocie.statut === "REFUSE");
+    const estRefusee = statutCand === "REFUSEE" && !aRefuseContrat;
     const aSigneContrat = Boolean(
         contratAssocie &&
         (contratAssocie.signeParEtudiant || contratAssocie.statut === "COMPLETE") &&
@@ -79,8 +80,11 @@ export default function ModalDetailOffre({
 
     if (!offre) return null;
 
-    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, ville, codePostal, telephone } = offre;
+    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, ville, codePostal, telephone, dateDebut, dateFin } = offre;
     const adresseComplete = [adresse, ville, codePostal].filter(Boolean).join(", ");
+    const periodeStage = dateDebut && dateFin
+        ? `${dateDebut} → ${dateFin}`
+        : dateDebut || dateFin || null;
 
     const handlePostuler = async () => {
         try {
@@ -165,7 +169,7 @@ export default function ModalDetailOffre({
                 {aRefuseContrat && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm flex items-center gap-2.5">
                         <XCircle className="w-5 h-5 text-slate-500 shrink-0" strokeWidth={1.5} />
-                        <span className="font-semibold">{t("contrats_etudiant.refused_badge_text")}</span>
+                        <span className="font-semibold">{t("contrats_etudiant.status_refused")}</span>
                     </div>
                 )}
 
@@ -186,12 +190,26 @@ export default function ModalDetailOffre({
                                 ? t("candidature_etudiant.choose_stage_notice")
                                 : contratAssocie
                                     ? t("candidature_etudiant.status_contract_pending_signature")
-                                    : t("candidature_etudiant.status_selected_waiting_contract")}
+                                    : statutCand === "EN_ATTENTE_CHOIX_STAGE" && aDejaStageChoisi
+                                        ? t("candidature_etudiant.other_contract_pending_notice")
+                                        : t("candidature_etudiant.status_selected_waiting_contract")}
                         </span>
                     </div>
                 )}
 
-                {estRefusee && (
+                {estRefusee && messageReponse === MESSAGE_AUTRE_STAGE_CHOISI && (
+                    <div className="mx-6 mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm">
+                        <div className="flex items-center gap-2 mb-1 font-semibold text-slate-900">
+                            <XCircle className="w-5 h-5 text-slate-500 shrink-0" strokeWidth={1.5} />
+                            <span>{t("candidature_etudiant.other_stage_chosen_title")}</span>
+                        </div>
+                        <p className="text-slate-600 pl-7 leading-relaxed">
+                            {t("candidature_etudiant.other_stage_chosen_desc")}
+                        </p>
+                    </div>
+                )}
+
+                {estRefusee && messageReponse !== MESSAGE_AUTRE_STAGE_CHOISI && (
                     <div className="mx-6 mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">
                         {messageReponse === MESSAGE_OFFRE_SUPPRIMEE ? (
                             <div className="flex items-center gap-2 font-semibold text-red-900">
@@ -266,6 +284,18 @@ export default function ModalDetailOffre({
                             </p>
                         </div>
                     </div>
+
+                    {periodeStage && (
+                        <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-xs font-medium text-[#64748B]">
+                                <Calendar className="w-4 h-4 text-[#2563EB] shrink-0" strokeWidth={1.5} />
+                                <span>{t("offres_etudiant.modal.dates")}</span>
+                            </div>
+                            <p className="text-sm font-semibold text-[#111827] break-words">
+                                {periodeStage}
+                            </p>
+                        </div>
+                    )}
 
                     {(adresseComplete || telephone) && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -347,7 +377,7 @@ export default function ModalDetailOffre({
                         </button>
                     )}
 
-                    {!hasApplied && !estRefusee && !estRetenueSansSignature && !aSigneContrat && (
+                    {!hasApplied && !estRefusee && !estRetenueSansSignature && !aSigneContrat && !aRefuseContrat && (
                         <button
                             type="button"
                             onClick={handlePostuler}

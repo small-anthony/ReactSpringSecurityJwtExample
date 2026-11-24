@@ -71,18 +71,32 @@ export default function ProfesseurEtudiants() {
     const aEvaluerCount = etudiants.filter((e) => e.aStage && !e.milieuEvalue).length;
     const evaluesCount = etudiants.filter((e) => e.milieuEvalue).length;
 
-    const etudiantsFiltres = etudiants.filter((e) => {
-        if (filtreEvaluation === "A_EVALUER" && (!e.aStage || e.milieuEvalue)) return false;
-        if (filtreEvaluation === "EVALUES" && !e.milieuEvalue) return false;
+    const getPrioriteEvaluationProfesseur = (etudiant) => {
+        if (etudiant.aStage && !etudiant.milieuEvalue) return 0;
+        if (etudiant.milieuEvalue) return 1;
+        return 2;
+    };
 
-        const query = recherche.trim().toLowerCase();
-        if (!query) return true;
-        const nom = `${e.firstName || ""} ${e.lastName || ""}`.toLowerCase();
-        const matricule = (e.matricule || "").toString();
-        const entreprise = (e.entrepriseStage || "").toLowerCase();
-        const titre = (e.titreOffreStage || "").toLowerCase();
-        return nom.includes(query) || matricule.includes(query) || entreprise.includes(query) || titre.includes(query);
-    });
+    const etudiantsFiltres = etudiants
+        .filter((e) => {
+            if (filtreEvaluation === "A_EVALUER" && (!e.aStage || e.milieuEvalue)) return false;
+            if (filtreEvaluation === "EVALUES" && !e.milieuEvalue) return false;
+
+            const query = recherche.trim().toLowerCase();
+            if (!query) return true;
+            const nom = `${e.firstName || ""} ${e.lastName || ""}`.toLowerCase();
+            const matricule = (e.matricule || "").toString();
+            const entreprise = (e.entrepriseStage || "").toLowerCase();
+            const titre = (e.titreOffreStage || "").toLowerCase();
+            return nom.includes(query) || matricule.includes(query) || entreprise.includes(query) || titre.includes(query);
+        })
+        .sort((a, b) => {
+            const diff = getPrioriteEvaluationProfesseur(a) - getPrioriteEvaluationProfesseur(b);
+            if (diff !== 0) return diff;
+            const nomA = `${a.lastName || ""} ${a.firstName || ""}`.trim();
+            const nomB = `${b.lastName || ""} ${b.firstName || ""}`.trim();
+            return nomA.localeCompare(nomB, "fr", { sensitivity: "base" });
+        });
 
     const {
         page,

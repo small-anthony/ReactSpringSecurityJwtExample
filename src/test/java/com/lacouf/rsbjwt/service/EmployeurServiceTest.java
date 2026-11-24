@@ -476,6 +476,29 @@ public class EmployeurServiceTest {
     }
 
     @Test
+    void embaucherCandidature_avecContratService_genereContratAutomatiquement() throws Exception {
+        ContratService mockContratService = mock(ContratService.class);
+        EmployeurService serviceAvecContrat = new EmployeurService(
+                userAppRepository, employeurRepository, offreStageRepository, candidatureRepository,
+                notificationService, gestionnaireRepository, mockContratService);
+
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+        Candidature candidature = creerCandidature(100L);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
+        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
+        when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> {
+            Candidature saved = inv.getArgument(0);
+            when(candidatureRepository.findById(100L)).thenReturn(Optional.of(saved));
+            return saved;
+        });
+
+        serviceAvecContrat.embaucherCandidature(100L, email);
+
+        verify(mockContratService).genererContratAutomatique(100L);
+    }
+
+    @Test
     void embaucherCandidature_sansEntrevueAcceptee_lanceException() {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
@@ -897,5 +920,36 @@ public class EmployeurServiceTest {
         assertEquals("gestionnaire.offre_submitted", notif.getMessage());
         assertEquals(NotificationActionType.APPROUVER_OFFRE, notif.getAction().getType());
         assertEquals(77L, notif.getAction().getReferenceId());
+    }
+
+    @Test
+    void createOffreStage_avecDatesDebutEtFin_sauvegardeLesDates() throws Exception {
+        String email = "employeur@entreprise.com";
+        preparerEmployeur(email);
+        when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        LocalDate debut = LocalDate.of(2026, 5, 11);
+        LocalDate fin = LocalDate.of(2026, 8, 21);
+
+        OffreStageDto resultat = employeurService.createOffreStage(
+                "Développeur Java", "CGI", "Stage backend",
+                "Techniques de l'informatique", "15 semaines", "25$/h", "Java",
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null, debut, fin);
+
+        assertEquals(debut, resultat.dateDebut());
+        assertEquals(fin, resultat.dateFin());
+    }
+
+    @Test
+    void createOffreStage_dateFinAvantDebut_lanceException() {
+        String email = "employeur@entreprise.com";
+
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage(
+                "Développeur Java", "CGI", "Stage backend",
+                "Techniques de l'informatique", "15 semaines", "25$/h", "Java",
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null,
+                LocalDate.of(2026, 8, 21), LocalDate.of(2026, 5, 11)));
+
+        assertEquals("La date de fin doit être postérieure à la date de début", exception.getMessage());
     }
 }

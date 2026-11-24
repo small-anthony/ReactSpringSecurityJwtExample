@@ -26,7 +26,9 @@ public record OffreStageDto(
         String adresse,
         String telephone,
         String ville,
-        String codePostal
+        String codePostal,
+        LocalDate dateDebut,
+        LocalDate dateFin
 ) implements DataTransferObject {
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
@@ -61,7 +63,17 @@ public record OffreStageDto(
                          String discipline, String salaire, String duree, String exigences,
                          List<CandidatureDto> candidatures, int annee) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, candidatures, annee, null, null, null, null);
+                discipline, salaire, duree, exigences, candidatures, annee, null, null, null, null, null, null);
+    }
+
+    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
+                         StatusAcceptation status, String messageReponse,
+                         String discipline, String salaire, String duree, String exigences,
+                         List<CandidatureDto> candidatures, int annee,
+                         String adresse, String telephone, String ville, String codePostal) {
+        this(id, titre, description, nomEntreprise, status, messageReponse,
+                discipline, salaire, duree, exigences, candidatures, annee,
+                adresse, telephone, ville, codePostal, null, null);
     }
 
     public static OffreStageDto create(OffreStage offreStage) {
@@ -81,7 +93,9 @@ public record OffreStageDto(
                 offreStage.getAdresse(),
                 offreStage.getTelephone(),
                 offreStage.getVille(),
-                offreStage.getCodePostal()
+                offreStage.getCodePostal(),
+                offreStage.getDateDebut(),
+                offreStage.getDateFin()
         );
     }
 
@@ -111,7 +125,9 @@ public record OffreStageDto(
                 offreStage.getAdresse(),
                 offreStage.getTelephone(),
                 offreStage.getVille(),
-                offreStage.getCodePostal()
+                offreStage.getCodePostal(),
+                offreStage.getDateDebut(),
+                offreStage.getDateFin()
         );
     }
 

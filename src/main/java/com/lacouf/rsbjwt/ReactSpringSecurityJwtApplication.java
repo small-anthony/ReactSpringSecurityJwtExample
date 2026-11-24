@@ -193,6 +193,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         offreCgiDev.setVille("Montréal");
                         offreCgiDev.setCodePostal("H3G 1T4");
                         offreCgiDev.setTelephone("514-555-0101");
+                        offreCgiDev.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
+                        offreCgiDev.setDateFin(LocalDate.of(anneeCourante, 8, 21));
                         offreCgiDev.accepter();
                         cgi.ajouterOffre(offreCgiDev);
 
@@ -206,6 +208,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         offreCgiSecu.setVille("Montréal");
                         offreCgiSecu.setCodePostal("H3G 1T4");
                         offreCgiSecu.setTelephone("514-555-0101");
+                        offreCgiSecu.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
+                        offreCgiSecu.setDateFin(LocalDate.of(anneeCourante, 8, 21));
                         offreCgiSecu.accepter();
                         cgi.ajouterOffre(offreCgiSecu);
 
@@ -220,6 +224,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         offreCgiDevOpsHisto.setVille("Montréal");
                         offreCgiDevOpsHisto.setCodePostal("H3G 1T4");
                         offreCgiDevOpsHisto.setTelephone("514-555-0101");
+                        offreCgiDevOpsHisto.setDateDebut(LocalDate.of(anneeHistorique, 5, 12));
+                        offreCgiDevOpsHisto.setDateFin(LocalDate.of(anneeHistorique, 8, 22));
                         offreCgiDevOpsHisto.accepter();
                         cgi.ajouterOffre(offreCgiDevOpsHisto);
 
@@ -236,6 +242,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         offreGoogleFront.setVille("Montréal");
                         offreGoogleFront.setCodePostal("H3B 2Y5");
                         offreGoogleFront.setTelephone("514-555-0202");
+                        offreGoogleFront.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
+                        offreGoogleFront.setDateFin(LocalDate.of(anneeCourante, 8, 28));
                         offreGoogleFront.accepter();
                         google.ajouterOffre(offreGoogleFront);
 
@@ -249,6 +257,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         offreGoogleQa.setVille("Montréal");
                         offreGoogleQa.setCodePostal("H3B 2Y5");
                         offreGoogleQa.setTelephone("514-555-0202");
+                        offreGoogleQa.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
+                        offreGoogleQa.setDateFin(LocalDate.of(anneeCourante, 8, 21));
                         offreGoogleQa.accepter();
                         google.ajouterOffre(offreGoogleQa);
 
@@ -302,12 +312,30 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(candMarcRefuse);
 
                         Candidature candEmmaCgiChoix = new Candidature(emma, offreCgiDev);
-                        candEmmaCgiChoix.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+                        candEmmaCgiChoix.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candEmmaCgiChoix);
+                        Contrat contratEmmaCgi = new Contrat(
+                                        candEmmaCgiChoix,
+                                        LocalDate.of(anneeCourante, 5, 11),
+                                        LocalDate.of(anneeCourante, 5, 11).plusWeeks(15),
+                                        "Du lundi au vendredi, 9h à 17h (35h/semaine)",
+                                        "24$/h",
+                                        offreCgiDev.getDescription(),
+                                        offreCgiDev.getExigences());
+                        contratRepository.save(contratEmmaCgi);
 
                         Candidature candEmmaGoogleChoix = new Candidature(emma, offreGoogleFront);
-                        candEmmaGoogleChoix.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+                        candEmmaGoogleChoix.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
                         candidatureRepository.save(candEmmaGoogleChoix);
+                        Contrat contratEmmaGoogle = new Contrat(
+                                        candEmmaGoogleChoix,
+                                        LocalDate.of(anneeCourante, 5, 11),
+                                        LocalDate.of(anneeCourante, 5, 11).plusWeeks(16),
+                                        "Du lundi au vendredi, 9h à 17h (35h/semaine)",
+                                        "28$/h",
+                                        offreGoogleFront.getDescription(),
+                                        offreGoogleFront.getExigences());
+                        contratRepository.save(contratEmmaGoogle);
 
                         // -------------------------------------------------------------------------
                         // EQ2-18 : En tant qu'étudiant, je signe le contrat

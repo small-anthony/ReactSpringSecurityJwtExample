@@ -11,7 +11,6 @@ import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import EtudiantContrats from "./EtudiantContrats.jsx";
 import TableauDeBordEtudiant, {
     construireActionsPrioritaires,
-    construireStatutParcours,
     estConvocationActive,
     extrairePremiereCandidature,
     obtenirStatutCandidature,
@@ -40,6 +39,7 @@ import {
 } from "lucide-react";
 
 const MESSAGE_OFFRE_SUPPRIMEE = "L'offre a été supprimée par l'employeur";
+const MESSAGE_AUTRE_STAGE_CHOISI = "L'étudiant a choisi une autre offre de stage.";
 
 function resolveTabFromParam(param) {
     if (param === "convocations") return "convocations";
@@ -175,9 +175,11 @@ export default function OffreStagesEtudiant() {
         });
     };
 
-    const chargerDonnees = async () => {
+    const chargerDonnees = async ({ silent = false } = {}) => {
         try {
-            setLoading(true);
+            if (!silent) {
+                setLoading(true);
+            }
             setErreur(null);
             const authHeader = authService.buildAuthHeader();
 
@@ -236,7 +238,9 @@ export default function OffreStagesEtudiant() {
         } catch {
             setErreur(t("offres_etudiant.error_fetch"));
         } finally {
-            setLoading(false);
+            if (!silent) {
+                setLoading(false);
+            }
         }
     };
 
@@ -347,32 +351,6 @@ export default function OffreStagesEtudiant() {
         );
     }, [mesCandidaturesOffres, candidaturesParOffre, contrats]);
 
-    const journeyStatus = useMemo(() => {
-        return construireStatutParcours({
-            contratsASigner,
-            contratSigneActif,
-            candidaturesEmbauchees,
-            convocationsEnAttente,
-            convocationsConfirmees,
-            cvState,
-            mesCandidaturesOffres,
-            candidaturesParOffre,
-            contrats,
-            t
-        });
-    }, [
-        contratsASigner,
-        contratSigneActif,
-        candidaturesEmbauchees,
-        convocationsEnAttente,
-        convocationsConfirmees,
-        cvState,
-        mesCandidaturesOffres,
-        candidaturesParOffre,
-        contrats,
-        t
-    ]);
-
     const actionsPrioritaires = useMemo(() => {
         return construireActionsPrioritaires({
             cvState,
@@ -427,7 +405,7 @@ export default function OffreStagesEtudiant() {
         const listeBase = ongletActif === "mes_candidatures" ? mesCandidaturesOffres : offres;
         const texteRecherche = recherche.toLowerCase();
 
-        return listeBase.filter((offre) => {
+        const filtrees = listeBase.filter((offre) => {
             const { id, titre, nomEntreprise, description, discipline, duree } = offre;
             if (ongletActif === "toutes" && idsOffresPostulees.has(id)) {
                 return false;
@@ -455,10 +433,27 @@ export default function OffreStagesEtudiant() {
                 correspondDuree
             );
         });
+
+        if (ongletActif === "mes_candidatures") {
+            return filtrees.sort((a, b) => {
+                const statutA = obtenirStatutCandidature(a, candidaturesParOffre, contrats);
+                const statutB = obtenirStatutCandidature(b, candidaturesParOffre, contrats);
+                const contratRefuseA = contrats.some((c) => c.offreStageId === a.id && c.statut === "REFUSE");
+                const contratRefuseB = contrats.some((c) => c.offreStageId === b.id && c.statut === "REFUSE");
+                const prioriteA = contratRefuseA ? 8 : (ORDRE_STATUT_CANDIDATURE[statutA] ?? 99);
+                const prioriteB = contratRefuseB ? 8 : (ORDRE_STATUT_CANDIDATURE[statutB] ?? 99);
+                if (prioriteA !== prioriteB) return prioriteA - prioriteB;
+                return Number(b.id || 0) - Number(a.id || 0);
+            });
+        }
+
+        return filtrees.sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
     }, [
         offres,
         mesCandidaturesOffres,
         idsOffresPostulees,
+        candidaturesParOffre,
+        contrats,
         recherche,
         filtreEntreprise,
         filtreDiscipline,
@@ -493,11 +488,10 @@ export default function OffreStagesEtudiant() {
 
     const aStageEnCoursOuTrouve = useMemo(() => {
         if (aDejaContratSigne) return true;
-        if (contrats.some((c) => c.statut !== "REFUSE")) return true;
         return Object.values(candidaturesParOffre).some(
-            (c) => c && (c.statut === "EN_ATTENTE_SIGNATURE" || c.statut === "EMBAUCHEE")
+            (c) => c && c.statut === "EMBAUCHEE"
         );
-    }, [aDejaContratSigne, contrats, candidaturesParOffre]);
+    }, [aDejaContratSigne, candidaturesParOffre]);
 
     const getCandidatureBadge = (offreId) => {
         const contratAssocie = contrats.find(
@@ -553,19 +547,11 @@ export default function OffreStagesEtudiant() {
             <div className="max-w-6xl mx-auto space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
                     <div className="space-y-1">
-                        <div className="flex items-center gap-2.5 flex-wrap">
-                            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                {prenomEtudiant
-                                    ? t("etudiant_dashboard.greeting", { name: prenomEtudiant })
-                                    : t("etudiant_dashboard.greeting_default")}
-                            </h1>
-                            <span
-                                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border ${journeyStatus.tone}`}
-                            >
-                                <span className={`w-2 h-2 rounded-full ${journeyStatus.dot}`} />
-                                <span>{journeyStatus.label}</span>
-                            </span>
-                        </div>
+                        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                            {prenomEtudiant
+                                ? t("etudiant_dashboard.greeting", { name: prenomEtudiant })
+                                : t("etudiant_dashboard.greeting_default")}
+                        </h1>
                         <p className="text-sm text-slate-500">
                             {t("etudiant_dashboard.subtitle_question")}
                         </p>
@@ -589,7 +575,7 @@ export default function OffreStagesEtudiant() {
                         <LayoutDashboard className="w-4 h-4" strokeWidth={1.75} />
                         <span>{t("etudiant_dashboard.tabs.dashboard")}</span>
                         {nombreActionsUrgentes > 0 && (
-                            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-full bg-rose-100 text-rose-700">
+                            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-800">
                                 {nombreActionsUrgentes}
                             </span>
                         )}
@@ -603,9 +589,6 @@ export default function OffreStagesEtudiant() {
                     >
                         <Compass className="w-4 h-4" strokeWidth={1.75} />
                         <span>{t("etudiant_dashboard.tabs.explore")}</span>
-                        <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-slate-200/80 text-slate-700">
-                            {offresDisponiblesNonPostulees.length}
-                        </span>
                     </button>
 
                     <button
@@ -617,7 +600,7 @@ export default function OffreStagesEtudiant() {
                         <Briefcase className="w-4 h-4" strokeWidth={1.75} />
                         <span>{t("etudiant_dashboard.tabs.applications")}</span>
                         {mesCandidaturesOffres.length > 0 && (
-                            <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-slate-200/80 text-slate-700">
+                            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-800">
                                 {mesCandidaturesOffres.length}
                             </span>
                         )}
@@ -647,7 +630,7 @@ export default function OffreStagesEtudiant() {
                         <FileText className="w-4 h-4" strokeWidth={1.75} />
                         <span>{t("etudiant_dashboard.tabs.stage")}</span>
                         {countPendingContrats > 0 && (
-                            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-full bg-blue-100 text-blue-800">
+                            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-800">
                                 {countPendingContrats}
                             </span>
                         )}
@@ -664,6 +647,7 @@ export default function OffreStagesEtudiant() {
                 {ongletActif === "convocations" ? (
                     <EtudiantConvocations
                         embedMode={true}
+                        initialConvocations={convocations}
                         onPendingCountChange={(pending, updatedList) => {
                             setCountPendingConvocations(pending);
                             if (Array.isArray(updatedList)) {
@@ -674,6 +658,8 @@ export default function OffreStagesEtudiant() {
                 ) : ongletActif === "contrats" ? (
                     <EtudiantContrats
                         embedMode={true}
+                        initialContrats={contrats}
+                        onContratUpdated={() => chargerDonnees({ silent: true })}
                         onPendingCountChange={(restant, signed, updatedContrat) => {
                             setCountPendingContrats(restant);
                             if (typeof signed === "boolean") {
@@ -841,15 +827,25 @@ export default function OffreStagesEtudiant() {
                                         titre,
                                         nomEntreprise,
                                         salaire,
-                                        description
+                                        description,
+                                        dateDebut,
+                                        dateFin
                                     } = offre;
                                     const candidature = candidaturesParOffre[id];
                                     const statutCandidature = candidature ? candidature.statut : null;
                                     const messageReponse = candidature ? candidature.messageReponse : null;
+                                    const estAutreStageChoisi = messageReponse === MESSAGE_AUTRE_STAGE_CHOISI;
+                                    const aContratRefuse = contrats.some(
+                                        (c) =>
+                                            (c.offreId === id || String(c.offreId) === String(id)) &&
+                                            c.statut === "REFUSE"
+                                    );
                                     const texteRefus =
                                         messageReponse === MESSAGE_OFFRE_SUPPRIMEE
                                             ? t("candidature_etudiant.offer_deleted")
-                                            : messageReponse || t("candidature_etudiant.status.REFUSEE");
+                                            : estAutreStageChoisi
+                                                ? t("candidature_etudiant.other_stage_chosen")
+                                                : messageReponse || t("candidature_etudiant.status.REFUSEE");
 
                                     return (
                                         <article
@@ -894,14 +890,25 @@ export default function OffreStagesEtudiant() {
                                                     <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed pt-1 break-words">
                                                         {description}
                                                     </p>
+                                                    {(dateDebut || dateFin) && (
+                                                        <p className="text-xs font-medium text-slate-600 flex items-center gap-1.5 pt-1">
+                                                            <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" strokeWidth={1.5} />
+                                                            <span>
+                                                                {dateDebut && dateFin
+                                                                    ? `${formatShortDate(dateDebut)} → ${formatShortDate(dateFin)}`
+                                                                    : formatShortDate(dateDebut || dateFin)}
+                                                            </span>
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
 
                                             {ongletActif === "mes_candidatures" &&
-                                                statutCandidature === "REFUSEE" && (
+                                                statutCandidature === "REFUSEE" &&
+                                                (!aContratRefuse || estAutreStageChoisi) && (
                                                     <div className="pb-3">
-                                                        <p className="text-xs text-rose-600 flex items-center gap-1.5 font-medium">
-                                                            <XCircle className="w-3.5 h-3.5 shrink-0 text-rose-500" />
+                                                        <p className={`text-xs flex items-center gap-1.5 font-medium ${estAutreStageChoisi ? "text-slate-600" : "text-rose-600"}`}>
+                                                            <XCircle className={`w-3.5 h-3.5 shrink-0 ${estAutreStageChoisi ? "text-slate-400" : "text-rose-500"}`} />
                                                             <span className="line-clamp-1">
                                                                 {texteRefus}
                                                             </span>
@@ -910,19 +917,12 @@ export default function OffreStagesEtudiant() {
                                                 )}
 
                                             {ongletActif === "mes_candidatures" &&
-                                                contrats.some(
-                                                    (c) =>
-                                                        (c.offreId === id || String(c.offreId) === String(id)) &&
-                                                        c.statut === "REFUSE"
-                                                ) && (
-                                                    <div className="pb-3">
-                                                        <p className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-                                                            <XCircle className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                                                            <span className="line-clamp-1">
-                                                                {t("contrats_etudiant.refused_badge_text")}
-                                                            </span>
-                                                        </p>
-                                                    </div>
+                                                statutCandidature === "EN_ATTENTE_CHOIX_STAGE" &&
+                                                aStageEnCoursOuTrouve &&
+                                                !aDejaContratSigne && (
+                                                    <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                                                        {t("candidature_etudiant.other_contract_pending_notice")}
+                                                    </p>
                                                 )}
 
                                             <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2 flex-wrap">

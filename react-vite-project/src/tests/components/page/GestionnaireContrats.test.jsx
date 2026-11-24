@@ -166,4 +166,32 @@ describe("GestionnaireContrats", () => {
         expect(await screen.findByText(/Luc Bélanger/i)).toBeInTheDocument();
         expect(await screen.findByText(/Signer le contrat de stage/i)).toBeInTheDocument();
     });
+
+    it("trie les contrats par priorité (à signer avant complétés et refusés)", async () => {
+        vi.spyOn(ContratAPI, "getTousLesContrats").mockResolvedValue([
+            {
+                ...mockContrats[1],
+                id: 301,
+                etudiantPrenom: "Paul",
+                etudiantNom: "Refusé",
+                statut: "REFUSE"
+            },
+            {
+                ...mockContrats[0],
+                id: 302,
+                etudiantPrenom: "Claire",
+                etudiantNom: "Complétée",
+                statut: "COMPLETE",
+                signeParGestionnaire: true
+            },
+            mockContrats[0]
+        ]);
+
+        const { container } = render(<MockGestionnaireContrats />);
+        expect(await screen.findByText(/Luc Bélanger/i)).toBeInTheDocument();
+
+        const texte = container.textContent;
+        expect(texte.indexOf("Luc Bélanger")).toBeLessThan(texte.indexOf("Claire Complétée"));
+        expect(texte.indexOf("Claire Complétée")).toBeLessThan(texte.indexOf("Paul Refusé"));
+    });
 });

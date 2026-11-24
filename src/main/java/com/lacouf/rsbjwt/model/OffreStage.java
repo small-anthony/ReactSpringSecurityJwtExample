@@ -24,6 +24,8 @@ public class OffreStage {
     private String ville;
     private String codePostal;
     private String telephone;
+    private LocalDate dateDebut;
+    private LocalDate dateFin;
     private LocalDate dateSuppression = null;
 
     @Column(nullable = false)
@@ -190,6 +192,14 @@ public class OffreStage {
         return telephone;
     }
 
+    public LocalDate getDateDebut() {
+        return dateDebut;
+    }
+
+    public LocalDate getDateFin() {
+        return dateFin;
+    }
+
     public int getAnnee() {
         return annee;
     }
@@ -232,6 +242,14 @@ public class OffreStage {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public void setDateDebut(LocalDate dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public void setDateFin(LocalDate dateFin) {
+        this.dateFin = dateFin;
     }
 
     public void setTitre (String titre) {

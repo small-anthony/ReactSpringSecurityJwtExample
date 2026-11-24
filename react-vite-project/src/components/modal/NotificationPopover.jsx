@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { getNotifications, dismissNotificationApi, deleteNotificationApi } from "../../services/api/NotificationAPI.js";
-import { getOffresStages } from "../../services/api/OffreStageService.js";
+import { getAnneesEmployeur, getOffresStages } from "../../services/api/OffreStageService.js";
 import i18n from "i18next";
 
 function getIconStyle(type) {
@@ -50,12 +50,26 @@ export function NotificationButton() {
     }, [authService]);
 
     useEffect(() => {
-        if (userData?.role === "ROLE_EMPLOYEUR") {
-            getOffresStages(authService.buildAuthHeader())
-                .then((data) => setOffres(data || []))
-                .catch(() => setOffres([]));
+        if (!isOpen || userData?.role !== "ROLE_EMPLOYEUR") {
+            return;
         }
-    }, [authService, userData?.role]);
+        let actif = true;
+        const header = authService.buildAuthHeader();
+        getAnneesEmployeur(header)
+            .then((annees) => {
+                const anneeCourante = Array.isArray(annees) && annees.length > 0 ? annees[0] : null;
+                return getOffresStages(header, anneeCourante);
+            })
+            .then((data) => {
+                if (actif) setOffres(data || []);
+            })
+            .catch(() => {
+                if (actif) setOffres([]);
+            });
+        return () => {
+            actif = false;
+        };
+    }, [isOpen, authService, userData?.role]);
 
     const handleAction = async (notification) => {
         if (!notification.dismissed) {
@@ -79,18 +93,20 @@ export function NotificationButton() {
         } else if (actionType === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
         } else if (notification.action?.type === "SIGNER_CONTRAT_ETUDIANT") {
-            navigate("/etudiant?tab=contrats");
+            navigate("/etudiant?tab=contrats&filtre=A_SIGNER");
         } else if (notification.action?.type === "SIGNER_CONTRAT_EMPLOYEUR") {
-            navigate("/employeur/contrats");
+            navigate("/employeur/contrats?filtre=A_SIGNER");
         } else if (actionType === "VOIR_CANDIDATURES") {
             const offreId = notification.action?.referenceId;
             navigate(offreId ? `/employeur/offres/${offreId}/candidatures` : "/employeur");
         } else if (notification.action?.type === "APPROUVER_OFFRE") {
             navigate("/gestionnaire/approbations/offres");
         } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
-            navigate("/etudiant?tab=convocations");
+            navigate("/etudiant?tab=convocations&filtre=EN_ATTENTE");
         } else if (notification.action?.type === "VOIR_EVALUATIONS") {
             navigate("/professeur?tab=evaluer");
+        } else if (notification.action?.type === "ETUDIANT_ASSIGNE") {
+            navigate("/professeur");
         } else if (actionsContrat[actionType]) {
             const contratId = notification.action?.referenceId;
             navigate(

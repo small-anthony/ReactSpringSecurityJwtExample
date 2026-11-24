@@ -1,0 +1,103 @@
+{
+  "sitename": "Stagify",
+  "common": {
+    "cancel": "Cancel",
+    "submitting": "Processing...",
+    "close": "Close",
+    "confirm": "Confirm",
+    "not_available": "N/A",
+    "at": "at",
+    "delete": "Delete",
+    "loading": "Loading..."
+  },
+  "pagename": {
+    "home": "Home",
+    "about": "About us",
+    "login": "Login",
+    "signup": "Sign up",
+    "signup_employeur": "Register as employer",
+    "signup_etudiant": "Register as student",
+    "signup_professeur": "Register as teacher",
+    "etudiant": "My profile",
+    "offres_stages": "Internship offers",
+    "convocations": "Interview Invitations",
+    "approbation_offres": "Offer Approvals",
+    "approbation_cvs": "Resume Approvals",
+    "voir_offres": "View offers",
+    "logout": "Logout",
+    "contrats": "My contracts",
+    "contrats_employeur": "My contracts",
+    "stagiaires": "My interns",
+    "mes_etudiants": "My Students",
+    "dashboard": "Dashboard",
+    "assignation_professeurs": "Professor Assignment"
+  },
+  "home": {
+    "title": "Stagify",
+    "subtitle": "Internship Management Platform",
+    "description": "The collaborative platform connecting students, companies, and teachers. Find a rewarding internship, recruit qualified talent, or oversee academic supervision with ease.",
+    "cta_signup": "Sign up",
+    "cta_login": "Log in",
+    "connected_as": "Connected as"
+  },
+  "about": {
+    "title": "About Stagify",
+    "version": "Version 1.0.0",
+    "description": "A centralized platform connecting students, partner companies, and academic supervisors to streamline the internship management process.",
+    "go_back": "Back to home"
+  },
+  "footer": {
+    "copyright": "All rights reserved © 2026 Stagify."
+  },
+  "hello-user": "Hello, <nameSpan>{{firstName}} {{lastName}}</nameSpan> - <roleSpan>{{role}}</roleSpan>",
+  "role": {
+    "gestionnaire": "Coordinator",
+    "etudiant": "Student",
+    "etudiant_nocv": "Student (No Resume)",
+    "employeur": "Employer",
+    "professeur": "Teacher",
+    "admin": "Administrator"
+  },
+  "placeholder": {
+    "rendezvous": "Create an interview",
+    "lieu": "Enter a location...",
+    "message": "Enter a message...",
+    "message_optionnel": "Optional message..."
+  },
+  "session": {
+    "toutes": "All sessions",
+    "libelle": "Winter {{annee}}"
+  },
+  "pagination": {
+    "info": "Showing {{debut}}-{{fin}} of {{total}}",
+    "per_page": "Per page",
+    "prev": "Previous",
+    "next": "Next",
+    "page_label": "Page {{page}}"
+  },
+  "calendar": {
+    "clear": "Clear date",
+    "calendar": "Calendar",
+    "prev_month": "Previous month",
+    "next_month": "Next month"
+  },
+  "notifications": {
+    "titre": "My notifications",
+    "non_lues_count": "{{count}} new",
+    "tout_lu": "All caught up",
+    "vide_titre": "No notifications",
+    "vide_description": "You're all caught up for now.",
+    "ouvrir": "Open"
+  },
+  "sidepanel": {
+    "title": "Manager Workspace",
+    "dashboard": "Dashboard",
+    "cvs": "Resume Approvals",
+    "offres": "Offer Approvals",
+    "contrats": "Internship Contracts",
+    "rapports": "Student Reports",
+    "assignation_professeurs": "Professor Assignment",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  }
+}

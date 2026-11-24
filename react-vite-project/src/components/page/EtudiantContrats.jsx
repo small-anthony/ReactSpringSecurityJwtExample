@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
     FileText,
     Clock,
@@ -12,7 +13,8 @@ import {
     CheckCircle2,
     AlertCircle,
     XCircle,
-    MapPin
+    MapPin,
+    X
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthServiceContext } from "../../services/AuthService.tsx";
@@ -35,20 +37,35 @@ const calculerEtatSignature = (liste) => {
     return { hasSigned, restant };
 };
 
-export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
+const FILTRES_CONTRAT_VALIDES = new Set(["TOUS", "A_SIGNER", "SIGNES", "REFUSES"]);
+
+const resolveFiltreContrat = (param) => {
+    const upper = param?.toUpperCase();
+    return FILTRES_CONTRAT_VALIDES.has(upper) ? upper : "TOUS";
+};
+
+export default function EtudiantContrats({ embedMode, initialContrats = null, onPendingCountChange, onContratUpdated }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
+    const [searchParams] = useSearchParams();
     const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesContratsEtudiant,
         authService
     );
 
-    const [contrats, setContrats] = useState([]);
+    const [contrats, setContrats] = useState(() => initialContrats ?? []);
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [succes, setSucces] = useState(null);
     const [messageRefus, setMessageRefus] = useState(null);
-    const [filtre, setFiltre] = useState("TOUS");
+    const [filtre, setFiltre] = useState(() => resolveFiltreContrat(searchParams.get("filtre")));
+
+    useEffect(() => {
+        const param = searchParams.get("filtre");
+        if (param) {
+            setFiltre(resolveFiltreContrat(param));
+        }
+    }, [searchParams]);
     const [signingContrat, setSigningContrat] = useState(null);
     const [contratARefuser, setContratARefuser] = useState(null);
     const [refusSubmitting, setRefusSubmitting] = useState(false);
@@ -87,6 +104,12 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
         chargerContrats(anneeChoisie);
     }, [anneesChargees, anneeChoisie]);
 
+    useEffect(() => {
+        if (embedMode && Array.isArray(initialContrats) && estSessionCourante()) {
+            setContrats(initialContrats);
+        }
+    }, [embedMode, initialContrats]);
+
     const handleVoirDocument = async (contratId) => {
         try {
             const currentHeader = authService.buildAuthHeader();
@@ -123,12 +146,14 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
         }
     };
 
-    const handleSignatureSuccess = (updatedContrat) => {
+    const handleSignatureSuccess = async (updatedContrat) => {
         setSucces(t("contrats_etudiant.success_signed"));
         setMessageRefus(null);
         const updated = contrats.map((c) => (c.id === updatedContrat.id ? updatedContrat : c));
         setContrats(updated);
         notifierChangementContrats(updated, anneeChoisie, updatedContrat);
+        await chargerContrats(anneeChoisie);
+        await onContratUpdated?.();
     };
 
     const handleConfirmRefus = async () => {
@@ -145,6 +170,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             const contratRefuse = updated.find((c) => c.id === contratARefuser.id);
             notifierChangementContrats(updated, anneeChoisie, contratRefuse);
             setContratARefuser(null);
+            await onContratUpdated?.();
         } catch (err) {
             setErreur(err.message || t("contrats_etudiant.error_refuse"));
             setContratARefuser(null);
@@ -185,12 +211,25 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
         );
     };
 
-    const contratsFiltres = contrats.filter((c) => {
-        if (filtre === "A_SIGNER") return !c.signeParEtudiant && c.statut !== "REFUSE";
-        if (filtre === "SIGNES") return c.signeParEtudiant;
-        if (filtre === "REFUSES") return c.statut === "REFUSE";
-        return true;
-    });
+    const getPrioriteContratEtudiant = (contrat) => {
+        if (contrat.statut === "REFUSE") return 3;
+        if (!contrat.signeParEtudiant) return 0;
+        if (contrat.statut === "COMPLETE") return 2;
+        return 1;
+    };
+
+    const contratsFiltres = contrats
+        .filter((c) => {
+            if (filtre === "A_SIGNER") return !c.signeParEtudiant && c.statut !== "REFUSE";
+            if (filtre === "SIGNES") return c.signeParEtudiant;
+            if (filtre === "REFUSES") return c.statut === "REFUSE";
+            return true;
+        })
+        .sort((a, b) => {
+            const diff = getPrioriteContratEtudiant(a) - getPrioriteContratEtudiant(b);
+            if (diff !== 0) return diff;
+            return Number(b.id || 0) - Number(a.id || 0);
+        });
 
     const aDejaSigneUnContrat = contrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
     const countASigner = aDejaSigneUnContrat
@@ -227,40 +266,52 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
             )}
 
             {erreur && (
-                <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-                    <span className="text-sm font-semibold">{erreur}</span>
+                <div className="ds-alert-error flex items-center justify-between gap-3" role="alert">
+                    <div className="flex items-center gap-2.5">
+                        <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                        <span>{erreur}</span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setErreur(null)}
+                        className="text-rose-700 hover:text-rose-900 cursor-pointer p-1 rounded-lg hover:bg-rose-100/60"
+                        aria-label={t("common.close")}
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
                 </div>
             )}
 
             {succes && (
-                <div className="p-4 bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 rounded-xl shadow-xs flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                <div className="ds-alert-success flex items-center justify-between gap-3" role="status">
+                    <div className="flex items-center gap-2.5">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                        <span className="text-sm font-semibold">{succes}</span>
+                        <span>{succes}</span>
                     </div>
                     <button
                         type="button"
                         onClick={() => setSucces(null)}
-                        className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer underline"
+                        className="text-emerald-700 hover:text-emerald-900 cursor-pointer p-1 rounded-lg hover:bg-emerald-100/60"
+                        aria-label={t("common.close")}
                     >
-                        {t("contrats.actions.close")}
+                        <X className="w-4 h-4" />
                     </button>
                 </div>
             )}
 
             {messageRefus && (
-                <div className="p-4 bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-xl shadow-xs flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                <div className="ds-alert-error flex items-center justify-between gap-3" role="status">
+                    <div className="flex items-center gap-2.5">
                         <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
-                        <span className="text-sm font-semibold">{messageRefus}</span>
+                        <span>{messageRefus}</span>
                     </div>
                     <button
                         type="button"
                         onClick={() => setMessageRefus(null)}
-                        className="text-xs text-rose-700 hover:text-rose-900 font-semibold cursor-pointer underline"
+                        className="text-rose-700 hover:text-rose-900 cursor-pointer p-1 rounded-lg hover:bg-rose-100/60"
+                        aria-label={t("common.close")}
                     >
-                        {t("contrats.actions.close")}
+                        <X className="w-4 h-4" />
                     </button>
                 </div>
             )}
@@ -331,7 +382,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                 />
             </div>
 
-            {loading && (
+            {!embedMode && loading && (
                 <div className="flex flex-col items-center justify-center py-20 space-y-4">
                     <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
                     <p className="text-sm font-medium text-gray-500">
@@ -352,7 +403,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                 </div>
             )}
 
-            {!loading && contratsFiltres.length > 0 && (
+            {(!loading || contrats.length > 0) && contratsFiltres.length > 0 && (
                 <>
                     <div className="grid gap-6">
                         {contratsPagines.map((c) => (
@@ -459,12 +510,7 @@ export default function EtudiantContrats({ embedMode, onPendingCountChange }) {
                                     </button>
                                 </div>
 
-                                {c.statut === "REFUSE" ? (
-                                    <div className="inline-flex items-center gap-1.5 text-red-700 bg-red-50 px-3.5 py-2 rounded-lg text-xs font-bold border border-red-200">
-                                        <XCircle className="w-4 h-4 text-red-600" />
-                                        <span>{t("contrats_etudiant.refused_badge_text")}</span>
-                                    </div>
-                                ) : !estAncienneSession && !c.signeParEtudiant ? (
+                                {c.statut === "REFUSE" ? null : !estAncienneSession && !c.signeParEtudiant ? (
                                     <div className="flex flex-wrap items-center justify-end gap-2">
                                         {aDejaSigneUnContrat && (
                                             <span className="text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">

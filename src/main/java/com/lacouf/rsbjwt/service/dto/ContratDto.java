@@ -36,7 +36,8 @@ public record ContratDto(
         boolean signeParGestionnaire,
         boolean refuseParEtudiant,
         boolean refuseParEmployeur,
-        boolean refuseParGestionnaire) implements DataTransferObject {
+        boolean refuseParGestionnaire,
+        String lieu) implements DataTransferObject {
 
     public ContratDto(
             Long id,
@@ -68,13 +69,57 @@ public record ContratDto(
                 horaire, salaire, descriptionTaches, conditions,
                 statut, dateCreation,
                 signeParEtudiant, signeParEmployeur, signeParGestionnaire,
-                false, false, false);
+                false, false, false, null);
+    }
+
+    public ContratDto(
+            Long id,
+            Long candidatureId,
+            Long offreId,
+            String titreOffre,
+            String nomEntreprise,
+            String employeurNom,
+            String employeurEmail,
+            String etudiantNom,
+            String etudiantPrenom,
+            String etudiantEmail,
+            int etudiantMatricule,
+            LocalDate dateDebut,
+            LocalDate dateFin,
+            String horaire,
+            String salaire,
+            String descriptionTaches,
+            String conditions,
+            StatutContrat statut,
+            Instant dateCreation,
+            boolean signeParEtudiant,
+            boolean signeParEmployeur,
+            boolean signeParGestionnaire,
+            boolean refuseParEtudiant,
+            boolean refuseParEmployeur,
+            boolean refuseParGestionnaire) {
+        this(
+                id, candidatureId, offreId, titreOffre, nomEntreprise,
+                employeurNom, employeurEmail, etudiantNom, etudiantPrenom,
+                etudiantEmail, etudiantMatricule, dateDebut, dateFin,
+                horaire, salaire, descriptionTaches, conditions,
+                statut, dateCreation,
+                signeParEtudiant, signeParEmployeur, signeParGestionnaire,
+                refuseParEtudiant, refuseParEmployeur, refuseParGestionnaire,
+                null);
     }
 
     public static ContratDto create(Contrat c) {
         Etudiant etudiant = c.getEtudiant();
         Employeur employeur = c.getEmployeur();
         OffreStage offre = c.getOffreStage();
+        String lieu = java.util.stream.Stream.of(offre.getAdresse(), offre.getVille(), offre.getCodePostal())
+                .filter(s -> s != null && !s.isBlank())
+                .map(String::trim)
+                .collect(java.util.stream.Collectors.joining(", "));
+        if (lieu.isEmpty()) {
+            lieu = null;
+        }
 
         return new ContratDto(
                 c.getId(),
@@ -101,7 +146,8 @@ public record ContratDto(
                 c.isSigneParGestionnaire(),
                 c.isRefuseParEtudiant(),
                 c.isRefuseParEmployeur(),
-                c.isRefuseParGestionnaire());
+                c.isRefuseParGestionnaire(),
+                lieu);
     }
 
     public static List<ContratDto> create(List<Contrat> contrats) {

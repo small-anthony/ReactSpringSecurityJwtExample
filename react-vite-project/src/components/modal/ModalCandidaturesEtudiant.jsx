@@ -2,6 +2,8 @@ import React from "react";
 import { X, Calendar, Building, CheckCircle, Clock, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
+import { usePagination } from "../../hooks/usePagination.js";
+import Pagination from "../widget/Pagination.jsx";
 
 const STYLE_ATTENTE = {
     badge: "bg-purple-100 text-purple-800 border-purple-200",
@@ -27,9 +29,18 @@ export default function ModalCandidaturesEtudiant({ etudiant, onClose }) {
     const { t } = useTranslation("main");
     const { traduireDiscipline } = useOffreFormater();
 
-    if (!etudiant) return null;
+    const candidatures = etudiant?.candidatures || [];
+    const {
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalItems,
+        totalPages,
+        paginatedItems: candidaturesPaginees
+    } = usePagination(candidatures, 10, [etudiant?.id]);
 
-    const candidatures = etudiant.candidatures || [];
+    if (!etudiant) return null;
 
     const formaterDate = (dateStr) => {
         if (!dateStr) return null;
@@ -85,48 +96,59 @@ export default function ModalCandidaturesEtudiant({ etudiant, onClose }) {
                             {t("gestionnaire_dashboard.modal_applications_empty")}
                         </div>
                     ) : (
-                        candidatures.map((cand) => {
-                            const style = STATUT_STYLES[cand.statut] || STYLE_ATTENTE;
-                            const IconStatut = style.icon;
-                            const dateAffichee = formaterDate(cand.dateCandidature);
+                        <>
+                            {candidaturesPaginees.map((cand) => {
+                                const style = STATUT_STYLES[cand.statut] || STYLE_ATTENTE;
+                                const IconStatut = style.icon;
+                                const dateAffichee = formaterDate(cand.dateCandidature);
 
-                            return (
-                                <div
-                                    key={cand.id}
-                                    className="p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition shadow-xs flex flex-col gap-2"
-                                >
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-gray-900 text-sm">
-                                                {cand.titreOffre || t("common.not_available")}
-                                            </h3>
-                                            <div className="text-xs text-gray-600 flex items-center gap-1.5 mt-1">
-                                                <Building className="w-3.5 h-3.5 text-gray-400" />
-                                                <span className="font-medium text-gray-800">
-                                                    {cand.nomEntreprise || t("common.not_available")}
-                                                </span>
+                                return (
+                                    <div
+                                        key={cand.id}
+                                        className="p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition shadow-xs flex flex-col gap-2"
+                                    >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-gray-900 text-sm">
+                                                    {cand.titreOffre || t("common.not_available")}
+                                                </h3>
+                                                <div className="text-xs text-gray-600 flex items-center gap-1.5 mt-1">
+                                                    <Building className="w-3.5 h-3.5 text-gray-400" />
+                                                    <span className="font-medium text-gray-800">
+                                                        {cand.nomEntreprise || t("common.not_available")}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${style.badge}`}>
-                                            <IconStatut className="w-3 h-3" />
-                                            <span>
-                                                {t(`gestionnaire_dashboard.statut_candidature.${cand.statut}`, {
-                                                    defaultValue: cand.statut
-                                                })}
+                                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${style.badge}`}>
+                                                <IconStatut className="w-3 h-3" />
+                                                <span>
+                                                    {t(`gestionnaire_dashboard.statut_candidature.${cand.statut}`, {
+                                                        defaultValue: cand.statut
+                                                    })}
+                                                </span>
                                             </span>
-                                        </span>
-                                    </div>
-
-                                    {dateAffichee && (
-                                        <div className="text-[11px] text-gray-400 flex items-center gap-1 pt-1 border-t border-gray-50">
-                                            <Calendar className="w-3 h-3" />
-                                            <span>{dateAffichee}</span>
                                         </div>
-                                    )}
-                                </div>
-                            );
-                        })
+
+                                        {dateAffichee && (
+                                            <div className="text-[11px] text-gray-400 flex items-center gap-1 pt-1 border-t border-gray-50">
+                                                <Calendar className="w-3 h-3" />
+                                                <span>{dateAffichee}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            <Pagination
+                                page={page}
+                                totalItems={totalItems}
+                                totalPages={totalPages}
+                                pageSize={pageSize}
+                                onPageChange={setPage}
+                                onPageSizeChange={setPageSize}
+                                className="!mt-4"
+                            />
+                        </>
                     )}
                 </div>
 

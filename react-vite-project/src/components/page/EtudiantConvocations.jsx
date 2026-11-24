@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Calendar,
   CheckCircle2,
@@ -19,14 +20,29 @@ import ModalRefuserConvocation from "../modal/ModalRefuserConvocation.jsx";
 import Pagination from "../widget/Pagination.jsx";
 import { usePagination } from "../../hooks/usePagination.js";
 
-export default function EtudiantConvocations({ embedMode, onPendingCountChange }) {
+const FILTRES_CONVOCATION_VALIDES = new Set(["TOUTES", "EN_ATTENTE", "ACCEPTEE", "REFUSEE", "EXPIREE"]);
+
+const resolveFiltreConvocation = (param) => {
+  const upper = param?.toUpperCase();
+  return FILTRES_CONVOCATION_VALIDES.has(upper) ? upper : "TOUTES";
+};
+
+export default function EtudiantConvocations({ embedMode, initialConvocations = null, onPendingCountChange }) {
   const { t } = useTranslation("main");
   const authService = useContext(AuthServiceContext);
+  const [searchParams] = useSearchParams();
 
-  const [convocations, setConvocations] = useState([]);
+  const [convocations, setConvocations] = useState(() => initialConvocations ?? []);
   const [loading, setLoading] = useState(true);
   const [erreur, setErreur] = useState(null);
-  const [filtre, setFiltre] = useState("TOUTES");
+  const [filtre, setFiltre] = useState(() => resolveFiltreConvocation(searchParams.get("filtre")));
+
+  useEffect(() => {
+    const param = searchParams.get("filtre");
+    if (param) {
+      setFiltre(resolveFiltreConvocation(param));
+    }
+  }, [searchParams]);
 
   const [modalRefusOpen, setModalRefusOpen] = useState(false);
   const [convocationRefusCible, setConvocationRefusCible] = useState(null);
@@ -109,14 +125,29 @@ export default function EtudiantConvocations({ embedMode, onPendingCountChange }
     }
   };
 
-  const convocationsFiltrees = convocations.filter((c) => {
-    if (filtre === "TOUTES") return true;
-    if (filtre === "EN_ATTENTE") return c.statut === "EN_ATTENTE";
-    if (filtre === "ACCEPTEE") return c.statut === "ACCEPTEE";
-    if (filtre === "REFUSEE") return c.statut === "REFUSEE";
-    if (filtre === "EXPIREE") return c.statut === "EXPIREE";
-    return true;
-  });
+  const ORDRE_STATUT_CONVOCATION = {
+    EN_ATTENTE: 0,
+    ACCEPTEE: 1,
+    EXPIREE: 2,
+    REFUSEE: 3,
+    ANNULEE: 4,
+  };
+
+  const convocationsFiltrees = convocations
+    .filter((c) => {
+      if (filtre === "TOUTES") return true;
+      if (filtre === "EN_ATTENTE") return c.statut === "EN_ATTENTE";
+      if (filtre === "ACCEPTEE") return c.statut === "ACCEPTEE";
+      if (filtre === "REFUSEE") return c.statut === "REFUSEE";
+      if (filtre === "EXPIREE") return c.statut === "EXPIREE";
+      return true;
+    })
+    .sort((a, b) => {
+      const prioriteA = ORDRE_STATUT_CONVOCATION[a.statut] ?? 99;
+      const prioriteB = ORDRE_STATUT_CONVOCATION[b.statut] ?? 99;
+      if (prioriteA !== prioriteB) return prioriteA - prioriteB;
+      return Number(b.id || 0) - Number(a.id || 0);
+    });
 
   const countEnAttente = convocations.filter((c) => c.statut === "EN_ATTENTE").length;
   const countAcceptees = convocations.filter((c) => c.statut === "ACCEPTEE").length;
@@ -227,12 +258,14 @@ export default function EtudiantConvocations({ embedMode, onPendingCountChange }
         </div>
 
         {loading && convocations.length === 0 ? (
-          <div className="ds-card p-12 text-center space-y-3">
-            <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
-            <p className="text-sm font-semibold text-slate-500">
-              {t("convocation.loading")}
-            </p>
-          </div>
+          embedMode ? null : (
+            <div className="ds-card p-12 text-center space-y-3">
+              <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+              <p className="text-sm font-semibold text-slate-500">
+                {t("convocation.loading")}
+              </p>
+            </div>
+          )
         ) : convocationsFiltrees.length === 0 ? (
           <div className="ds-card p-12 text-center space-y-3">
             <Inbox className="w-12 h-12 text-slate-300 mx-auto" />

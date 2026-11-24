@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.EvaluationRepository;
 import com.lacouf.rsbjwt.service.dto.EvaluationDto;
 import com.lacouf.rsbjwt.service.dto.StagiaireDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,6 +83,10 @@ public class EvaluationService {
     }
 
     private void verifierEvaluation(Contrat contrat, EvaluationRequest requete) throws Exception {
+        if (contrat.getOffreStage() != null
+                && contrat.getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible d'évaluer un stage d'une ancienne session.");
+        }
         if (!contrat.estComplete()) {
             throw new Exception("Le contrat doit être complété avant d'évaluer le stagiaire");
         }

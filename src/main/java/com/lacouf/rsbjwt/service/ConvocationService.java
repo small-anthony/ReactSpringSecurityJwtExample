@@ -99,6 +99,16 @@ public class ConvocationService {
             throw new AuthenticationException("Vous n'êtes pas autorisé à convoquer ce candidat");
         }
 
+        if (candidature.getOffreStage() != null
+                && candidature.getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de convoquer un candidat sur une ancienne session.");
+        }
+
+        if (candidature.getStatut() != StatutCandidature.EN_ATTENTE_CONVOCATION
+                && candidature.getStatut() != StatutCandidature.ENTREVUE_REFUSEE) {
+            throw new Exception("Impossible de convoquer ce candidat dans son état actuel.");
+        }
+
         validerRendezVous(rendezVousPossibles);
         Convocation convocation = new Convocation(RendezVous.create(rendezVousPossibles), messageEmployeur);
         candidature.addConvocation(convocation);
@@ -119,8 +129,17 @@ public class ConvocationService {
             throw new AuthenticationException("Non autorise");
         }
 
+        if (convocation.getCandidature() != null
+                && convocation.getCandidature().getOffreStage() != null
+                && convocation.getCandidature().getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de répondre à une convocation d'une ancienne session.");
+        }
+
         if (convocation.estResolu()) {
             throw new Exception("La convocation est deja resolue");
+        }
+        if (convocation.estPassee()) {
+            throw new Exception("Le délai de réponse pour cette convocation est expiré.");
         }
         if (rendezVousSelection == null) {
             throw new Exception("Le rendez-vous selectionne n'est pas disponible");
@@ -139,14 +158,19 @@ public class ConvocationService {
     public ConvocationDto refuserConvocation(String actorEmail, Long convocationId, String motif) throws Exception {
         Convocation convocation = convocationRepository.findWithEmployeurAndEtudiantById(convocationId)
                 .orElseThrow(() -> new Exception("Convocation non trouvée"));
-        if (!convocation.getEtudiant().getEmail().equals(actorEmail)) {
-            throw new Exception("Non autorise");
+        if (!convocation.estDestineAEtudiant(actorEmail)) {
+            throw new AuthenticationException("Non autorise");
+        }
+        if (convocation.getCandidature() != null
+                && convocation.getCandidature().getOffreStage() != null
+                && convocation.getCandidature().getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible de répondre à une convocation d'une ancienne session.");
         }
         if (convocation.estResolu()) {
             throw new Exception("La convocation est deja resolue");
         }
-        if (!convocation.estDestineAEtudiant(actorEmail)) {
-            throw new AuthenticationException("Non autorise");
+        if (convocation.estPassee()) {
+            throw new Exception("Le délai de réponse pour cette convocation est expiré.");
         }
 
         convocation.refuser(motif);
