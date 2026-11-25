@@ -42,7 +42,7 @@ public class Candidature {
     @OneToOne(fetch = FetchType.EAGER)
     private EvaluationMilieuStage evaluation;
 
-    private Instant lastEvaluationNag = Instant.MIN;
+    private Instant lastEvaluationNag = Instant.EPOCH;
 
     public Candidature() {}
 
