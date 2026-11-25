@@ -100,10 +100,6 @@ public class ContratPdfGenerator {
         return genererDocument(data);
     }
 
-    public static byte[] mettreAJour(Contrat contrat, String nomGestionnaire) throws IOException {
-        return generer(contrat, nomGestionnaire);
-    }
-
     public static byte[] generer(Candidature candidature, CreationContratRequest request, String nomGestionnaire) throws IOException {
         Etudiant etudiant = candidature.getEtudiant();
         Employeur employeur = candidature.getEmployeur();

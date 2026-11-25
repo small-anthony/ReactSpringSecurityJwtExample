@@ -230,10 +230,6 @@ public class GestionnaireService {
                 .toList();
     }
 
-    public List<RapportEtudiantDto> getEtudiantsSansConvocation() {
-        return getEtudiantsSansConvocation(AcademicSessionUtils.getAnneeActuelle());
-    }
-
     public List<RapportEtudiantDto> getEtudiantsSansConvocation(Integer annee) {
         if (annee == null) {
             return etudiantRepository.findEtudiantsSansConvocation()
@@ -388,10 +384,6 @@ public class GestionnaireService {
                     return ProfesseurPourAssignationDto.create(p, count);
                 })
                 .toList();
-    }
-
-    public List<ProfesseurPourAssignationDto> getProfesseursPourAssignation() {
-        return getProfesseursPourAssignation(null);
     }
 
     public AssignationProfesseurResponseDto assignerProfesseur(Long etudiantId, Long professeurId, String professeurNom) throws Exception {

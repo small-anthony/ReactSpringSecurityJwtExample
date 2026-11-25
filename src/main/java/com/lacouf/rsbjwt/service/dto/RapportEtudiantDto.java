@@ -32,33 +32,6 @@ public record RapportEtudiantDto(
         this(id, firstName, lastName, email, matricule, discipline, null, candidatures, false, null);
     }
 
-    public RapportEtudiantDto(
-            int id,
-            String firstName,
-            String lastName,
-            String email,
-            int matricule,
-            String discipline,
-            String statutStage,
-            List<CandidatureDto> candidatures
-    ) {
-        this(id, firstName, lastName, email, matricule, discipline, statutStage, candidatures, false, null);
-    }
-
-    public RapportEtudiantDto(
-            int id,
-            String firstName,
-            String lastName,
-            String email,
-            int matricule,
-            String discipline,
-            List<CandidatureDto> candidatures,
-            boolean milieuEvalue,
-            Long evaluationMilieuId
-    ) {
-        this(id, firstName, lastName, email, matricule, discipline, null, candidatures, milieuEvalue, evaluationMilieuId);
-    }
-
     public static RapportEtudiantDto create(Etudiant etudiant) {
         return create(etudiant, false, null);
     }
@@ -105,19 +78,6 @@ public record RapportEtudiantDto(
                 milieuEvalue,
                 evaluationMilieuId
         );
-    }
-
-    public static RapportEtudiantDto createFilteredByAnnee(Etudiant etudiant, int annee) {
-        return create(etudiant, annee, false, null, null);
-    }
-
-    public static RapportEtudiantDto createFilteredByAnnee(
-            Etudiant etudiant,
-            int annee,
-            boolean milieuEvalue,
-            Long evaluationMilieuId
-    ) {
-        return create(etudiant, annee, milieuEvalue, evaluationMilieuId, null);
     }
 
     public static RapportEtudiantDto createFilteredByAnnee(

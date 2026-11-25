@@ -256,7 +256,6 @@ public class EmployeurService {
             throw new Exception(erreurStatut);
         }
 
-        StatutCandidature ancienStatut = candidature.getStatut();
         candidature.setStatut(nouveauStatut);
         candidature.setMessageReponse(message);
         candidature.setDateDecision(LocalDateTime.now());
