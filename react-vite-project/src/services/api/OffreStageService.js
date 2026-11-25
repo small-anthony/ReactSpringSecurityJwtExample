@@ -1,14 +1,14 @@
 import { BASE_URL } from "../../components/config/Config";
 import APIHelper from "../../utils/APIHelper.ts";
 
-export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, duree, salaire, exigences, adresse, telephone, authHeader) {
+export async function createOffreStage(offreOrTitre, description, nomEntreprise, discipline, salaire, exigences, adresse, telephone, authHeader) {
   let bodyData;
   let headers;
 
   if (typeof offreOrTitre === "object" && offreOrTitre !== null) {
     bodyData = offreOrTitre;
     headers = description;
-  } else if (typeof discipline === "object" && discipline !== null && !duree) {
+  } else if (typeof discipline === "object" && discipline !== null) {
     bodyData = { titre: offreOrTitre, description, nomEntreprise };
     headers = discipline;
   } else {
@@ -17,7 +17,6 @@ export async function createOffreStage(offreOrTitre, description, nomEntreprise,
       description,
       nomEntreprise,
       discipline,
-      duree,
       salaire,
       exigences,
       adresse,

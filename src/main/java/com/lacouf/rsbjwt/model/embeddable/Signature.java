@@ -43,10 +43,6 @@ public class Signature<User extends UserApp> {
 		return valid;
 	}
 
-	public boolean isSignedBy(User user) {
-		return user != null && signataire != null && Objects.equals(user.getId(), signataire.getId());
-	}
-
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(data);

@@ -323,7 +323,7 @@ public class EtudiantServiceTest {
                 Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
                 etudiant.setId(1L);
 
-                OffreStage offreAncienne = new OffreStage("Stage 2025", "Desc", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2025);
+                OffreStage offreAncienne = new OffreStage("Stage 2025", "Desc", "CGI", "Informatique", "25$/h", "Java", 2025);
                 offreAncienne.setId(10L);
                 offreAncienne.accepter();
 
@@ -529,7 +529,7 @@ public class EtudiantServiceTest {
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
 
                 OffreStage offrePublique = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h",
-                                "15 semaines", "Java");
+                                "Java");
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
@@ -558,7 +558,7 @@ public class EtudiantServiceTest {
                 when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
 
                 OffreStage offrePublique = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h",
-                                "15 semaines", "Java");
+                                "Java");
                 offrePublique.setId(10L);
                 offrePublique.getEtudiantsAutorises().clear();
 
@@ -585,7 +585,7 @@ public class EtudiantServiceTest {
 
                 when(userAppRepository.findUserAppByEmail("etudiant@gmail.com")).thenReturn(Optional.of(etudiant));
 
-                OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h", "15 semaines",
+                OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "Informatique", "25$/h",
                                 "Java");
                 offre.setId(10L);
                 offre.accepter();

@@ -4,7 +4,7 @@ import {accepterOffre, fetchOffresEnAttente, refuserOffre} from "../../services/
 import ModalApprobation from "../modal/ModalApprobation.jsx";
 import SidePanelGestionnaire from "../widget/SidePanelGestionnaire.jsx";
 import ModalRefus from "../modal/ModalRefus.jsx";
-import { Briefcase, DollarSign, Clock, GraduationCap, ClipboardList, AlignLeft, MapPin, Phone, Calendar } from "lucide-react";
+import { Briefcase, DollarSign, GraduationCap, ClipboardList, AlignLeft, MapPin, Phone, Calendar } from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 import {usePagination} from "../../hooks/usePagination.js";
@@ -13,7 +13,7 @@ import Pagination from "../widget/Pagination.jsx";
 const ApprobationOffres = () => {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
+    const { traduireDiscipline, formaterSalaire } = useOffreFormater();
     const [offres, setOffres] = useState([]);
     const [offreToApprove, setOffreToApprove] = useState(null);
     const [offreToRefuse, setOffreToRefuse] = useState(null);
@@ -123,12 +123,14 @@ const ApprobationOffres = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3 min-w-0">
-                                    <div className="bg-amber-50 p-2 rounded-lg border border-amber-100 shrink-0">
-                                        <Clock className="w-4 h-4 text-amber-600" />
+                                    <div className="bg-blue-50 p-2 rounded-lg border border-blue-100 shrink-0">
+                                        <Calendar className="w-4 h-4 text-blue-600" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.duree')}</span>
-                                        <span className="block text-slate-800 text-sm font-medium break-words">{traduireDuree(offre.duree)}</span>
+                                        <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('approbation.offres.attributes.periode')}</span>
+                                        <span className="block text-slate-800 text-sm font-medium break-words">
+                                            {offre.dateDebut && offre.dateFin ? `${offre.dateDebut} → ${offre.dateFin}` : (offre.dateDebut || offre.dateFin || t("offres_etudiant.modal.not_specified"))}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -162,17 +164,6 @@ const ApprobationOffres = () => {
                                     </h4>
                                     <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">{offre.telephone}</p>
                                 </div>
-                                {(offre.dateDebut || offre.dateFin) && (
-                                    <div className="pt-2 border-t border-slate-200/60">
-                                        <h4 className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-1.5">
-                                            <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-                                            {t('approbation.offres.attributes.periode')}
-                                        </h4>
-                                        <p className="text-slate-600 text-sm leading-relaxed pl-0 sm:pl-6 break-words">
-                                            {offre.dateDebut && offre.dateFin ? `${offre.dateDebut} → ${offre.dateFin}` : (offre.dateDebut || offre.dateFin)}
-                                        </p>
-                                    </div>
-                                )}
                             </div>
 
                             {!(offreToRefuse && offreToRefuse.id === offre.id) && !(offreToApprove && offreToApprove.id === offre.id) && (

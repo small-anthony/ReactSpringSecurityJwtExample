@@ -28,8 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import com.lacouf.rsbjwt.model.ENUM.StatutContrat;
 import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 
@@ -159,11 +157,10 @@ public class ContratService {
         validerAbsenceAutreStageActif(candidature, annee);
         LocalDate dateDebut = (offre != null && offre.getDateDebut() != null)
                 ? offre.getDateDebut()
-                : LocalDate.of(annee, 5, 11);
-        long semaines = extraireSemainesDuree(offre != null ? offre.getDuree() : null);
-        LocalDate dateFin = (offre != null && offre.getDateDebut() != null && offre.getDateFin() != null)
+                : LocalDate.of(annee, 3, 2);
+        LocalDate dateFin = (offre != null && offre.getDateFin() != null && offre.getDateFin().isAfter(dateDebut))
                 ? offre.getDateFin()
-                : dateDebut.plusWeeks(semaines);
+                : dateDebut.plusWeeks(12);
         String horaire = "Du lundi au vendredi, 9h à 17h (35h/semaine)";
         String salaire = (offre != null && !estVide(offre.getSalaire())) ? offre.getSalaire().trim() : "Non spécifié";
         String descriptionTaches = (offre != null && !estVide(offre.getDescription()))
@@ -406,20 +403,6 @@ public class ContratService {
         if (dejaEmbauchee || dejaContratSigne) {
             throw new Exception("Vous avez déjà choisi et signé un stage pour cette session.");
         }
-    }
-
-    private long extraireSemainesDuree(String duree) {
-        if (estVide(duree)) {
-            return 15L;
-        }
-        Matcher matcher = Pattern.compile("(\\d{1,3})").matcher(duree);
-        if (matcher.find()) {
-            long valeur = Long.parseLong(matcher.group(1));
-            if (valeur > 0) {
-                return valeur;
-            }
-        }
-        return 15L;
     }
 
     private void refuserAutresCandidaturesEtContratsEtudiant(Candidature candidatureChoisie, Etudiant etudiant, int annee, Contrat contratSigne) {

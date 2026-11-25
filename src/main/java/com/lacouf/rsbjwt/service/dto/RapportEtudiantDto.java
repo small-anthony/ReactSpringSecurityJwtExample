@@ -32,27 +32,6 @@ public record RapportEtudiantDto(
         this(id, firstName, lastName, email, matricule, discipline, null, candidatures, false, null);
     }
 
-    public static RapportEtudiantDto create(Etudiant etudiant) {
-        return create(etudiant, false, null);
-    }
-
-    public static RapportEtudiantDto create(Etudiant etudiant, Integer annee) {
-        return create(etudiant, annee, false, null);
-    }
-
-    public static RapportEtudiantDto create(Etudiant etudiant, boolean milieuEvalue, Long evaluationMilieuId) {
-        return create(etudiant, null, milieuEvalue, evaluationMilieuId);
-    }
-
-    public static RapportEtudiantDto create(
-            Etudiant etudiant,
-            Integer annee,
-            boolean milieuEvalue,
-            Long evaluationMilieuId
-    ) {
-        return create(etudiant, annee, milieuEvalue, evaluationMilieuId, null);
-    }
-
     public static RapportEtudiantDto create(
             Etudiant etudiant,
             Integer annee,

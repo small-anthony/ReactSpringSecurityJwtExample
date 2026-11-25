@@ -14,10 +14,6 @@ public interface EvaluationMilieuStageRepository extends JpaRepository<Evaluatio
     @Query("SELECT e FROM EvaluationMilieuStage e WHERE e.candidature.id = :candidatureId")
     Optional<EvaluationMilieuStage> findByCandidatureId(@Param("candidatureId") Long candidatureId);
 
-    @Query("SELECT e FROM EvaluationMilieuStage e WHERE e.etudiant.id = :etudiantId AND e.candidature.id = :candidatureId")
-    Optional<EvaluationMilieuStage> findByEtudiantIdAndCandidatureId(@Param("etudiantId") Long etudiantId,
-            @Param("candidatureId") Long candidatureId);
-
     @Query("SELECT e FROM EvaluationMilieuStage e WHERE e.etudiant.id = :etudiantId ORDER BY e.dateEvaluation DESC")
     List<EvaluationMilieuStage> findByEtudiantIdOrderByDateEvaluationDesc(@Param("etudiantId") Long etudiantId);
 

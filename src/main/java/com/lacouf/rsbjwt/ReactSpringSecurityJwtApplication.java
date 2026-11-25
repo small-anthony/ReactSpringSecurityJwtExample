@@ -186,30 +186,30 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         OffreStage offreCgiDev = new OffreStage(
                                         "Développeur Full Stack Web",
                                         "Participer au développement d'applications web avec React et Spring Boot en méthodologie Agile.",
-                                        "CGI Inc.", "Techniques de l'informatique", "24$/h", "15 semaines",
+                                        "CGI Inc.", "Techniques de l'informatique", "24$/h",
                                         "Connaissance de JavaScript/React et Java. Esprit d'équipe et autonomie.");
                         offreCgiDev.setAnnee(anneeCourante);
                         offreCgiDev.setAdresse("1350 boulevard René-Lévesque Ouest");
                         offreCgiDev.setVille("Montréal");
                         offreCgiDev.setCodePostal("H3G 1T4");
                         offreCgiDev.setTelephone("514-555-0101");
-                        offreCgiDev.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
-                        offreCgiDev.setDateFin(LocalDate.of(anneeCourante, 8, 21));
+                        offreCgiDev.setDateDebut(LocalDate.of(anneeCourante, 3, 2));
+                        offreCgiDev.setDateFin(LocalDate.of(anneeCourante, 5, 22));
                         offreCgiDev.accepter();
                         cgi.ajouterOffre(offreCgiDev);
 
                         OffreStage offreCgiSecu = new OffreStage(
                                         "Analyste Cybersécurité Junior",
                                         "Participer aux audits de sécurité applicative et à la configuration des protocoles de chiffrement.",
-                                        "CGI Inc.", "Techniques de l'informatique", "27$/h", "15 semaines",
+                                        "CGI Inc.", "Techniques de l'informatique", "27$/h",
                                         "Intérêt pour la sécurité web, OWASP et les tests d'intrusion.");
                         offreCgiSecu.setAnnee(anneeCourante);
                         offreCgiSecu.setAdresse("1350 boulevard René-Lévesque Ouest");
                         offreCgiSecu.setVille("Montréal");
                         offreCgiSecu.setCodePostal("H3G 1T4");
                         offreCgiSecu.setTelephone("514-555-0101");
-                        offreCgiSecu.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
-                        offreCgiSecu.setDateFin(LocalDate.of(anneeCourante, 8, 21));
+                        offreCgiSecu.setDateDebut(LocalDate.of(anneeCourante, 3, 9));
+                        offreCgiSecu.setDateFin(LocalDate.of(anneeCourante, 5, 29));
                         offreCgiSecu.accepter();
                         cgi.ajouterOffre(offreCgiSecu);
 
@@ -217,15 +217,15 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         OffreStage offreCgiDevOpsHisto = new OffreStage(
                                         "Stagiaire DevOps & Cloud (Archive)",
                                         "Mise en place de pipelines CI/CD, automatisation et surveillance d'infrastructures Docker.",
-                                        "CGI Inc.", "Techniques de l'informatique", "26$/h", "15 semaines",
+                                        "CGI Inc.", "Techniques de l'informatique", "26$/h",
                                         "Connaissance de Linux, Git et Docker.");
                         offreCgiDevOpsHisto.setAnnee(anneeHistorique);
                         offreCgiDevOpsHisto.setAdresse("1350 boulevard René-Lévesque Ouest");
                         offreCgiDevOpsHisto.setVille("Montréal");
                         offreCgiDevOpsHisto.setCodePostal("H3G 1T4");
                         offreCgiDevOpsHisto.setTelephone("514-555-0101");
-                        offreCgiDevOpsHisto.setDateDebut(LocalDate.of(anneeHistorique, 5, 12));
-                        offreCgiDevOpsHisto.setDateFin(LocalDate.of(anneeHistorique, 8, 22));
+                        offreCgiDevOpsHisto.setDateDebut(LocalDate.of(anneeHistorique, 3, 3));
+                        offreCgiDevOpsHisto.setDateFin(LocalDate.of(anneeHistorique, 5, 22));
                         offreCgiDevOpsHisto.accepter();
                         cgi.ajouterOffre(offreCgiDevOpsHisto);
 
@@ -235,30 +235,30 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         OffreStage offreGoogleFront = new OffreStage(
                                         "Développeur Frontend React",
                                         "Conception d'interfaces modernes et performantes en méthodologie Agile.",
-                                        "Google", "Techniques de l'informatique", "28$/h", "16 semaines",
+                                        "Google", "Techniques de l'informatique", "28$/h",
                                         "Maîtrise de React, JavaScript moderne et Git.");
                         offreGoogleFront.setAnnee(anneeCourante);
                         offreGoogleFront.setAdresse("1253 avenue McGill College");
                         offreGoogleFront.setVille("Montréal");
                         offreGoogleFront.setCodePostal("H3B 2Y5");
                         offreGoogleFront.setTelephone("514-555-0202");
-                        offreGoogleFront.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
-                        offreGoogleFront.setDateFin(LocalDate.of(anneeCourante, 8, 28));
+                        offreGoogleFront.setDateDebut(LocalDate.of(anneeCourante, 3, 1));
+                        offreGoogleFront.setDateFin(LocalDate.of(anneeCourante, 5, 21));
                         offreGoogleFront.accepter();
                         google.ajouterOffre(offreGoogleFront);
 
                         OffreStage offreGoogleQa = new OffreStage(
                                         "Stagiaire Assurance Qualité QA",
                                         "Écriture de suites de tests end-to-end automatisés et validation de parcours utilisateurs.",
-                                        "Google", "Techniques de l'informatique", "25$/h", "15 semaines",
+                                        "Google", "Techniques de l'informatique", "25$/h",
                                         "Connaissance de tests d'intégration, JavaScript et rigueur méthodique.");
                         offreGoogleQa.setAnnee(anneeCourante);
                         offreGoogleQa.setAdresse("1253 avenue McGill College");
                         offreGoogleQa.setVille("Montréal");
                         offreGoogleQa.setCodePostal("H3B 2Y5");
                         offreGoogleQa.setTelephone("514-555-0202");
-                        offreGoogleQa.setDateDebut(LocalDate.of(anneeCourante, 5, 11));
-                        offreGoogleQa.setDateFin(LocalDate.of(anneeCourante, 8, 21));
+                        offreGoogleQa.setDateDebut(LocalDate.of(anneeCourante, 3, 15));
+                        offreGoogleQa.setDateFin(LocalDate.of(anneeCourante, 5, 28));
                         offreGoogleQa.accepter();
                         google.ajouterOffre(offreGoogleQa);
 
@@ -316,8 +316,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(candEmmaCgiChoix);
                         Contrat contratEmmaCgi = new Contrat(
                                         candEmmaCgiChoix,
-                                        LocalDate.of(anneeCourante, 5, 11),
-                                        LocalDate.of(anneeCourante, 5, 11).plusWeeks(15),
+                                        LocalDate.of(anneeCourante, 3, 2),
+                                        LocalDate.of(anneeCourante, 5, 22),
                                         "Du lundi au vendredi, 9h à 17h (35h/semaine)",
                                         "24$/h",
                                         offreCgiDev.getDescription(),
@@ -329,8 +329,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(candEmmaGoogleChoix);
                         Contrat contratEmmaGoogle = new Contrat(
                                         candEmmaGoogleChoix,
-                                        LocalDate.of(anneeCourante, 5, 11),
-                                        LocalDate.of(anneeCourante, 5, 11).plusWeeks(16),
+                                        LocalDate.of(anneeCourante, 3, 1),
+                                        LocalDate.of(anneeCourante, 5, 21),
                                         "Du lundi au vendredi, 9h à 17h (35h/semaine)",
                                         "28$/h",
                                         offreGoogleFront.getDescription(),
@@ -348,8 +348,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqHatimGoogle = new CreationContratRequest(
                                         candHatimGoogle.getId(),
-                                        LocalDate.of(anneeCourante, 5, 11),
-                                        LocalDate.of(anneeCourante, 8, 28),
+                                        LocalDate.of(anneeCourante, 3, 1),
+                                        LocalDate.of(anneeCourante, 5, 21),
                                         "Du lundi au vendredi, 9h à 17h (35h/semaine)",
                                         "28.00$/h",
                                         "Développement de composants UI React modernes et intégration aux APIs REST.",
@@ -373,8 +373,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqSophie = new CreationContratRequest(
                                         candSophieCgi.getId(),
-                                        LocalDate.of(anneeCourante, 5, 18),
-                                        LocalDate.of(anneeCourante, 8, 21),
+                                        LocalDate.of(anneeCourante, 3, 2),
+                                        LocalDate.of(anneeCourante, 5, 22),
                                         "Du lundi au vendredi, 8h30 à 16h30 (35h/semaine)",
                                         "24.00$/h",
                                         "Développement full-stack de microservices Spring Boot et interfaces utilisateur.",
@@ -400,8 +400,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqLuc = new CreationContratRequest(
                                         candLucGoogle.getId(),
-                                        LocalDate.of(anneeCourante, 5, 25),
-                                        LocalDate.of(anneeCourante, 8, 28),
+                                        LocalDate.of(anneeCourante, 3, 15),
+                                        LocalDate.of(anneeCourante, 5, 28),
                                         "Du lundi au vendredi, 9h à 17h (35h/semaine)",
                                         "25.00$/h",
                                         "Automatisation de tests E2E avec Playwright et validation continue des livrables.",
@@ -427,8 +427,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqClaireComp = new CreationContratRequest(
                                         candClaireCgiComplete.getId(),
-                                        LocalDate.of(anneeCourante, 5, 11),
-                                        LocalDate.of(anneeCourante, 8, 21),
+                                        LocalDate.of(anneeCourante, 3, 2),
+                                        LocalDate.of(anneeCourante, 5, 22),
                                         "35h/semaine", "24.00$/h",
                                         "Développement Full Stack Web avec React et Spring Boot",
                                         "Télétravail hybride");
@@ -453,8 +453,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                         CreationContratRequest reqHisto = new CreationContratRequest(
                                         candHisto.getId(),
-                                        LocalDate.of(anneeHistorique, 5, 12),
-                                        LocalDate.of(anneeHistorique, 8, 22),
+                                        LocalDate.of(anneeHistorique, 3, 3),
+                                        LocalDate.of(anneeHistorique, 5, 22),
                                         "35h/semaine", "26.00$/h",
                                         "Maintenance et automatisation des déploiements DevOps historiques.",
                                         "Conditions standards.");
@@ -499,13 +499,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.",
                                         "Techniques de l'informatique",
                                         (22 + (i % 5)) + "$/h",
-                                        "15 semaines",
                                         "Java, React, Git");
                         offreAcceptee.setAnnee(anneeCourante);
                         offreAcceptee.setAdresse("1350 boulevard René-Lévesque Ouest");
                         offreAcceptee.setVille("Montréal");
                         offreAcceptee.setCodePostal("H3G 1T4");
                         offreAcceptee.setTelephone("514-555-0101");
+                        offreAcceptee.setDateDebut(LocalDate.of(anneeCourante, 3, 1 + i));
+                        offreAcceptee.setDateFin(LocalDate.of(anneeCourante, 5, 15 + i));
                         offreAcceptee.accepter();
                         cgi.ajouterOffre(offreAcceptee);
                 }
@@ -517,13 +518,14 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                         "CGI Inc.",
                                         "Techniques de l'informatique",
                                         "23$/h",
-                                        "15 semaines",
                                         "SQL, Communication, Agile");
                         offreEnAttente.setAnnee(anneeCourante);
                         offreEnAttente.setAdresse("1350 boulevard René-Lévesque Ouest");
                         offreEnAttente.setVille("Montréal");
                         offreEnAttente.setCodePostal("H3G 1T4");
                         offreEnAttente.setTelephone("514-555-0101");
+                        offreEnAttente.setDateDebut(LocalDate.of(anneeCourante, 3, 3 + i));
+                        offreEnAttente.setDateFin(LocalDate.of(anneeCourante, 5, 17 + i));
                         cgi.ajouterOffre(offreEnAttente);
                 }
                 employeurRepository.save(cgi);
@@ -566,8 +568,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
                                 Contrat contrat = new Contrat(
                                                 cand,
-                                                LocalDate.of(anneeCourante, 5, 11),
-                                                LocalDate.of(anneeCourante, 8, 21),
+                                                LocalDate.of(anneeCourante, 3, 2),
+                                                LocalDate.of(anneeCourante, 5, 22),
                                                 "35h/semaine",
                                                 "24.00$/h",
                                                 "Développement Full Stack et tests unitaires.",

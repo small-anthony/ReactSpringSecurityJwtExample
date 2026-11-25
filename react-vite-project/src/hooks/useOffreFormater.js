@@ -9,11 +9,6 @@ export function useOffreFormater() {
         return t(`signup_etudiant.disciplines.${disc ? disc.labelKey : valeur}`, valeur);
     };
 
-    const traduireDuree = (valeur) => {
-        const nombre = parseInt(valeur, 10);
-        return Number.isNaN(nombre) ? valeur : t("creer_offre.weeks", { count: nombre });
-    };
-
     const formaterSalaire = (salaire) => {
         if (!salaire) return t("offres_etudiant.salary_to_discuss");
 
@@ -28,7 +23,6 @@ export function useOffreFormater() {
 
     return {
         traduireDiscipline,
-        traduireDuree,
         formaterSalaire
     }
 }

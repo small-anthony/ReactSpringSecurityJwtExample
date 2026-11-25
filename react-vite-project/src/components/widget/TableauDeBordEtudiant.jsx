@@ -37,7 +37,6 @@ export default function TableauDeBordEtudiant({
     aTrouveStage,
     renderCandidatureBadge,
     traduireDiscipline,
-    traduireDuree,
     formatShortDate,
     changerOnglet,
     onSelectionnerOffre
@@ -88,7 +87,7 @@ export default function TableauDeBordEtudiant({
                         nombreOffresDisponibles={offresDisponiblesNonPostulees.length}
                         candidaturesParOffre={candidaturesParOffre}
                         renderCandidatureBadge={renderCandidatureBadge}
-                        traduireDuree={traduireDuree}
+                        formatShortDate={formatShortDate}
                         changerOnglet={changerOnglet}
                         onSelectionnerOffre={onSelectionnerOffre}
                         t={t}

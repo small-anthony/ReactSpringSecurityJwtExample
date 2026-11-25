@@ -124,12 +124,14 @@ public class EmployeurControllerTest {
         request.put("titre", "Stagiaire en informatique");
         request.put("nomEntreprise", "CGI");
         request.put("description", "Développement web React et Spring Boot");
+        request.put("dateDebut", "2027-03-02");
+        request.put("dateFin", "2027-05-22");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, null, null, "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, null, "employeur@entreprise.com", null, java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22)))
                 .thenReturn(offreDto);
 
 //        ACT
@@ -152,7 +154,7 @@ public class EmployeurControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
-        when(employeurService.createOffreStage("", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, null, null, "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("", "CGI", "Développement web React et Spring Boot", null, null, null, null, null, null, null, "employeur@entreprise.com", null, null, null))
                 .thenThrow(new Exception("Le titre est obligatoire"));
 
 //        ACT
@@ -189,7 +191,7 @@ public class EmployeurControllerTest {
 
         List<OffreStageDto> offres = List.of(
                 new OffreStageDto(1, "Titre 2025", "Desc", "Ent", StatusAcceptation.ACCEPTE, "",
-                        "info", "25$/h", "15 semaines", "Java", List.of(), 2025));
+                        "info", "25$/h", "Java", List.of(), 2025));
 
         when(employeurService.getOffres("employeur@entreprise.com", 2025)).thenReturn(offres);
 
@@ -408,14 +410,15 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         ModifierOffreRequest request = new ModifierOffreRequest(1L, "Stagiaire en informatique", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234");
+                "Développement web React et Spring Boot", "info", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
+                java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22));
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire en informatique", "Développement web React et Spring Boot",
-                "CGI", StatusAcceptation.EN_ATTENTE, null, "info", "25$/h", "15 semaines", "Java et React");
+                "CGI", StatusAcceptation.EN_ATTENTE, null, "info", "25$/h", "Java et React");
 
         when(employeurService.updateOffreStage(1L, "Stagiaire en informatique", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
-                "employeur@entreprise.com"))
+                "Développement web React et Spring Boot", "info", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
+                "employeur@entreprise.com", java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22)))
                 .thenReturn(offreDto);
 
 //        ACT
@@ -433,11 +436,12 @@ public class EmployeurControllerTest {
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         ModifierOffreRequest request = new ModifierOffreRequest(1L, "", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234");
+                "Développement web React et Spring Boot", "info", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
+                java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22));
 
         when(employeurService.updateOffreStage(1L, "", "CGI",
-                "Développement web React et Spring Boot", "info", "15 semaines", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
-                "employeur@entreprise.com"))
+                "Développement web React et Spring Boot", "info", "25$/h", "Java et React", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234",
+                "employeur@entreprise.com", java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22)))
                 .thenThrow(new Exception("Le titre est obligatoire"));
 //        ACT
         ResponseEntity<Object> response = employeurController.updateOffre(request, authentication);
@@ -575,20 +579,21 @@ public class EmployeurControllerTest {
         request.put("nomEntreprise", "CGI");
         request.put("description", "Dev web");
         request.put("discipline", "info");
-        request.put("duree", "15 sem");
         request.put("salaire", "25$/h");
         request.put("exigences", "Java");
         request.put("adresse", "1 rue Test, Montréal");
         request.put("ville", "Montréal");
         request.put("codePostal", "H3G 1T4");
         request.put("telephone", "514-555-1234");
-        request.put("annee", "2026");
+        request.put("annee", "2027");
+        request.put("dateDebut", "2027-03-02");
+        request.put("dateFin", "2027-05-22");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234", "employeur@entreprise.com", 2026))
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "25$/h", "Java", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234", "employeur@entreprise.com", 2027, java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22)))
                 .thenReturn(offreDto);
 
         // Act
@@ -607,19 +612,20 @@ public class EmployeurControllerTest {
         request.put("nomEntreprise", "CGI");
         request.put("description", "Dev web");
         request.put("discipline", "info");
-        request.put("duree", "15 sem");
         request.put("salaire", "25$/h");
         request.put("exigences", "Java");
         request.put("adresse", "1 rue Test, Montréal");
         request.put("ville", "Montréal");
         request.put("codePostal", "H3G 1T4");
         request.put("telephone", "514-555-1234");
+        request.put("dateDebut", "2027-03-02");
+        request.put("dateFin", "2027-05-22");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "15 sem", "25$/h", "Java", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234", "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", "info", "25$/h", "Java", "1 rue Test, Montréal", "Montréal", "H3G 1T4", "514-555-1234", "employeur@entreprise.com", null, java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22)))
                 .thenReturn(offreDto);
 
         // Act
@@ -638,12 +644,14 @@ public class EmployeurControllerTest {
         request.put("nomEntreprise", "CGI");
         request.put("description", "Dev web");
         request.put("annee", "non-nombre");
+        request.put("dateDebut", "2027-03-02");
+        request.put("dateFin", "2027-05-22");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("employeur@entreprise.com");
 
         OffreStageDto offreDto = new OffreStageDto(1, "Stagiaire", "Dev web", "CGI", StatusAcceptation.EN_ATTENTE, null, new ArrayList<>());
-        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", null, null, null, null, null, null, null, null, "employeur@entreprise.com", null))
+        when(employeurService.createOffreStage("Stagiaire", "CGI", "Dev web", null, null, null, null, null, null, null, "employeur@entreprise.com", null, java.time.LocalDate.of(2027, 3, 2), java.time.LocalDate.of(2027, 5, 22)))
                 .thenReturn(offreDto);
 
         // Act

@@ -1,20 +1,16 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DISCIPLINES } from "../../constants/disciplines.js";
-import { DUREES } from "../../constants/durees.js";
-import {useOffreFormater} from "../../hooks/useOffreFormater.js";
 
 export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm" }) {
     const { t, i18n } = useTranslation("main");
     const isEn = i18n.language?.startsWith("en");
-    const { traduireDuree, formaterSalaire } = useOffreFormater();
 
     const [formData, setFormData] = useState({
         id: initialValues.id || null,
         titre: initialValues.titre || "",
         nomEntreprise: initialValues.nomEntreprise || "",
         discipline: initialValues.discipline || "",
-        duree: initialValues.duree || "",
         dateDebut: initialValues.dateDebut || "",
         dateFin: initialValues.dateFin || "",
         salaire: initialValues.salaire ? (initialValues.salaire.toString().match(/\d+([.,]\d+)?/)?.[0] || "") : "",
@@ -59,18 +55,13 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
             }
         }
 
-        if (!formData.duree.trim()) newErrors.duree = "duree";
-
-        const datesRequises = !formData.id || Boolean(initialValues.dateDebut || initialValues.dateFin || formData.dateDebut || formData.dateFin);
-        if (datesRequises) {
-            if (!formData.dateDebut) {
-                newErrors.dateDebut = "required";
-            }
-            if (!formData.dateFin) {
-                newErrors.dateFin = "required";
-            } else if (formData.dateDebut && formData.dateFin <= formData.dateDebut) {
-                newErrors.dateFin = "afterStart";
-            }
+        if (!formData.dateDebut) {
+            newErrors.dateDebut = "required";
+        }
+        if (!formData.dateFin) {
+            newErrors.dateFin = "required";
+        } else if (formData.dateDebut && formData.dateFin <= formData.dateDebut) {
+            newErrors.dateFin = "afterStart";
         }
 
         if (!formData.exigences.trim()) newErrors.exigences = "exigences";
@@ -147,33 +138,33 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                 />
             </div>
 
-            <div>
-                <label className="ds-label">
-                    {t("creer_offre.discipline")} <span className="text-red-500">*</span>
-                </label>
-                <select
-                    name="discipline"
-                    value={formData.discipline}
-                    onChange={handleChange}
-                    className={`ds-input ${
-                        errors.discipline ? "ds-input-error" : ""
-                    }`}
-                >
-                    <option value="">{t("creer_offre.placeholders.discipline")}</option>
-                    {DISCIPLINES.map((disc) => (
-                        <option key={disc.value} value={disc.value}>
-                            {t(`signup_etudiant.disciplines.${disc.labelKey}`)}
-                        </option>
-                    ))}
-                </select>
-                {errors.discipline && (
-                    <p className="ds-error-text">
-                        {t(`creer_offre.errors.${errors.discipline}`)}
-                    </p>
-                )}
-            </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="ds-label">
+                        {t("creer_offre.discipline")} <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                        name="discipline"
+                        value={formData.discipline}
+                        onChange={handleChange}
+                        className={`ds-input ${
+                            errors.discipline ? "ds-input-error" : ""
+                        }`}
+                    >
+                        <option value="">{t("creer_offre.placeholders.discipline")}</option>
+                        {DISCIPLINES.map((disc) => (
+                            <option key={disc.value} value={disc.value}>
+                                {t(`signup_etudiant.disciplines.${disc.labelKey}`)}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.discipline && (
+                        <p className="ds-error-text">
+                            {t(`creer_offre.errors.${errors.discipline}`)}
+                        </p>
+                    )}
+                </div>
+
                 <div>
                     <label className="ds-label">
                         {t("creer_offre.salaire")} <span className="text-red-500">*</span>
@@ -208,38 +199,12 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
                         </p>
                     )}
                 </div>
-
-                <div>
-                    <label className="ds-label">
-                        {t("creer_offre.duree")} <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                        name="duree"
-                        value={formData.duree}
-                        onChange={handleChange}
-                        className={`ds-input ${
-                            errors.duree ? "ds-input-error" : ""
-                        }`}
-                    >
-                        <option value="">{t("creer_offre.placeholders.duree")}</option>
-                        {DUREES.map((dur) => (
-                            <option key={dur} value={dur}>
-                                {traduireDuree(dur)}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.duree && (
-                        <p className="ds-error-text">
-                            {t(`creer_offre.errors.${errors.duree}`)}
-                        </p>
-                    )}
-                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label className="ds-label">
-                        {t("creer_offre.dateDebut")} {!formData.id && <span className="text-red-500">*</span>}
+                        {t("creer_offre.dateDebut")} <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="date"
@@ -259,7 +224,7 @@ export default function OffreForm({initialValues = {}, onSubmit, id = "offreForm
 
                 <div>
                     <label className="ds-label">
-                        {t("creer_offre.dateFin")} {!formData.id && <span className="text-red-500">*</span>}
+                        {t("creer_offre.dateFin")} <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="date"

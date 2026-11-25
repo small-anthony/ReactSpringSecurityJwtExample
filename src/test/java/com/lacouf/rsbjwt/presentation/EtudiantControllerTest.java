@@ -48,7 +48,7 @@ public class EtudiantControllerTest {
         return new OffreStageDto(
                 1, "Dev Web", "Description", "CGI",
                 StatusAcceptation.EN_ATTENTE, null,
-                "informatique", "25$/h", "15 sem", "Java",
+                "informatique", "25$/h", "Java",
                 List.of(), 2026
         );
     }

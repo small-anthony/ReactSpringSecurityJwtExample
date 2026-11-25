@@ -19,7 +19,8 @@ const mockOffre = {
     nomEntreprise: "Google Montréal",
     discipline: "Techniques de l'informatique",
     salaire: "28.00 $/h",
-    duree: "12 semaines",
+    dateDebut: "2027-03-02",
+    dateFin: "2027-05-22",
     description: "Conception de microservices Spring Boot.",
     exigences: "Expérience avec Java et les bases de données SQL.",
     adresse: "1253 avenue McGill College",
@@ -145,32 +146,32 @@ describe("ModalModifierOffre", () => {
         const user = userEvent.setup();
         OffreStageService.updateOffreStage.mockResolvedValueOnce({
             ...mockOffre,
-            dateDebut: "2026-05-11",
-            dateFin: "2026-08-21"
+            dateDebut: "2027-03-02",
+            dateFin: "2027-05-22"
         });
 
         renderModal({
             offre: {
                 ...mockOffre,
-                dateDebut: "2026-05-11",
-                dateFin: "2026-08-21"
+                dateDebut: "2027-03-02",
+                dateFin: "2027-05-22"
             }
         });
 
-        const inputDebut = screen.getByDisplayValue("2026-05-11");
-        const inputFin = screen.getByDisplayValue("2026-08-21");
+        const inputDebut = screen.getByDisplayValue("2027-03-02");
+        const inputFin = screen.getByDisplayValue("2027-05-22");
 
         await user.clear(inputFin);
-        await user.type(inputFin, "2026-05-01");
+        await user.type(inputFin, "2027-02-20");
         await user.click(screen.getByRole("button", { name: /enregistrer/i }));
 
         expect(await screen.findByText(/date de fin doit être postérieure/i)).toBeInTheDocument();
         expect(OffreStageService.updateOffreStage).not.toHaveBeenCalled();
 
         await user.clear(inputDebut);
-        await user.type(inputDebut, "2026-05-11");
+        await user.type(inputDebut, "2027-03-02");
         await user.clear(inputFin);
-        await user.type(inputFin, "2026-08-21");
+        await user.type(inputFin, "2027-05-22");
         await user.click(screen.getByRole("button", { name: /enregistrer/i }));
 
         const boutonConfirmer = await screen.findByRole("button", { name: /confirmer/i });
@@ -179,11 +180,28 @@ describe("ModalModifierOffre", () => {
         await waitFor(() => {
             expect(OffreStageService.updateOffreStage).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    dateDebut: "2026-05-11",
-                    dateFin: "2026-08-21"
+                    dateDebut: "2027-03-02",
+                    dateFin: "2027-05-22"
                 }),
                 { Authorization: "Bearer token123" }
             );
         });
+    });
+
+    it("devrait exiger les dates de début et de fin lors de la soumission", async () => {
+        const user = userEvent.setup();
+        renderModal({
+            offre: {
+                ...mockOffre,
+                dateDebut: "",
+                dateFin: ""
+            }
+        });
+
+        await user.click(screen.getByRole("button", { name: /enregistrer/i }));
+
+        expect(await screen.findByText(/date de début est obligatoire/i)).toBeInTheDocument();
+        expect(screen.getByText(/date de fin est obligatoire/i)).toBeInTheDocument();
+        expect(OffreStageService.updateOffreStage).not.toHaveBeenCalled();
     });
 });

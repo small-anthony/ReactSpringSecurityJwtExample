@@ -34,15 +34,14 @@ export default function CreerOffre() {
               description: formData.description.trim(),
               nomEntreprise: finalEntreprise,
               discipline: formData.discipline.trim(),
-              duree: formData.duree.trim(),
               salaire: finalSalaire,
               exigences: formData.exigences.trim(),
               adresse: formData.adresse.trim(),
               ville: formData.ville.trim(),
               codePostal: formData.codePostal.trim(),
               telephone: formData.telephone.trim(),
-              dateDebut: formData.dateDebut || null,
-              dateFin: formData.dateFin || null
+              dateDebut: formData.dateDebut,
+              dateFin: formData.dateFin
           },
           authHeader
       );

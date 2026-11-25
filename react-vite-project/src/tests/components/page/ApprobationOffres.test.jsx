@@ -33,7 +33,8 @@ const mockOffres = [
         nomEntreprise: "Google",
         discipline: "Techniques de l'informatique",
         salaire: "25.00 $/h",
-        duree: "12 semaines",
+        dateDebut: "2027-03-02",
+        dateFin: "2027-05-22",
         description: "Création d'applications React",
         exigences: "Connaître JavaScript",
         status: "EN_ATTENTE"

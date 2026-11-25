@@ -264,9 +264,9 @@ public class GestionnaireServiceTest {
     @Test
     void getOffresEnAttente_exclutOffresAncienneSession() {
         int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
-        OffreStage offreAncienne = new OffreStage("Ancienne", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", anneeActuelle - 1);
+        OffreStage offreAncienne = new OffreStage("Ancienne", "Desc", "CGI", "info", "25$/h", "Java", anneeActuelle - 1);
         offreAncienne.setId(1L);
-        OffreStage offreCourante = new OffreStage("Courante", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", anneeActuelle);
+        OffreStage offreCourante = new OffreStage("Courante", "Desc", "CGI", "info", "25$/h", "Java", anneeActuelle);
         offreCourante.setId(2L);
 
         when(offreStageRepository.findByApprobationStatusAndDateSuppressionIsNull(StatusAcceptation.EN_ATTENTE))
@@ -300,7 +300,7 @@ public class GestionnaireServiceTest {
     @Test
     void getOffresEnAttente_avecAnnee_retourneOffresEnAttenteAnnee() {
 //        ARRANGE
-        OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "Java", 2025);
         offre.setId(1L);
 
         when(offreStageRepository.findByApprobationStatusAndAnnee(StatusAcceptation.EN_ATTENTE, 2025))
@@ -317,7 +317,7 @@ public class GestionnaireServiceTest {
     @Test
     void getToutesOffres_avecAnnee_retourneToutesLesOffresAnnee() {
 //        ARRANGE
-        OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        OffreStage offre = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "Java", 2025);
         offre.setId(1L);
 
         when(offreStageRepository.findAllByAnnee(2025)).thenReturn(List.of(offre));
@@ -368,7 +368,7 @@ public class GestionnaireServiceTest {
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
 
-        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2025);
+        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "Informatique", "25$/h", "Java", 2025);
         Candidature candidature = new Candidature(etudiant, offre2025);
         candidature.setId(10L);
         candidature.setStatut(StatutCandidature.EMBAUCHEE);
@@ -396,7 +396,7 @@ public class GestionnaireServiceTest {
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
 
-        OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2026);
+        OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "Java", 2026);
         Candidature candidature = new Candidature(etudiant, offre2026);
         candidature.setId(15L);
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
@@ -421,7 +421,7 @@ public class GestionnaireServiceTest {
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
 
-        OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2026);
+        OffreStage offre2026 = new OffreStage("Stage 2026", "Description", "CGI", "Informatique", "25$/h", "Java", 2026);
         Candidature candidature = new Candidature(etudiant, offre2026);
         candidature.setId(16L);
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
@@ -446,7 +446,7 @@ public class GestionnaireServiceTest {
         Etudiant etudiant = new Etudiant("Jean", "Dupont", cred, 1234567, "Informatique");
         etudiant.setId(1L);
 
-        OffreStage offre2024 = new OffreStage("Stage 2024", "Description", "CGI", "Informatique", "25$/h", "15 semaines", "Java", 2024);
+        OffreStage offre2024 = new OffreStage("Stage 2024", "Description", "CGI", "Informatique", "25$/h", "Java", 2024);
         Candidature candidature = new Candidature(etudiant, offre2024);
         candidature.setId(10L);
         candidature.setStatut(StatutCandidature.EMBAUCHEE);
@@ -641,7 +641,7 @@ public class GestionnaireServiceTest {
     private Etudiant createEtudiantAvecStage(Long id, String prenom, String nom, String email, int matricule) {
         Etudiant etudiant = new Etudiant(prenom, nom, new Credentials(email, "pass", Role.ETUDIANT), matricule, "info");
         etudiant.setId(id);
-        OffreStage offre = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
+        OffreStage offre = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "Java", 2026);
         offre.setId(1L);
         Candidature cand = new Candidature(etudiant, offre);
         cand.setId(1L);

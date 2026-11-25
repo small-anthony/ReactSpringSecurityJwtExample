@@ -20,6 +20,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.model.UserApp;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.OffreStageDto;
+import com.lacouf.rsbjwt.util.AcademicSessionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,6 +42,9 @@ public class EmployeurServiceTest {
     private static final String VILLE = "Montréal";
     private static final String CODE_POSTAL = "H3G 1T4";
     private static final String TELEPHONE = "514-555-1234";
+    private static final int ANNEE_COURANTE = AcademicSessionUtils.getAnneeActuelle();
+    private static final LocalDate DATE_DEBUT = LocalDate.of(ANNEE_COURANTE, 3, 2);
+    private static final LocalDate DATE_FIN = LocalDate.of(ANNEE_COURANTE, 5, 22);
     @Mock
     private UserAppRepository userAppRepository;
     @Mock
@@ -87,7 +91,6 @@ public class EmployeurServiceTest {
         String description = "Développement d'applications web avec Spring Boot et React";
         String discipline = "info";
         String salaire = "25$/h";
-        String duree = "16 semaines";
         String exigences = "Connaissances en Java et React";
 
         UserApp userMock = mock(UserApp.class);
@@ -99,19 +102,21 @@ public class EmployeurServiceTest {
         employeur.setId(1L);
         when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
-        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire, duree,
+        OffreStage offreEnregistree = new OffreStage(titre, description, nomEntreprise, discipline, salaire,
                 exigences);
         offreEnregistree.setAdresse(ADRESSE);
         offreEnregistree.setVille(VILLE);
         offreEnregistree.setCodePostal(CODE_POSTAL);
         offreEnregistree.setTelephone(TELEPHONE);
+        offreEnregistree.setDateDebut(DATE_DEBUT);
+        offreEnregistree.setDateFin(DATE_FIN);
         offreEnregistree.setId(1L);
         offreEnregistree.setEmployeur(employeur);
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(offreEnregistree);
 
         // ACT
-        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline, duree,
-                salaire, exigences, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null);
+        OffreStageDto resultat = employeurService.createOffreStage(titre, nomEntreprise, description, discipline,
+                salaire, exigences, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null, DATE_DEBUT, DATE_FIN);
 
         // ASSERT
         assertNotNull(resultat);
@@ -124,13 +129,15 @@ public class EmployeurServiceTest {
         assertEquals(VILLE, resultat.ville());
         assertEquals(CODE_POSTAL, resultat.codePostal());
         assertEquals(TELEPHONE, resultat.telephone());
+        assertEquals(DATE_DEBUT, resultat.dateDebut());
+        assertEquals(DATE_FIN, resultat.dateFin());
     }
 
     @Test
     void testCreerOffre_titreVide_lanceException() {
         // ACT
         Exception exception = assertThrows(Exception.class,
-                () -> employeurService.createOffreStage("", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null));
+                () -> employeurService.createOffreStage("", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         // Assert
         assertEquals("Le titre est obligatoire", exception.getMessage());
@@ -140,7 +147,7 @@ public class EmployeurServiceTest {
     void testCreerOffre_nomEntrepriseVide_lanceException() {
         // ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
-                .createOffreStage("Stagiaire en informatique", "", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null));
+                .createOffreStage("Stagiaire en informatique", "", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         // ASSERT
         assertEquals("Le nom de l'entreprise est obligatoire", exception.getMessage());
@@ -150,7 +157,7 @@ public class EmployeurServiceTest {
     void testCreerOffre_descriptionVide_lanceException() {
         // ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
-                .createOffreStage("Stagiaire en informatique", "CGI", "", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null));
+                .createOffreStage("Stagiaire en informatique", "CGI", "", null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         // ASSERT
         assertEquals("La description est obligatoire", exception.getMessage());
@@ -160,7 +167,7 @@ public class EmployeurServiceTest {
     void testCreerOffre_emailVide_lanceException() {
         // ACT
         Exception exception = assertThrows(Exception.class,
-                () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "", null));
+                () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "", null, DATE_DEBUT, DATE_FIN));
 
         // ASSERT
         assertEquals("Le courriel de l'employeur est obligatoire", exception.getMessage());
@@ -174,7 +181,7 @@ public class EmployeurServiceTest {
 
         // ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
-                .createOffreStage("Stagiaire en informatique", "CGI", "Description", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, emailInexistant, null));
+                .createOffreStage("Stagiaire en informatique", "CGI", "Description", null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, emailInexistant, null, DATE_DEBUT, DATE_FIN));
 
         // Assert
         assertEquals("Utilisateur non trouvé avec l'email : " + emailInexistant, exception.getMessage());
@@ -191,7 +198,7 @@ public class EmployeurServiceTest {
 
         // ACT
         Exception exception = assertThrows(Exception.class,
-                () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null));
+                () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description", null, null, null, ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null, DATE_DEBUT, DATE_FIN));
 
         // ASSeRT
         assertEquals("Employeur non trouvé avec cette id", exception.getMessage());
@@ -560,7 +567,7 @@ public class EmployeurServiceTest {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
 
-        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        OffreStage offre2025 = new OffreStage("Stage 2025", "Description", "CGI", "info", "25$/h", "Java", 2025);
         offre2025.setId(1L);
 
         when(offreStageRepository.findWithCandidaturesByEmployeurAndAnnee(employeur, 2025))
@@ -672,8 +679,8 @@ public class EmployeurServiceTest {
 
         //ACT
         OffreStageDto resultat = employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI",
-                "Développement d'applications web avec Spring Boot et React", "info", "16 semaines",
-                "25$/h", "Connaissances en Java et React", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email);
+                "Développement d'applications web avec Spring Boot et React", "info",
+                "25$/h", "Connaissances en Java et React", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, DATE_DEBUT, DATE_FIN);
 
         //ASSERT
         assertNotNull(resultat);
@@ -681,13 +688,14 @@ public class EmployeurServiceTest {
         assertEquals("Stagiaire en informatique", resultat.titre());
         assertEquals("Développement d'applications web avec Spring Boot et React", resultat.description());
         assertEquals("info", resultat.discipline());
-        assertEquals("16 semaines", resultat.duree());
         assertEquals("25$/h", resultat.salaire());
         assertEquals("Connaissances en Java et React", resultat.exigences());
         assertEquals(ADRESSE, resultat.adresse());
         assertEquals(VILLE, resultat.ville());
         assertEquals(CODE_POSTAL, resultat.codePostal());
         assertEquals(TELEPHONE, resultat.telephone());
+        assertEquals(DATE_DEBUT, resultat.dateDebut());
+        assertEquals(DATE_FIN, resultat.dateFin());
         assertEquals(StatusAcceptation.EN_ATTENTE, resultat.status());
     }
 
@@ -695,8 +703,8 @@ public class EmployeurServiceTest {
     void updateOffreStage_titreVide_lanceException() {
         //ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
-                .updateOffreStage(10L, "", "CGI", "Description valide", "info", "16 semaines",
-                        "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com"));
+                .updateOffreStage(10L, "", "CGI", "Description valide", "info",
+                        "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le titre est obligatoire", exception.getMessage());
@@ -707,7 +715,7 @@ public class EmployeurServiceTest {
         //ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
                 .updateOffreStage(10L, "Stagiaire en informatique", "", "Description valide", "info",
-                        "16 semaines", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com"));
+                        "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le nom de l'entreprise est obligatoire", exception.getMessage());
@@ -718,7 +726,7 @@ public class EmployeurServiceTest {
         //ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
                 .updateOffreStage(10L, "Stagiaire en informatique", "CGI", "", "info",
-                        "16 semaines", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com"));
+                        "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("La description est obligatoire", exception.getMessage());
@@ -734,7 +742,7 @@ public class EmployeurServiceTest {
         //ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
                 .updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info",
-                        "16 semaines", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, emailInexistant));
+                        "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, emailInexistant, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Employeur non trouvé", exception.getMessage());
@@ -755,7 +763,7 @@ public class EmployeurServiceTest {
         //ACT
         Exception exception = assertThrows(Exception.class, () -> employeurService
                 .updateOffreStage(99L, "Stagiaire en informatique", "CGI", "Description valide", "info",
-                        "16 semaines", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email));
+                        "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Offre introuvable pour cet employeur", exception.getMessage());
@@ -764,7 +772,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_adresseVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, "", VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, "", VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("L'adresse est obligatoire", exception.getMessage());
@@ -773,7 +781,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_adresseNulle_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, null, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("L'adresse est obligatoire", exception.getMessage());
@@ -782,7 +790,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_telephoneVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, "", "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, "", "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le téléphone est obligatoire", exception.getMessage());
@@ -791,7 +799,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_telephoneNul_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, null, "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, null, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le téléphone est obligatoire", exception.getMessage());
@@ -800,7 +808,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_telephoneInvalide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, "abc", "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, "abc", "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le numéro de téléphone est invalide", exception.getMessage());
@@ -809,7 +817,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_telephoneTropCourt_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, CODE_POSTAL, "555-1234", "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, CODE_POSTAL, "555-1234", "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le numéro de téléphone est invalide", exception.getMessage());
@@ -818,7 +826,7 @@ public class EmployeurServiceTest {
     @Test
     void updateOffreStage_adresseVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "16 semaines", "25$/h", "Java", "", VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com"));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "25$/h", "Java", "", VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("L'adresse est obligatoire", exception.getMessage());
@@ -827,7 +835,7 @@ public class EmployeurServiceTest {
     @Test
     void updateOffreStage_telephoneVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "16 semaines", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, "", "employeur@entreprise.com"));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, "", "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le téléphone est obligatoire", exception.getMessage());
@@ -836,7 +844,7 @@ public class EmployeurServiceTest {
     @Test
     void updateOffreStage_telephoneInvalide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "16 semaines", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, "abc", "employeur@entreprise.com"));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "25$/h", "Java", ADRESSE, VILLE, CODE_POSTAL, "abc", "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le numéro de téléphone est invalide", exception.getMessage());
@@ -845,7 +853,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_villeVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, "", CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, "", CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("La ville est obligatoire", exception.getMessage());
@@ -854,7 +862,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_codePostalVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, "", TELEPHONE, "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, "", TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le code postal est obligatoire", exception.getMessage());
@@ -863,7 +871,7 @@ public class EmployeurServiceTest {
     @Test
     void testCreerOffre_codePostalInvalide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, null, ADRESSE, VILLE, "12345", TELEPHONE, "employeur@entreprise.com", null));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage("Stagiaire en informatique", "CGI", "Description valide", null, null, null, ADRESSE, VILLE, "12345", TELEPHONE, "employeur@entreprise.com", null, DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le code postal est invalide", exception.getMessage());
@@ -872,7 +880,7 @@ public class EmployeurServiceTest {
     @Test
     void updateOffreStage_villeVide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "16 semaines", "25$/h", "Java", ADRESSE, "", CODE_POSTAL, TELEPHONE, "employeur@entreprise.com"));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "25$/h", "Java", ADRESSE, "", CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("La ville est obligatoire", exception.getMessage());
@@ -881,7 +889,7 @@ public class EmployeurServiceTest {
     @Test
     void updateOffreStage_codePostalInvalide_lanceException() {
         //ACT
-        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "16 semaines", "25$/h", "Java", ADRESSE, VILLE, "12345", TELEPHONE, "employeur@entreprise.com"));
+        Exception exception = assertThrows(Exception.class, () -> employeurService.updateOffreStage(10L, "Stagiaire en informatique", "CGI", "Description valide", "info", "25$/h", "Java", ADRESSE, VILLE, "12345", TELEPHONE, "employeur@entreprise.com", DATE_DEBUT, DATE_FIN));
 
         //ASSERT
         assertEquals("Le code postal est invalide", exception.getMessage());
@@ -908,8 +916,8 @@ public class EmployeurServiceTest {
 
         employeurService.createOffreStage(
                 "Développeur Java", "CGI", "Stage backend",
-                null, null, null, null,
-                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null);
+                null, null, null,
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null, DATE_DEBUT, DATE_FIN);
 
         org.mockito.ArgumentCaptor<Notification> notifCaptor = org.mockito.ArgumentCaptor.forClass(Notification.class);
         verify(notificationService).pushNotification(notifCaptor.capture(), eq(10L));
@@ -928,16 +936,35 @@ public class EmployeurServiceTest {
         preparerEmployeur(email);
         when(offreStageRepository.save(any(OffreStage.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        LocalDate debut = LocalDate.of(2026, 5, 11);
-        LocalDate fin = LocalDate.of(2026, 8, 21);
-
         OffreStageDto resultat = employeurService.createOffreStage(
                 "Développeur Java", "CGI", "Stage backend",
-                "Techniques de l'informatique", "15 semaines", "25$/h", "Java",
-                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null, debut, fin);
+                "Techniques de l'informatique", "25$/h", "Java",
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null, DATE_DEBUT, DATE_FIN);
 
-        assertEquals(debut, resultat.dateDebut());
-        assertEquals(fin, resultat.dateFin());
+        assertEquals(DATE_DEBUT, resultat.dateDebut());
+        assertEquals(DATE_FIN, resultat.dateFin());
+    }
+
+    @Test
+    void createOffreStage_dateDebutManquante_lanceException() {
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage(
+                "Développeur Java", "CGI", "Stage backend",
+                "Techniques de l'informatique", "25$/h", "Java",
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null,
+                null, DATE_FIN));
+
+        assertEquals("La date de début est obligatoire", exception.getMessage());
+    }
+
+    @Test
+    void createOffreStage_dateFinManquante_lanceException() {
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage(
+                "Développeur Java", "CGI", "Stage backend",
+                "Techniques de l'informatique", "25$/h", "Java",
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null,
+                DATE_DEBUT, null));
+
+        assertEquals("La date de fin est obligatoire", exception.getMessage());
     }
 
     @Test
@@ -946,10 +973,24 @@ public class EmployeurServiceTest {
 
         Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage(
                 "Développeur Java", "CGI", "Stage backend",
-                "Techniques de l'informatique", "15 semaines", "25$/h", "Java",
+                "Techniques de l'informatique", "25$/h", "Java",
                 ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, email, null,
-                LocalDate.of(2026, 8, 21), LocalDate.of(2026, 5, 11)));
+                DATE_FIN, DATE_DEBUT));
 
         assertEquals("La date de fin doit être postérieure à la date de début", exception.getMessage());
+    }
+
+    @Test
+    void createOffreStage_datesAncienneSession_lanceException() {
+        LocalDate debutPasse = LocalDate.of(ANNEE_COURANTE - 1, 3, 2);
+        LocalDate finPassee = LocalDate.of(ANNEE_COURANTE - 1, 5, 22);
+
+        Exception exception = assertThrows(Exception.class, () -> employeurService.createOffreStage(
+                "Développeur Java", "CGI", "Stage backend",
+                "Techniques de l'informatique", "25$/h", "Java",
+                ADRESSE, VILLE, CODE_POSTAL, TELEPHONE, "employeur@entreprise.com", null,
+                debutPasse, finPassee));
+
+        assertEquals("Les dates de l'offre ne peuvent pas appartenir à une ancienne session.", exception.getMessage());
     }
 }

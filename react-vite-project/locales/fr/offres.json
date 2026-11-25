@@ -5,7 +5,6 @@
     "titre": "Titre du poste",
     "nomEntreprise": "Nom de l'entreprise",
     "discipline": "Discipline d'études",
-    "duree": "Durée du stage",
     "dateDebut": "Date de début",
     "dateFin": "Date de fin",
     "salaire": "Rémunération / Salaire",
@@ -15,12 +14,10 @@
     "telephone": "Téléphone de contact",
     "exigences": "Exigences particulières (compétences, technologies)",
     "description": "Description de l'offre",
-    "weeks": "{{count}} semaines",
     "placeholders": {
       "titre": "Ex: Développeur Web Junior",
       "nomEntreprise": "Ex: CGI Inc.",
       "discipline": "-- Choisir une discipline --",
-      "duree": "-- Choisir une durée --",
       "salaire": "22.50",
       "adresse": "Ex: 1350 boulevard René-Lévesque Ouest",
       "ville": "Ex: Montréal",
@@ -37,7 +34,6 @@
         "required": "La rémunération est obligatoire.",
         "format": "Format de rémunération invalide."
       },
-      "duree": "Veuillez choisir une durée.",
       "dateDebut": {
         "required": "La date de début est obligatoire."
       },
@@ -183,7 +179,6 @@
     "search_placeholder": "Rechercher par titre, entreprise ou mot-clé...",
     "all_companies": "Toutes les entreprises",
     "all_disciplines": "Toutes les disciplines",
-    "all_durations": "Toutes les durées",
     "offers_count": "{{count}} offre trouvée",
     "offers_count_plural": "{{count}} offres trouvées",
     "reset_filters": "Réinitialiser les filtres",
@@ -201,7 +196,6 @@
     "modal": {
       "validated_badge": "Offre validée",
       "discipline": "Discipline",
-      "duration": "Durée",
       "dates": "Dates du stage",
       "salary": "Rémunération",
       "not_specified": "Non spécifiée",

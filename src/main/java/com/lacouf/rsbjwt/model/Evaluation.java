@@ -94,10 +94,6 @@ public class Evaluation {
         return id;
     }
 
-    public Contrat getContrat() {
-        return contrat;
-    }
-
     public Long getContratId() {
         return contrat.getId();
     }

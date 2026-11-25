@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.model.Candidature;
+import com.lacouf.rsbjwt.model.Contrat;
 import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.OffreStage;
 import com.lacouf.rsbjwt.model.Professeur;
@@ -8,6 +9,7 @@ import com.lacouf.rsbjwt.model.ENUM.StatutCandidature;
 import com.lacouf.rsbjwt.model.ENUM.notifications.NotificationActionType;
 import com.lacouf.rsbjwt.presentation.RequestDto.CreationContratRequest;
 import com.lacouf.rsbjwt.repository.CandidatureRepository;
+import com.lacouf.rsbjwt.repository.ContratRepository;
 import com.lacouf.rsbjwt.repository.EtudiantRepository;
 import com.lacouf.rsbjwt.repository.OffreStageRepository;
 import com.lacouf.rsbjwt.repository.ProfesseurRepository;
@@ -22,9 +24,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -51,6 +56,9 @@ class ReactSpringSecurityJwtApplicationTests {
     @Autowired
     private ProfesseurRepository professeurRepository;
 
+    @Autowired
+    private ContratRepository contratRepository;
+
     @Test
     void contextLoads() {
     }
@@ -75,8 +83,8 @@ class ReactSpringSecurityJwtApplicationTests {
         contratService.creerContrat(
                 new CreationContratRequest(
                         nouvelle.getId(),
-                        LocalDate.of(AcademicSessionUtils.getAnneeActuelle(), 5, 11),
-                        LocalDate.of(AcademicSessionUtils.getAnneeActuelle(), 8, 21),
+                        LocalDate.of(AcademicSessionUtils.getAnneeActuelle(), 3, 2),
+                        LocalDate.of(AcademicSessionUtils.getAnneeActuelle(), 5, 22),
                         "35h/semaine",
                         "27$/h",
                         "Taches",
@@ -118,6 +126,45 @@ class ReactSpringSecurityJwtApplicationTests {
                 "professeur.etudiant_assigne".equals(n.message())
                         && n.action() != null
                         && n.action().type() == NotificationActionType.ETUDIANT_ASSIGNE));
+    }
+
+    @Test
+    @Transactional
+    void donneesDemo_datesMarsAMaiEtCoherentesParSession() {
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
+        int anneeHistorique = anneeCourante - 1;
+
+        List<OffreStage> offres = offreStageRepository.findAll();
+        assertFalse(offres.isEmpty());
+        assertTrue(offres.stream().anyMatch(o -> o.getAnnee() == anneeCourante));
+        assertTrue(offres.stream().anyMatch(o -> o.getAnnee() == anneeHistorique));
+
+        for (OffreStage offre : offres) {
+            assertNotNull(offre.getDateDebut(), "dateDebut manquante pour " + offre.getTitre());
+            assertNotNull(offre.getDateFin(), "dateFin manquante pour " + offre.getTitre());
+            assertTrue(offre.getDateFin().isAfter(offre.getDateDebut()));
+            assertEquals(Month.MARCH, offre.getDateDebut().getMonth());
+            assertEquals(Month.MAY, offre.getDateFin().getMonth());
+            assertEquals(offre.getAnnee(), AcademicSessionUtils.getAnnee(offre.getDateDebut()));
+            assertEquals(offre.getAnnee(), offre.getDateDebut().getYear());
+        }
+
+        long nbDatesDistinctesCourantes = offres.stream()
+                .filter(o -> o.getAnnee() == anneeCourante)
+                .map(o -> o.getDateDebut() + "->" + o.getDateFin())
+                .distinct()
+                .count();
+        assertTrue(nbDatesDistinctesCourantes >= 4);
+
+        List<Contrat> contrats = contratRepository.findAll();
+        assertFalse(contrats.isEmpty());
+        for (Contrat contrat : contrats) {
+            assertNotNull(contrat.getDateDebut());
+            assertNotNull(contrat.getDateFin());
+            assertEquals(Month.MARCH, contrat.getDateDebut().getMonth());
+            assertEquals(Month.MAY, contrat.getDateFin().getMonth());
+            assertEquals(contrat.getOffreStage().getAnnee(), contrat.getAnneeDebut());
+        }
     }
 
 }

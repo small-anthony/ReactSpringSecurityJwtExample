@@ -69,15 +69,7 @@ public class EmployeurService {
     }
 
     public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
-                                          String discipline, String duree, String salaire, String exigences,
-                                          String adresse, String ville, String codePostal, String telephone,
-                                          String emailEmployeur, Integer annee) throws Exception {
-        return createOffreStage(titre, nomEntreprise, description, discipline, duree, salaire, exigences,
-                adresse, ville, codePostal, telephone, emailEmployeur, annee, null, null);
-    }
-
-    public OffreStageDto createOffreStage(String titre, String nomEntreprise, String description,
-                                          String discipline, String duree, String salaire, String exigences,
+                                          String discipline, String salaire, String exigences,
                                           String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur, Integer annee,
                                           LocalDate dateDebut, LocalDate dateFin) throws Exception {
@@ -94,7 +86,12 @@ public class EmployeurService {
         }
 
         validerLieuEtContact(adresse, ville, codePostal, telephone);
-        validerDatesOffre(dateDebut, dateFin);
+        int anneeActuelle = AcademicSessionUtils.getAnneeActuelle();
+        int anneeCible = (annee != null && annee > 0) ? annee : anneeActuelle;
+        if (anneeCible < anneeActuelle) {
+            throw new Exception("Impossible de créer une offre pour une ancienne session.");
+        }
+        validerDatesOffre(dateDebut, dateFin, anneeCible);
 
         if (emailEmployeur == null || emailEmployeur.trim().isEmpty()) {
             throw new Exception("Le courriel de l'employeur est obligatoire");
@@ -112,7 +109,6 @@ public class EmployeurService {
                 nomEntreprise.trim(),
                 discipline != null && !discipline.trim().isEmpty() ? discipline.trim() : null,
                 salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null,
-                duree != null && !duree.trim().isEmpty() ? duree.trim() : null,
                 exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null
         );
         offreStage.setAdresse(adresse.trim());
@@ -121,13 +117,7 @@ public class EmployeurService {
         offreStage.setTelephone(telephone.trim());
         offreStage.setDateDebut(dateDebut);
         offreStage.setDateFin(dateFin);
-
-        if (annee != null && annee > 0) {
-            if (annee < AcademicSessionUtils.getAnneeActuelle()) {
-                throw new Exception("Impossible de créer une offre pour une ancienne session.");
-            }
-            offreStage.setAnnee(annee);
-        }
+        offreStage.setAnnee(anneeCible);
 
         employeur.ajouterOffre(offreStage);
 
@@ -302,15 +292,7 @@ public class EmployeurService {
     }
 
     public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
-                                          String discipline, String duree, String salaire, String exigences,
-                                          String adresse, String ville, String codePostal, String telephone,
-                                          String emailEmployeur) throws Exception {
-        return updateOffreStage(offreId, titre, nomEntreprise, description, discipline, duree, salaire, exigences,
-                adresse, ville, codePostal, telephone, emailEmployeur, null, null);
-    }
-
-    public OffreStageDto updateOffreStage(Long offreId, String titre, String nomEntreprise, String description,
-                                          String discipline, String duree, String salaire, String exigences,
+                                          String discipline, String salaire, String exigences,
                                           String adresse, String ville, String codePostal, String telephone,
                                           String emailEmployeur,
                                           LocalDate dateDebut, LocalDate dateFin) throws Exception {
@@ -328,7 +310,7 @@ public class EmployeurService {
         }
 
         validerLieuEtContact(adresse, ville, codePostal, telephone);
-        validerDatesOffre(dateDebut, dateFin);
+        validerDatesOffre(dateDebut, dateFin, AcademicSessionUtils.getAnneeActuelle());
 
         Employeur employeur = (Employeur) userAppRepository.findUserAppByEmail(emailEmployeur)
                 .orElseThrow(() -> new Exception("Employeur non trouvé"));
@@ -339,34 +321,38 @@ public class EmployeurService {
         if (offre.getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
             throw new Exception("Impossible de modifier une offre d'une ancienne session.");
         }
+        validerDatesOffre(dateDebut, dateFin, offre.getAnnee());
 
         offre.setTitre(titre.trim());
         offre.setNomEntreprise(nomEntreprise.trim());
         offre.setDescription(description.trim());
         offre.setDiscipline(discipline != null && !discipline.trim().isEmpty() ? discipline.trim() : null);
-        offre.setDuree(duree != null && !duree.trim().isEmpty() ? duree.trim() : null);
         offre.setSalaire(salaire != null && !salaire.trim().isEmpty() ? salaire.trim() : null);
         offre.setExigences(exigences != null && !exigences.trim().isEmpty() ? exigences.trim() : null);
         offre.setAdresse(adresse.trim());
         offre.setVille(ville.trim());
         offre.setCodePostal(codePostal.trim().toUpperCase());
         offre.setTelephone(telephone.trim());
-        if (dateDebut != null && dateFin != null) {
-            offre.setDateDebut(dateDebut);
-            offre.setDateFin(dateFin);
-        }
+        offre.setDateDebut(dateDebut);
+        offre.setDateFin(dateFin);
 
         offre.reinitialiserApprobation();
 
         return OffreStageDto.create(offreStageRepository.save(offre));
     }
 
-    private void validerDatesOffre(LocalDate dateDebut, LocalDate dateFin) throws Exception {
-        if ((dateDebut != null && dateFin == null) || (dateDebut == null && dateFin != null)) {
-            throw new Exception("Les dates de début et de fin sont obligatoires ensemble");
+    private void validerDatesOffre(LocalDate dateDebut, LocalDate dateFin, int anneeSession) throws Exception {
+        if (dateDebut == null) {
+            throw new Exception("La date de début est obligatoire");
         }
-        if (dateDebut != null && !dateFin.isAfter(dateDebut)) {
+        if (dateFin == null) {
+            throw new Exception("La date de fin est obligatoire");
+        }
+        if (!dateFin.isAfter(dateDebut)) {
             throw new Exception("La date de fin doit être postérieure à la date de début");
+        }
+        if (AcademicSessionUtils.getAnnee(dateDebut) < anneeSession) {
+            throw new Exception("Les dates de l'offre ne peuvent pas appartenir à une ancienne session.");
         }
     }
 

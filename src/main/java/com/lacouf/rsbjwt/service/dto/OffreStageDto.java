@@ -19,7 +19,6 @@ public record OffreStageDto(
         String messageReponse,
         String discipline,
         String salaire,
-        String duree,
         String exigences,
         List<CandidatureDto> candidatures,
         int annee,
@@ -33,47 +32,29 @@ public record OffreStageDto(
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                null, null, null, null, List.of(), AcademicSessionUtils.getAnneeActuelle());
+                null, null, null, List.of(), AcademicSessionUtils.getAnneeActuelle());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
                          List<CandidatureDto> candidatures) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                null, null, null, null, candidatures, AcademicSessionUtils.getAnneeActuelle());
+                null, null, null, candidatures, AcademicSessionUtils.getAnneeActuelle());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
-                         String discipline, String salaire, String duree, String exigences) {
+                         String discipline, String salaire, String exigences) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, List.of(), AcademicSessionUtils.getAnneeActuelle());
+                discipline, salaire, exigences, List.of(), AcademicSessionUtils.getAnneeActuelle());
     }
 
     public OffreStageDto(int id, String titre, String description, String nomEntreprise,
                          StatusAcceptation status, String messageReponse,
-                         String discipline, String salaire, String duree, String exigences,
-                         List<CandidatureDto> candidatures) {
-        this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, candidatures, AcademicSessionUtils.getAnneeActuelle());
-    }
-
-    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
-                         StatusAcceptation status, String messageReponse,
-                         String discipline, String salaire, String duree, String exigences,
+                         String discipline, String salaire, String exigences,
                          List<CandidatureDto> candidatures, int annee) {
         this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, candidatures, annee, null, null, null, null, null, null);
-    }
-
-    public OffreStageDto(int id, String titre, String description, String nomEntreprise,
-                         StatusAcceptation status, String messageReponse,
-                         String discipline, String salaire, String duree, String exigences,
-                         List<CandidatureDto> candidatures, int annee,
-                         String adresse, String telephone, String ville, String codePostal) {
-        this(id, titre, description, nomEntreprise, status, messageReponse,
-                discipline, salaire, duree, exigences, candidatures, annee,
-                adresse, telephone, ville, codePostal, null, null);
+                discipline, salaire, exigences, candidatures, annee, null, null, null, null, null, null);
     }
 
     public static OffreStageDto create(OffreStage offreStage) {
@@ -86,7 +67,6 @@ public record OffreStageDto(
                 offreStage.getMessageReponse(),
                 offreStage.getDiscipline(),
                 offreStage.getSalaire(),
-                offreStage.getDuree(),
                 offreStage.getExigences(),
                 offreStage.getCandidatures() != null ? CandidatureDto.create(offreStage.getCandidatures()) : new ArrayList<>(),
                 offreStage.getAnnee(),
@@ -113,7 +93,6 @@ public record OffreStageDto(
                 offreStage.getMessageReponse(),
                 offreStage.getDiscipline(),
                 offreStage.getSalaire(),
-                offreStage.getDuree(),
                 offreStage.getExigences(),
                 CandidatureDto.create(
                         offreStage.getCandidatures() != null ?

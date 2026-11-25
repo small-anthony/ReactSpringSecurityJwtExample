@@ -159,7 +159,7 @@ class ProfesseurControllerTest {
     @Test
     void getOffres_avecAnnee_retourneOffresAnnee() throws Exception {
 //        Arrange
-        OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "info", "25$/h", "Java", 2025);
         offre.setId(1L);
         offre.accepter();
 
@@ -182,7 +182,7 @@ class ProfesseurControllerTest {
                 new Credentials("sophie@test.com", "pass", Role.ETUDIANT), 123456, "info");
         etudiant.setId(1L);
 
-        OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "info", "25$/h", "15 semaines", "Java", 2025);
+        OffreStage offre = new OffreStage("Stage Dev", "Desc", "CGI", "info", "25$/h", "Java", 2025);
         offre.setId(10L);
 
         Candidature cand = new Candidature(etudiant, offre);

@@ -132,13 +132,5 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     """)
     List<Etudiant> findByProfesseurId(@Param("professeurId") Long professeurId);
 
-    @Query("""
-        SELECT DISTINCT e FROM Etudiant e
-        LEFT JOIN FETCH e.candidatures c
-        LEFT JOIN FETCH c.offreStage
-        WHERE LOWER(e.professeur.credentials.email) = LOWER(:email)
-    """)
-    List<Etudiant> findByProfesseurEmail(@Param("email") String email);
-
     long countByProfesseurId(Long professeurId);
 }

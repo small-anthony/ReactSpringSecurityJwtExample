@@ -18,7 +18,6 @@ public class OffreStage {
     private String description;
     private String discipline;
     private String salaire;
-    private String duree;
     private String exigences;
     private String adresse;
     private String ville;
@@ -54,37 +53,34 @@ public class OffreStage {
     }
 
     public OffreStage(String titre, String description, String nomEntreprise, String discipline, String salaire,
-            String duree, String exigences) {
+            String exigences) {
         this.titre = titre;
         this.description = description;
         this.nomEntreprise = nomEntreprise;
         this.discipline = discipline;
         this.salaire = salaire;
-        this.duree = duree;
         this.exigences = exigences;
         this.etudiantsAutorises = new ArrayList<>();
     }
 
-    public OffreStage(String titre, String description, String nomEntreprise,String discipline, String salaire,
-                      String duree, String exigences, int annee) {
+    public OffreStage(String titre, String description, String nomEntreprise, String discipline, String salaire,
+                      String exigences, int annee) {
         this.titre = titre;
         this.description = description;
         this.nomEntreprise = nomEntreprise;
         this.discipline = discipline;
         this.salaire = salaire;
-        this.duree = duree;
         this.exigences = exigences;
         this.annee = annee;
     }
 
     public OffreStage(String titre, String description, Employeur employeur,
-            String discipline, String salaire, String duree, String exigences) {
+            String discipline, String salaire, String exigences) {
         this.titre = titre;
         this.description = description;
         this.employeur = employeur;
         this.discipline = discipline;
         this.salaire = salaire;
-        this.duree = duree;
         this.exigences = exigences;
         this.etudiantsAutorises = new ArrayList<>();
     }
@@ -166,10 +162,6 @@ public class OffreStage {
         return salaire;
     }
 
-    public String getDuree() {
-        return duree;
-    }
-
     public String getExigences() {
         return exigences;
     }
@@ -216,10 +208,6 @@ public class OffreStage {
 
     public void setSalaire(String salaire) {
         this.salaire = salaire;
-    }
-
-    public void setDuree(String duree) {
-        this.duree = duree;
     }
 
     public void setExigences(String exigences) {

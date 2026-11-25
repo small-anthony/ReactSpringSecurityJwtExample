@@ -54,7 +54,6 @@ public class EmployeurController {
         try {
             String email = authentication.getName();
             String discipline = request.get("discipline");
-            String duree = request.get("duree");
             String salaire = request.get("salaire");
             String exigences = request.get("exigences");
 
@@ -68,39 +67,22 @@ public class EmployeurController {
             java.time.LocalDate dateDebut = parseDateOffre(request.get("dateDebut"));
             java.time.LocalDate dateFin = parseDateOffre(request.get("dateFin"));
 
-            OffreStageDto offreCree = (dateDebut != null || dateFin != null)
-                    ? employeurService.createOffreStage(
-                            request.get("titre"),
-                            request.get("nomEntreprise"),
-                            request.get("description"),
-                            discipline,
-                            duree,
-                            salaire,
-                            exigences,
-                            request.get("adresse"),
-                            request.get("ville"),
-                            request.get("codePostal"),
-                            request.get("telephone"),
-                            email,
-                            annee,
-                            dateDebut,
-                            dateFin
-                    )
-                    : employeurService.createOffreStage(
-                            request.get("titre"),
-                            request.get("nomEntreprise"),
-                            request.get("description"),
-                            discipline,
-                            duree,
-                            salaire,
-                            exigences,
-                            request.get("adresse"),
-                            request.get("ville"),
-                            request.get("codePostal"),
-                            request.get("telephone"),
-                            email,
-                            annee
-                    );
+            OffreStageDto offreCree = employeurService.createOffreStage(
+                    request.get("titre"),
+                    request.get("nomEntreprise"),
+                    request.get("description"),
+                    discipline,
+                    salaire,
+                    exigences,
+                    request.get("adresse"),
+                    request.get("ville"),
+                    request.get("codePostal"),
+                    request.get("telephone"),
+                    email,
+                    annee,
+                    dateDebut,
+                    dateFin
+            );
             return ResponseEntity.status(HttpStatus.CREATED).body(offreCree);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -223,39 +205,22 @@ public class EmployeurController {
                                               Authentication authentication) {
         try {
             String email = authentication.getName();
-            OffreStageDto offreModifiee = (request.dateDebut() != null || request.dateFin() != null)
-                    ? employeurService.updateOffreStage(
-                            request.id(),
-                            request.titre(),
-                            request.nomEntreprise(),
-                            request.description(),
-                            request.discipline(),
-                            request.duree(),
-                            request.salaire(),
-                            request.exigences(),
-                            request.adresse(),
-                            request.ville(),
-                            request.codePostal(),
-                            request.telephone(),
-                            email,
-                            request.dateDebut(),
-                            request.dateFin()
-                    )
-                    : employeurService.updateOffreStage(
-                            request.id(),
-                            request.titre(),
-                            request.nomEntreprise(),
-                            request.description(),
-                            request.discipline(),
-                            request.duree(),
-                            request.salaire(),
-                            request.exigences(),
-                            request.adresse(),
-                            request.ville(),
-                            request.codePostal(),
-                            request.telephone(),
-                            email
-                    );
+            OffreStageDto offreModifiee = employeurService.updateOffreStage(
+                    request.id(),
+                    request.titre(),
+                    request.nomEntreprise(),
+                    request.description(),
+                    request.discipline(),
+                    request.salaire(),
+                    request.exigences(),
+                    request.adresse(),
+                    request.ville(),
+                    request.codePostal(),
+                    request.telephone(),
+                    email,
+                    request.dateDebut(),
+                    request.dateFin()
+            );
             return ResponseEntity.ok(offreModifiee);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

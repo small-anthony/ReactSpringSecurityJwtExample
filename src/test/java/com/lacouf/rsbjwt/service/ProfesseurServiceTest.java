@@ -66,7 +66,7 @@ public class ProfesseurServiceTest {
         etudiant.setId(1L);
         etudiant.setProfesseur(prof);
 
-        OffreStage offre = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
+        OffreStage offre = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "Java", 2026);
         offre.setId(1L);
         Candidature cand = new Candidature(etudiant, offre);
         cand.setId(1L);
@@ -97,7 +97,7 @@ public class ProfesseurServiceTest {
         etudiant.setId(1L);
         etudiant.setProfesseur(prof);
 
-        OffreStage offre2026 = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
+        OffreStage offre2026 = new OffreStage("Dev Web", "Desc", "CGI", "info", "25$/h", "Java", 2026);
         offre2026.setId(1L);
         Candidature cand = new Candidature(etudiant, offre2026);
         cand.setId(1L);
@@ -124,8 +124,8 @@ public class ProfesseurServiceTest {
         Etudiant hatim = new Etudiant("Hatim", "Fakhour", new Credentials("hatim@test.com", "pass", Role.ETUDIANT), 1234567, "info");
         hatim.setId(1L);
         hatim.setProfesseur(prof);
-        OffreStage offre2026 = new OffreStage("DevOps", "Desc", "CGI", "info", "25$/h", "15 sem", "Java", 2026);
-        OffreStage offreGoogle2027 = new OffreStage("Front", "Desc", "Google", "info", "25$/h", "15 sem", "React", 2027);
+        OffreStage offre2026 = new OffreStage("DevOps", "Desc", "CGI", "info", "25$/h", "Java", 2026);
+        OffreStage offreGoogle2027 = new OffreStage("Front", "Desc", "Google", "info", "25$/h", "React", 2027);
         Candidature candHatim2026 = new Candidature(hatim, offre2026);
         candHatim2026.setStatut(StatutCandidature.EMBAUCHEE);
         Candidature candHatim2027 = new Candidature(hatim, offreGoogle2027);
@@ -135,7 +135,7 @@ public class ProfesseurServiceTest {
         Etudiant claire = new Etudiant("Claire", "Lavoie", new Credentials("claire@test.com", "pass", Role.ETUDIANT), 8887776, "info");
         claire.setId(2L);
         claire.setProfesseur(prof);
-        OffreStage offreCgi2027 = new OffreStage("FullStack", "Desc", "CGI", "info", "24$/h", "15 sem", "Spring", 2027);
+        OffreStage offreCgi2027 = new OffreStage("FullStack", "Desc", "CGI", "info", "24$/h", "Spring", 2027);
         Candidature candClaire2027 = new Candidature(claire, offreCgi2027);
         candClaire2027.setStatut(StatutCandidature.EMBAUCHEE);
         claire.setCandidatures(List.of(candClaire2027));
@@ -297,7 +297,7 @@ public class ProfesseurServiceTest {
         Employeur employeur = new Employeur("Valentin", "Dimitrov", new Credentials("emp@test.com", "pass", Role.EMPLOYEUR), "CGI Inc.", "514-555-1234");
         employeur.setId(5L);
 
-        OffreStage offre = new OffreStage("Dev Web", "Desc", employeur, "info", "24$/h", "15 sem", "Java");
+        OffreStage offre = new OffreStage("Dev Web", "Desc", employeur, "info", "24$/h", "Java");
         offre.setId(2L);
         offre.setNomEntreprise("CGI Inc.");
 

@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -65,10 +64,6 @@ public abstract class UserApp  {
 
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
-    }
-
-    public List<Notification> getNotifications() {
-        return Collections.unmodifiableList(notifications);
     }
 
     public void addNotification(Notification notification) {

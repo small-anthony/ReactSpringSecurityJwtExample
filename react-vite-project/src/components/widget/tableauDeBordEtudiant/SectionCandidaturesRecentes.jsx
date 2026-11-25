@@ -1,4 +1,4 @@
-import { ArrowRight, Briefcase, Building2 } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, Calendar } from "lucide-react";
 
 const MESSAGE_OFFRE_SUPPRIMEE = "L'offre a été supprimée par l'employeur";
 const MESSAGE_AUTRE_STAGE_CHOISI = "L'étudiant a choisi une autre offre de stage.";
@@ -9,7 +9,7 @@ export default function SectionCandidaturesRecentes({
     nombreOffresDisponibles,
     candidaturesParOffre,
     renderCandidatureBadge,
-    traduireDuree,
+    formatShortDate,
     changerOnglet,
     onSelectionnerOffre,
     t
@@ -61,7 +61,7 @@ export default function SectionCandidaturesRecentes({
             ) : (
                 <div className="divide-y divide-slate-100">
                     {candidaturesTrieesApercu.map((offre) => {
-                        const { id, titre, nomEntreprise, duree } = offre;
+                        const { id, titre, nomEntreprise, dateDebut, dateFin } = offre;
                         const candidature = candidaturesParOffre[id];
                         const statut = candidature ? candidature.statut : null;
                         const messageReponse = candidature ? candidature.messageReponse : null;
@@ -88,10 +88,15 @@ export default function SectionCandidaturesRecentes({
                                     <p className="text-xs font-medium text-slate-500 flex items-center gap-1.5 flex-wrap min-w-0">
                                         <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                         <span className="break-words">{nomEntreprise}</span>
-                                        {duree && (
+                                        {(dateDebut || dateFin) && (
                                             <>
                                                 <span className="text-slate-300">•</span>
-                                                <span>{traduireDuree(duree)}</span>
+                                                <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                                <span>
+                                                    {dateDebut && dateFin
+                                                        ? `${formatShortDate ? formatShortDate(dateDebut) : dateDebut} → ${formatShortDate ? formatShortDate(dateFin) : dateFin}`
+                                                        : (formatShortDate ? formatShortDate(dateDebut || dateFin) : (dateDebut || dateFin))}
+                                                </span>
                                             </>
                                         )}
                                     </p>

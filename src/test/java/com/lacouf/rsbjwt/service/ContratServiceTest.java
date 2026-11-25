@@ -534,7 +534,8 @@ public class ContratServiceTest {
     void genererContratAutomatique_succes_extraitInfosEtConserveAutresCandidatures() throws Exception {
         int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
         offreStage.setSalaire("25.00$/h");
-        offreStage.setDuree("14 semaines");
+        offreStage.setDateDebut(LocalDate.of(anneeCourante, 3, 2));
+        offreStage.setDateFin(LocalDate.of(anneeCourante, 5, 22));
         offreStage.setExigences("Java et React");
         offreStage.setAnnee(anneeCourante);
 
@@ -557,8 +558,8 @@ public class ContratServiceTest {
         assertEquals("25.00$/h", result.salaire());
         assertEquals("Stage backend", result.descriptionTaches());
         assertEquals("Java et React", result.conditions());
-        assertEquals(LocalDate.of(anneeCourante, 5, 11), result.dateDebut());
-        assertEquals(LocalDate.of(anneeCourante, 5, 11).plusWeeks(14), result.dateFin());
+        assertEquals(LocalDate.of(anneeCourante, 3, 2), result.dateDebut());
+        assertEquals(LocalDate.of(anneeCourante, 5, 22), result.dateFin());
         assertEquals(StatutCandidature.EN_ATTENTE_SIGNATURE, candidature.getStatut());
         assertEquals(StatutCandidature.EN_ATTENTE_CHOIX_STAGE, autreCandidature.getStatut());
     }

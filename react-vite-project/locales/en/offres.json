@@ -5,7 +5,6 @@
     "titre": "Job Title",
     "nomEntreprise": "Company Name",
     "discipline": "Field / Discipline",
-    "duree": "Internship Duration",
     "dateDebut": "Start Date",
     "dateFin": "End Date",
     "salaire": "Compensation / Salary",
@@ -15,12 +14,10 @@
     "telephone": "Contact phone number",
     "exigences": "Special Requirements (skills, tech stack)",
     "description": "Offer Description",
-    "weeks": "{{count}} weeks",
     "placeholders": {
       "titre": "Ex: Junior Web Developer",
       "nomEntreprise": "Ex: TechCorp",
       "discipline": "-- Select a discipline --",
-      "duree": "-- Select a duration --",
       "salaire": "22.50",
       "adresse": "Ex: 1350 René-Lévesque Blvd West",
       "ville": "Ex: Montréal",
@@ -33,7 +30,6 @@
       "titre": "Title is required.",
       "nomEntreprise": "Company name is required.",
       "discipline": "Please select a discipline.",
-      "duree": "Please select a duration.",
       "dateDebut": {
         "required": "Start date is required."
       },
@@ -183,7 +179,6 @@
     "search_placeholder": "Search by title, company or keyword...",
     "all_companies": "All companies",
     "all_disciplines": "All disciplines",
-    "all_durations": "All durations",
     "offers_count": "{{count}} offer found",
     "offers_count_plural": "{{count}} offers found",
     "reset_filters": "Reset filters",
@@ -201,7 +196,6 @@
     "modal": {
       "validated_badge": "Validated offer",
       "discipline": "Discipline",
-      "duration": "Duration",
       "dates": "Internship dates",
       "salary": "Compensation",
       "not_specified": "Not specified",

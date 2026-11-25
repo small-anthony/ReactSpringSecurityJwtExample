@@ -43,9 +43,6 @@ public class RendezVous {
 	public static RendezVous read(RendezVousDto dto) {
 		return read(dto.lieu(), dto.date());
 	}
-	public static List<RendezVous> read(List<RendezVousDto> dtos) {
-		return dtos.stream().map(RendezVous::read).toList();
-	}
 
 	public Instant getDate() {
 		return date;

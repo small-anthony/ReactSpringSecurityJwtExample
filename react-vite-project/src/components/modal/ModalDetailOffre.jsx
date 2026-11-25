@@ -45,7 +45,7 @@ export default function ModalDetailOffre({
 }) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
+    const { traduireDiscipline, formaterSalaire } = useOffreFormater();
     const [isApplying, setIsApplying] = useState(false);
     const [isChoosingStage, setIsChoosingStage] = useState(false);
     const [hasApplied, setHasApplied] = useState(aPostule);
@@ -80,7 +80,7 @@ export default function ModalDetailOffre({
 
     if (!offre) return null;
 
-    const { titre, nomEntreprise, discipline, duree, salaire, exigences, description, adresse, ville, codePostal, telephone, dateDebut, dateFin } = offre;
+    const { titre, nomEntreprise, discipline, salaire, exigences, description, adresse, ville, codePostal, telephone, dateDebut, dateFin } = offre;
     const adresseComplete = [adresse, ville, codePostal].filter(Boolean).join(", ");
     const periodeStage = dateDebut && dateFin
         ? `${dateDebut} → ${dateFin}`
@@ -267,10 +267,10 @@ export default function ModalDetailOffre({
                         <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex flex-col justify-between min-w-0">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] mb-1.5">
                                 <Calendar className="w-4 h-4 text-[#059669] shrink-0" strokeWidth={1.5} />
-                                <span>{t("offres_etudiant.modal.duration")}</span>
+                                <span>{t("offres_etudiant.modal.dates")}</span>
                             </div>
                             <p className="text-sm font-semibold text-[#111827] leading-snug break-words">
-                                {duree ? traduireDuree(duree) : t("offres_etudiant.modal.not_specified")}
+                                {periodeStage || t("offres_etudiant.modal.not_specified")}
                             </p>
                         </div>
 
@@ -284,18 +284,6 @@ export default function ModalDetailOffre({
                             </p>
                         </div>
                     </div>
-
-                    {periodeStage && (
-                        <div className="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2 text-xs font-medium text-[#64748B]">
-                                <Calendar className="w-4 h-4 text-[#2563EB] shrink-0" strokeWidth={1.5} />
-                                <span>{t("offres_etudiant.modal.dates")}</span>
-                            </div>
-                            <p className="text-sm font-semibold text-[#111827] break-words">
-                                {periodeStage}
-                            </p>
-                        </div>
-                    )}
 
                     {(adresseComplete || telephone) && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

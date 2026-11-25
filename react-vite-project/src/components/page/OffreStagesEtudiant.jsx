@@ -17,7 +17,6 @@ import TableauDeBordEtudiant, {
     trouverContratSigneActif
 } from "../widget/TableauDeBordEtudiant.jsx";
 import { DISCIPLINES } from "../../constants/disciplines";
-import { DUREES } from "../../constants/durees";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
 import { usePagination } from "../../hooks/usePagination.js";
 import Pagination from "../widget/Pagination.jsx";
@@ -131,7 +130,7 @@ export default function OffreStagesEtudiant() {
     const authService = useContext(AuthServiceContext);
     const userData = authService.getUserData();
     const prenomEtudiant = userData ? userData.firstName : null;
-    const { traduireDiscipline, traduireDuree, formaterSalaire } = useOffreFormater();
+    const { traduireDiscipline, formaterSalaire } = useOffreFormater();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabFromUrl = searchParams.get("tab");
     const uploadCvFromUrl = searchParams.get("uploadCv") === "true";
@@ -158,12 +157,21 @@ export default function OffreStagesEtudiant() {
     const [recherche, setRecherche] = useState("");
     const [filtreEntreprise, setFiltreEntreprise] = useState("");
     const [filtreDiscipline, setFiltreDiscipline] = useState("");
-    const [filtreDuree, setFiltreDuree] = useState("");
 
     const currentLocale = determinerLocale(i18n);
 
     const formatShortDate = (dateStr) => {
         if (!dateStr) return "";
+        if (typeof dateStr === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const [y, m, day] = dateStr.split("-").map(Number);
+            const localDate = new Date(y, m - 1, day);
+            if (Number.isNaN(localDate.getTime())) return dateStr;
+            return localDate.toLocaleDateString(currentLocale, {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+        }
         const d = new Date(dateStr);
         if (Number.isNaN(d.getTime())) return dateStr;
         return d.toLocaleDateString(currentLocale, {
@@ -387,15 +395,6 @@ export default function OffreStagesEtudiant() {
         return [...new Set([...predefined, ...fromOffers])].sort();
     }, [offres]);
 
-    const dureesUniques = useMemo(() => {
-        const fromOffers = offres.map((o) => o.duree).filter(Boolean);
-        return [...new Set([...DUREES, ...fromOffers])].sort((a, b) => {
-            const numA = parseInt(a, 10) || 0;
-            const numB = parseInt(b, 10) || 0;
-            return numA - numB;
-        });
-    }, [offres]);
-
     const offresEmbauchees = useMemo(
         () => mesCandidaturesOffres.filter((o) => candidaturesParOffre[o.id]?.statut === "EMBAUCHEE"),
         [mesCandidaturesOffres, candidaturesParOffre]
@@ -406,7 +405,7 @@ export default function OffreStagesEtudiant() {
         const texteRecherche = recherche.toLowerCase();
 
         const filtrees = listeBase.filter((offre) => {
-            const { id, titre, nomEntreprise, description, discipline, duree } = offre;
+            const { id, titre, nomEntreprise, description, discipline } = offre;
             if (ongletActif === "toutes" && idsOffresPostulees.has(id)) {
                 return false;
             }
@@ -423,14 +422,10 @@ export default function OffreStagesEtudiant() {
             const correspondDiscipline =
                 !filtreDiscipline || discipline === filtreDiscipline;
 
-            const correspondDuree =
-                !filtreDuree || duree === filtreDuree;
-
             return (
                 correspondRecherche &&
                 correspondEntreprise &&
-                correspondDiscipline &&
-                correspondDuree
+                correspondDiscipline
             );
         });
 
@@ -457,7 +452,6 @@ export default function OffreStagesEtudiant() {
         recherche,
         filtreEntreprise,
         filtreDiscipline,
-        filtreDuree,
         ongletActif
     ]);
 
@@ -472,18 +466,17 @@ export default function OffreStagesEtudiant() {
     } = usePagination(
         offresFiltrees,
         9,
-        [ongletActif, recherche, filtreEntreprise, filtreDiscipline, filtreDuree]
+        [ongletActif, recherche, filtreEntreprise, filtreDiscipline]
     );
 
     const aDesFiltresActifs = Boolean(
-        recherche || filtreEntreprise || filtreDiscipline || filtreDuree
+        recherche || filtreEntreprise || filtreDiscipline
     );
 
     const reinitialiserFiltres = () => {
         setRecherche("");
         setFiltreEntreprise("");
         setFiltreDiscipline("");
-        setFiltreDuree("");
     };
 
     const aStageEnCoursOuTrouve = useMemo(() => {
@@ -692,7 +685,6 @@ export default function OffreStagesEtudiant() {
                         aTrouveStage={aTrouveStage}
                         renderCandidatureBadge={getCandidatureBadge}
                         traduireDiscipline={traduireDiscipline}
-                        traduireDuree={traduireDuree}
                         formatShortDate={formatShortDate}
                         changerOnglet={changerOnglet}
                         onSelectionnerOffre={setOffreSelectionnee}
@@ -725,7 +717,7 @@ export default function OffreStagesEtudiant() {
                                     )}
                                 </div>
 
-                                <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <select
                                         value={filtreEntreprise}
                                         onChange={({ target }) => setFiltreEntreprise(target.value)}
@@ -748,19 +740,6 @@ export default function OffreStagesEtudiant() {
                                         {disciplinesUniques.map((discipline) => (
                                             <option key={discipline} value={discipline}>
                                                 {traduireDiscipline(discipline)}
-                                            </option>
-                                        ))}
-                                    </select>
-
-                                    <select
-                                        value={filtreDuree}
-                                        onChange={({ target }) => setFiltreDuree(target.value)}
-                                        className="ds-input py-2 text-xs"
-                                    >
-                                        <option value="">{t("offres_etudiant.all_durations")}</option>
-                                        {dureesUniques.map((duree) => (
-                                            <option key={duree} value={duree}>
-                                                {traduireDuree(duree)}
                                             </option>
                                         ))}
                                     </select>
@@ -823,7 +802,6 @@ export default function OffreStagesEtudiant() {
                                     const {
                                         id,
                                         discipline,
-                                        duree,
                                         titre,
                                         nomEntreprise,
                                         salaire,
@@ -860,11 +838,6 @@ export default function OffreStagesEtudiant() {
                                                                 <span className="truncate">
                                                                     {traduireDiscipline(discipline)}
                                                                 </span>
-                                                            </span>
-                                                        )}
-                                                        {duree && (
-                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 shrink-0">
-                                                                <span>{traduireDuree(duree)}</span>
                                                             </span>
                                                         )}
                                                     </div>

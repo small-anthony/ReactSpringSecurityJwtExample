@@ -22,12 +22,4 @@ public class Professeur extends UserApp {
     public Professeur(String firstName, String lastName, Credentials credentials) {
         super(firstName, lastName, credentials);
     }
-
-    public List<Etudiant> getEtudiants() {
-        return etudiants;
-    }
-
-    public void setEtudiants(List<Etudiant> etudiants) {
-        this.etudiants = etudiants;
-    }
 }

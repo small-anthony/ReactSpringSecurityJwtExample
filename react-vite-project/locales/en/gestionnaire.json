@@ -70,7 +70,6 @@
         "description": "Description",
         "discipline": "Discipline",
         "salaire": "Salary",
-        "duree": "Duration",
         "periode": "Internship period",
         "exigences": "Requirements",
         "adresse": "Address",

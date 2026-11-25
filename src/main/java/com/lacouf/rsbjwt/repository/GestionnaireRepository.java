@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface GestionnaireRepository extends JpaRepository<Gestionnaire, Long> {
     @Query("SELECT g FROM Gestionnaire g WHERE LOWER(g.credentials.email) = LOWER(:email)")
     Optional<Gestionnaire> findByEmail(@Param("email") String email);
-    boolean existsByCredentialsEmail(String email);
 }
