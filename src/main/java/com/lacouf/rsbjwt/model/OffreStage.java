@@ -44,8 +44,6 @@ public class OffreStage {
     @OneToMany(mappedBy = "offreStage", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final List<Candidature> candidatures = new ArrayList<>();
 
-
-
     public OffreStage() {}
 
     public OffreStage(String titre, String description, String nomEntreprise) {
@@ -267,13 +265,11 @@ public class OffreStage {
     public void setAnnee(int annee) {
         this.annee = annee;
     }
-    public void setDateSuppression(LocalDate dateSuppression) {
-        this.dateSuppression = dateSuppression;
-    }
 
     public boolean isSupprime() {
         return this.dateSuppression != null;
     }
+
     public void supprimer() {
         this.dateSuppression = LocalDate.now();
     }

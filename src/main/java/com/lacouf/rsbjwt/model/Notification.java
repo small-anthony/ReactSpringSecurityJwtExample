@@ -83,10 +83,6 @@ public class Notification {
 		return dateCreation;
 	}
 
-	public Instant getDateDismissed() {
-		return dateDismissed;
-	}
-
 	public void markDeleted() {
 		this.dateDeleted = Instant.now();
 	}

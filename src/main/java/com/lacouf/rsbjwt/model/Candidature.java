@@ -146,10 +146,6 @@ public class Candidature {
         return offreStage.getDescription();
     }
 
-    public Instant getLastEvaluationNag() {
-        return lastEvaluationNag;
-    }
-
     public void setLastEvaluationNag(Instant lastEvaluationNag) {
         this.lastEvaluationNag = lastEvaluationNag;
     }

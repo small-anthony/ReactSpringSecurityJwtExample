@@ -81,11 +81,6 @@ public class Convocation {
         this.statut = StatutConvocation.ANNULEE;
     }
 
-    public void updateDetails(List<RendezVous> rendezVousPossibles, String messageEmployeur) {
-        this.rendezVousPossibles = rendezVousPossibles;
-        this.messageEmployeur = messageEmployeur;
-    }
-
     public Long getId() {
         return id;
     }
@@ -99,10 +94,6 @@ public class Convocation {
 
     public Instant getDateLimite() {
         return dateLimite;
-    }
-
-    public void setDateLimite(Instant dateLimite) {
-        this.dateLimite = dateLimite;
     }
 
     public String getMessageEmployeur() {
