@@ -531,7 +531,7 @@ public class ContratServiceTest {
     }
 
     @Test
-    void genererContratAutomatique_succes_extraitInfosEtConserveAutresCandidatures() throws Exception {
+    void genererContratAutomatique_succes_creeContratEtDeclineAutresCandidatures() throws Exception {
         int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
         offreStage.setSalaire("25.00$/h");
         offreStage.setDateDebut(LocalDate.of(anneeCourante, 3, 2));
@@ -561,7 +561,8 @@ public class ContratServiceTest {
         assertEquals(LocalDate.of(anneeCourante, 3, 2), result.dateDebut());
         assertEquals(LocalDate.of(anneeCourante, 5, 22), result.dateFin());
         assertEquals(StatutCandidature.EN_ATTENTE_SIGNATURE, candidature.getStatut());
-        assertEquals(StatutCandidature.EN_ATTENTE_CHOIX_STAGE, autreCandidature.getStatut());
+        assertEquals(StatutCandidature.REFUSEE, autreCandidature.getStatut());
+        assertEquals("L'étudiant a choisi une autre offre de stage.", autreCandidature.getMessageReponse());
     }
 
     @Test
@@ -608,6 +609,56 @@ public class ContratServiceTest {
 
         assertEquals("Vous avez déjà choisi et signé un stage pour cette session.", exception.getMessage());
         verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    void genererContratAutomatique_etudiantDejaContratEnAttenteSignature_lanceException() {
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
+        offreStage.setAnnee(anneeCourante);
+        OffreStage autreOffre = new OffreStage("Analyste QA", "Tests E2E", "Google");
+        autreOffre.setId(6L);
+        autreOffre.setAnnee(anneeCourante);
+        Candidature autreCandidature = new Candidature(etudiant, autreOffre);
+        autreCandidature.setId(2L);
+        autreCandidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candidature, autreCandidature));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                contratService.genererContratAutomatique(1L));
+
+        assertEquals("Vous avez déjà choisi et signé un stage pour cette session.", exception.getMessage());
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    void genererContratAutomatique_apresContratPrecedentRefuse_permetNouveauChoix() throws Exception {
+        int anneeCourante = AcademicSessionUtils.getAnneeActuelle();
+        offreStage.setAnnee(anneeCourante);
+
+        OffreStage offreRefusee = new OffreStage("Ancien poste", "Desc", "Ubisoft");
+        offreRefusee.setId(7L);
+        offreRefusee.setAnnee(anneeCourante);
+        Candidature candRefusee = new Candidature(etudiant, offreRefusee);
+        candRefusee.setId(3L);
+        candRefusee.setStatut(StatutCandidature.REFUSEE);
+        Contrat contratRefuse = new Contrat(candRefusee, LocalDate.of(anneeCourante, 3, 2), LocalDate.of(anneeCourante, 5, 22), "35h", "20$", "desc", "cond");
+        contratRefuse.setId(99L);
+        contratRefuse.rejeter(etudiant);
+
+        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
+        when(contratRepository.existsByCandidatureId(1L)).thenReturn(false);
+        when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candidature, candRefusee));
+        when(contratRepository.findByCandidatureEtudiantEmail("jean@test.com")).thenReturn(List.of(contratRefuse));
+        when(contratRepository.save(any(Contrat.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        ContratDto result = contratService.genererContratAutomatique(1L);
+
+        assertNotNull(result);
+        assertEquals(StatutContrat.EN_ATTENTE_SIGNATURE, result.statut());
+        assertEquals(StatutCandidature.EN_ATTENTE_SIGNATURE, candidature.getStatut());
     }
 
     @Test

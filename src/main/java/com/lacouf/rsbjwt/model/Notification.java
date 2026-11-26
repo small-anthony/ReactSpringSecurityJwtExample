@@ -110,6 +110,17 @@ public class Notification {
 		);
 	}
 
+	public static Notification candidatureEmbauchee(Candidature candidature) {
+		Long offreId = candidature != null && candidature.getOffreStage() != null
+				? candidature.getOffreStage().getId()
+				: null;
+		return new Notification(
+				NotificationType.ACTION_REQUIRED,
+				new NotificationAction(NotificationActionType.CHOISIR_STAGE, offreId),
+				"etudiant.candidature_embauchee"
+		);
+	}
+
 	public static Notification cvCreated(Cv cv) {
 		return new Notification(
 				NotificationType.ACTION_REQUIRED,

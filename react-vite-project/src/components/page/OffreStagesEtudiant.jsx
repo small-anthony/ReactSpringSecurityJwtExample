@@ -6,6 +6,7 @@ import { getMesCandidatures, getOffresDisponibles } from "../../services/api/Etu
 import { getConvocationsEtudiant } from "../../services/api/ConvocationAPI.js";
 import { getAnneesContratsEtudiant, getContratsEtudiant, choisirStageEtGenererContrat } from "../../services/api/ContratAPI.js";
 import ModalDetailOffre from "../modal/ModalDetailOffre.jsx";
+import ModalConfirmerChoixStage from "../modal/ModalConfirmerChoixStage.jsx";
 import ModalCvEtudiant from "../modal/ModalCvEtudiant.jsx";
 import EtudiantConvocations from "./EtudiantConvocations.jsx";
 import EtudiantContrats from "./EtudiantContrats.jsx";
@@ -154,6 +155,7 @@ export default function OffreStagesEtudiant() {
     });
     const [offreSelectionnee, setOffreSelectionnee] = useState(null);
     const [choosingCandidatureId, setChoosingCandidatureId] = useState(null);
+    const [stageAConfirmer, setStageAConfirmer] = useState(null);
     const [recherche, setRecherche] = useState("");
     const [filtreEntreprise, setFiltreEntreprise] = useState("");
     const [filtreDiscipline, setFiltreDiscipline] = useState("");
@@ -302,14 +304,17 @@ export default function OffreStagesEtudiant() {
         changerOnglet("contrats");
     };
 
-    const handleChoisirStageDepuisCarte = async (candidatureId) => {
+    const handleConfirmerChoisirStage = async () => {
+        const candidatureId = stageAConfirmer?.candidatureId;
         if (!candidatureId) return;
         try {
             setChoosingCandidatureId(candidatureId);
             setErreur(null);
             await choisirStageEtGenererContrat(candidatureId, authService.buildAuthHeader());
+            setStageAConfirmer(null);
             await handleChoisirStageSucces();
         } catch (err) {
+            setStageAConfirmer(null);
             setErreur((err && err.message) || t("candidature_etudiant.choose_stage_error"));
         } finally {
             setChoosingCandidatureId(null);
@@ -479,12 +484,17 @@ export default function OffreStagesEtudiant() {
         setFiltreDiscipline("");
     };
 
+    const aContratActif = useMemo(
+        () => contrats.some((c) => c && c.statut !== "REFUSE"),
+        [contrats]
+    );
+
     const aStageEnCoursOuTrouve = useMemo(() => {
-        if (aDejaContratSigne) return true;
+        if (aDejaContratSigne || aContratActif) return true;
         return Object.values(candidaturesParOffre).some(
-            (c) => c && c.statut === "EMBAUCHEE"
+            (c) => c && (c.statut === "EN_ATTENTE_SIGNATURE" || c.statut === "EMBAUCHEE")
         );
-    }, [aDejaContratSigne, candidaturesParOffre]);
+    }, [aDejaContratSigne, aContratActif, candidaturesParOffre]);
 
     const getCandidatureBadge = (offreId) => {
         const contratAssocie = contrats.find(
@@ -906,8 +916,8 @@ export default function OffreStagesEtudiant() {
                                                         <button
                                                             type="button"
                                                             id={`btn-choisir-stage-${candidature.id}`}
-                                                            onClick={() => handleChoisirStageDepuisCarte(candidature.id)}
-                                                            disabled={choosingCandidatureId === candidature.id}
+                                                            onClick={() => setStageAConfirmer({ offre, candidatureId: candidature.id })}
+                                                            disabled={Boolean(choosingCandidatureId)}
                                                             className="btn-primary bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto text-xs py-2 px-4"
                                                         >
                                                             {choosingCandidatureId === candidature.id ? (
@@ -962,6 +972,18 @@ export default function OffreStagesEtudiant() {
                 onChoisirStageSucces={handleChoisirStageSucces}
                 aDejaStageChoisi={aStageEnCoursOuTrouve}
                 contrats={contrats}
+            />
+
+            <ModalConfirmerChoixStage
+                isOpen={Boolean(stageAConfirmer)}
+                offre={stageAConfirmer?.offre}
+                onClose={() => {
+                    if (!choosingCandidatureId) {
+                        setStageAConfirmer(null);
+                    }
+                }}
+                onConfirm={handleConfirmerChoisirStage}
+                loading={Boolean(choosingCandidatureId)}
             />
         </div>
     );

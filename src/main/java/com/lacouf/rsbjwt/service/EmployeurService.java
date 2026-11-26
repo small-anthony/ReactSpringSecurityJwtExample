@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Employeur;
+import com.lacouf.rsbjwt.model.Etudiant;
 import com.lacouf.rsbjwt.model.Gestionnaire;
 import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.OffreStage;
@@ -211,17 +212,58 @@ public class EmployeurService {
     }
 
     public CandidatureDto embaucherCandidature(Long candidatureId, String emailEmployeur) throws Exception {
-        CandidatureDto dto = repondre(candidatureId, emailEmployeur,
-                EnumSet.of(StatutCandidature.EN_ATTENTE_ENTREVUE),
-                StatutCandidature.EN_ATTENTE_CHOIX_STAGE, null,
-                "L'entrevue doit être confirmée par l'étudiant avant l'embauche");
-        if (contratService != null) {
-            contratService.genererContratAutomatique(candidatureId);
-            return candidatureRepository.findById(candidatureId)
-                    .map(CandidatureDto::create)
-                    .orElse(dto);
+        UserApp user = userAppRepository.findUserAppByEmail(emailEmployeur)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'email : " + emailEmployeur));
+
+        Employeur employeur = employeurRepository.findById(user.getId())
+                .orElseThrow(() -> new Exception("Employeur non trouvé avec cette id"));
+
+        Candidature candidature = candidatureRepository.findByIdAndOffreStageEmployeur(candidatureId, employeur)
+                .orElseThrow(() -> new Exception("Candidature introuvable pour cet employeur"));
+
+        if (candidature.getOffreStage() != null
+                && candidature.getOffreStage().getAnnee() < AcademicSessionUtils.getAnneeActuelle()) {
+            throw new Exception("Impossible d'effectuer cette action sur une ancienne session.");
         }
-        return dto;
+
+        if (candidature.getStatut() != StatutCandidature.EN_ATTENTE_ENTREVUE) {
+            throw new Exception("L'entrevue doit être confirmée par l'étudiant avant l'embauche");
+        }
+
+        validerEtudiantSansStageChoisi(candidature);
+
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
+        candidature.setMessageReponse(null);
+        candidature.setDateDecision(LocalDateTime.now());
+        Candidature sauvegardee = candidatureRepository.save(candidature);
+
+        if (notificationService != null && sauvegardee.getEtudiant() != null && sauvegardee.getEtudiant().getId() != null) {
+            notificationService.pushNotification(
+                    Notification.candidatureEmbauchee(sauvegardee),
+                    sauvegardee.getEtudiant().getId()
+            );
+        }
+
+        return CandidatureDto.create(sauvegardee);
+    }
+
+    private void validerEtudiantSansStageChoisi(Candidature candidature) throws Exception {
+        Etudiant etudiant = candidature.getEtudiant();
+        if (etudiant == null) {
+            return;
+        }
+        int annee = candidature.getOffreStage() != null
+                ? candidature.getOffreStage().getAnnee()
+                : AcademicSessionUtils.getAnneeActuelle();
+        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(etudiant);
+        boolean dejaStageChoisi = candidaturesEtudiant != null && candidaturesEtudiant.stream()
+                .anyMatch(autre -> !autre.getId().equals(candidature.getId())
+                        && (autre.getOffreStage() == null || autre.getOffreStage().getAnnee() == annee)
+                        && (autre.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE
+                        || autre.getStatut() == StatutCandidature.EMBAUCHEE));
+        if (dejaStageChoisi) {
+            throw new Exception("Cet étudiant a déjà choisi un autre stage pour cette session.");
+        }
     }
 
     private CandidatureDto repondre(Long candidatureId, String emailEmployeur,

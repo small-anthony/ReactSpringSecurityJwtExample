@@ -3,6 +3,7 @@
     "cv_accepted": "Your CV was accepted! You can now browse internship offers.",
     "cv_rejected": "Your CV was rejected. Please review the feedback and upload a new CV.",
     "convocation_received": "You have received an interview invitation. Open it to choose a time slot.",
+    "candidature_embauchee": "Congratulations! A company has selected you for an internship. Choose your internship to generate your contract.",
     "contrat_created": "A new internship contract is ready for your signature."
   },
   "employeur": {

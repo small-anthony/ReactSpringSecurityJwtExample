@@ -483,7 +483,7 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    void embaucherCandidature_avecContratService_genereContratAutomatiquement() throws Exception {
+    void embaucherCandidature_neGenerePasContratEtNotifieEtudiant() throws Exception {
         ContratService mockContratService = mock(ContratService.class);
         EmployeurService serviceAvecContrat = new EmployeurService(
                 userAppRepository, employeurRepository, offreStageRepository, candidatureRepository,
@@ -492,17 +492,39 @@ public class EmployeurServiceTest {
         String email = "employeur@entreprise.com";
         Employeur employeur = preparerEmployeur(email);
         Candidature candidature = creerCandidature(100L);
+        candidature.getEtudiant().setId(55L);
         candidature.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
         when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
-        when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> {
-            Candidature saved = inv.getArgument(0);
-            when(candidatureRepository.findById(100L)).thenReturn(Optional.of(saved));
-            return saved;
-        });
+        when(candidatureRepository.save(any(Candidature.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        serviceAvecContrat.embaucherCandidature(100L, email);
+        CandidatureDto resultat = serviceAvecContrat.embaucherCandidature(100L, email);
 
-        verify(mockContratService).genererContratAutomatique(100L);
+        assertEquals(StatutCandidature.EN_ATTENTE_CHOIX_STAGE, resultat.statut());
+        verify(mockContratService, never()).genererContratAutomatique(anyLong());
+        verify(notificationService).pushNotification(any(Notification.class), eq(55L));
+    }
+
+    @Test
+    void embaucherCandidature_etudiantDejaStageChoisi_lanceException() {
+        String email = "employeur@entreprise.com";
+        Employeur employeur = preparerEmployeur(email);
+        Candidature candidature = creerCandidature(100L);
+        candidature.setStatut(StatutCandidature.EN_ATTENTE_ENTREVUE);
+
+        OffreStage autreOffre = new OffreStage("Autre poste", "Desc", "Google");
+        autreOffre.setAnnee(AcademicSessionUtils.getAnneeActuelle());
+        Candidature autreCand = new Candidature(candidature.getEtudiant(), autreOffre);
+        autreCand.setId(200L);
+        autreCand.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+
+        when(candidatureRepository.findByIdAndOffreStageEmployeur(100L, employeur)).thenReturn(Optional.of(candidature));
+        when(candidatureRepository.findByEtudiant(candidature.getEtudiant())).thenReturn(List.of(candidature, autreCand));
+
+        Exception exception = assertThrows(Exception.class, () ->
+                employeurService.embaucherCandidature(100L, email));
+
+        assertEquals("Cet étudiant a déjà choisi un autre stage pour cette session.", exception.getMessage());
+        verify(candidatureRepository, never()).save(any(Candidature.class));
     }
 
     @Test

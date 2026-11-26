@@ -167,4 +167,30 @@ class ReactSpringSecurityJwtApplicationTests {
         }
     }
 
+    @Test
+    @Transactional
+    void donneesDemo_emmaDeuxChoixSansContrat_choisirCreeContratEtDeclineAutre() throws Exception {
+        Etudiant emma = etudiantRepository.findAll().stream()
+                .filter(e -> "emma@test.com".equals(e.getEmail()))
+                .findFirst()
+                .orElseThrow();
+
+        List<Candidature> candsEmma = candidatureRepository.findByEtudiant(emma);
+        assertEquals(2, candsEmma.size());
+        assertTrue(candsEmma.stream().allMatch(c -> c.getStatut() == StatutCandidature.EN_ATTENTE_CHOIX_STAGE));
+        assertTrue(contratRepository.findByCandidatureEtudiantEmail("emma@test.com").isEmpty());
+
+        Candidature candChoisie = candsEmma.get(0);
+        Candidature candAutre = candsEmma.get(1);
+
+        var contratCree = contratService.genererContratAutomatique(candChoisie.getId());
+
+        assertNotNull(contratCree);
+        assertEquals(1, contratRepository.findByCandidatureEtudiantEmail("emma@test.com").size());
+        assertEquals(StatutCandidature.EN_ATTENTE_SIGNATURE,
+                candidatureRepository.findById(candChoisie.getId()).orElseThrow().getStatut());
+        assertEquals(StatutCandidature.REFUSEE,
+                candidatureRepository.findById(candAutre.getId()).orElseThrow().getStatut());
+    }
+
 }

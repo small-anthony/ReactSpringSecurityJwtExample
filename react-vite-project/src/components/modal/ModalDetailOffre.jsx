@@ -5,6 +5,7 @@ import { AuthServiceContext } from "../../services/AuthService.tsx";
 import { postuler } from "../../services/api/OffreStageService.js";
 import { choisirStageEtGenererContrat } from "../../services/api/ContratAPI.js";
 import { useOffreFormater } from "../../hooks/useOffreFormater.js";
+import ModalConfirmerChoixStage from "./ModalConfirmerChoixStage.jsx";
 
 const MESSAGE_OFFRE_SUPPRIMEE = "L'offre a été supprimée par l'employeur";
 const MESSAGE_AUTRE_STAGE_CHOISI = "L'étudiant a choisi une autre offre de stage.";
@@ -48,6 +49,7 @@ export default function ModalDetailOffre({
     const { traduireDiscipline, formaterSalaire } = useOffreFormater();
     const [isApplying, setIsApplying] = useState(false);
     const [isChoosingStage, setIsChoosingStage] = useState(false);
+    const [confirmChoixOpen, setConfirmChoixOpen] = useState(false);
     const [hasApplied, setHasApplied] = useState(aPostule);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
@@ -76,6 +78,7 @@ export default function ModalDetailOffre({
     useEffect(() => {
         setErrorMessage("");
         setSuccessMessage("");
+        setConfirmChoixOpen(false);
     }, [idOffre]);
 
     if (!offre) return null;
@@ -122,10 +125,12 @@ export default function ModalDetailOffre({
             setErrorMessage("");
             const authHeader = authService.buildAuthHeader();
             const contrat = await choisirStageEtGenererContrat(cand.id, authHeader);
+            setConfirmChoixOpen(false);
             if (onChoisirStageSucces) {
                 await onChoisirStageSucces(contrat);
             }
         } catch (err) {
+            setConfirmChoixOpen(false);
             setErrorMessage((err && err.message) || t("candidature_etudiant.choose_stage_error"));
         } finally {
             setIsChoosingStage(false);
@@ -347,7 +352,7 @@ export default function ModalDetailOffre({
                         <button
                             type="button"
                             id="btn-choisir-stage-modal"
-                            onClick={handleChoisirStage}
+                            onClick={() => setConfirmChoixOpen(true)}
                             disabled={isChoosingStage}
                             className="btn-primary bg-emerald-600 hover:bg-emerald-700 px-6"
                         >
@@ -365,7 +370,7 @@ export default function ModalDetailOffre({
                         </button>
                     )}
 
-                    {!hasApplied && !estRefusee && !estRetenueSansSignature && !aSigneContrat && !aRefuseContrat && (
+                    {!hasApplied && !estRefusee && !estRetenueSansSignature && !aSigneContrat && !aRefuseContrat && !aDejaStageChoisi && (
                         <button
                             type="button"
                             onClick={handlePostuler}
@@ -387,6 +392,14 @@ export default function ModalDetailOffre({
                     )}
                 </div>
             </div>
+
+            <ModalConfirmerChoixStage
+                isOpen={confirmChoixOpen}
+                offre={offre}
+                onClose={() => !isChoosingStage && setConfirmChoixOpen(false)}
+                onConfirm={handleChoisirStage}
+                loading={isChoosingStage}
+            />
         </div>
     );
 }

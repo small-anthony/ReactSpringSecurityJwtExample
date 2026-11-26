@@ -93,7 +93,7 @@ export function NotificationButton() {
         } else if (actionType === "APPROUVER_CV") {
             navigate("/gestionnaire/approbations/cvs");
         } else if (notification.action?.type === "SIGNER_CONTRAT_ETUDIANT") {
-            navigate("/etudiant?tab=contrats&filtre=A_SIGNER");
+            navigate("/etudiant?tab=contrats");
         } else if (notification.action?.type === "SIGNER_CONTRAT_EMPLOYEUR") {
             navigate("/employeur/contrats?filtre=A_SIGNER");
         } else if (actionType === "VOIR_CANDIDATURES") {
@@ -103,6 +103,8 @@ export function NotificationButton() {
             navigate("/gestionnaire/approbations/offres");
         } else if (notification.action?.type === "VOIR_CONVOCATIONS") {
             navigate("/etudiant?tab=convocations&filtre=EN_ATTENTE");
+        } else if (actionType === "CHOISIR_STAGE") {
+            navigate("/etudiant?tab=candidatures");
         } else if (notification.action?.type === "VOIR_EVALUATIONS") {
             navigate("/professeur?tab=evaluer");
         } else if (notification.action?.type === "ETUDIANT_ASSIGNE") {

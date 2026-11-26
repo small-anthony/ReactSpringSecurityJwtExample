@@ -136,11 +136,7 @@ public class ContratService {
                 request.descriptionTaches().trim(),
                 request.conditions().trim());
 
-        candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
-        candidatureRepository.save(candidature);
-        Contrat savedContrat = contratRepository.save(contrat);
-        notifierCreationContrat(candidature, savedContrat);
-        return ContratDto.create(savedContrat);
+        return finaliserCreationContrat(candidature, contrat, annee);
     }
 
     public ContratDto genererContratAutomatique(Long candidatureId) throws Exception {
@@ -179,10 +175,15 @@ public class ContratService {
                 descriptionTaches,
                 conditions);
 
+        return finaliserCreationContrat(candidature, contrat, annee);
+    }
+
+    private ContratDto finaliserCreationContrat(Candidature candidature, Contrat contrat, int annee) {
         candidature.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
         candidatureRepository.save(candidature);
         Contrat savedContrat = contratRepository.save(contrat);
         notifierCreationContrat(candidature, savedContrat);
+        refuserAutresCandidaturesEtContratsEtudiant(candidature, candidature.getEtudiant(), annee, savedContrat);
         return ContratDto.create(savedContrat);
     }
 
@@ -392,15 +393,15 @@ public class ContratService {
         boolean dejaEmbauchee = candidaturesEtudiant != null && candidaturesEtudiant.stream()
                 .anyMatch(autre -> !Objects.equals(autre.getId(), candidatureChoisie.getId())
                         && (autre.getOffreStage() == null || autre.getOffreStage().getAnnee() == annee)
-                        && autre.getStatut() == StatutCandidature.EMBAUCHEE);
-        boolean dejaContratSigne = etudiant.getEmail() != null && Optional.ofNullable(contratRepository.findByCandidatureEtudiantEmail(etudiant.getEmail()))
+                        && (autre.getStatut() == StatutCandidature.EMBAUCHEE
+                        || autre.getStatut() == StatutCandidature.EN_ATTENTE_SIGNATURE));
+        boolean dejaContratActif = etudiant.getEmail() != null && Optional.ofNullable(contratRepository.findByCandidatureEtudiantEmail(etudiant.getEmail()))
                 .orElse(List.of())
                 .stream()
-                .anyMatch(c -> c.isSigneParEtudiant()
-                        && c.getStatut() != StatutContrat.REFUSE
+                .anyMatch(c -> c.getStatut() != StatutContrat.REFUSE
                         && (c.getOffreStage() == null || c.getOffreStage().getAnnee() == annee)
                         && (c.getCandidature() == null || !Objects.equals(c.getCandidature().getId(), candidatureChoisie.getId())));
-        if (dejaEmbauchee || dejaContratSigne) {
+        if (dejaEmbauchee || dejaContratActif) {
             throw new Exception("Vous avez déjà choisi et signé un stage pour cette session.");
         }
     }

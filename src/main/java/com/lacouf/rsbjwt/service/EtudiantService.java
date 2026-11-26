@@ -102,6 +102,15 @@ public class EtudiantService {
             throw new Exception("Cette offre n'est plus disponible pour l'année en cours");
         }
 
+        List<Candidature> candidaturesEtudiant = candidatureRepository.findByEtudiant(etudiant);
+        boolean dejaStageChoisi = candidaturesEtudiant != null && candidaturesEtudiant.stream()
+                .anyMatch(c -> (c.getOffreStage() == null || c.getOffreStage().getAnnee() == anneeActuelle)
+                        && (c.getStatut() == com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_SIGNATURE
+                        || c.getStatut() == com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EMBAUCHEE));
+        if (dejaStageChoisi) {
+            throw new Exception("Vous avez déjà choisi un stage pour cette session.");
+        }
+
         offre.addCandidature(new Candidature(etudiant, offre));
         offreStageRepository.save(offre);
 

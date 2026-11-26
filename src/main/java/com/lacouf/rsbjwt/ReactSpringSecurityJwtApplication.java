@@ -312,30 +312,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         candidatureRepository.save(candMarcRefuse);
 
                         Candidature candEmmaCgiChoix = new Candidature(emma, offreCgiDev);
-                        candEmmaCgiChoix.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+                        candEmmaCgiChoix.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
                         candidatureRepository.save(candEmmaCgiChoix);
-                        Contrat contratEmmaCgi = new Contrat(
-                                        candEmmaCgiChoix,
-                                        LocalDate.of(anneeCourante, 3, 2),
-                                        LocalDate.of(anneeCourante, 5, 22),
-                                        "Du lundi au vendredi, 9h à 17h (35h/semaine)",
-                                        "24$/h",
-                                        offreCgiDev.getDescription(),
-                                        offreCgiDev.getExigences());
-                        contratRepository.save(contratEmmaCgi);
 
                         Candidature candEmmaGoogleChoix = new Candidature(emma, offreGoogleFront);
-                        candEmmaGoogleChoix.setStatut(StatutCandidature.EN_ATTENTE_SIGNATURE);
+                        candEmmaGoogleChoix.setStatut(StatutCandidature.EN_ATTENTE_CHOIX_STAGE);
                         candidatureRepository.save(candEmmaGoogleChoix);
-                        Contrat contratEmmaGoogle = new Contrat(
-                                        candEmmaGoogleChoix,
-                                        LocalDate.of(anneeCourante, 3, 1),
-                                        LocalDate.of(anneeCourante, 5, 21),
-                                        "Du lundi au vendredi, 9h à 17h (35h/semaine)",
-                                        "28$/h",
-                                        offreGoogleFront.getDescription(),
-                                        offreGoogleFront.getExigences());
-                        contratRepository.save(contratEmmaGoogle);
 
                         // -------------------------------------------------------------------------
                         // EQ2-18 : En tant qu'étudiant, je signe le contrat

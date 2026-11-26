@@ -216,6 +216,34 @@ public class EtudiantServiceTest {
         }
 
         @Test
+        void postuler_shouldRejectIfStudentAlreadyChoseStageInCurrentSession() throws Exception {
+                Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);
+                Etudiant etudiant = new Etudiant("Peter", "Parker", credentials, 12345, "Informatique");
+                etudiant.setId(1L);
+
+                OffreStage offreExistante = new OffreStage("Stage déjà choisi", "Desc", "CGI");
+                offreExistante.setId(9L);
+                Candidature candExistante = new Candidature(etudiant, offreExistante);
+                candExistante.setStatut(com.lacouf.rsbjwt.model.ENUM.StatutCandidature.EN_ATTENTE_SIGNATURE);
+
+                OffreStage nouvelleOffre = new OffreStage("Nouvelle offre", "Stage de quatre mois.", "TechCorp");
+                nouvelleOffre.setId(10L);
+                nouvelleOffre.accepter();
+
+                when(userAppRepository.findUserAppByEmail("test@gmail.com")).thenReturn(Optional.of(etudiant));
+                when(etudiantRepository.findById(1L)).thenReturn(Optional.of(etudiant));
+                when(offreStageRepository.findById(10L)).thenReturn(Optional.of(nouvelleOffre));
+                when(candidatureRepository.existsByEtudiantAndOffreStage(etudiant, nouvelleOffre)).thenReturn(false);
+                when(candidatureRepository.findByEtudiant(etudiant)).thenReturn(List.of(candExistante));
+
+                Exception exception = assertThrows(Exception.class,
+                        () -> etudiantService.postuler(10L, "test@gmail.com"));
+
+                assertEquals("Vous avez déjà choisi un stage pour cette session.", exception.getMessage());
+                verify(offreStageRepository, never()).save(any());
+        }
+
+        @Test
         void postuler_shouldRejectIfOffreNotAccepted() throws Exception {
                 // ARRANGE
                 Credentials credentials = new Credentials("test@gmail.com", "password", Role.ETUDIANT);

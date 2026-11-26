@@ -162,7 +162,7 @@
     "tab_to_sign": "À signer",
     "tab_signed": "Signés",
     "no_contracts": "Vous n'avez aucun contrat de stage pour le moment.",
-    "no_contracts_desc": "Dès qu'une offre est acceptée et qu'un contrat est rédigé par votre gestionnaire, il apparaîtra ici pour signature.",
+    "no_contracts_desc": "Dès que vous aurez choisi un stage après une embauche, votre contrat sera généré automatiquement et apparaîtra ici pour signature.",
     "sign_button": "Signer le contrat",
     "view_button": "Consulter le contrat",
     "download_button": "Télécharger le PDF",
@@ -198,7 +198,7 @@
       "success_refused": "Vous avez refusé ce contrat de stage. Le gestionnaire et l'étudiant en ont été notifiés.",
       "error_refuse": "Impossible de refuser le contrat.",
       "no_contracts": "Aucun contrat de stage trouvé",
-      "no_contracts_sub": "Votre gestionnaire de stage préparera les contrats dès qu'une embauche est confirmée."
+      "no_contracts_sub": "Le contrat sera généré automatiquement dès que le candidat retenu aura confirmé son choix de stage."
     },
     "actions": {
       "view": "Consulter le contrat",

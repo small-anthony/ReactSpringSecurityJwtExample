@@ -162,7 +162,7 @@
     "tab_to_sign": "To sign",
     "tab_signed": "Signed",
     "no_contracts": "You have no internship contracts at the moment.",
-    "no_contracts_desc": "Once an offer is accepted and a contract is drafted by your internship coordinator, it will appear here for signature.",
+    "no_contracts_desc": "Once you choose an internship after being hired, your contract will be generated automatically and appear here for signature.",
     "sign_button": "Sign contract",
     "view_button": "View contract",
     "download_button": "Download PDF",
@@ -198,7 +198,7 @@
       "success_refused": "You have refused this internship contract. The manager and student have been notified.",
       "error_refuse": "Unable to refuse the contract.",
       "no_contracts": "No internship contracts found",
-      "no_contracts_sub": "Your internship manager will prepare contracts once a hire is confirmed."
+      "no_contracts_sub": "The contract will be generated automatically once the selected candidate confirms their internship choice."
     },
     "actions": {
       "view": "View contract",

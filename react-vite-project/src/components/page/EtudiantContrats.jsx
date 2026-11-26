@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useSearchParams } from "react-router-dom";
 import {
     FileText,
     Clock,
@@ -37,17 +36,14 @@ const calculerEtatSignature = (liste) => {
     return { hasSigned, restant };
 };
 
-const FILTRES_CONTRAT_VALIDES = new Set(["TOUS", "A_SIGNER", "SIGNES", "REFUSES"]);
-
-const resolveFiltreContrat = (param) => {
-    const upper = param?.toUpperCase();
-    return FILTRES_CONTRAT_VALIDES.has(upper) ? upper : "TOUS";
-};
-
-export default function EtudiantContrats({ embedMode, initialContrats = null, onPendingCountChange, onContratUpdated }) {
+export default function EtudiantContrats({
+    embedMode,
+    initialContrats = null,
+    onPendingCountChange,
+    onContratUpdated
+}) {
     const { t } = useTranslation("main");
     const authService = useContext(AuthServiceContext);
-    const [searchParams] = useSearchParams();
     const { annees, anneeChoisie, setAnneeChoisie, anneesChargees, estAncienneSession } = useSessionSelection(
         getAnneesContratsEtudiant,
         authService
@@ -58,14 +54,6 @@ export default function EtudiantContrats({ embedMode, initialContrats = null, on
     const [erreur, setErreur] = useState(null);
     const [succes, setSucces] = useState(null);
     const [messageRefus, setMessageRefus] = useState(null);
-    const [filtre, setFiltre] = useState(() => resolveFiltreContrat(searchParams.get("filtre")));
-
-    useEffect(() => {
-        const param = searchParams.get("filtre");
-        if (param) {
-            setFiltre(resolveFiltreContrat(param));
-        }
-    }, [searchParams]);
     const [signingContrat, setSigningContrat] = useState(null);
     const [contratARefuser, setContratARefuser] = useState(null);
     const [refusSubmitting, setRefusSubmitting] = useState(false);
@@ -218,25 +206,13 @@ export default function EtudiantContrats({ embedMode, initialContrats = null, on
         return 1;
     };
 
-    const contratsFiltres = contrats
-        .filter((c) => {
-            if (filtre === "A_SIGNER") return !c.signeParEtudiant && c.statut !== "REFUSE";
-            if (filtre === "SIGNES") return c.signeParEtudiant;
-            if (filtre === "REFUSES") return c.statut === "REFUSE";
-            return true;
-        })
-        .sort((a, b) => {
-            const diff = getPrioriteContratEtudiant(a) - getPrioriteContratEtudiant(b);
-            if (diff !== 0) return diff;
-            return Number(b.id || 0) - Number(a.id || 0);
-        });
+    const contratsTries = [...contrats].sort((a, b) => {
+        const diff = getPrioriteContratEtudiant(a) - getPrioriteContratEtudiant(b);
+        if (diff !== 0) return diff;
+        return Number(b.id || 0) - Number(a.id || 0);
+    });
 
     const aDejaSigneUnContrat = contrats.some((c) => c.signeParEtudiant && c.statut !== "REFUSE");
-    const countASigner = aDejaSigneUnContrat
-        ? 0
-        : contrats.filter((c) => !c.signeParEtudiant && c.statut !== "REFUSE").length;
-    const countSignes = contrats.filter((c) => c.signeParEtudiant && c.statut !== "REFUSE").length;
-    const countRefuses = contrats.filter((c) => c.statut === "REFUSE").length;
 
     const {
         page,
@@ -246,7 +222,7 @@ export default function EtudiantContrats({ embedMode, initialContrats = null, on
         totalItems,
         totalPages,
         paginatedItems: contratsPagines
-    } = usePagination(contratsFiltres, 10, [filtre, anneeChoisie]);
+    } = usePagination(contratsTries, 10, [anneeChoisie]);
 
     const content = (
         <div className={embedMode ? "space-y-6" : "max-w-6xl mx-auto space-y-6"}>
@@ -316,65 +292,7 @@ export default function EtudiantContrats({ embedMode, initialContrats = null, on
                 </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                <div className="flex flex-wrap items-center gap-2">
-                    <button
-                        type="button"
-                        id="filter-contrats-tous"
-                        onClick={() => setFiltre("TOUS")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                            filtre === "TOUS"
-                                ? "bg-blue-600 text-white shadow-xs"
-                                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                        }`}
-                    >
-                        {t("contrats_etudiant.tab_all")} ({contrats.length})
-                    </button>
-
-                    <button
-                        type="button"
-                        id="filter-contrats-a-signer"
-                        onClick={() => setFiltre("A_SIGNER")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5 ${
-                            filtre === "A_SIGNER"
-                                ? "bg-amber-600 text-white shadow-xs"
-                                : "bg-white text-amber-700 hover:bg-amber-50 border border-amber-200"
-                        }`}
-                    >
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{t("contrats_etudiant.tab_to_sign")} ({countASigner})</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        id="filter-contrats-signes"
-                        onClick={() => setFiltre("SIGNES")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5 ${
-                            filtre === "SIGNES"
-                                ? "bg-emerald-600 text-white shadow-xs"
-                                : "bg-white text-emerald-700 hover:bg-emerald-50 border border-emerald-200"
-                        }`}
-                    >
-                        <Check className="w-3.5 h-3.5" />
-                        <span>{t("contrats_etudiant.tab_signed")} ({countSignes})</span>
-                    </button>
-
-                    {countRefuses > 0 && (
-                        <button
-                            type="button"
-                            id="filter-contrats-refuses"
-                            onClick={() => setFiltre("REFUSES")}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5 ${
-                                filtre === "REFUSES"
-                                    ? "bg-rose-600 text-white shadow-xs"
-                                    : "bg-white text-rose-700 hover:bg-rose-50 border border-rose-200"
-                            }`}
-                        >
-                            <XCircle className="w-3.5 h-3.5" />
-                            <span>{t("contrats_etudiant.status_refused")} ({countRefuses})</span>
-                        </button>
-                    )}
-                </div>
+            <div className="flex justify-end pt-1">
                 <SelecteurSession
                     annees={annees}
                     anneeSelectionnee={anneeChoisie}
@@ -391,7 +309,7 @@ export default function EtudiantContrats({ embedMode, initialContrats = null, on
                 </div>
             )}
 
-            {!loading && contratsFiltres.length === 0 && (
+            {!loading && contratsTries.length === 0 && (
                 <div className="text-center bg-white rounded-2xl shadow-xs border border-gray-200 p-16 space-y-3">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto" />
                     <h3 className="text-lg font-bold text-gray-800">
@@ -403,7 +321,7 @@ export default function EtudiantContrats({ embedMode, initialContrats = null, on
                 </div>
             )}
 
-            {(!loading || contrats.length > 0) && contratsFiltres.length > 0 && (
+            {(!loading || contrats.length > 0) && contratsTries.length > 0 && (
                 <>
                     <div className="grid gap-6">
                         {contratsPagines.map((c) => (
